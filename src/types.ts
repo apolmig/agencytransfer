@@ -92,3 +92,10 @@ export interface BenchmarkRecord {
   modelPeriod: string;
   sourceUrl: string;
 }
+
+export type {
+  FrontierTimelineModel as FrontierModel,
+  FrontierTimelineObservation as FrontierObservation,
+} from "./components/FrontierTimeline";
+
+export type { TestingNoteRecord as TestingNote } from "./components/TestingSection";

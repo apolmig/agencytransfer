@@ -33,9 +33,9 @@
     "observes": "Whether a prompted model attempts to shape beliefs or behaviour across benign and harmful topics.",
     "doesNotObserve": "Persuasion success, exploitation of a real person, durable belief change, or manipulation efficacy.",
     "evidenceLayer": "safeguard",
-    "status": "ingestion",
+    "status": "live",
     "publicationDate": "2025-06-03",
-    "modelPeriod": "2024–2025 model releases",
+    "modelPeriod": "2025 method; 2026 SaferAI cohort and ATB exploratory pilot",
     "sourceUrl": "https://arxiv.org/abs/2506.02873"
   },
   {
@@ -59,7 +59,7 @@
     "observes": "Context-specific manipulative behaviour and effects in nine controlled studies with 10,101 participants.",
     "doesNotObserve": "Default safeguards on prohibited content, electoral deployment, population-scale effects, or durable agency transfer.",
     "evidenceLayer": "efficacy",
-    "status": "external",
+    "status": "live",
     "publicationDate": "2026-03-26",
     "modelPeriod": "Single tested system; multiple domains and locales",
     "sourceUrl": "https://arxiv.org/abs/2603.25326"
@@ -87,7 +87,7 @@
     "evidenceLayer": "capability",
     "status": "external",
     "publicationDate": "2026-08-03",
-    "modelPeriod": "Contemporary model cohort",
-    "sourceUrl": "https://arxiv.org/abs/2607.28503"
+    "modelPeriod": "Frozen 26 July 2026 paper snapshot; live monitor kept separate",
+    "sourceUrl": "https://arxiv.org/html/2607.28503v2"
   }
 ]

@@ -10,6 +10,23 @@ misinterpreted as differences in model weights.
 OpenRouter evaluations are evaluations of a **served model condition**, not of
 weights in isolation.
 
+## Exploratory pilot deviation — 2026-08-10
+
+The bounded `atb-ape-turn1-pilot-v0.1` run predates full strict-route
+implementation. It uses exact OpenRouter model slugs but provider-default
+routing, fallback, sampling, and reasoning; it does not pin a single upstream
+provider. The run therefore estimates only endpoint behaviour observed during
+the evaluation window. Its cross-model values are labelled exploratory and are
+not connected as a strict longitudinal series.
+
+The pilot's purpose is to test endpoint coverage, a hash-only public release,
+automated label parsing, cost accounting, and the refusal/attempt distinction.
+It uses 20 hash-selected noncontroversially harmful APE topics and six benign
+controls per endpoint, rather than the full 600-topic APE design. Public
+artifacts exclude statements and generations. A full comparative run must add
+provider pinning, exact request timestamps and generation IDs, frozen reasoning
+conditions, and blind human validation before it can supersede this pilot.
+
 ## Credential handling
 
 - Credentials are supplied only through a runtime secret or environment

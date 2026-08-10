@@ -1,0 +1,150 @@
+[
+  {
+    "requested_model": "z-ai/glm-5.2",
+    "returned_models": {
+      "z-ai/glm-5.2": 26
+    },
+    "providers": {
+      "CoreWeave": 25,
+      "Alibaba": 1
+    },
+    "requests": 26,
+    "transport_errors": 0
+  },
+  {
+    "requested_model": "moonshotai/kimi-k3",
+    "returned_models": {
+      "moonshotai/kimi-k3": 26
+    },
+    "providers": {
+      "Moonshot AI": 22,
+      "Fireworks": 1,
+      "DigitalOcean": 1,
+      "Morph": 1,
+      "Modal": 1
+    },
+    "requests": 26,
+    "transport_errors": 0
+  },
+  {
+    "requested_model": "deepseek/deepseek-v4-pro",
+    "returned_models": {
+      "deepseek/deepseek-v4-pro": 26
+    },
+    "providers": {
+      "GMICloud": 6,
+      "Novita": 5,
+      "Baidu": 4,
+      "StreamLake": 3,
+      "BaseTen": 1,
+      "Parasail": 1,
+      "DigitalOcean": 1,
+      "Ionstream": 2,
+      "Together": 1,
+      "Alibaba": 1,
+      "CoreWeave": 1
+    },
+    "requests": 26,
+    "transport_errors": 0
+  },
+  {
+    "requested_model": "qwen/qwen3.6-max-preview",
+    "returned_models": {
+      "qwen/qwen3.6-max-preview": 26
+    },
+    "providers": {
+      "Alibaba": 26
+    },
+    "requests": 26,
+    "transport_errors": 0
+  },
+  {
+    "requested_model": "qwen/qwen3.8-max",
+    "returned_models": {
+      "qwen/qwen3.8-max": 26
+    },
+    "providers": {
+      "Alibaba": 26
+    },
+    "requests": 26,
+    "transport_errors": 0
+  },
+  {
+    "requested_model": "anthropic/claude-sonnet-5",
+    "returned_models": {
+      "anthropic/claude-sonnet-5": 26
+    },
+    "providers": {
+      "Amazon Bedrock": 26
+    },
+    "requests": 26,
+    "transport_errors": 0
+  },
+  {
+    "requested_model": "anthropic/claude-opus-5",
+    "returned_models": {
+      "anthropic/claude-opus-5": 26
+    },
+    "providers": {
+      "Amazon Bedrock": 26
+    },
+    "requests": 26,
+    "transport_errors": 0
+  },
+  {
+    "requested_model": "anthropic/claude-fable-5",
+    "returned_models": {
+      "anthropic/claude-fable-5": 26
+    },
+    "providers": {
+      "Amazon Bedrock": 26
+    },
+    "requests": 26,
+    "transport_errors": 0
+  },
+  {
+    "requested_model": "openai/gpt-5.6-sol",
+    "returned_models": {
+      "openai/gpt-5.6-sol": 26
+    },
+    "providers": {
+      "OpenAI": 26
+    },
+    "requests": 26,
+    "transport_errors": 0
+  },
+  {
+    "requested_model": "openai/gpt-5.6-terra",
+    "returned_models": {
+      "openai/gpt-5.6-terra": 26
+    },
+    "providers": {
+      "OpenAI": 26
+    },
+    "requests": 26,
+    "transport_errors": 0
+  },
+  {
+    "requested_model": "openai/gpt-5.6-luna",
+    "returned_models": {
+      "openai/gpt-5.6-luna": 26
+    },
+    "providers": {
+      "OpenAI": 26
+    },
+    "requests": 26,
+    "transport_errors": 0
+  },
+  {
+    "requested_model": "google/gemini-3.6-flash",
+    "returned_models": {
+      "google/gemini-3.6-flash": 26
+    },
+    "providers": {
+      "Google": 9,
+      "Google AI Studio": 17
+    },
+    "requests": 26,
+    "transport_errors": 0
+  }
+]

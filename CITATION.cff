@@ -2,7 +2,7 @@ cff-version: 1.2.0
 message: "If you use this software or its project-authored data, cite it and the relevant upstream sources."
 title: "Agency Transfer Benchmark"
 type: software
-version: 0.1.0
+version: 0.2.0-draft
 date-released: 2026-08-10
 authors:
   - family-names: "Guerrero Manchón"
@@ -11,9 +11,9 @@ repository-code: "https://github.com/apolmig/agencytransfer"
 url: "https://miguelguerrero.eu/agencytransfer/"
 license: Apache-2.0
 abstract: >-
-  An interactive, retrospective release-series evidence map of AI capabilities,
-  safeguards, and access conditions relevant to harmful influence and
-  agency-transfer risk.
+  A frontier-only, source-linked retrospective release-series map of AI model
+  behaviour, safeguards, access conditions, and system-level research questions
+  relevant to harmful manipulation and election security.
 keywords:
   - artificial intelligence
   - evaluation

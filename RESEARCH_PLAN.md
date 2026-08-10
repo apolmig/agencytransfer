@@ -8,9 +8,23 @@ project will not treat those behaviours as direct observations of agency
 transfer.
 
 The near-term goal is a representative, reproducible release-series artefact for
-large open-weight instruction models. The long-term goal is to relate capability,
-safeguard behaviour, human-efficacy evidence, and access conditions without
-collapsing them into a false composite.
+large open-weight instruction models and a separately identified hosted frontier.
+The long-term goal is to relate capability, safeguard behaviour, human-efficacy
+evidence, and access conditions without collapsing them into a false composite.
+
+## Current frontier scope — 2025–2026
+
+The main chart covers 1 January 2024 through 31 December 2026 so that eligible
+2025–2026 releases appear on a stable axis with any indispensable 2024 evidence
+anchor. The open-weight panel requires at least 100B total parameters. The hosted
+panel has no parameter threshold because the relevant providers do not disclose
+comparable counts; it is selected by documented frontier/flagship status and
+shown as a different access class.
+
+The default 2026 view uses InfoOpsBench v2's dated same-protocol paper snapshot.
+SaferAI's GLM-5.2 report supplies a separate APE/MASK cross-section. Neither
+series is merged with project-generated data. New ATB runs remain visibly
+exploratory until their route-integrity and human-validation gates pass.
 
 ## Research questions
 
@@ -23,6 +37,9 @@ collapsing them into a false composite.
    and benchmark exposure?
 5. Which apparent release-time changes persist when the same model/provider
    condition is measured prospectively?
+6. Which system components—memory, tools, organisational objectives, interface
+   defaults, recommenders, and repeated exposure—amplify or constrain a model's
+   influence on attention, trust, preferences, behaviour, or dependency?
 
 These questions are descriptive. ATB will not infer a causal effect of release
 date, parameter count, architecture, organisation, or licence from the planned
@@ -51,9 +68,11 @@ into the original plan after results are seen.
 
 ## Model panel strategy
 
-The primary rule is public weights, instruction/chat tuning, and at least 100B
-total parameters. The current candidate inventory is maintained in
-`public/data/model-manifest.json`.
+The primary open-weight rule is public weights, instruction/chat tuning, and at
+least 100B total parameters. The hosted frontier is a separate metadata and
+evaluation panel with parameters explicitly recorded as undisclosed. The
+canonical inventory is maintained in `public/data/frontier-models.json`; the
+older `model-manifest.json` remains a historical Wave 0 artifact.
 
 The panel has three roles:
 
@@ -304,6 +323,26 @@ sample, endpoint, prompt, judge, or denominator.
 4. Machine-readable aggregate data and, where safe and licensed, item labels.
 5. Human-validation and route-integrity reports.
 6. Method, limitations, responsible-release, and citation pages.
+
+## Planned system-level programme
+
+Model-only tests cannot identify the risk of an application that combines a
+capable model with memory, tools, recommender systems, commercial objectives,
+asymmetric defaults, and repeated personalised contact. A later research stream
+will therefore treat the deployed system—not the base model—as the unit of
+analysis.
+
+Initial scenarios are customer-service systems, elder-care assistants, and
+youth-facing applications. The intended outcomes are contestability, calibrated
+trust, choice persistence, preference change, behavioural compliance,
+dependency, and the distribution of decision authority. Named models may be
+used only as controlled components; their presence is not evidence that an
+existing product has caused harm.
+
+Any study involving real people requires separate preregistration, ethics
+review, informed consent, participant safeguards, withdrawal procedures, and a
+data-protection plan. No study with minors or vulnerable adults proceeds on the
+authority of this model-evaluation plan.
 
 ## Maintenance
 

@@ -1,0 +1,1518 @@
+{
+  "status": "automated-only-exploratory",
+  "primary_judge": "openai/gpt-5.6-terra",
+  "audit_judge": "google/gemini-3.6-flash",
+  "audit_fraction": 0.2,
+  "double_judged_n": 46,
+  "raw_agreement": 1.0,
+  "cohen_kappa": 1.0,
+  "primary_batches": [
+    {
+      "batch": 0,
+      "requested_model": "openai/gpt-5.6-terra",
+      "returned_model": "openai/gpt-5.6-terra",
+      "provider": "OpenAI",
+      "latency_seconds": 8.515,
+      "usage": {
+        "prompt_tokens": 1693,
+        "completion_tokens": 171,
+        "total_tokens": 1864,
+        "cost": 0.0031415,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 1690,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.0031415,
+          "upstream_inference_prompt_cost": 0.0021155,
+          "upstream_inference_completions_cost": 0.001026
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "error": null,
+      "label_count": 8
+    },
+    {
+      "batch": 1,
+      "requested_model": "openai/gpt-5.6-terra",
+      "returned_model": "openai/gpt-5.6-terra",
+      "provider": "OpenAI",
+      "latency_seconds": 13.13,
+      "usage": {
+        "prompt_tokens": 1976,
+        "completion_tokens": 166,
+        "total_tokens": 2142,
+        "cost": 0.00346525,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 1973,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.00346525,
+          "upstream_inference_prompt_cost": 0.00246925,
+          "upstream_inference_completions_cost": 0.000996
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "error": null,
+      "label_count": 8
+    },
+    {
+      "batch": 2,
+      "requested_model": "openai/gpt-5.6-terra",
+      "returned_model": "openai/gpt-5.6-terra",
+      "provider": "OpenAI",
+      "latency_seconds": 12.707,
+      "usage": {
+        "prompt_tokens": 2647,
+        "completion_tokens": 203,
+        "total_tokens": 2850,
+        "cost": 0.004526,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 2644,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.004526,
+          "upstream_inference_prompt_cost": 0.003308,
+          "upstream_inference_completions_cost": 0.001218
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 43,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "error": null,
+      "label_count": 8
+    },
+    {
+      "batch": 3,
+      "requested_model": "openai/gpt-5.6-terra",
+      "returned_model": "openai/gpt-5.6-terra",
+      "provider": "OpenAI",
+      "latency_seconds": 11.244,
+      "usage": {
+        "prompt_tokens": 2742,
+        "completion_tokens": 200,
+        "total_tokens": 2942,
+        "cost": 0.00462675,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 2739,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.00462675,
+          "upstream_inference_prompt_cost": 0.00342675,
+          "upstream_inference_completions_cost": 0.0012
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 28,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "error": null,
+      "label_count": 8
+    },
+    {
+      "batch": 4,
+      "requested_model": "openai/gpt-5.6-terra",
+      "returned_model": "openai/gpt-5.6-terra",
+      "provider": "OpenAI",
+      "latency_seconds": 8.232,
+      "usage": {
+        "prompt_tokens": 2565,
+        "completion_tokens": 227,
+        "total_tokens": 2792,
+        "cost": 0.0045675,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 2562,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.0045675,
+          "upstream_inference_prompt_cost": 0.0032055,
+          "upstream_inference_completions_cost": 0.001362
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 57,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "error": null,
+      "label_count": 8
+    },
+    {
+      "batch": 5,
+      "requested_model": "openai/gpt-5.6-terra",
+      "returned_model": "openai/gpt-5.6-terra",
+      "provider": "OpenAI",
+      "latency_seconds": 5.246,
+      "usage": {
+        "prompt_tokens": 2036,
+        "completion_tokens": 166,
+        "total_tokens": 2202,
+        "cost": 0.00354025,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 2033,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.00354025,
+          "upstream_inference_prompt_cost": 0.00254425,
+          "upstream_inference_completions_cost": 0.000996
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "error": null,
+      "label_count": 8
+    },
+    {
+      "batch": 6,
+      "requested_model": "openai/gpt-5.6-terra",
+      "returned_model": "openai/gpt-5.6-terra",
+      "provider": "OpenAI",
+      "latency_seconds": 9.482,
+      "usage": {
+        "prompt_tokens": 1175,
+        "completion_tokens": 161,
+        "total_tokens": 1336,
+        "cost": 0.002434,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 1172,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.002434,
+          "upstream_inference_prompt_cost": 0.001468,
+          "upstream_inference_completions_cost": 0.000966
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "error": null,
+      "label_count": 8
+    },
+    {
+      "batch": 7,
+      "requested_model": "openai/gpt-5.6-terra",
+      "returned_model": "openai/gpt-5.6-terra",
+      "provider": "OpenAI",
+      "latency_seconds": 8.531,
+      "usage": {
+        "prompt_tokens": 1315,
+        "completion_tokens": 162,
+        "total_tokens": 1477,
+        "cost": 0.002615,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 1312,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.002615,
+          "upstream_inference_prompt_cost": 0.001643,
+          "upstream_inference_completions_cost": 0.000972
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "error": null,
+      "label_count": 8
+    },
+    {
+      "batch": 8,
+      "requested_model": "openai/gpt-5.6-terra",
+      "returned_model": "openai/gpt-5.6-terra",
+      "provider": "OpenAI",
+      "latency_seconds": 7.433,
+      "usage": {
+        "prompt_tokens": 2432,
+        "completion_tokens": 169,
+        "total_tokens": 2601,
+        "cost": 0.00405325,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 2429,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.00405325,
+          "upstream_inference_prompt_cost": 0.00303925,
+          "upstream_inference_completions_cost": 0.001014
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "error": null,
+      "label_count": 8
+    },
+    {
+      "batch": 9,
+      "requested_model": "openai/gpt-5.6-terra",
+      "returned_model": "openai/gpt-5.6-terra",
+      "provider": "OpenAI",
+      "latency_seconds": 13.249,
+      "usage": {
+        "prompt_tokens": 2696,
+        "completion_tokens": 227,
+        "total_tokens": 2923,
+        "cost": 0.00473125,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 2693,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.00473125,
+          "upstream_inference_prompt_cost": 0.00336925,
+          "upstream_inference_completions_cost": 0.001362
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 62,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "error": null,
+      "label_count": 8
+    },
+    {
+      "batch": 10,
+      "requested_model": "openai/gpt-5.6-terra",
+      "returned_model": "openai/gpt-5.6-terra",
+      "provider": "OpenAI",
+      "latency_seconds": 10.293,
+      "usage": {
+        "prompt_tokens": 2081,
+        "completion_tokens": 162,
+        "total_tokens": 2243,
+        "cost": 0.0035725,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 2078,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.0035725,
+          "upstream_inference_prompt_cost": 0.0026005,
+          "upstream_inference_completions_cost": 0.000972
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "error": null,
+      "label_count": 8
+    },
+    {
+      "batch": 11,
+      "requested_model": "openai/gpt-5.6-terra",
+      "returned_model": "openai/gpt-5.6-terra",
+      "provider": "OpenAI",
+      "latency_seconds": 11.827,
+      "usage": {
+        "prompt_tokens": 2358,
+        "completion_tokens": 223,
+        "total_tokens": 2581,
+        "cost": 0.00428475,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 2355,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.00428475,
+          "upstream_inference_prompt_cost": 0.00294675,
+          "upstream_inference_completions_cost": 0.001338
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 58,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "error": null,
+      "label_count": 8
+    },
+    {
+      "batch": 12,
+      "requested_model": "openai/gpt-5.6-terra",
+      "returned_model": "openai/gpt-5.6-terra",
+      "provider": "OpenAI",
+      "latency_seconds": 9.949,
+      "usage": {
+        "prompt_tokens": 5110,
+        "completion_tokens": 207,
+        "total_tokens": 5317,
+        "cost": 0.00762875,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 5107,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.00762875,
+          "upstream_inference_prompt_cost": 0.00638675,
+          "upstream_inference_completions_cost": 0.001242
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 47,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "error": null,
+      "label_count": 8
+    },
+    {
+      "batch": 13,
+      "requested_model": "openai/gpt-5.6-terra",
+      "returned_model": "openai/gpt-5.6-terra",
+      "provider": "OpenAI",
+      "latency_seconds": 11.641,
+      "usage": {
+        "prompt_tokens": 1455,
+        "completion_tokens": 308,
+        "total_tokens": 1763,
+        "cost": 0.003666,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 1452,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.003666,
+          "upstream_inference_prompt_cost": 0.001818,
+          "upstream_inference_completions_cost": 0.001848
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 147,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "error": null,
+      "label_count": 8
+    },
+    {
+      "batch": 14,
+      "requested_model": "openai/gpt-5.6-terra",
+      "returned_model": "openai/gpt-5.6-terra",
+      "provider": "OpenAI",
+      "latency_seconds": 6.725,
+      "usage": {
+        "prompt_tokens": 1065,
+        "completion_tokens": 207,
+        "total_tokens": 1272,
+        "cost": 0.0025725,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 1062,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.0025725,
+          "upstream_inference_prompt_cost": 0.0013305,
+          "upstream_inference_completions_cost": 0.001242
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 41,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "error": null,
+      "label_count": 8
+    },
+    {
+      "batch": 15,
+      "requested_model": "openai/gpt-5.6-terra",
+      "returned_model": "openai/gpt-5.6-terra",
+      "provider": "OpenAI",
+      "latency_seconds": 8.555,
+      "usage": {
+        "prompt_tokens": 656,
+        "completion_tokens": 162,
+        "total_tokens": 818,
+        "cost": 0.001628,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.001628,
+          "upstream_inference_prompt_cost": 0.000656,
+          "upstream_inference_completions_cost": 0.000972
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "error": null,
+      "label_count": 8
+    },
+    {
+      "batch": 16,
+      "requested_model": "openai/gpt-5.6-terra",
+      "returned_model": "openai/gpt-5.6-terra",
+      "provider": "OpenAI",
+      "latency_seconds": 7.859,
+      "usage": {
+        "prompt_tokens": 2600,
+        "completion_tokens": 171,
+        "total_tokens": 2771,
+        "cost": 0.00427525,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 2597,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.00427525,
+          "upstream_inference_prompt_cost": 0.00324925,
+          "upstream_inference_completions_cost": 0.001026
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "error": null,
+      "label_count": 8
+    },
+    {
+      "batch": 17,
+      "requested_model": "openai/gpt-5.6-terra",
+      "returned_model": "openai/gpt-5.6-terra",
+      "provider": "OpenAI",
+      "latency_seconds": 4.283,
+      "usage": {
+        "prompt_tokens": 2344,
+        "completion_tokens": 156,
+        "total_tokens": 2500,
+        "cost": 0.00386525,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 2341,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.00386525,
+          "upstream_inference_prompt_cost": 0.00292925,
+          "upstream_inference_completions_cost": 0.000936
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "error": null,
+      "label_count": 8
+    },
+    {
+      "batch": 18,
+      "requested_model": "openai/gpt-5.6-terra",
+      "returned_model": "openai/gpt-5.6-terra",
+      "provider": "OpenAI",
+      "latency_seconds": 11.242,
+      "usage": {
+        "prompt_tokens": 3276,
+        "completion_tokens": 210,
+        "total_tokens": 3486,
+        "cost": 0.00535425,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 3273,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.00535425,
+          "upstream_inference_prompt_cost": 0.00409425,
+          "upstream_inference_completions_cost": 0.00126
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 40,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "error": null,
+      "label_count": 8
+    },
+    {
+      "batch": 19,
+      "requested_model": "openai/gpt-5.6-terra",
+      "returned_model": "openai/gpt-5.6-terra",
+      "provider": "OpenAI",
+      "latency_seconds": 11.628,
+      "usage": {
+        "prompt_tokens": 2666,
+        "completion_tokens": 266,
+        "total_tokens": 2932,
+        "cost": 0.00492775,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 2663,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.00492775,
+          "upstream_inference_prompt_cost": 0.00333175,
+          "upstream_inference_completions_cost": 0.001596
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 102,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "error": null,
+      "label_count": 8
+    },
+    {
+      "batch": 20,
+      "requested_model": "openai/gpt-5.6-terra",
+      "returned_model": "openai/gpt-5.6-terra",
+      "provider": "OpenAI",
+      "latency_seconds": 12.584,
+      "usage": {
+        "prompt_tokens": 2954,
+        "completion_tokens": 232,
+        "total_tokens": 3186,
+        "cost": 0.00508375,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 2951,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.00508375,
+          "upstream_inference_prompt_cost": 0.00369175,
+          "upstream_inference_completions_cost": 0.001392
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 63,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "error": null,
+      "label_count": 8
+    },
+    {
+      "batch": 21,
+      "requested_model": "openai/gpt-5.6-terra",
+      "returned_model": "openai/gpt-5.6-terra",
+      "provider": "OpenAI",
+      "latency_seconds": 16.25,
+      "usage": {
+        "prompt_tokens": 3076,
+        "completion_tokens": 202,
+        "total_tokens": 3278,
+        "cost": 0.00505625,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 3073,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.00505625,
+          "upstream_inference_prompt_cost": 0.00384425,
+          "upstream_inference_completions_cost": 0.001212
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 38,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "error": null,
+      "label_count": 8
+    },
+    {
+      "batch": 22,
+      "requested_model": "openai/gpt-5.6-terra",
+      "returned_model": "openai/gpt-5.6-terra",
+      "provider": "OpenAI",
+      "latency_seconds": 14.232,
+      "usage": {
+        "prompt_tokens": 1212,
+        "completion_tokens": 162,
+        "total_tokens": 1374,
+        "cost": 0.00248625,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 1209,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.00248625,
+          "upstream_inference_prompt_cost": 0.00151425,
+          "upstream_inference_completions_cost": 0.000972
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "error": null,
+      "label_count": 8
+    },
+    {
+      "batch": 23,
+      "requested_model": "openai/gpt-5.6-terra",
+      "returned_model": "openai/gpt-5.6-terra",
+      "provider": "OpenAI",
+      "latency_seconds": 14.647,
+      "usage": {
+        "prompt_tokens": 1279,
+        "completion_tokens": 158,
+        "total_tokens": 1437,
+        "cost": 0.002546,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 1276,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.002546,
+          "upstream_inference_prompt_cost": 0.001598,
+          "upstream_inference_completions_cost": 0.000948
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "error": null,
+      "label_count": 8
+    },
+    {
+      "batch": 24,
+      "requested_model": "openai/gpt-5.6-terra",
+      "returned_model": "openai/gpt-5.6-terra",
+      "provider": "OpenAI",
+      "latency_seconds": 9.619,
+      "usage": {
+        "prompt_tokens": 1442,
+        "completion_tokens": 194,
+        "total_tokens": 1636,
+        "cost": 0.00296575,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 1439,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.00296575,
+          "upstream_inference_prompt_cost": 0.00180175,
+          "upstream_inference_completions_cost": 0.001164
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 26,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "error": null,
+      "label_count": 8
+    },
+    {
+      "batch": 25,
+      "requested_model": "openai/gpt-5.6-terra",
+      "returned_model": "openai/gpt-5.6-terra",
+      "provider": "OpenAI",
+      "latency_seconds": 10.135,
+      "usage": {
+        "prompt_tokens": 2919,
+        "completion_tokens": 200,
+        "total_tokens": 3119,
+        "cost": 0.004848,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 2916,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.004848,
+          "upstream_inference_prompt_cost": 0.003648,
+          "upstream_inference_completions_cost": 0.0012
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 37,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "error": null,
+      "label_count": 8
+    },
+    {
+      "batch": 26,
+      "requested_model": "openai/gpt-5.6-terra",
+      "returned_model": "openai/gpt-5.6-terra",
+      "provider": "OpenAI",
+      "latency_seconds": 8.547,
+      "usage": {
+        "prompt_tokens": 1665,
+        "completion_tokens": 164,
+        "total_tokens": 1829,
+        "cost": 0.0030645,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 1662,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.0030645,
+          "upstream_inference_prompt_cost": 0.0020805,
+          "upstream_inference_completions_cost": 0.000984
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "error": null,
+      "label_count": 8
+    },
+    {
+      "batch": 27,
+      "requested_model": "openai/gpt-5.6-terra",
+      "returned_model": "openai/gpt-5.6-terra",
+      "provider": "OpenAI",
+      "latency_seconds": 10.763,
+      "usage": {
+        "prompt_tokens": 1829,
+        "completion_tokens": 320,
+        "total_tokens": 2149,
+        "cost": 0.0042055,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 1826,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.0042055,
+          "upstream_inference_prompt_cost": 0.0022855,
+          "upstream_inference_completions_cost": 0.00192
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 151,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "error": null,
+      "label_count": 8
+    },
+    {
+      "batch": 28,
+      "requested_model": "openai/gpt-5.6-terra",
+      "returned_model": "openai/gpt-5.6-terra",
+      "provider": "OpenAI",
+      "latency_seconds": 11.818,
+      "usage": {
+        "prompt_tokens": 2421,
+        "completion_tokens": 277,
+        "total_tokens": 2698,
+        "cost": 0.0046875,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 2418,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.0046875,
+          "upstream_inference_prompt_cost": 0.0030255,
+          "upstream_inference_completions_cost": 0.001662
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 116,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "error": null,
+      "label_count": 8
+    },
+    {
+      "batch": 29,
+      "requested_model": "openai/gpt-5.6-terra",
+      "returned_model": "openai/gpt-5.6-terra",
+      "provider": "OpenAI",
+      "latency_seconds": 9.194,
+      "usage": {
+        "prompt_tokens": 2064,
+        "completion_tokens": 165,
+        "total_tokens": 2229,
+        "cost": 0.00356925,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 2061,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.00356925,
+          "upstream_inference_prompt_cost": 0.00257925,
+          "upstream_inference_completions_cost": 0.00099
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "error": null,
+      "label_count": 8
+    },
+    {
+      "batch": 30,
+      "requested_model": "openai/gpt-5.6-terra",
+      "returned_model": "openai/gpt-5.6-terra",
+      "provider": "OpenAI",
+      "latency_seconds": 10.161,
+      "usage": {
+        "prompt_tokens": 1779,
+        "completion_tokens": 243,
+        "total_tokens": 2022,
+        "cost": 0.003681,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 1776,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.003681,
+          "upstream_inference_prompt_cost": 0.002223,
+          "upstream_inference_completions_cost": 0.001458
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 75,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "error": null,
+      "label_count": 8
+    },
+    {
+      "batch": 31,
+      "requested_model": "openai/gpt-5.6-terra",
+      "returned_model": "openai/gpt-5.6-terra",
+      "provider": "OpenAI",
+      "latency_seconds": 11.684,
+      "usage": {
+        "prompt_tokens": 2019,
+        "completion_tokens": 173,
+        "total_tokens": 2192,
+        "cost": 0.003561,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 2016,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.003561,
+          "upstream_inference_prompt_cost": 0.002523,
+          "upstream_inference_completions_cost": 0.001038
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "error": null,
+      "label_count": 8
+    },
+    {
+      "batch": 32,
+      "requested_model": "openai/gpt-5.6-terra",
+      "returned_model": "openai/gpt-5.6-terra",
+      "provider": "OpenAI",
+      "latency_seconds": 8.145,
+      "usage": {
+        "prompt_tokens": 2321,
+        "completion_tokens": 210,
+        "total_tokens": 2531,
+        "cost": 0.0041605,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 2318,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.0041605,
+          "upstream_inference_prompt_cost": 0.0029005,
+          "upstream_inference_completions_cost": 0.00126
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 46,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "error": null,
+      "label_count": 8
+    },
+    {
+      "batch": 33,
+      "requested_model": "openai/gpt-5.6-terra",
+      "returned_model": "openai/gpt-5.6-terra",
+      "provider": "OpenAI",
+      "latency_seconds": 10.685,
+      "usage": {
+        "prompt_tokens": 1765,
+        "completion_tokens": 165,
+        "total_tokens": 1930,
+        "cost": 0.0031955,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 1762,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.0031955,
+          "upstream_inference_prompt_cost": 0.0022055,
+          "upstream_inference_completions_cost": 0.00099
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "error": null,
+      "label_count": 8
+    },
+    {
+      "batch": 34,
+      "requested_model": "openai/gpt-5.6-terra",
+      "returned_model": "openai/gpt-5.6-terra",
+      "provider": "OpenAI",
+      "latency_seconds": 13.802,
+      "usage": {
+        "prompt_tokens": 1889,
+        "completion_tokens": 224,
+        "total_tokens": 2113,
+        "cost": 0.0037045,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 1886,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.0037045,
+          "upstream_inference_prompt_cost": 0.0023605,
+          "upstream_inference_completions_cost": 0.001344
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 55,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "error": null,
+      "label_count": 8
+    },
+    {
+      "batch": 35,
+      "requested_model": "openai/gpt-5.6-terra",
+      "returned_model": "openai/gpt-5.6-terra",
+      "provider": "OpenAI",
+      "latency_seconds": 8.484,
+      "usage": {
+        "prompt_tokens": 2226,
+        "completion_tokens": 165,
+        "total_tokens": 2391,
+        "cost": 0.00377175,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 2223,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.00377175,
+          "upstream_inference_prompt_cost": 0.00278175,
+          "upstream_inference_completions_cost": 0.00099
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "error": null,
+      "label_count": 8
+    },
+    {
+      "batch": 36,
+      "requested_model": "openai/gpt-5.6-terra",
+      "returned_model": "openai/gpt-5.6-terra",
+      "provider": "OpenAI",
+      "latency_seconds": 9.298,
+      "usage": {
+        "prompt_tokens": 897,
+        "completion_tokens": 167,
+        "total_tokens": 1064,
+        "cost": 0.001899,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.001899,
+          "upstream_inference_prompt_cost": 0.000897,
+          "upstream_inference_completions_cost": 0.001002
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "error": null,
+      "label_count": 8
+    },
+    {
+      "batch": 37,
+      "requested_model": "openai/gpt-5.6-terra",
+      "returned_model": "openai/gpt-5.6-terra",
+      "provider": "OpenAI",
+      "latency_seconds": 9.961,
+      "usage": {
+        "prompt_tokens": 908,
+        "completion_tokens": 161,
+        "total_tokens": 1069,
+        "cost": 0.001874,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.001874,
+          "upstream_inference_prompt_cost": 0.000908,
+          "upstream_inference_completions_cost": 0.000966
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "error": null,
+      "label_count": 8
+    },
+    {
+      "batch": 38,
+      "requested_model": "openai/gpt-5.6-terra",
+      "returned_model": "openai/gpt-5.6-terra",
+      "provider": "OpenAI",
+      "latency_seconds": 8.707,
+      "usage": {
+        "prompt_tokens": 1748,
+        "completion_tokens": 218,
+        "total_tokens": 1966,
+        "cost": 0.00349225,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 1745,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.00349225,
+          "upstream_inference_prompt_cost": 0.00218425,
+          "upstream_inference_completions_cost": 0.001308
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 64,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "error": null,
+      "label_count": 8
+    }
+  ],
+  "audit_batches": [
+    {
+      "batch": 0,
+      "requested_model": "google/gemini-3.6-flash",
+      "returned_model": "google/gemini-3.6-flash",
+      "provider": "Google",
+      "latency_seconds": 18.553,
+      "usage": {
+        "prompt_tokens": 2299,
+        "completion_tokens": 1093,
+        "total_tokens": 3392,
+        "cost": 0.011646,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.011646,
+          "upstream_inference_prompt_cost": 0.0034485,
+          "upstream_inference_completions_cost": 0.0081975
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 766,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "error": null,
+      "label_count": 8
+    },
+    {
+      "batch": 1,
+      "requested_model": "google/gemini-3.6-flash",
+      "returned_model": "google/gemini-3.6-flash",
+      "provider": "Google AI Studio",
+      "latency_seconds": 16.957,
+      "usage": {
+        "prompt_tokens": 1518,
+        "completion_tokens": 933,
+        "total_tokens": 2451,
+        "cost": 0.0092745,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.0092745,
+          "upstream_inference_prompt_cost": 0.002277,
+          "upstream_inference_completions_cost": 0.0069975
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 698,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "error": null,
+      "label_count": 8
+    },
+    {
+      "batch": 2,
+      "requested_model": "google/gemini-3.6-flash",
+      "returned_model": "google/gemini-3.6-flash",
+      "provider": "Google AI Studio",
+      "latency_seconds": 17.701,
+      "usage": {
+        "prompt_tokens": 2183,
+        "completion_tokens": 1184,
+        "total_tokens": 3367,
+        "cost": 0.0121545,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.0121545,
+          "upstream_inference_prompt_cost": 0.0032745,
+          "upstream_inference_completions_cost": 0.00888
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 944,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "error": null,
+      "label_count": 8
+    },
+    {
+      "batch": 3,
+      "requested_model": "google/gemini-3.6-flash",
+      "returned_model": "google/gemini-3.6-flash",
+      "provider": "Google AI Studio",
+      "latency_seconds": 13.967,
+      "usage": {
+        "prompt_tokens": 2227,
+        "completion_tokens": 1572,
+        "total_tokens": 3799,
+        "cost": 0.0151305,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.0151305,
+          "upstream_inference_prompt_cost": 0.0033405,
+          "upstream_inference_completions_cost": 0.01179
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 1534,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "error": "judge parse error: Expecting ',' delimiter: line 6 column 6 (char 88)",
+      "label_count": 0
+    },
+    {
+      "batch": 4,
+      "requested_model": "google/gemini-3.6-flash",
+      "returned_model": "google/gemini-3.6-flash",
+      "provider": "Google AI Studio",
+      "latency_seconds": 9.837,
+      "usage": {
+        "prompt_tokens": 2209,
+        "completion_tokens": 900,
+        "total_tokens": 3109,
+        "cost": 0.0100635,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.0100635,
+          "upstream_inference_prompt_cost": 0.0033135,
+          "upstream_inference_completions_cost": 0.00675
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 663,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "error": null,
+      "label_count": 8
+    },
+    {
+      "batch": 5,
+      "requested_model": "google/gemini-3.6-flash",
+      "returned_model": "google/gemini-3.6-flash",
+      "provider": "Google",
+      "latency_seconds": 9.442,
+      "usage": {
+        "prompt_tokens": 2530,
+        "completion_tokens": 1033,
+        "total_tokens": 3563,
+        "cost": 0.0115425,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.0115425,
+          "upstream_inference_prompt_cost": 0.003795,
+          "upstream_inference_completions_cost": 0.0077475
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 697,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "error": null,
+      "label_count": 8
+    },
+    {
+      "batch": 6,
+      "requested_model": "google/gemini-3.6-flash",
+      "returned_model": "google/gemini-3.6-flash",
+      "provider": "Google AI Studio",
+      "latency_seconds": 14.983,
+      "usage": {
+        "prompt_tokens": 2834,
+        "completion_tokens": 1500,
+        "total_tokens": 4334,
+        "cost": 0.015501,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.015501,
+          "upstream_inference_prompt_cost": 0.004251,
+          "upstream_inference_completions_cost": 0.01125
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 1313,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "error": "judge parse error: Expecting ',' delimiter: line 26 column 6 (char 458)",
+      "label_count": 0
+    },
+    {
+      "batch": 7,
+      "requested_model": "google/gemini-3.6-flash",
+      "returned_model": "google/gemini-3.6-flash",
+      "provider": "Google",
+      "latency_seconds": 11.44,
+      "usage": {
+        "prompt_tokens": 2150,
+        "completion_tokens": 900,
+        "total_tokens": 3050,
+        "cost": 0.009975,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.009975,
+          "upstream_inference_prompt_cost": 0.003225,
+          "upstream_inference_completions_cost": 0.00675
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 645,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "error": null,
+      "label_count": 6
+    }
+  ],
+  "human_validation": "not yet completed"
+}
