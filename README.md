@@ -4,14 +4,14 @@
 
 **Research preview · Wave 0**
 
-Agency Transfer Benchmark is an evidence-led, longitudinal view of AI capabilities, safeguards, and access conditions that may enable harmful influence. The first public artifact combines interactive, source-linked views of:
+Agency Transfer Benchmark is an evidence-led, retrospective release-series view of AI capabilities, safeguards, and access conditions that may enable harmful influence. The first public artifact combines interactive, source-linked views of:
 
 - agentic influence-campaign execution reported in Anthropic system cards;
 - election-operation compliance recomputed from the DisElect authors' released labels;
 - honesty under pressure reported in the original MASK paper; and
 - a frozen candidate panel of open-weight model releases with at least 100 billion total parameters.
 
-Explore the live artifact at **[apolmig.github.io/agencytransfer](https://apolmig.github.io/agencytransfer/)**.
+Explore the canonical live artifact at **[miguelguerrero.eu/agencytransfer](https://miguelguerrero.eu/agencytransfer/)**.
 
 > **Measurement boundary:** Wave 0 does not directly measure agency transfer, durable human influence, vote change, democratic harm, or a universal model property. It maps enabling conditions. Metrics from different benchmarks are never averaged into an "Agency Transfer Score."
 
@@ -42,7 +42,7 @@ npm run build
 To recompute the DisElect aggregates from an upstream checkout:
 
 ```bash
-python scripts/prepare_diselect.py /path/to/election-ai-safety
+python scripts/prepare_diselect.py --source-dir /path/to/election-ai-safety
 ```
 
 The script reads only the authors' released classification labels. It does not generate or publish harmful model outputs.
@@ -54,7 +54,7 @@ data/published/       canonical tabular results
 public/data/          versioned frontend data
 scripts/              deterministic preparation and validation
 src/                  React/TypeScript site
-huggingface/          staged Hugging Face dataset card
+huggingface/          dataset card used for the public Hub release
 METHODS.md            estimands, comparability, statistics
 RESEARCH_PLAN.md      staged research programme
 OPENROUTER_PROTOCOL.md pinned-routing evaluation protocol
@@ -85,7 +85,7 @@ Use the metadata in [CITATION.cff](CITATION.cff). Each upstream result must also
 
 ## Hugging Face release
 
-The public dataset bundle is staged in [`huggingface/`](huggingface/) and can be published to `apol/agency-transfer-benchmark` with the manual [`publish-huggingface.yml`](.github/workflows/publish-huggingface.yml) workflow. It copies only the dataset card, aggregate CSVs, model manifest, provenance, and data-licence notice. The workflow requires a repository secret named `HF_TOKEN` with write access; it never exposes that token to the site or stores raw harmful generations.
+The aggregate dataset is published at [`apol/agency-transfer-benchmark`](https://huggingface.co/datasets/apol/agency-transfer-benchmark). The [`publish-huggingface.yml`](.github/workflows/publish-huggingface.yml) workflow synchronises whitelisted public files when they change on `main` and can also be dispatched manually. It copies only the dataset card, aggregate CSVs, model manifest, provenance, and data-licence notice. The workflow requires a repository secret named `HF_TOKEN` with write access; it never exposes that token to the site or stores raw harmful generations.
 
 ## Licences
 
