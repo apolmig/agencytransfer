@@ -23,8 +23,12 @@ ATB separates four evidence layers:
 4. **Access conditions:** price, latency, licence, availability, modality, and
    serving restrictions.
 
-Results from these layers are not averaged into a single score. A capability or
-propensity is not evidence of real-world efficacy.
+Native results from these layers are never presented as directly comparable
+observations. A separately versioned experimental proxy may combine them only
+when its weights, imputations, uncertainty, evidence grade, sensitivity, and
+source IDs are public. The current specification is
+[`HMC proxy estimate v0.1`](ESTIMATED_SCORE.md). It is not an observed benchmark
+result, human-efficacy measure, or evidence of real-world harm.
 
 ## Study designs
 
@@ -78,8 +82,9 @@ passed the 100B rule. Lower-cost and lower-latency tiers may appear behind a
 secondary filter when a source or project run evaluates them, but they do not
 define the primary capability envelope.
 
-The canonical registry begins in 2025. A 2024 release appears only when it is an
-indispensable anchor for a published comparison. Model family names and mutable
+The canonical retrospective registry begins in 2022 and runs through 2026.
+Historical releases appear when they are indispensable anchors for a published
+comparison or for release-axis continuity. Model family names and mutable
 `latest` aliases are ineligible as observations: ATB records an exact public
 checkpoint or a dated served condition. Announcement date, API availability,
 weight availability, release-date basis, and evaluation date remain distinct
@@ -134,17 +139,18 @@ extraction method, and reviewer. Digitised values retain extraction uncertainty.
 | MASK | benchmark-defined lie, explicit-honest, and unresolved/evasive proportions | task accuracy, invalid judgment, provider block, and item archetype | a general truthfulness score, manipulation, intent, or human response |
 | Human-efficacy evidence | study-specific effect size in its original population and context | uncertainty, treatment, outcome timing, and study design | a universal model score or a direct substitute for capability evaluation |
 
-ATB does not transform these outcomes into a cross-benchmark mean, z-score,
-rank, radar area, or “Agency Transfer Score.” A within-instrument contrast may be
-reported when prespecified. For example, DisElect selectivity may be expressed
-as benign completion minus harmful compliance. Such a contrast remains a
-DisElect outcome and is never averaged with APE or MASK.
+ATB does not present a cross-benchmark mean, z-score, rank, or radar area as an
+observed result or “Agency Transfer Score.” A separately labelled modelled proxy
+may be published under the requirements above and must preserve native views.
+A within-instrument contrast may be reported when prespecified. For example,
+DisElect selectivity may be expressed as benign completion minus harmful
+compliance. Such a contrast remains a DisElect outcome.
 
 ## Benchmark implementation
 
 ### InfoOpsBench v2
 
-InfoOpsBench v2 supplies the default 2026 cross-section because its dated paper
+InfoOpsBench v2 supplies one native 2026 cross-section because its dated paper
 snapshot evaluates many requested frontier endpoints under one protocol. The
 primary value is the source-defined compliance proportion: items classified as
 amplifying or preserving a state-backed information-operation claim. ATB
@@ -324,8 +330,11 @@ more favourable trend.
 
 ## Visualisation rules
 
-- Native metrics appear in aligned small multiples, not on a shared synthetic
-  scale.
+- The Home chart may default to the separately versioned HMC proxy with its
+  modelled interval, evidence gate, missing releases, and method link visible.
+- Native metrics remain selectable and never inherit the proxy's interpretation.
+- The proxy frontier is a stepwise running maximum with no smoothing and is
+  labelled monotonic by construction.
 - Points are connected only within a model family when item set, protocol,
   judge, and serving condition are comparable.
 - Major architecture or modality changes break the line and receive an

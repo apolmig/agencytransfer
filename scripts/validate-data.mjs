@@ -11,6 +11,9 @@ const [
   benchmarks,
   frontierModels,
   frontierObservations,
+  hmcEstimates,
+  hmcFrontier,
+  hmcManifest,
   testingNotes,
   pilotManifest,
   pilotLabels,
@@ -24,6 +27,9 @@ const [
   readJson("public/data/benchmarks.json"),
   readJson("public/data/frontier-models.json"),
   readJson("public/data/frontier-observations.json"),
+  readJson("public/data/hmc-estimates.json"),
+  readJson("public/data/hmc-frontier.json"),
+  readJson("data/estimated/hmc-proxy-v0.1-manifest.json"),
   readJson("public/data/testing-notes.json"),
   readJson("data/runs/2026-08-10-ape-frontier-pilot-v01/manifest.json"),
   readJson("data/runs/2026-08-10-ape-frontier-pilot-v01/labels.json"),
@@ -89,12 +95,12 @@ if (!mask.every((row) => row.n === 1500 && row.totalParamsB >= 100)) {
   fail("MASK subset must remain the reported 1,500-item, >=100B open-weight cohort");
 }
 
-requireArray(frontierModels, "frontier registry", 35);
+requireArray(frontierModels, "frontier registry", 50);
 requireUnique(frontierModels, "id", "frontier registry");
 const frontierIds = new Set(frontierModels.map((row) => row.id));
 for (const row of frontierModels) {
-  if (!/^202[456]-\d{2}-\d{2}$/.test(row.releaseDate)) {
-    fail(`${row.id}: release date lies outside the fixed 2024–2026 chart domain`);
+  if (!/^202[2-6]-\d{2}-\d{2}$/.test(row.releaseDate)) {
+    fail(`${row.id}: release date lies outside the 2022–2026 chart domain`);
   }
   if (row.accessType === "open-weight" && !(Number.isFinite(row.totalParamsB) && row.totalParamsB >= 100)) {
     fail(`${row.id}: open-weight frontier row does not meet the 100B total-parameter rule`);
@@ -106,7 +112,7 @@ for (const row of frontierModels) {
   if (/gemma|mistral[ -]?small/i.test(row.model)) fail(`${row.id}: excluded small model entered frontier registry`);
 }
 
-requireArray(frontierObservations, "frontier observations", 23);
+requireArray(frontierObservations, "frontier observations", 50);
 requireUnique(frontierObservations, "id", "frontier observations");
 for (const row of frontierObservations) {
   if (!frontierIds.has(row.modelId)) fail(`${row.id}: unknown modelId ${row.modelId}`);
@@ -130,11 +136,62 @@ if (saferApe.length !== 9 || saferMask.length !== 3) {
   fail("expected nine SaferAI APE rows and three SaferAI MASK lie-rate rows");
 }
 
+requireArray(hmcEstimates, "HMC estimates", frontierModels.length);
+requireUnique(hmcEstimates, "id", "HMC estimates");
+if (hmcEstimates.length !== frontierModels.length) {
+  fail("HMC estimate ledger must contain one row per frontier release");
+}
+for (const row of hmcEstimates) {
+  if (!frontierIds.has(row.modelId)) fail(`${row.id}: unknown estimate modelId ${row.modelId}`);
+  if (row.estimateVersion !== "hmc-proxy-v0.1") fail(`${row.id}: unexpected estimate version`);
+  if (row.evidenceStatus === "estimated") {
+    const bounds = [row.lower95Pct, row.lower80Pct, row.scorePct, row.upper80Pct, row.upper95Pct];
+    if (!bounds.every((value) => Number.isFinite(value) && value >= 0 && value <= 100)) {
+      fail(`${row.id}: invalid estimate or interval`);
+    }
+    if (!bounds.every((value, index) => index === 0 || value >= bounds[index - 1])) {
+      fail(`${row.id}: estimate intervals are not ordered`);
+    }
+    if (row.observedWeight < 0.3 || !(row.componentObserved.operational || row.componentObserved.agentic)) {
+      fail(`${row.id}: numeric estimate does not pass the v0.1 evidence gate`);
+    }
+  } else if (row.evidenceStatus === "insufficient-evidence") {
+    if (row.scorePct !== null) fail(`${row.id}: insufficient evidence must not receive a numeric score`);
+  } else {
+    fail(`${row.id}: invalid evidenceStatus`);
+  }
+}
+const eligibleEstimates = hmcEstimates.filter((row) => row.evidenceStatus === "estimated");
+if (eligibleEstimates.length < 15) fail("HMC estimate has too few evidence-eligible releases");
+
+requireArray(hmcFrontier, "HMC frontier", 20);
+for (const accessFilter of ["all", "open-weight", "hosted"]) {
+  const rows = hmcFrontier.filter((row) => row.accessFilter === accessFilter);
+  if (rows.length === 0) fail(`missing HMC frontier for ${accessFilter}`);
+  for (let index = 1; index < rows.length; index += 1) {
+    if (rows[index].releaseDate < rows[index - 1].releaseDate) fail(`${accessFilter} frontier is not date ordered`);
+    if (rows[index].scorePct < rows[index - 1].scorePct) fail(`${accessFilter} frontier is not monotonic`);
+  }
+}
+if (hmcManifest.estimateVersion !== "hmc-proxy-v0.1" || hmcManifest.draws !== 20000) {
+  fail("unexpected HMC estimate manifest");
+}
+if (hmcManifest.eligibleRows !== eligibleEstimates.length) {
+  fail("HMC estimate manifest count does not match the public ledger");
+}
+
 requireArray(testingNotes, "testing notes", 12);
 requireUnique(testingNotes, "id", "testing notes");
 const allowedStatuses = new Set(["planned", "running", "complete", "blocked", "exploratory"]);
+const allowedValidationStatuses = new Set(["pending", "validated", "failed"]);
 for (const note of testingNotes) {
   if (!allowedStatuses.has(note.status)) fail(`${note.id}: invalid testing-note status`);
+  if (!allowedValidationStatuses.has(note.validationStatus)) {
+    fail(`${note.id}: invalid or missing validationStatus`);
+  }
+  if (note.validationStatus === "validated" && !note.validationArtifactUrl?.startsWith("https://")) {
+    fail(`${note.id}: validated result requires a public validation artifact`);
+  }
   if (!Array.isArray(note.artifacts) || note.artifacts.length === 0) {
     fail(`${note.id}: every testing note requires a public artifact link`);
   }
@@ -162,5 +219,5 @@ const publicText = JSON.stringify({ frontierModels, frontierObservations, testin
 if (/sk-or-v1-|authorization\s*:/i.test(publicText)) fail("public artifacts contain a credential marker");
 
 console.log(
-  `Validated ${frontierModels.length} frontier releases, ${frontierObservations.length} source-linked observations, ${testingNotes.length} testing notes, ${pilotLabels.length} pilot labels, and all legacy evidence tables.`,
+  `Validated ${frontierModels.length} frontier releases, ${frontierObservations.length} source-linked observations, ${eligibleEstimates.length} evidence-eligible HMC estimates, ${testingNotes.length} testing notes, ${pilotLabels.length} pilot labels, and all legacy evidence tables.`,
 );

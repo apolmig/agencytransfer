@@ -2,7 +2,10 @@
 
 This repository separates **published observations** from **contextual evidence**. A source appearing in this registry does not imply that its results are numerically comparable with another source, and an entry in the evidence ledger does not imply that any score has been ingested.
 
-The row-level lineage, denominators, transformations, and known limitations for the three published datasets are recorded in [`data/PROVENANCE.md`](data/PROVENANCE.md).
+Row-level lineage, denominators, transformations, and known limitations for the
+published and project-generated evidence are recorded in
+[`data/PROVENANCE.md`](data/PROVENANCE.md). The experimental synthesis has its
+own versioned method in [`ESTIMATED_SCORE.md`](ESTIMATED_SCORE.md).
 
 ## Published observations used by the site
 
@@ -148,7 +151,7 @@ SaferAI ran the GLM-5.2 evaluation. The report states that the Claude Opus 4.7 a
 
 The canonical registry is [`data/models/frontier-models.csv`](data/models/frontier-models.csv), mirrored for the client in [`public/data/frontier-models.json`](public/data/frontier-models.json). The longitudinal inclusion rule is:
 
-1. Include a 2025–2026 open-weight model only when a primary model card or architecture source reports at least 100B **total** parameters. Active parameters alone do not determine eligibility.
+1. Include a 2022–2026 open-weight model only when a primary model card or architecture source reports at least 100B **total** parameters. Active parameters alone do not determine eligibility.
 2. Admit a concise hosted-frontier envelope when the provider withholds parameter count; store `totalParamsB = null` and say why the model is retained.
 3. Preserve previews, served tiers, and post-training revisions as such. Do not silently treat a preview endpoint or routing alias as a new base architecture.
 4. Exclude small families and sub-threshold open checkpoints, including Gemma and Mistral Small. Mistral Large 3 remains eligible at 675B total.
@@ -190,8 +193,8 @@ These works help define the evidence chain from model propensity to human effect
 
 | Evidence ID | Primary source | Construct and protocol relevance | Current status and exclusion reason |
 |---|---|---|---|
-| `ape` | Kowal et al., *It's the Thought that Counts: Evaluating the Attempts of Frontier LLMs to Persuade on Harmful Topics*, arXiv:2506.02873v3: <https://arxiv.org/html/2506.02873v3>; author code: <https://github.com/AlignmentResearch/AttemptPersuadeEval> | Multi-turn Attempt to Persuade Eval (APE); separates attempt, no-attempt, and refusal across benign, controversial, conspiracy, and harmful topics. | The original Figure 3 series remains `evidence_only`: it is not transcribed and no upstream code commit is pinned. The separately identified SaferAI turn-1 replication is ingested under its own protocol and category-specific comparison groups. Propensity is not persuasion efficacy. |
-| `gdm-harmful-manipulation` | Akbulut et al., *Evaluating Language Models for Harmful Manipulation*, arXiv:2603.25326v1: <https://arxiv.org/html/2603.25326v1>; DeepMind overview: <https://deepmind.google/blog/protecting-people-from-harmful-manipulation/> | Controlled human-participant studies distinguish manipulative propensity from effects on beliefs and behavior across multiple domains and countries. | `evidence_only`; the study evaluates a single named model under several experimental conditions, so it is not a longitudinal model series. No effect-size row is ingested. |
+| `ape` | Kowal et al., *It's the Thought that Counts: Evaluating the Attempts of Frontier LLMs to Persuade on Harmful Topics*, arXiv:2506.02873v4: <https://arxiv.org/html/2506.02873v4>; author code: <https://github.com/AlignmentResearch/AttemptPersuadeEval> | Multi-turn Attempt to Persuade Eval (APE); separates attempt, no-attempt, and refusal across benign, controversial, conspiracy, and harmful topics. | The original Figure 3 series remains `evidence_only`: it is not transcribed and no upstream code commit is pinned. The separately identified SaferAI turn-1 replication is ingested under its own protocol and category-specific comparison groups. Propensity is not persuasion efficacy. |
+| `gdm-harmful-manipulation` | Akbulut et al., *Evaluating Language Models for Harmful Manipulation*, arXiv:2603.25326v4: <https://arxiv.org/html/2603.25326v4>; DeepMind overview: <https://deepmind.google/blog/protecting-people-from-harmful-manipulation/> | Controlled human-participant studies distinguish manipulative propensity from effects on beliefs and behavior across multiple domains and countries. | `evidence_only`; the study evaluates a single named model under several experimental conditions, so it is not a longitudinal model series. No effect-size row is ingested. |
 | `anthropic-persuasiveness` | Durmus et al., *Measuring the Persuasiveness of Language Models*: <https://www.anthropic.com/research/measuring-model-persuasiveness> | Single written arguments on emerging policy claims; outcome is the pre/post change on a seven-point support scale. The study covers Claude generations and human-written controls. | `evidence_only`; Figure 1 is not transcribed. It measures short-run persuasion in a benign laboratory setting, not harmful manipulation or agentic campaigning. |
 
 ## Citation and update policy
@@ -201,4 +204,4 @@ These works help define the evidence chain from model propensity to human effect
 3. Pin source repositories by full commit SHA whenever item-level results are transformed.
 4. Give each materially different prompt set, judge, sampling configuration, deployment condition, or aggregation rule a new `protocol_id`.
 5. Label values as author-reported, derived from author data, digitized, or newly evaluated. Digitized or inferred values may not be presented as author-reported.
-6. Do not calculate a single composite “agency transfer” score across these sources. They observe different constructs and use different denominators and metric directions.
+6. Do not present a cross-source synthesis as an observed result or an “agency transfer” score. A separately versioned experimental proxy is permitted only when its weights, imputations, uncertainty, evidence gate, sensitivity, source IDs, and limitations are published and every native measure remains accessible.

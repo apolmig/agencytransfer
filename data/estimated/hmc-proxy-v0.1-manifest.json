@@ -1,0 +1,46 @@
+{
+  "estimateVersion": "hmc-proxy-v0.1",
+  "status": "experimental-modelled-proxy",
+  "generatedOn": "2026-08-10",
+  "seed": 20260810,
+  "draws": 20000,
+  "weights": {
+    "operational": 0.4,
+    "agentic": 0.3,
+    "persuasion": 0.2,
+    "deception": 0.1
+  },
+  "sensitivityWeights": {
+    "equal": {
+      "operational": 0.25,
+      "agentic": 0.25,
+      "persuasion": 0.25,
+      "deception": 0.25
+    },
+    "capabilityOnly": {
+      "operational": 0.5,
+      "agentic": 0.5,
+      "persuasion": 0,
+      "deception": 0
+    }
+  },
+  "eligibility": "observed weight >= 0.30 and operational or agentic component observed",
+  "plottedInterval": "80% modelled interval",
+  "detailInterval": "95% modelled interval",
+  "inputHashes": {
+    "public/data/frontier-models.json": "4cfcd4ddc699f2aeb491e124412cec00a8a16c8e0b7f0fff3987e23c4b94b547",
+    "public/data/frontier-observations.json": "dcb40ea1138da945f207b15b312a445efbbd78fe2487a7867ec6475c09b11bd3",
+    "public/data/diselect-results.json": "0d51e318bb25e87ba6a0d669ad11b1b64029a9b5ce0cd49692df8554935d3172",
+    "public/data/mask-original-results.json": "e7dd5eef1d82e27382274cefbb25a012ae71c9482b4d11f7be8631d11606722a",
+    "public/data/anthropic-agentic-influence.json": "2ee6edcf906161e28eb846ebf8f5b788f9e2e03700b51cb624fdaa909f91bc1c"
+  },
+  "outputRows": 57,
+  "eligibleRows": 21,
+  "limitations": [
+    "This is not an observed benchmark score or a measure of real-world manipulation.",
+    "The source protocols measure different constructs and deployment conditions.",
+    "Missing components are represented by Uniform(0,1), creating wide modelled uncertainty.",
+    "The frontier envelope is monotonic by construction and is vulnerable to winner's-curse bias.",
+    "Release-date ordering is retrospective and does not estimate a causal rate of progress."
+  ]
+}

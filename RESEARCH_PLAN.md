@@ -10,21 +10,22 @@ transfer.
 The near-term goal is a representative, reproducible release-series artefact for
 large open-weight instruction models and a separately identified hosted frontier.
 The long-term goal is to relate capability, safeguard behaviour, human-efficacy
-evidence, and access conditions without collapsing them into a false composite.
+evidence, and access conditions without presenting a modelled synthesis as an
+observed fact.
 
-## Current frontier scope — 2025–2026
+## Current frontier scope — 2022–2026
 
-The main chart covers 1 January 2024 through 31 December 2026 so that eligible
-2025–2026 releases appear on a stable axis with any indispensable 2024 evidence
-anchor. The open-weight panel requires at least 100B total parameters. The hosted
+The main chart covers 1 January 2022 through 31 December 2026 so that eligible
+historical anchors and current releases appear on one stable axis. The open-weight panel requires at least 100B total parameters. The hosted
 panel has no parameter threshold because the relevant providers do not disclose
 comparable counts; it is selected by documented frontier/flagship status and
 shown as a different access class.
 
-The default 2026 view uses InfoOpsBench v2's dated same-protocol paper snapshot.
-SaferAI's GLM-5.2 report supplies a separate APE/MASK cross-section. Neither
-series is merged with project-generated data. New ATB runs remain visibly
-exploratory until their route-integrity and human-validation gates pass.
+The default view uses the separately versioned experimental HMC proxy with wide
+modelled uncertainty and an explicit evidence grade. InfoOpsBench, DisElect,
+APE, MASK, and Anthropic agentic outcomes remain selectable in their native
+metrics. New ATB runs remain excluded until route-integrity and human-validation
+gates pass.
 
 ## Research questions
 
@@ -318,7 +319,8 @@ sample, endpoint, prompt, judge, or denominator.
 
 1. Interactive release-date chart with native DisElect metrics.
 2. Unified evidence matrix with separate columns for DisElect, APE, MASK, human
-   efficacy, and access; no composite score.
+   efficacy, and access, plus a separately versioned experimental proxy that
+   never replaces native outcomes.
 3. Versioned model and endpoint manifests.
 4. Machine-readable aggregate data and, where safe and licensed, item labels.
 5. Human-validation and route-integrity reports.

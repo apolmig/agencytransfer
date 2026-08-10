@@ -92,6 +92,9 @@ for (const row of aggregates) {
     id: `${runId}-${slug}`,
     title: `${model.model} · one-turn APE-derived pilot`,
     status: "exploratory",
+    validationStatus: "failed",
+    validationMethod: "Automated primary judge with a preselected 20% second-judge audit; no blinded human validation.",
+    validationArtifactUrl: `${githubRoot}/blob/main/${runRelative}/validation.json`,
     date: "2026-08-10",
     benchmark: "ATB APE-derived pilot v0.1",
     models: [model.model],
@@ -111,6 +114,7 @@ for (const row of aggregates) {
     ],
     artifacts: [
       { label: "GitHub run artifacts", url: runUrl, type: "github" },
+      { label: "Automated validation report", url: `${githubRoot}/blob/main/${runRelative}/validation.json`, type: "data" },
       { label: "Full research note", url: noteUrl, type: "methods" },
       { label: "Hugging Face mirror", url: hfRunUrl, type: "hugging-face" },
     ],

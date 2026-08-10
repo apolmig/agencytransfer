@@ -1,0 +1,2126 @@
+[
+  {
+    "id": "hmc-proxy-v0.1-bloomz-176b",
+    "modelId": "bloomz-176b",
+    "estimateVersion": "hmc-proxy-v0.1",
+    "evidenceStatus": "insufficient-evidence",
+    "scorePct": null,
+    "lower80Pct": null,
+    "upper80Pct": null,
+    "lower95Pct": null,
+    "upper95Pct": null,
+    "observedWeight": 0,
+    "imputedWeight": 1,
+    "evidenceGrade": "D",
+    "componentObserved": {
+      "operational": false,
+      "agentic": false,
+      "persuasion": false,
+      "deception": false
+    },
+    "componentPct": {
+      "operational": null,
+      "agentic": null,
+      "persuasion": null,
+      "deception": null
+    },
+    "partialIdentificationLowerPct": 0,
+    "partialIdentificationUpperPct": 100,
+    "equalWeightsMedianPct": null,
+    "capabilityOnlyMedianPct": null,
+    "weightSensitive": false,
+    "basisBenchmarks": [],
+    "sourceObservationIds": [],
+    "methodUrl": "https://github.com/apolmig/agencytransfer/blob/main/ESTIMATED_SCORE.md",
+    "note": "No numeric proxy is shown because direct operational or agentic evidence is insufficient under v0.1 eligibility rules."
+  },
+  {
+    "id": "hmc-proxy-v0.1-gpt-3-text-davinci-003",
+    "modelId": "gpt-3-text-davinci-003",
+    "estimateVersion": "hmc-proxy-v0.1",
+    "evidenceStatus": "estimated",
+    "scorePct": 65.1,
+    "lower80Pct": 50.4,
+    "upper80Pct": 79.3,
+    "lower95Pct": 44.4,
+    "upper95Pct": 85.2,
+    "observedWeight": 0.4,
+    "imputedWeight": 0.6,
+    "evidenceGrade": "C",
+    "componentObserved": {
+      "operational": true,
+      "agentic": false,
+      "persuasion": false,
+      "deception": false
+    },
+    "componentPct": {
+      "operational": 87.3,
+      "agentic": null,
+      "persuasion": null,
+      "deception": null
+    },
+    "partialIdentificationLowerPct": 34.9,
+    "partialIdentificationUpperPct": 94.9,
+    "equalWeightsMedianPct": 59.4,
+    "capabilityOnlyMedianPct": 68.7,
+    "weightSensitive": false,
+    "basisBenchmarks": [
+      "diselect"
+    ],
+    "sourceObservationIds": [
+      "diselect-gpt-3-text-davinci-003-harmful-compliance"
+    ],
+    "methodUrl": "https://github.com/apolmig/agencytransfer/blob/main/ESTIMATED_SCORE.md",
+    "note": "Modelled proxy with missing components drawn from Uniform(0,1); not observed manipulation, human efficacy, agency transfer, or real-world harm."
+  },
+  {
+    "id": "hmc-proxy-v0.1-gpt-3-5-turbo-0613",
+    "modelId": "gpt-3-5-turbo-0613",
+    "estimateVersion": "hmc-proxy-v0.1",
+    "evidenceStatus": "estimated",
+    "scorePct": 68.6,
+    "lower80Pct": 54.4,
+    "upper80Pct": 83.1,
+    "lower95Pct": 48.5,
+    "upper95Pct": 89.2,
+    "observedWeight": 0.4,
+    "imputedWeight": 0.6,
+    "evidenceGrade": "C",
+    "componentObserved": {
+      "operational": true,
+      "agentic": false,
+      "persuasion": false,
+      "deception": false
+    },
+    "componentPct": {
+      "operational": 96.7,
+      "agentic": null,
+      "persuasion": null,
+      "deception": null
+    },
+    "partialIdentificationLowerPct": 38.7,
+    "partialIdentificationUpperPct": 98.7,
+    "equalWeightsMedianPct": 61.7,
+    "capabilityOnlyMedianPct": 73.2,
+    "weightSensitive": false,
+    "basisBenchmarks": [
+      "diselect"
+    ],
+    "sourceObservationIds": [
+      "diselect-gpt-3-5-turbo-0613-harmful-compliance"
+    ],
+    "methodUrl": "https://github.com/apolmig/agencytransfer/blob/main/ESTIMATED_SCORE.md",
+    "note": "Modelled proxy with missing components drawn from Uniform(0,1); not observed manipulation, human efficacy, agency transfer, or real-world harm."
+  },
+  {
+    "id": "hmc-proxy-v0.1-gpt-4-0613",
+    "modelId": "gpt-4-0613",
+    "estimateVersion": "hmc-proxy-v0.1",
+    "evidenceStatus": "estimated",
+    "scorePct": 66.4,
+    "lower80Pct": 52,
+    "upper80Pct": 80.9,
+    "lower95Pct": 46,
+    "upper95Pct": 87,
+    "observedWeight": 0.4,
+    "imputedWeight": 0.6,
+    "evidenceGrade": "C",
+    "componentObserved": {
+      "operational": true,
+      "agentic": false,
+      "persuasion": false,
+      "deception": false
+    },
+    "componentPct": {
+      "operational": 91.4,
+      "agentic": null,
+      "persuasion": null,
+      "deception": null
+    },
+    "partialIdentificationLowerPct": 36.6,
+    "partialIdentificationUpperPct": 96.6,
+    "equalWeightsMedianPct": 60.3,
+    "capabilityOnlyMedianPct": 70.6,
+    "weightSensitive": false,
+    "basisBenchmarks": [
+      "diselect"
+    ],
+    "sourceObservationIds": [
+      "diselect-gpt-4-0613-harmful-compliance"
+    ],
+    "methodUrl": "https://github.com/apolmig/agencytransfer/blob/main/ESTIMATED_SCORE.md",
+    "note": "Modelled proxy with missing components drawn from Uniform(0,1); not observed manipulation, human efficacy, agency transfer, or real-world harm."
+  },
+  {
+    "id": "hmc-proxy-v0.1-falcon-180b-chat",
+    "modelId": "falcon-180b-chat",
+    "estimateVersion": "hmc-proxy-v0.1",
+    "evidenceStatus": "insufficient-evidence",
+    "scorePct": null,
+    "lower80Pct": null,
+    "upper80Pct": null,
+    "lower95Pct": null,
+    "upper95Pct": null,
+    "observedWeight": 0,
+    "imputedWeight": 1,
+    "evidenceGrade": "D",
+    "componentObserved": {
+      "operational": false,
+      "agentic": false,
+      "persuasion": false,
+      "deception": false
+    },
+    "componentPct": {
+      "operational": null,
+      "agentic": null,
+      "persuasion": null,
+      "deception": null
+    },
+    "partialIdentificationLowerPct": 0,
+    "partialIdentificationUpperPct": 100,
+    "equalWeightsMedianPct": null,
+    "capabilityOnlyMedianPct": null,
+    "weightSensitive": false,
+    "basisBenchmarks": [],
+    "sourceObservationIds": [],
+    "methodUrl": "https://github.com/apolmig/agencytransfer/blob/main/ESTIMATED_SCORE.md",
+    "note": "No numeric proxy is shown because direct operational or agentic evidence is insufficient under v0.1 eligibility rules."
+  },
+  {
+    "id": "hmc-proxy-v0.1-gemini-1-0-pro-002",
+    "modelId": "gemini-1-0-pro-002",
+    "estimateVersion": "hmc-proxy-v0.1",
+    "evidenceStatus": "estimated",
+    "scorePct": 55.3,
+    "lower80Pct": 41,
+    "upper80Pct": 69.7,
+    "lower95Pct": 35,
+    "upper95Pct": 75.7,
+    "observedWeight": 0.4,
+    "imputedWeight": 0.6,
+    "evidenceGrade": "C",
+    "componentObserved": {
+      "operational": true,
+      "agentic": false,
+      "persuasion": false,
+      "deception": false
+    },
+    "componentPct": {
+      "operational": 63.6,
+      "agentic": null,
+      "persuasion": null,
+      "deception": null
+    },
+    "partialIdentificationLowerPct": 25.5,
+    "partialIdentificationUpperPct": 85.5,
+    "equalWeightsMedianPct": 53.3,
+    "capabilityOnlyMedianPct": 56.8,
+    "weightSensitive": false,
+    "basisBenchmarks": [
+      "diselect"
+    ],
+    "sourceObservationIds": [
+      "diselect-gemini-1-0-pro-002-harmful-compliance"
+    ],
+    "methodUrl": "https://github.com/apolmig/agencytransfer/blob/main/ESTIMATED_SCORE.md",
+    "note": "Modelled proxy with missing components drawn from Uniform(0,1); not observed manipulation, human efficacy, agency transfer, or real-world harm."
+  },
+  {
+    "id": "hmc-proxy-v0.1-mixtral-8x22b-instruct",
+    "modelId": "mixtral-8x22b-instruct",
+    "estimateVersion": "hmc-proxy-v0.1",
+    "evidenceStatus": "insufficient-evidence",
+    "scorePct": null,
+    "lower80Pct": null,
+    "upper80Pct": null,
+    "lower95Pct": null,
+    "upper95Pct": null,
+    "observedWeight": 0,
+    "imputedWeight": 1,
+    "evidenceGrade": "D",
+    "componentObserved": {
+      "operational": false,
+      "agentic": false,
+      "persuasion": false,
+      "deception": false
+    },
+    "componentPct": {
+      "operational": null,
+      "agentic": null,
+      "persuasion": null,
+      "deception": null
+    },
+    "partialIdentificationLowerPct": 0,
+    "partialIdentificationUpperPct": 100,
+    "equalWeightsMedianPct": null,
+    "capabilityOnlyMedianPct": null,
+    "weightSensitive": false,
+    "basisBenchmarks": [],
+    "sourceObservationIds": [],
+    "methodUrl": "https://github.com/apolmig/agencytransfer/blob/main/ESTIMATED_SCORE.md",
+    "note": "No numeric proxy is shown because direct operational or agentic evidence is insufficient under v0.1 eligibility rules."
+  },
+  {
+    "id": "hmc-proxy-v0.1-qwen1-5-110b-chat",
+    "modelId": "qwen1-5-110b-chat",
+    "estimateVersion": "hmc-proxy-v0.1",
+    "evidenceStatus": "insufficient-evidence",
+    "scorePct": null,
+    "lower80Pct": null,
+    "upper80Pct": null,
+    "lower95Pct": null,
+    "upper95Pct": null,
+    "observedWeight": 0.1,
+    "imputedWeight": 0.9,
+    "evidenceGrade": "D",
+    "componentObserved": {
+      "operational": false,
+      "agentic": false,
+      "persuasion": false,
+      "deception": true
+    },
+    "componentPct": {
+      "operational": null,
+      "agentic": null,
+      "persuasion": null,
+      "deception": 35.6
+    },
+    "partialIdentificationLowerPct": 3.6,
+    "partialIdentificationUpperPct": 93.6,
+    "equalWeightsMedianPct": null,
+    "capabilityOnlyMedianPct": null,
+    "weightSensitive": false,
+    "basisBenchmarks": [
+      "mask-original"
+    ],
+    "sourceObservationIds": [
+      "mask-original-qwen1-5-110b-chat-lie-rate"
+    ],
+    "methodUrl": "https://github.com/apolmig/agencytransfer/blob/main/ESTIMATED_SCORE.md",
+    "note": "No numeric proxy is shown because direct operational or agentic evidence is insufficient under v0.1 eligibility rules."
+  },
+  {
+    "id": "hmc-proxy-v0.1-llama-3-1-405b-instruct",
+    "modelId": "llama-3-1-405b-instruct",
+    "estimateVersion": "hmc-proxy-v0.1",
+    "evidenceStatus": "insufficient-evidence",
+    "scorePct": null,
+    "lower80Pct": null,
+    "upper80Pct": null,
+    "lower95Pct": null,
+    "upper95Pct": null,
+    "observedWeight": 0.1,
+    "imputedWeight": 0.9,
+    "evidenceGrade": "D",
+    "componentObserved": {
+      "operational": false,
+      "agentic": false,
+      "persuasion": false,
+      "deception": true
+    },
+    "componentPct": {
+      "operational": null,
+      "agentic": null,
+      "persuasion": null,
+      "deception": 28
+    },
+    "partialIdentificationLowerPct": 2.8,
+    "partialIdentificationUpperPct": 92.8,
+    "equalWeightsMedianPct": null,
+    "capabilityOnlyMedianPct": null,
+    "weightSensitive": false,
+    "basisBenchmarks": [
+      "mask-original"
+    ],
+    "sourceObservationIds": [
+      "mask-original-llama-3-1-405b-instruct-lie-rate"
+    ],
+    "methodUrl": "https://github.com/apolmig/agencytransfer/blob/main/ESTIMATED_SCORE.md",
+    "note": "No numeric proxy is shown because direct operational or agentic evidence is insufficient under v0.1 eligibility rules."
+  },
+  {
+    "id": "hmc-proxy-v0.1-deepseek-v3",
+    "modelId": "deepseek-v3",
+    "estimateVersion": "hmc-proxy-v0.1",
+    "evidenceStatus": "insufficient-evidence",
+    "scorePct": null,
+    "lower80Pct": null,
+    "upper80Pct": null,
+    "lower95Pct": null,
+    "upper95Pct": null,
+    "observedWeight": 0.1,
+    "imputedWeight": 0.9,
+    "evidenceGrade": "D",
+    "componentObserved": {
+      "operational": false,
+      "agentic": false,
+      "persuasion": false,
+      "deception": true
+    },
+    "componentPct": {
+      "operational": null,
+      "agentic": null,
+      "persuasion": null,
+      "deception": 53.5
+    },
+    "partialIdentificationLowerPct": 5.4,
+    "partialIdentificationUpperPct": 95.4,
+    "equalWeightsMedianPct": null,
+    "capabilityOnlyMedianPct": null,
+    "weightSensitive": false,
+    "basisBenchmarks": [
+      "mask-original"
+    ],
+    "sourceObservationIds": [
+      "mask-original-deepseek-v3-lie-rate"
+    ],
+    "methodUrl": "https://github.com/apolmig/agencytransfer/blob/main/ESTIMATED_SCORE.md",
+    "note": "No numeric proxy is shown because direct operational or agentic evidence is insufficient under v0.1 eligibility rules."
+  },
+  {
+    "id": "hmc-proxy-v0.1-deepseek-r1",
+    "modelId": "deepseek-r1",
+    "estimateVersion": "hmc-proxy-v0.1",
+    "evidenceStatus": "insufficient-evidence",
+    "scorePct": null,
+    "lower80Pct": null,
+    "upper80Pct": null,
+    "lower95Pct": null,
+    "upper95Pct": null,
+    "observedWeight": 0.1,
+    "imputedWeight": 0.9,
+    "evidenceGrade": "D",
+    "componentObserved": {
+      "operational": false,
+      "agentic": false,
+      "persuasion": false,
+      "deception": true
+    },
+    "componentPct": {
+      "operational": null,
+      "agentic": null,
+      "persuasion": null,
+      "deception": 42.9
+    },
+    "partialIdentificationLowerPct": 4.3,
+    "partialIdentificationUpperPct": 94.3,
+    "equalWeightsMedianPct": null,
+    "capabilityOnlyMedianPct": null,
+    "weightSensitive": false,
+    "basisBenchmarks": [
+      "mask-original"
+    ],
+    "sourceObservationIds": [
+      "mask-original-deepseek-r1-lie-rate"
+    ],
+    "methodUrl": "https://github.com/apolmig/agencytransfer/blob/main/ESTIMATED_SCORE.md",
+    "note": "No numeric proxy is shown because direct operational or agentic evidence is insufficient under v0.1 eligibility rules."
+  },
+  {
+    "id": "hmc-proxy-v0.1-llama-4-maverick",
+    "modelId": "llama-4-maverick",
+    "estimateVersion": "hmc-proxy-v0.1",
+    "evidenceStatus": "estimated",
+    "scorePct": 56.9,
+    "lower80Pct": 42.4,
+    "upper80Pct": 71.1,
+    "lower95Pct": 36.4,
+    "upper95Pct": 77,
+    "observedWeight": 0.4,
+    "imputedWeight": 0.6,
+    "evidenceGrade": "C",
+    "componentObserved": {
+      "operational": true,
+      "agentic": false,
+      "persuasion": false,
+      "deception": false
+    },
+    "componentPct": {
+      "operational": 67.2,
+      "agentic": null,
+      "persuasion": null,
+      "deception": null
+    },
+    "partialIdentificationLowerPct": 26.9,
+    "partialIdentificationUpperPct": 86.9,
+    "equalWeightsMedianPct": 54.2,
+    "capabilityOnlyMedianPct": 58.7,
+    "weightSensitive": false,
+    "basisBenchmarks": [
+      "infoopsbench"
+    ],
+    "sourceObservationIds": [
+      "infoops-20260726-llama-4-maverick-compliance"
+    ],
+    "methodUrl": "https://github.com/apolmig/agencytransfer/blob/main/ESTIMATED_SCORE.md",
+    "note": "Modelled proxy with missing components drawn from Uniform(0,1); not observed manipulation, human efficacy, agency transfer, or real-world harm."
+  },
+  {
+    "id": "hmc-proxy-v0.1-openai-o3",
+    "modelId": "openai-o3",
+    "estimateVersion": "hmc-proxy-v0.1",
+    "evidenceStatus": "insufficient-evidence",
+    "scorePct": null,
+    "lower80Pct": null,
+    "upper80Pct": null,
+    "lower95Pct": null,
+    "upper95Pct": null,
+    "observedWeight": 0,
+    "imputedWeight": 1,
+    "evidenceGrade": "D",
+    "componentObserved": {
+      "operational": false,
+      "agentic": false,
+      "persuasion": false,
+      "deception": false
+    },
+    "componentPct": {
+      "operational": null,
+      "agentic": null,
+      "persuasion": null,
+      "deception": null
+    },
+    "partialIdentificationLowerPct": 0,
+    "partialIdentificationUpperPct": 100,
+    "equalWeightsMedianPct": null,
+    "capabilityOnlyMedianPct": null,
+    "weightSensitive": false,
+    "basisBenchmarks": [],
+    "sourceObservationIds": [],
+    "methodUrl": "https://github.com/apolmig/agencytransfer/blob/main/ESTIMATED_SCORE.md",
+    "note": "No numeric proxy is shown because direct operational or agentic evidence is insufficient under v0.1 eligibility rules."
+  },
+  {
+    "id": "hmc-proxy-v0.1-qwen3-235b-a22b",
+    "modelId": "qwen3-235b-a22b",
+    "estimateVersion": "hmc-proxy-v0.1",
+    "evidenceStatus": "insufficient-evidence",
+    "scorePct": null,
+    "lower80Pct": null,
+    "upper80Pct": null,
+    "lower95Pct": null,
+    "upper95Pct": null,
+    "observedWeight": 0,
+    "imputedWeight": 1,
+    "evidenceGrade": "D",
+    "componentObserved": {
+      "operational": false,
+      "agentic": false,
+      "persuasion": false,
+      "deception": false
+    },
+    "componentPct": {
+      "operational": null,
+      "agentic": null,
+      "persuasion": null,
+      "deception": null
+    },
+    "partialIdentificationLowerPct": 0,
+    "partialIdentificationUpperPct": 100,
+    "equalWeightsMedianPct": null,
+    "capabilityOnlyMedianPct": null,
+    "weightSensitive": false,
+    "basisBenchmarks": [],
+    "sourceObservationIds": [],
+    "methodUrl": "https://github.com/apolmig/agencytransfer/blob/main/ESTIMATED_SCORE.md",
+    "note": "No numeric proxy is shown because direct operational or agentic evidence is insufficient under v0.1 eligibility rules."
+  },
+  {
+    "id": "hmc-proxy-v0.1-claude-opus-4",
+    "modelId": "claude-opus-4",
+    "estimateVersion": "hmc-proxy-v0.1",
+    "evidenceStatus": "insufficient-evidence",
+    "scorePct": null,
+    "lower80Pct": null,
+    "upper80Pct": null,
+    "lower95Pct": null,
+    "upper95Pct": null,
+    "observedWeight": 0,
+    "imputedWeight": 1,
+    "evidenceGrade": "D",
+    "componentObserved": {
+      "operational": false,
+      "agentic": false,
+      "persuasion": false,
+      "deception": false
+    },
+    "componentPct": {
+      "operational": null,
+      "agentic": null,
+      "persuasion": null,
+      "deception": null
+    },
+    "partialIdentificationLowerPct": 0,
+    "partialIdentificationUpperPct": 100,
+    "equalWeightsMedianPct": null,
+    "capabilityOnlyMedianPct": null,
+    "weightSensitive": false,
+    "basisBenchmarks": [],
+    "sourceObservationIds": [],
+    "methodUrl": "https://github.com/apolmig/agencytransfer/blob/main/ESTIMATED_SCORE.md",
+    "note": "No numeric proxy is shown because direct operational or agentic evidence is insufficient under v0.1 eligibility rules."
+  },
+  {
+    "id": "hmc-proxy-v0.1-deepseek-r1-0528",
+    "modelId": "deepseek-r1-0528",
+    "estimateVersion": "hmc-proxy-v0.1",
+    "evidenceStatus": "insufficient-evidence",
+    "scorePct": null,
+    "lower80Pct": null,
+    "upper80Pct": null,
+    "lower95Pct": null,
+    "upper95Pct": null,
+    "observedWeight": 0,
+    "imputedWeight": 1,
+    "evidenceGrade": "D",
+    "componentObserved": {
+      "operational": false,
+      "agentic": false,
+      "persuasion": false,
+      "deception": false
+    },
+    "componentPct": {
+      "operational": null,
+      "agentic": null,
+      "persuasion": null,
+      "deception": null
+    },
+    "partialIdentificationLowerPct": 0,
+    "partialIdentificationUpperPct": 100,
+    "equalWeightsMedianPct": null,
+    "capabilityOnlyMedianPct": null,
+    "weightSensitive": false,
+    "basisBenchmarks": [],
+    "sourceObservationIds": [],
+    "methodUrl": "https://github.com/apolmig/agencytransfer/blob/main/ESTIMATED_SCORE.md",
+    "note": "No numeric proxy is shown because direct operational or agentic evidence is insufficient under v0.1 eligibility rules."
+  },
+  {
+    "id": "hmc-proxy-v0.1-gemini-2-5-pro",
+    "modelId": "gemini-2-5-pro",
+    "estimateVersion": "hmc-proxy-v0.1",
+    "evidenceStatus": "insufficient-evidence",
+    "scorePct": null,
+    "lower80Pct": null,
+    "upper80Pct": null,
+    "lower95Pct": null,
+    "upper95Pct": null,
+    "observedWeight": 0,
+    "imputedWeight": 1,
+    "evidenceGrade": "D",
+    "componentObserved": {
+      "operational": false,
+      "agentic": false,
+      "persuasion": false,
+      "deception": false
+    },
+    "componentPct": {
+      "operational": null,
+      "agentic": null,
+      "persuasion": null,
+      "deception": null
+    },
+    "partialIdentificationLowerPct": 0,
+    "partialIdentificationUpperPct": 100,
+    "equalWeightsMedianPct": null,
+    "capabilityOnlyMedianPct": null,
+    "weightSensitive": false,
+    "basisBenchmarks": [],
+    "sourceObservationIds": [],
+    "methodUrl": "https://github.com/apolmig/agencytransfer/blob/main/ESTIMATED_SCORE.md",
+    "note": "No numeric proxy is shown because direct operational or agentic evidence is insufficient under v0.1 eligibility rules."
+  },
+  {
+    "id": "hmc-proxy-v0.1-grok-4",
+    "modelId": "grok-4",
+    "estimateVersion": "hmc-proxy-v0.1",
+    "evidenceStatus": "insufficient-evidence",
+    "scorePct": null,
+    "lower80Pct": null,
+    "upper80Pct": null,
+    "lower95Pct": null,
+    "upper95Pct": null,
+    "observedWeight": 0,
+    "imputedWeight": 1,
+    "evidenceGrade": "D",
+    "componentObserved": {
+      "operational": false,
+      "agentic": false,
+      "persuasion": false,
+      "deception": false
+    },
+    "componentPct": {
+      "operational": null,
+      "agentic": null,
+      "persuasion": null,
+      "deception": null
+    },
+    "partialIdentificationLowerPct": 0,
+    "partialIdentificationUpperPct": 100,
+    "equalWeightsMedianPct": null,
+    "capabilityOnlyMedianPct": null,
+    "weightSensitive": false,
+    "basisBenchmarks": [],
+    "sourceObservationIds": [],
+    "methodUrl": "https://github.com/apolmig/agencytransfer/blob/main/ESTIMATED_SCORE.md",
+    "note": "No numeric proxy is shown because direct operational or agentic evidence is insufficient under v0.1 eligibility rules."
+  },
+  {
+    "id": "hmc-proxy-v0.1-kimi-k2-instruct",
+    "modelId": "kimi-k2-instruct",
+    "estimateVersion": "hmc-proxy-v0.1",
+    "evidenceStatus": "insufficient-evidence",
+    "scorePct": null,
+    "lower80Pct": null,
+    "upper80Pct": null,
+    "lower95Pct": null,
+    "upper95Pct": null,
+    "observedWeight": 0,
+    "imputedWeight": 1,
+    "evidenceGrade": "D",
+    "componentObserved": {
+      "operational": false,
+      "agentic": false,
+      "persuasion": false,
+      "deception": false
+    },
+    "componentPct": {
+      "operational": null,
+      "agentic": null,
+      "persuasion": null,
+      "deception": null
+    },
+    "partialIdentificationLowerPct": 0,
+    "partialIdentificationUpperPct": 100,
+    "equalWeightsMedianPct": null,
+    "capabilityOnlyMedianPct": null,
+    "weightSensitive": false,
+    "basisBenchmarks": [],
+    "sourceObservationIds": [],
+    "methodUrl": "https://github.com/apolmig/agencytransfer/blob/main/ESTIMATED_SCORE.md",
+    "note": "No numeric proxy is shown because direct operational or agentic evidence is insufficient under v0.1 eligibility rules."
+  },
+  {
+    "id": "hmc-proxy-v0.1-glm-4-5",
+    "modelId": "glm-4-5",
+    "estimateVersion": "hmc-proxy-v0.1",
+    "evidenceStatus": "insufficient-evidence",
+    "scorePct": null,
+    "lower80Pct": null,
+    "upper80Pct": null,
+    "lower95Pct": null,
+    "upper95Pct": null,
+    "observedWeight": 0,
+    "imputedWeight": 1,
+    "evidenceGrade": "D",
+    "componentObserved": {
+      "operational": false,
+      "agentic": false,
+      "persuasion": false,
+      "deception": false
+    },
+    "componentPct": {
+      "operational": null,
+      "agentic": null,
+      "persuasion": null,
+      "deception": null
+    },
+    "partialIdentificationLowerPct": 0,
+    "partialIdentificationUpperPct": 100,
+    "equalWeightsMedianPct": null,
+    "capabilityOnlyMedianPct": null,
+    "weightSensitive": false,
+    "basisBenchmarks": [],
+    "sourceObservationIds": [],
+    "methodUrl": "https://github.com/apolmig/agencytransfer/blob/main/ESTIMATED_SCORE.md",
+    "note": "No numeric proxy is shown because direct operational or agentic evidence is insufficient under v0.1 eligibility rules."
+  },
+  {
+    "id": "hmc-proxy-v0.1-gpt-5",
+    "modelId": "gpt-5",
+    "estimateVersion": "hmc-proxy-v0.1",
+    "evidenceStatus": "insufficient-evidence",
+    "scorePct": null,
+    "lower80Pct": null,
+    "upper80Pct": null,
+    "lower95Pct": null,
+    "upper95Pct": null,
+    "observedWeight": 0,
+    "imputedWeight": 1,
+    "evidenceGrade": "D",
+    "componentObserved": {
+      "operational": false,
+      "agentic": false,
+      "persuasion": false,
+      "deception": false
+    },
+    "componentPct": {
+      "operational": null,
+      "agentic": null,
+      "persuasion": null,
+      "deception": null
+    },
+    "partialIdentificationLowerPct": 0,
+    "partialIdentificationUpperPct": 100,
+    "equalWeightsMedianPct": null,
+    "capabilityOnlyMedianPct": null,
+    "weightSensitive": false,
+    "basisBenchmarks": [],
+    "sourceObservationIds": [],
+    "methodUrl": "https://github.com/apolmig/agencytransfer/blob/main/ESTIMATED_SCORE.md",
+    "note": "No numeric proxy is shown because direct operational or agentic evidence is insufficient under v0.1 eligibility rules."
+  },
+  {
+    "id": "hmc-proxy-v0.1-kimi-k2-instruct-0905",
+    "modelId": "kimi-k2-instruct-0905",
+    "estimateVersion": "hmc-proxy-v0.1",
+    "evidenceStatus": "insufficient-evidence",
+    "scorePct": null,
+    "lower80Pct": null,
+    "upper80Pct": null,
+    "lower95Pct": null,
+    "upper95Pct": null,
+    "observedWeight": 0,
+    "imputedWeight": 1,
+    "evidenceGrade": "D",
+    "componentObserved": {
+      "operational": false,
+      "agentic": false,
+      "persuasion": false,
+      "deception": false
+    },
+    "componentPct": {
+      "operational": null,
+      "agentic": null,
+      "persuasion": null,
+      "deception": null
+    },
+    "partialIdentificationLowerPct": 0,
+    "partialIdentificationUpperPct": 100,
+    "equalWeightsMedianPct": null,
+    "capabilityOnlyMedianPct": null,
+    "weightSensitive": false,
+    "basisBenchmarks": [],
+    "sourceObservationIds": [],
+    "methodUrl": "https://github.com/apolmig/agencytransfer/blob/main/ESTIMATED_SCORE.md",
+    "note": "No numeric proxy is shown because direct operational or agentic evidence is insufficient under v0.1 eligibility rules."
+  },
+  {
+    "id": "hmc-proxy-v0.1-qwen3-max",
+    "modelId": "qwen3-max",
+    "estimateVersion": "hmc-proxy-v0.1",
+    "evidenceStatus": "insufficient-evidence",
+    "scorePct": null,
+    "lower80Pct": null,
+    "upper80Pct": null,
+    "lower95Pct": null,
+    "upper95Pct": null,
+    "observedWeight": 0,
+    "imputedWeight": 1,
+    "evidenceGrade": "D",
+    "componentObserved": {
+      "operational": false,
+      "agentic": false,
+      "persuasion": false,
+      "deception": false
+    },
+    "componentPct": {
+      "operational": null,
+      "agentic": null,
+      "persuasion": null,
+      "deception": null
+    },
+    "partialIdentificationLowerPct": 0,
+    "partialIdentificationUpperPct": 100,
+    "equalWeightsMedianPct": null,
+    "capabilityOnlyMedianPct": null,
+    "weightSensitive": false,
+    "basisBenchmarks": [],
+    "sourceObservationIds": [],
+    "methodUrl": "https://github.com/apolmig/agencytransfer/blob/main/ESTIMATED_SCORE.md",
+    "note": "No numeric proxy is shown because direct operational or agentic evidence is insufficient under v0.1 eligibility rules."
+  },
+  {
+    "id": "hmc-proxy-v0.1-gemini-3-pro-preview",
+    "modelId": "gemini-3-pro-preview",
+    "estimateVersion": "hmc-proxy-v0.1",
+    "evidenceStatus": "insufficient-evidence",
+    "scorePct": null,
+    "lower80Pct": null,
+    "upper80Pct": null,
+    "lower95Pct": null,
+    "upper95Pct": null,
+    "observedWeight": 0,
+    "imputedWeight": 1,
+    "evidenceGrade": "D",
+    "componentObserved": {
+      "operational": false,
+      "agentic": false,
+      "persuasion": false,
+      "deception": false
+    },
+    "componentPct": {
+      "operational": null,
+      "agentic": null,
+      "persuasion": null,
+      "deception": null
+    },
+    "partialIdentificationLowerPct": 0,
+    "partialIdentificationUpperPct": 100,
+    "equalWeightsMedianPct": null,
+    "capabilityOnlyMedianPct": null,
+    "weightSensitive": false,
+    "basisBenchmarks": [],
+    "sourceObservationIds": [],
+    "methodUrl": "https://github.com/apolmig/agencytransfer/blob/main/ESTIMATED_SCORE.md",
+    "note": "No numeric proxy is shown because direct operational or agentic evidence is insufficient under v0.1 eligibility rules."
+  },
+  {
+    "id": "hmc-proxy-v0.1-claude-opus-4-5",
+    "modelId": "claude-opus-4-5",
+    "estimateVersion": "hmc-proxy-v0.1",
+    "evidenceStatus": "insufficient-evidence",
+    "scorePct": null,
+    "lower80Pct": null,
+    "upper80Pct": null,
+    "lower95Pct": null,
+    "upper95Pct": null,
+    "observedWeight": 0,
+    "imputedWeight": 1,
+    "evidenceGrade": "D",
+    "componentObserved": {
+      "operational": false,
+      "agentic": false,
+      "persuasion": false,
+      "deception": false
+    },
+    "componentPct": {
+      "operational": null,
+      "agentic": null,
+      "persuasion": null,
+      "deception": null
+    },
+    "partialIdentificationLowerPct": 0,
+    "partialIdentificationUpperPct": 100,
+    "equalWeightsMedianPct": null,
+    "capabilityOnlyMedianPct": null,
+    "weightSensitive": false,
+    "basisBenchmarks": [],
+    "sourceObservationIds": [],
+    "methodUrl": "https://github.com/apolmig/agencytransfer/blob/main/ESTIMATED_SCORE.md",
+    "note": "No numeric proxy is shown because direct operational or agentic evidence is insufficient under v0.1 eligibility rules."
+  },
+  {
+    "id": "hmc-proxy-v0.1-deepseek-v3-2",
+    "modelId": "deepseek-v3-2",
+    "estimateVersion": "hmc-proxy-v0.1",
+    "evidenceStatus": "insufficient-evidence",
+    "scorePct": null,
+    "lower80Pct": null,
+    "upper80Pct": null,
+    "lower95Pct": null,
+    "upper95Pct": null,
+    "observedWeight": 0,
+    "imputedWeight": 1,
+    "evidenceGrade": "D",
+    "componentObserved": {
+      "operational": false,
+      "agentic": false,
+      "persuasion": false,
+      "deception": false
+    },
+    "componentPct": {
+      "operational": null,
+      "agentic": null,
+      "persuasion": null,
+      "deception": null
+    },
+    "partialIdentificationLowerPct": 0,
+    "partialIdentificationUpperPct": 100,
+    "equalWeightsMedianPct": null,
+    "capabilityOnlyMedianPct": null,
+    "weightSensitive": false,
+    "basisBenchmarks": [],
+    "sourceObservationIds": [],
+    "methodUrl": "https://github.com/apolmig/agencytransfer/blob/main/ESTIMATED_SCORE.md",
+    "note": "No numeric proxy is shown because direct operational or agentic evidence is insufficient under v0.1 eligibility rules."
+  },
+  {
+    "id": "hmc-proxy-v0.1-mistral-large-3",
+    "modelId": "mistral-large-3",
+    "estimateVersion": "hmc-proxy-v0.1",
+    "evidenceStatus": "insufficient-evidence",
+    "scorePct": null,
+    "lower80Pct": null,
+    "upper80Pct": null,
+    "lower95Pct": null,
+    "upper95Pct": null,
+    "observedWeight": 0,
+    "imputedWeight": 1,
+    "evidenceGrade": "D",
+    "componentObserved": {
+      "operational": false,
+      "agentic": false,
+      "persuasion": false,
+      "deception": false
+    },
+    "componentPct": {
+      "operational": null,
+      "agentic": null,
+      "persuasion": null,
+      "deception": null
+    },
+    "partialIdentificationLowerPct": 0,
+    "partialIdentificationUpperPct": 100,
+    "equalWeightsMedianPct": null,
+    "capabilityOnlyMedianPct": null,
+    "weightSensitive": false,
+    "basisBenchmarks": [],
+    "sourceObservationIds": [],
+    "methodUrl": "https://github.com/apolmig/agencytransfer/blob/main/ESTIMATED_SCORE.md",
+    "note": "No numeric proxy is shown because direct operational or agentic evidence is insufficient under v0.1 eligibility rules."
+  },
+  {
+    "id": "hmc-proxy-v0.1-gpt-5-2",
+    "modelId": "gpt-5-2",
+    "estimateVersion": "hmc-proxy-v0.1",
+    "evidenceStatus": "insufficient-evidence",
+    "scorePct": null,
+    "lower80Pct": null,
+    "upper80Pct": null,
+    "lower95Pct": null,
+    "upper95Pct": null,
+    "observedWeight": 0,
+    "imputedWeight": 1,
+    "evidenceGrade": "D",
+    "componentObserved": {
+      "operational": false,
+      "agentic": false,
+      "persuasion": false,
+      "deception": false
+    },
+    "componentPct": {
+      "operational": null,
+      "agentic": null,
+      "persuasion": null,
+      "deception": null
+    },
+    "partialIdentificationLowerPct": 0,
+    "partialIdentificationUpperPct": 100,
+    "equalWeightsMedianPct": null,
+    "capabilityOnlyMedianPct": null,
+    "weightSensitive": false,
+    "basisBenchmarks": [],
+    "sourceObservationIds": [],
+    "methodUrl": "https://github.com/apolmig/agencytransfer/blob/main/ESTIMATED_SCORE.md",
+    "note": "No numeric proxy is shown because direct operational or agentic evidence is insufficient under v0.1 eligibility rules."
+  },
+  {
+    "id": "hmc-proxy-v0.1-minimax-m2-1",
+    "modelId": "minimax-m2-1",
+    "estimateVersion": "hmc-proxy-v0.1",
+    "evidenceStatus": "insufficient-evidence",
+    "scorePct": null,
+    "lower80Pct": null,
+    "upper80Pct": null,
+    "lower95Pct": null,
+    "upper95Pct": null,
+    "observedWeight": 0,
+    "imputedWeight": 1,
+    "evidenceGrade": "D",
+    "componentObserved": {
+      "operational": false,
+      "agentic": false,
+      "persuasion": false,
+      "deception": false
+    },
+    "componentPct": {
+      "operational": null,
+      "agentic": null,
+      "persuasion": null,
+      "deception": null
+    },
+    "partialIdentificationLowerPct": 0,
+    "partialIdentificationUpperPct": 100,
+    "equalWeightsMedianPct": null,
+    "capabilityOnlyMedianPct": null,
+    "weightSensitive": false,
+    "basisBenchmarks": [],
+    "sourceObservationIds": [],
+    "methodUrl": "https://github.com/apolmig/agencytransfer/blob/main/ESTIMATED_SCORE.md",
+    "note": "No numeric proxy is shown because direct operational or agentic evidence is insufficient under v0.1 eligibility rules."
+  },
+  {
+    "id": "hmc-proxy-v0.1-kimi-k2-5",
+    "modelId": "kimi-k2-5",
+    "estimateVersion": "hmc-proxy-v0.1",
+    "evidenceStatus": "insufficient-evidence",
+    "scorePct": null,
+    "lower80Pct": null,
+    "upper80Pct": null,
+    "lower95Pct": null,
+    "upper95Pct": null,
+    "observedWeight": 0,
+    "imputedWeight": 1,
+    "evidenceGrade": "D",
+    "componentObserved": {
+      "operational": false,
+      "agentic": false,
+      "persuasion": false,
+      "deception": false
+    },
+    "componentPct": {
+      "operational": null,
+      "agentic": null,
+      "persuasion": null,
+      "deception": null
+    },
+    "partialIdentificationLowerPct": 0,
+    "partialIdentificationUpperPct": 100,
+    "equalWeightsMedianPct": null,
+    "capabilityOnlyMedianPct": null,
+    "weightSensitive": false,
+    "basisBenchmarks": [],
+    "sourceObservationIds": [],
+    "methodUrl": "https://github.com/apolmig/agencytransfer/blob/main/ESTIMATED_SCORE.md",
+    "note": "No numeric proxy is shown because direct operational or agentic evidence is insufficient under v0.1 eligibility rules."
+  },
+  {
+    "id": "hmc-proxy-v0.1-claude-opus-4-6",
+    "modelId": "claude-opus-4-6",
+    "estimateVersion": "hmc-proxy-v0.1",
+    "evidenceStatus": "estimated",
+    "scorePct": 48.6,
+    "lower80Pct": 30.1,
+    "upper80Pct": 66.5,
+    "lower95Pct": 23,
+    "upper95Pct": 73.6,
+    "observedWeight": 0.3,
+    "imputedWeight": 0.7,
+    "evidenceGrade": "C",
+    "componentObserved": {
+      "operational": false,
+      "agentic": true,
+      "persuasion": false,
+      "deception": false
+    },
+    "componentPct": {
+      "operational": null,
+      "agentic": 44.5,
+      "persuasion": null,
+      "deception": null
+    },
+    "partialIdentificationLowerPct": 13.4,
+    "partialIdentificationUpperPct": 83.4,
+    "equalWeightsMedianPct": 48.7,
+    "capabilityOnlyMedianPct": 47.3,
+    "weightSensitive": false,
+    "basisBenchmarks": [
+      "anthropic-agentic-influence"
+    ],
+    "sourceObservationIds": [
+      "anthropic-agentic-claude-opus-4-6-domestic-polarization",
+      "anthropic-agentic-claude-opus-4-6-voter-suppression"
+    ],
+    "methodUrl": "https://github.com/apolmig/agencytransfer/blob/main/ESTIMATED_SCORE.md",
+    "note": "Modelled proxy with missing components drawn from Uniform(0,1); not observed manipulation, human efficacy, agency transfer, or real-world harm."
+  },
+  {
+    "id": "hmc-proxy-v0.1-glm-5",
+    "modelId": "glm-5",
+    "estimateVersion": "hmc-proxy-v0.1",
+    "evidenceStatus": "insufficient-evidence",
+    "scorePct": null,
+    "lower80Pct": null,
+    "upper80Pct": null,
+    "lower95Pct": null,
+    "upper95Pct": null,
+    "observedWeight": 0,
+    "imputedWeight": 1,
+    "evidenceGrade": "D",
+    "componentObserved": {
+      "operational": false,
+      "agentic": false,
+      "persuasion": false,
+      "deception": false
+    },
+    "componentPct": {
+      "operational": null,
+      "agentic": null,
+      "persuasion": null,
+      "deception": null
+    },
+    "partialIdentificationLowerPct": 0,
+    "partialIdentificationUpperPct": 100,
+    "equalWeightsMedianPct": null,
+    "capabilityOnlyMedianPct": null,
+    "weightSensitive": false,
+    "basisBenchmarks": [],
+    "sourceObservationIds": [],
+    "methodUrl": "https://github.com/apolmig/agencytransfer/blob/main/ESTIMATED_SCORE.md",
+    "note": "No numeric proxy is shown because direct operational or agentic evidence is insufficient under v0.1 eligibility rules."
+  },
+  {
+    "id": "hmc-proxy-v0.1-qwen3-5-397b-a17b",
+    "modelId": "qwen3-5-397b-a17b",
+    "estimateVersion": "hmc-proxy-v0.1",
+    "evidenceStatus": "insufficient-evidence",
+    "scorePct": null,
+    "lower80Pct": null,
+    "upper80Pct": null,
+    "lower95Pct": null,
+    "upper95Pct": null,
+    "observedWeight": 0,
+    "imputedWeight": 1,
+    "evidenceGrade": "D",
+    "componentObserved": {
+      "operational": false,
+      "agentic": false,
+      "persuasion": false,
+      "deception": false
+    },
+    "componentPct": {
+      "operational": null,
+      "agentic": null,
+      "persuasion": null,
+      "deception": null
+    },
+    "partialIdentificationLowerPct": 0,
+    "partialIdentificationUpperPct": 100,
+    "equalWeightsMedianPct": null,
+    "capabilityOnlyMedianPct": null,
+    "weightSensitive": false,
+    "basisBenchmarks": [],
+    "sourceObservationIds": [],
+    "methodUrl": "https://github.com/apolmig/agencytransfer/blob/main/ESTIMATED_SCORE.md",
+    "note": "No numeric proxy is shown because direct operational or agentic evidence is insufficient under v0.1 eligibility rules."
+  },
+  {
+    "id": "hmc-proxy-v0.1-claude-sonnet-4-6",
+    "modelId": "claude-sonnet-4-6",
+    "estimateVersion": "hmc-proxy-v0.1",
+    "evidenceStatus": "estimated",
+    "scorePct": 46.7,
+    "lower80Pct": 28.5,
+    "upper80Pct": 64.7,
+    "lower95Pct": 21.7,
+    "upper95Pct": 71.7,
+    "observedWeight": 0.3,
+    "imputedWeight": 0.7,
+    "evidenceGrade": "C",
+    "componentObserved": {
+      "operational": false,
+      "agentic": true,
+      "persuasion": false,
+      "deception": false
+    },
+    "componentPct": {
+      "operational": null,
+      "agentic": 38.8,
+      "persuasion": null,
+      "deception": null
+    },
+    "partialIdentificationLowerPct": 11.6,
+    "partialIdentificationUpperPct": 81.6,
+    "equalWeightsMedianPct": 47.2,
+    "capabilityOnlyMedianPct": 44.4,
+    "weightSensitive": false,
+    "basisBenchmarks": [
+      "anthropic-agentic-influence"
+    ],
+    "sourceObservationIds": [
+      "anthropic-agentic-claude-sonnet-4-6-domestic-polarization",
+      "anthropic-agentic-claude-sonnet-4-6-voter-suppression"
+    ],
+    "methodUrl": "https://github.com/apolmig/agencytransfer/blob/main/ESTIMATED_SCORE.md",
+    "note": "Modelled proxy with missing components drawn from Uniform(0,1); not observed manipulation, human efficacy, agency transfer, or real-world harm."
+  },
+  {
+    "id": "hmc-proxy-v0.1-gemini-3-1-pro-preview",
+    "modelId": "gemini-3-1-pro-preview",
+    "estimateVersion": "hmc-proxy-v0.1",
+    "evidenceStatus": "insufficient-evidence",
+    "scorePct": null,
+    "lower80Pct": null,
+    "upper80Pct": null,
+    "lower95Pct": null,
+    "upper95Pct": null,
+    "observedWeight": 0,
+    "imputedWeight": 1,
+    "evidenceGrade": "D",
+    "componentObserved": {
+      "operational": false,
+      "agentic": false,
+      "persuasion": false,
+      "deception": false
+    },
+    "componentPct": {
+      "operational": null,
+      "agentic": null,
+      "persuasion": null,
+      "deception": null
+    },
+    "partialIdentificationLowerPct": 0,
+    "partialIdentificationUpperPct": 100,
+    "equalWeightsMedianPct": null,
+    "capabilityOnlyMedianPct": null,
+    "weightSensitive": false,
+    "basisBenchmarks": [],
+    "sourceObservationIds": [],
+    "methodUrl": "https://github.com/apolmig/agencytransfer/blob/main/ESTIMATED_SCORE.md",
+    "note": "No numeric proxy is shown because direct operational or agentic evidence is insufficient under v0.1 eligibility rules."
+  },
+  {
+    "id": "hmc-proxy-v0.1-gpt-5-4",
+    "modelId": "gpt-5-4",
+    "estimateVersion": "hmc-proxy-v0.1",
+    "evidenceStatus": "insufficient-evidence",
+    "scorePct": null,
+    "lower80Pct": null,
+    "upper80Pct": null,
+    "lower95Pct": null,
+    "upper95Pct": null,
+    "observedWeight": 0,
+    "imputedWeight": 1,
+    "evidenceGrade": "D",
+    "componentObserved": {
+      "operational": false,
+      "agentic": false,
+      "persuasion": false,
+      "deception": false
+    },
+    "componentPct": {
+      "operational": null,
+      "agentic": null,
+      "persuasion": null,
+      "deception": null
+    },
+    "partialIdentificationLowerPct": 0,
+    "partialIdentificationUpperPct": 100,
+    "equalWeightsMedianPct": null,
+    "capabilityOnlyMedianPct": null,
+    "weightSensitive": false,
+    "basisBenchmarks": [],
+    "sourceObservationIds": [],
+    "methodUrl": "https://github.com/apolmig/agencytransfer/blob/main/ESTIMATED_SCORE.md",
+    "note": "No numeric proxy is shown because direct operational or agentic evidence is insufficient under v0.1 eligibility rules."
+  },
+  {
+    "id": "hmc-proxy-v0.1-claude-mythos-preview",
+    "modelId": "claude-mythos-preview",
+    "estimateVersion": "hmc-proxy-v0.1",
+    "evidenceStatus": "estimated",
+    "scorePct": 50.4,
+    "lower80Pct": 32,
+    "upper80Pct": 68.4,
+    "lower95Pct": 24.9,
+    "upper95Pct": 75.5,
+    "observedWeight": 0.3,
+    "imputedWeight": 0.7,
+    "evidenceGrade": "C",
+    "componentObserved": {
+      "operational": false,
+      "agentic": true,
+      "persuasion": false,
+      "deception": false
+    },
+    "componentPct": {
+      "operational": null,
+      "agentic": 50.6,
+      "persuasion": null,
+      "deception": null
+    },
+    "partialIdentificationLowerPct": 15.2,
+    "partialIdentificationUpperPct": 85.2,
+    "equalWeightsMedianPct": 50.3,
+    "capabilityOnlyMedianPct": 50.3,
+    "weightSensitive": false,
+    "basisBenchmarks": [
+      "anthropic-agentic-influence"
+    ],
+    "sourceObservationIds": [
+      "anthropic-agentic-claude-mythos-preview-domestic-polarization",
+      "anthropic-agentic-claude-mythos-preview-voter-suppression"
+    ],
+    "methodUrl": "https://github.com/apolmig/agencytransfer/blob/main/ESTIMATED_SCORE.md",
+    "note": "Modelled proxy with missing components drawn from Uniform(0,1); not observed manipulation, human efficacy, agency transfer, or real-world harm."
+  },
+  {
+    "id": "hmc-proxy-v0.1-claude-opus-4-7",
+    "modelId": "claude-opus-4-7",
+    "estimateVersion": "hmc-proxy-v0.1",
+    "evidenceStatus": "estimated",
+    "scorePct": 38.1,
+    "lower80Pct": 21.7,
+    "upper80Pct": 54.2,
+    "lower95Pct": 17.1,
+    "upper95Pct": 58.6,
+    "observedWeight": 0.6,
+    "imputedWeight": 0.4,
+    "evidenceGrade": "B",
+    "componentObserved": {
+      "operational": false,
+      "agentic": true,
+      "persuasion": true,
+      "deception": true
+    },
+    "componentPct": {
+      "operational": null,
+      "agentic": 52,
+      "persuasion": 3,
+      "deception": 17
+    },
+    "partialIdentificationLowerPct": 17.9,
+    "partialIdentificationUpperPct": 57.9,
+    "equalWeightsMedianPct": 30.6,
+    "capabilityOnlyMedianPct": 51.1,
+    "weightSensitive": true,
+    "basisBenchmarks": [
+      "anthropic-agentic-influence",
+      "ape-saferai",
+      "mask-saferai"
+    ],
+    "sourceObservationIds": [
+      "anthropic-agentic-claude-opus-4-7-domestic-polarization",
+      "anthropic-agentic-claude-opus-4-7-voter-suppression",
+      "saferai-ape-conspiracy-claude-opus-4-7",
+      "saferai-ape-noncontroversially-harmful-claude-opus-4-7",
+      "saferai-ape-undermining-control-claude-opus-4-7",
+      "saferai-mask-lie-claude-opus-4-7"
+    ],
+    "methodUrl": "https://github.com/apolmig/agencytransfer/blob/main/ESTIMATED_SCORE.md",
+    "note": "Modelled proxy with missing components drawn from Uniform(0,1); not observed manipulation, human efficacy, agency transfer, or real-world harm."
+  },
+  {
+    "id": "hmc-proxy-v0.1-qwen3-6-max-preview",
+    "modelId": "qwen3-6-max-preview",
+    "estimateVersion": "hmc-proxy-v0.1",
+    "evidenceStatus": "insufficient-evidence",
+    "scorePct": null,
+    "lower80Pct": null,
+    "upper80Pct": null,
+    "lower95Pct": null,
+    "upper95Pct": null,
+    "observedWeight": 0,
+    "imputedWeight": 1,
+    "evidenceGrade": "D",
+    "componentObserved": {
+      "operational": false,
+      "agentic": false,
+      "persuasion": false,
+      "deception": false
+    },
+    "componentPct": {
+      "operational": null,
+      "agentic": null,
+      "persuasion": null,
+      "deception": null
+    },
+    "partialIdentificationLowerPct": 0,
+    "partialIdentificationUpperPct": 100,
+    "equalWeightsMedianPct": null,
+    "capabilityOnlyMedianPct": null,
+    "weightSensitive": false,
+    "basisBenchmarks": [],
+    "sourceObservationIds": [],
+    "methodUrl": "https://github.com/apolmig/agencytransfer/blob/main/ESTIMATED_SCORE.md",
+    "note": "No numeric proxy is shown because direct operational or agentic evidence is insufficient under v0.1 eligibility rules."
+  },
+  {
+    "id": "hmc-proxy-v0.1-gpt-5-5",
+    "modelId": "gpt-5-5",
+    "estimateVersion": "hmc-proxy-v0.1",
+    "evidenceStatus": "insufficient-evidence",
+    "scorePct": null,
+    "lower80Pct": null,
+    "upper80Pct": null,
+    "lower95Pct": null,
+    "upper95Pct": null,
+    "observedWeight": 0.3,
+    "imputedWeight": 0.7,
+    "evidenceGrade": "C",
+    "componentObserved": {
+      "operational": false,
+      "agentic": false,
+      "persuasion": true,
+      "deception": true
+    },
+    "componentPct": {
+      "operational": null,
+      "agentic": null,
+      "persuasion": 13.6,
+      "deception": 10
+    },
+    "partialIdentificationLowerPct": 3.7,
+    "partialIdentificationUpperPct": 73.7,
+    "equalWeightsMedianPct": null,
+    "capabilityOnlyMedianPct": null,
+    "weightSensitive": false,
+    "basisBenchmarks": [
+      "ape-saferai",
+      "mask-saferai"
+    ],
+    "sourceObservationIds": [
+      "saferai-ape-conspiracy-gpt-5-5",
+      "saferai-ape-noncontroversially-harmful-gpt-5-5",
+      "saferai-ape-undermining-control-gpt-5-5",
+      "saferai-mask-lie-gpt-5-5"
+    ],
+    "methodUrl": "https://github.com/apolmig/agencytransfer/blob/main/ESTIMATED_SCORE.md",
+    "note": "No numeric proxy is shown because direct operational or agentic evidence is insufficient under v0.1 eligibility rules."
+  },
+  {
+    "id": "hmc-proxy-v0.1-deepseek-v4-flash",
+    "modelId": "deepseek-v4-flash",
+    "estimateVersion": "hmc-proxy-v0.1",
+    "evidenceStatus": "estimated",
+    "scorePct": 53.8,
+    "lower80Pct": 39.4,
+    "upper80Pct": 68.2,
+    "lower95Pct": 33.4,
+    "upper95Pct": 74.2,
+    "observedWeight": 0.4,
+    "imputedWeight": 0.6,
+    "evidenceGrade": "C",
+    "componentObserved": {
+      "operational": true,
+      "agentic": false,
+      "persuasion": false,
+      "deception": false
+    },
+    "componentPct": {
+      "operational": 59.8,
+      "agentic": null,
+      "persuasion": null,
+      "deception": null
+    },
+    "partialIdentificationLowerPct": 23.9,
+    "partialIdentificationUpperPct": 83.9,
+    "equalWeightsMedianPct": 52.3,
+    "capabilityOnlyMedianPct": 54.5,
+    "weightSensitive": false,
+    "basisBenchmarks": [
+      "infoopsbench"
+    ],
+    "sourceObservationIds": [
+      "infoops-20260726-deepseek-v4-flash-compliance"
+    ],
+    "methodUrl": "https://github.com/apolmig/agencytransfer/blob/main/ESTIMATED_SCORE.md",
+    "note": "Modelled proxy with missing components drawn from Uniform(0,1); not observed manipulation, human efficacy, agency transfer, or real-world harm."
+  },
+  {
+    "id": "hmc-proxy-v0.1-deepseek-v4-pro",
+    "modelId": "deepseek-v4-pro",
+    "estimateVersion": "hmc-proxy-v0.1",
+    "evidenceStatus": "estimated",
+    "scorePct": 55.1,
+    "lower80Pct": 40.6,
+    "upper80Pct": 69.5,
+    "lower95Pct": 34.8,
+    "upper95Pct": 75.6,
+    "observedWeight": 0.4,
+    "imputedWeight": 0.6,
+    "evidenceGrade": "C",
+    "componentObserved": {
+      "operational": true,
+      "agentic": false,
+      "persuasion": false,
+      "deception": false
+    },
+    "componentPct": {
+      "operational": 62.6,
+      "agentic": null,
+      "persuasion": null,
+      "deception": null
+    },
+    "partialIdentificationLowerPct": 25,
+    "partialIdentificationUpperPct": 85,
+    "equalWeightsMedianPct": 53.1,
+    "capabilityOnlyMedianPct": 56.5,
+    "weightSensitive": false,
+    "basisBenchmarks": [
+      "infoopsbench"
+    ],
+    "sourceObservationIds": [
+      "infoops-20260726-deepseek-v4-pro-compliance"
+    ],
+    "methodUrl": "https://github.com/apolmig/agencytransfer/blob/main/ESTIMATED_SCORE.md",
+    "note": "Modelled proxy with missing components drawn from Uniform(0,1); not observed manipulation, human efficacy, agency transfer, or real-world harm."
+  },
+  {
+    "id": "hmc-proxy-v0.1-gemini-3-1-flash-lite",
+    "modelId": "gemini-3-1-flash-lite",
+    "estimateVersion": "hmc-proxy-v0.1",
+    "evidenceStatus": "insufficient-evidence",
+    "scorePct": null,
+    "lower80Pct": null,
+    "upper80Pct": null,
+    "lower95Pct": null,
+    "upper95Pct": null,
+    "observedWeight": 0,
+    "imputedWeight": 1,
+    "evidenceGrade": "D",
+    "componentObserved": {
+      "operational": false,
+      "agentic": false,
+      "persuasion": false,
+      "deception": false
+    },
+    "componentPct": {
+      "operational": null,
+      "agentic": null,
+      "persuasion": null,
+      "deception": null
+    },
+    "partialIdentificationLowerPct": 0,
+    "partialIdentificationUpperPct": 100,
+    "equalWeightsMedianPct": null,
+    "capabilityOnlyMedianPct": null,
+    "weightSensitive": false,
+    "basisBenchmarks": [],
+    "sourceObservationIds": [],
+    "methodUrl": "https://github.com/apolmig/agencytransfer/blob/main/ESTIMATED_SCORE.md",
+    "note": "No numeric proxy is shown because direct operational or agentic evidence is insufficient under v0.1 eligibility rules."
+  },
+  {
+    "id": "hmc-proxy-v0.1-claude-opus-4-8",
+    "modelId": "claude-opus-4-8",
+    "estimateVersion": "hmc-proxy-v0.1",
+    "evidenceStatus": "estimated",
+    "scorePct": 53.9,
+    "lower80Pct": 35.8,
+    "upper80Pct": 72,
+    "lower95Pct": 28.5,
+    "upper95Pct": 79,
+    "observedWeight": 0.3,
+    "imputedWeight": 0.7,
+    "evidenceGrade": "C",
+    "componentObserved": {
+      "operational": false,
+      "agentic": true,
+      "persuasion": false,
+      "deception": false
+    },
+    "componentPct": {
+      "operational": null,
+      "agentic": 63.3,
+      "persuasion": null,
+      "deception": null
+    },
+    "partialIdentificationLowerPct": 19,
+    "partialIdentificationUpperPct": 89,
+    "equalWeightsMedianPct": 53.2,
+    "capabilityOnlyMedianPct": 56.4,
+    "weightSensitive": false,
+    "basisBenchmarks": [
+      "anthropic-agentic-influence"
+    ],
+    "sourceObservationIds": [
+      "anthropic-agentic-claude-opus-4-8-domestic-polarization",
+      "anthropic-agentic-claude-opus-4-8-voter-suppression"
+    ],
+    "methodUrl": "https://github.com/apolmig/agencytransfer/blob/main/ESTIMATED_SCORE.md",
+    "note": "Modelled proxy with missing components drawn from Uniform(0,1); not observed manipulation, human efficacy, agency transfer, or real-world harm."
+  },
+  {
+    "id": "hmc-proxy-v0.1-minimax-m3",
+    "modelId": "minimax-m3",
+    "estimateVersion": "hmc-proxy-v0.1",
+    "evidenceStatus": "insufficient-evidence",
+    "scorePct": null,
+    "lower80Pct": null,
+    "upper80Pct": null,
+    "lower95Pct": null,
+    "upper95Pct": null,
+    "observedWeight": 0,
+    "imputedWeight": 1,
+    "evidenceGrade": "D",
+    "componentObserved": {
+      "operational": false,
+      "agentic": false,
+      "persuasion": false,
+      "deception": false
+    },
+    "componentPct": {
+      "operational": null,
+      "agentic": null,
+      "persuasion": null,
+      "deception": null
+    },
+    "partialIdentificationLowerPct": 0,
+    "partialIdentificationUpperPct": 100,
+    "equalWeightsMedianPct": null,
+    "capabilityOnlyMedianPct": null,
+    "weightSensitive": false,
+    "basisBenchmarks": [],
+    "sourceObservationIds": [],
+    "methodUrl": "https://github.com/apolmig/agencytransfer/blob/main/ESTIMATED_SCORE.md",
+    "note": "No numeric proxy is shown because direct operational or agentic evidence is insufficient under v0.1 eligibility rules."
+  },
+  {
+    "id": "hmc-proxy-v0.1-claude-fable-5",
+    "modelId": "claude-fable-5",
+    "estimateVersion": "hmc-proxy-v0.1",
+    "evidenceStatus": "insufficient-evidence",
+    "scorePct": null,
+    "lower80Pct": null,
+    "upper80Pct": null,
+    "lower95Pct": null,
+    "upper95Pct": null,
+    "observedWeight": 0,
+    "imputedWeight": 1,
+    "evidenceGrade": "D",
+    "componentObserved": {
+      "operational": false,
+      "agentic": false,
+      "persuasion": false,
+      "deception": false
+    },
+    "componentPct": {
+      "operational": null,
+      "agentic": null,
+      "persuasion": null,
+      "deception": null
+    },
+    "partialIdentificationLowerPct": 0,
+    "partialIdentificationUpperPct": 100,
+    "equalWeightsMedianPct": null,
+    "capabilityOnlyMedianPct": null,
+    "weightSensitive": false,
+    "basisBenchmarks": [],
+    "sourceObservationIds": [],
+    "methodUrl": "https://github.com/apolmig/agencytransfer/blob/main/ESTIMATED_SCORE.md",
+    "note": "No numeric proxy is shown because direct operational or agentic evidence is insufficient under v0.1 eligibility rules."
+  },
+  {
+    "id": "hmc-proxy-v0.1-claude-mythos-5",
+    "modelId": "claude-mythos-5",
+    "estimateVersion": "hmc-proxy-v0.1",
+    "evidenceStatus": "estimated",
+    "scorePct": 51.8,
+    "lower80Pct": 33.8,
+    "upper80Pct": 69.8,
+    "lower95Pct": 26.5,
+    "upper95Pct": 77.1,
+    "observedWeight": 0.3,
+    "imputedWeight": 0.7,
+    "evidenceGrade": "C",
+    "componentObserved": {
+      "operational": false,
+      "agentic": true,
+      "persuasion": false,
+      "deception": false
+    },
+    "componentPct": {
+      "operational": null,
+      "agentic": 56.3,
+      "persuasion": null,
+      "deception": null
+    },
+    "partialIdentificationLowerPct": 16.9,
+    "partialIdentificationUpperPct": 86.9,
+    "equalWeightsMedianPct": 51.6,
+    "capabilityOnlyMedianPct": 52.9,
+    "weightSensitive": false,
+    "basisBenchmarks": [
+      "anthropic-agentic-influence"
+    ],
+    "sourceObservationIds": [
+      "anthropic-agentic-claude-mythos-5-domestic-polarization",
+      "anthropic-agentic-claude-mythos-5-voter-suppression"
+    ],
+    "methodUrl": "https://github.com/apolmig/agencytransfer/blob/main/ESTIMATED_SCORE.md",
+    "note": "Modelled proxy with missing components drawn from Uniform(0,1); not observed manipulation, human efficacy, agency transfer, or real-world harm."
+  },
+  {
+    "id": "hmc-proxy-v0.1-glm-5-2",
+    "modelId": "glm-5-2",
+    "estimateVersion": "hmc-proxy-v0.1",
+    "evidenceStatus": "estimated",
+    "scorePct": 54.1,
+    "lower80Pct": 41.8,
+    "upper80Pct": 65.8,
+    "lower95Pct": 39.4,
+    "upper95Pct": 68.1,
+    "observedWeight": 0.7,
+    "imputedWeight": 0.3,
+    "evidenceGrade": "B",
+    "componentObserved": {
+      "operational": true,
+      "agentic": false,
+      "persuasion": true,
+      "deception": true
+    },
+    "componentPct": {
+      "operational": 76.5,
+      "agentic": null,
+      "persuasion": 30.2,
+      "deception": 21
+    },
+    "partialIdentificationLowerPct": 38.7,
+    "partialIdentificationUpperPct": 68.7,
+    "equalWeightsMedianPct": 44.7,
+    "capabilityOnlyMedianPct": 63.8,
+    "weightSensitive": false,
+    "basisBenchmarks": [
+      "ape-saferai",
+      "infoopsbench",
+      "mask-saferai"
+    ],
+    "sourceObservationIds": [
+      "infoops-20260726-glm-5-2-compliance",
+      "saferai-ape-conspiracy-glm-5-2",
+      "saferai-ape-noncontroversially-harmful-glm-5-2",
+      "saferai-ape-undermining-control-glm-5-2",
+      "saferai-mask-lie-glm-5-2"
+    ],
+    "methodUrl": "https://github.com/apolmig/agencytransfer/blob/main/ESTIMATED_SCORE.md",
+    "note": "Modelled proxy with missing components drawn from Uniform(0,1); not observed manipulation, human efficacy, agency transfer, or real-world harm."
+  },
+  {
+    "id": "hmc-proxy-v0.1-claude-sonnet-5",
+    "modelId": "claude-sonnet-5",
+    "estimateVersion": "hmc-proxy-v0.1",
+    "evidenceStatus": "estimated",
+    "scorePct": 31.4,
+    "lower80Pct": 21.9,
+    "upper80Pct": 41,
+    "lower95Pct": 17.9,
+    "upper95Pct": 45.1,
+    "observedWeight": 0.7,
+    "imputedWeight": 0.3,
+    "evidenceGrade": "B",
+    "componentObserved": {
+      "operational": true,
+      "agentic": true,
+      "persuasion": false,
+      "deception": false
+    },
+    "componentPct": {
+      "operational": 5.6,
+      "agentic": 47.3,
+      "persuasion": null,
+      "deception": null
+    },
+    "partialIdentificationLowerPct": 16.4,
+    "partialIdentificationUpperPct": 46.4,
+    "equalWeightsMedianPct": 38.2,
+    "capabilityOnlyMedianPct": 26.5,
+    "weightSensitive": false,
+    "basisBenchmarks": [
+      "anthropic-agentic-influence",
+      "infoopsbench"
+    ],
+    "sourceObservationIds": [
+      "anthropic-agentic-claude-sonnet-5-domestic-polarization",
+      "anthropic-agentic-claude-sonnet-5-voter-suppression",
+      "infoops-20260726-claude-sonnet-5-compliance"
+    ],
+    "methodUrl": "https://github.com/apolmig/agencytransfer/blob/main/ESTIMATED_SCORE.md",
+    "note": "Modelled proxy with missing components drawn from Uniform(0,1); not observed manipulation, human efficacy, agency transfer, or real-world harm."
+  },
+  {
+    "id": "hmc-proxy-v0.1-gpt-5-6-luna",
+    "modelId": "gpt-5-6-luna",
+    "estimateVersion": "hmc-proxy-v0.1",
+    "evidenceStatus": "estimated",
+    "scorePct": 41.7,
+    "lower80Pct": 27.2,
+    "upper80Pct": 56.1,
+    "lower95Pct": 21,
+    "upper95Pct": 62,
+    "observedWeight": 0.4,
+    "imputedWeight": 0.6,
+    "evidenceGrade": "C",
+    "componentObserved": {
+      "operational": true,
+      "agentic": false,
+      "persuasion": false,
+      "deception": false
+    },
+    "componentPct": {
+      "operational": 28.9,
+      "agentic": null,
+      "persuasion": null,
+      "deception": null
+    },
+    "partialIdentificationLowerPct": 11.6,
+    "partialIdentificationUpperPct": 71.6,
+    "equalWeightsMedianPct": 44.7,
+    "capabilityOnlyMedianPct": 39.6,
+    "weightSensitive": false,
+    "basisBenchmarks": [
+      "infoopsbench"
+    ],
+    "sourceObservationIds": [
+      "infoops-20260726-gpt-5-6-luna-compliance"
+    ],
+    "methodUrl": "https://github.com/apolmig/agencytransfer/blob/main/ESTIMATED_SCORE.md",
+    "note": "Modelled proxy with missing components drawn from Uniform(0,1); not observed manipulation, human efficacy, agency transfer, or real-world harm."
+  },
+  {
+    "id": "hmc-proxy-v0.1-gpt-5-6-sol",
+    "modelId": "gpt-5-6-sol",
+    "estimateVersion": "hmc-proxy-v0.1",
+    "evidenceStatus": "estimated",
+    "scorePct": 41,
+    "lower80Pct": 26.3,
+    "upper80Pct": 55.6,
+    "lower95Pct": 20.5,
+    "upper95Pct": 61.6,
+    "observedWeight": 0.4,
+    "imputedWeight": 0.6,
+    "evidenceGrade": "C",
+    "componentObserved": {
+      "operational": true,
+      "agentic": false,
+      "persuasion": false,
+      "deception": false
+    },
+    "componentPct": {
+      "operational": 27.2,
+      "agentic": null,
+      "persuasion": null,
+      "deception": null
+    },
+    "partialIdentificationLowerPct": 10.9,
+    "partialIdentificationUpperPct": 70.9,
+    "equalWeightsMedianPct": 44.3,
+    "capabilityOnlyMedianPct": 38.7,
+    "weightSensitive": false,
+    "basisBenchmarks": [
+      "infoopsbench"
+    ],
+    "sourceObservationIds": [
+      "infoops-20260726-gpt-5-6-sol-compliance"
+    ],
+    "methodUrl": "https://github.com/apolmig/agencytransfer/blob/main/ESTIMATED_SCORE.md",
+    "note": "Modelled proxy with missing components drawn from Uniform(0,1); not observed manipulation, human efficacy, agency transfer, or real-world harm."
+  },
+  {
+    "id": "hmc-proxy-v0.1-gpt-5-6-terra",
+    "modelId": "gpt-5-6-terra",
+    "estimateVersion": "hmc-proxy-v0.1",
+    "evidenceStatus": "estimated",
+    "scorePct": 45,
+    "lower80Pct": 30.6,
+    "upper80Pct": 59.6,
+    "lower95Pct": 24.5,
+    "upper95Pct": 65.5,
+    "observedWeight": 0.4,
+    "imputedWeight": 0.6,
+    "evidenceGrade": "C",
+    "componentObserved": {
+      "operational": true,
+      "agentic": false,
+      "persuasion": false,
+      "deception": false
+    },
+    "componentPct": {
+      "operational": 37.8,
+      "agentic": null,
+      "persuasion": null,
+      "deception": null
+    },
+    "partialIdentificationLowerPct": 15.1,
+    "partialIdentificationUpperPct": 75.1,
+    "equalWeightsMedianPct": 46.9,
+    "capabilityOnlyMedianPct": 43.9,
+    "weightSensitive": false,
+    "basisBenchmarks": [
+      "infoopsbench"
+    ],
+    "sourceObservationIds": [
+      "infoops-20260726-gpt-5-6-terra-compliance"
+    ],
+    "methodUrl": "https://github.com/apolmig/agencytransfer/blob/main/ESTIMATED_SCORE.md",
+    "note": "Modelled proxy with missing components drawn from Uniform(0,1); not observed manipulation, human efficacy, agency transfer, or real-world harm."
+  },
+  {
+    "id": "hmc-proxy-v0.1-grok-4-5",
+    "modelId": "grok-4-5",
+    "estimateVersion": "hmc-proxy-v0.1",
+    "evidenceStatus": "insufficient-evidence",
+    "scorePct": null,
+    "lower80Pct": null,
+    "upper80Pct": null,
+    "lower95Pct": null,
+    "upper95Pct": null,
+    "observedWeight": 0,
+    "imputedWeight": 1,
+    "evidenceGrade": "D",
+    "componentObserved": {
+      "operational": false,
+      "agentic": false,
+      "persuasion": false,
+      "deception": false
+    },
+    "componentPct": {
+      "operational": null,
+      "agentic": null,
+      "persuasion": null,
+      "deception": null
+    },
+    "partialIdentificationLowerPct": 0,
+    "partialIdentificationUpperPct": 100,
+    "equalWeightsMedianPct": null,
+    "capabilityOnlyMedianPct": null,
+    "weightSensitive": false,
+    "basisBenchmarks": [],
+    "sourceObservationIds": [],
+    "methodUrl": "https://github.com/apolmig/agencytransfer/blob/main/ESTIMATED_SCORE.md",
+    "note": "No numeric proxy is shown because direct operational or agentic evidence is insufficient under v0.1 eligibility rules."
+  },
+  {
+    "id": "hmc-proxy-v0.1-gemini-3-6-flash",
+    "modelId": "gemini-3-6-flash",
+    "estimateVersion": "hmc-proxy-v0.1",
+    "evidenceStatus": "estimated",
+    "scorePct": 51.2,
+    "lower80Pct": 36.6,
+    "upper80Pct": 65.7,
+    "lower95Pct": 30.4,
+    "upper95Pct": 71.7,
+    "observedWeight": 0.4,
+    "imputedWeight": 0.6,
+    "evidenceGrade": "C",
+    "componentObserved": {
+      "operational": true,
+      "agentic": false,
+      "persuasion": false,
+      "deception": false
+    },
+    "componentPct": {
+      "operational": 52.7,
+      "agentic": null,
+      "persuasion": null,
+      "deception": null
+    },
+    "partialIdentificationLowerPct": 21.1,
+    "partialIdentificationUpperPct": 81.1,
+    "equalWeightsMedianPct": 50.6,
+    "capabilityOnlyMedianPct": 51.5,
+    "weightSensitive": false,
+    "basisBenchmarks": [
+      "infoopsbench"
+    ],
+    "sourceObservationIds": [
+      "infoops-20260726-gemini-3-6-flash-compliance"
+    ],
+    "methodUrl": "https://github.com/apolmig/agencytransfer/blob/main/ESTIMATED_SCORE.md",
+    "note": "Modelled proxy with missing components drawn from Uniform(0,1); not observed manipulation, human efficacy, agency transfer, or real-world harm."
+  },
+  {
+    "id": "hmc-proxy-v0.1-kimi-k3",
+    "modelId": "kimi-k3",
+    "estimateVersion": "hmc-proxy-v0.1",
+    "evidenceStatus": "estimated",
+    "scorePct": 39.5,
+    "lower80Pct": 25,
+    "upper80Pct": 54,
+    "lower95Pct": 19.1,
+    "upper95Pct": 60.1,
+    "observedWeight": 0.4,
+    "imputedWeight": 0.6,
+    "evidenceGrade": "C",
+    "componentObserved": {
+      "operational": true,
+      "agentic": false,
+      "persuasion": false,
+      "deception": false
+    },
+    "componentPct": {
+      "operational": 23.5,
+      "agentic": null,
+      "persuasion": null,
+      "deception": null
+    },
+    "partialIdentificationLowerPct": 9.4,
+    "partialIdentificationUpperPct": 69.4,
+    "equalWeightsMedianPct": 43.5,
+    "capabilityOnlyMedianPct": 36.8,
+    "weightSensitive": false,
+    "basisBenchmarks": [
+      "infoopsbench"
+    ],
+    "sourceObservationIds": [
+      "infoops-20260726-kimi-k3-compliance"
+    ],
+    "methodUrl": "https://github.com/apolmig/agencytransfer/blob/main/ESTIMATED_SCORE.md",
+    "note": "Modelled proxy with missing components drawn from Uniform(0,1); not observed manipulation, human efficacy, agency transfer, or real-world harm."
+  },
+  {
+    "id": "hmc-proxy-v0.1-claude-opus-5",
+    "modelId": "claude-opus-5",
+    "estimateVersion": "hmc-proxy-v0.1",
+    "evidenceStatus": "estimated",
+    "scorePct": 34.4,
+    "lower80Pct": 19.9,
+    "upper80Pct": 48.8,
+    "lower95Pct": 13.9,
+    "upper95Pct": 54.8,
+    "observedWeight": 0.4,
+    "imputedWeight": 0.6,
+    "evidenceGrade": "C",
+    "componentObserved": {
+      "operational": true,
+      "agentic": false,
+      "persuasion": false,
+      "deception": false
+    },
+    "componentPct": {
+      "operational": 11.1,
+      "agentic": null,
+      "persuasion": null,
+      "deception": null
+    },
+    "partialIdentificationLowerPct": 4.4,
+    "partialIdentificationUpperPct": 64.4,
+    "equalWeightsMedianPct": 40.2,
+    "capabilityOnlyMedianPct": 30.3,
+    "weightSensitive": false,
+    "basisBenchmarks": [
+      "infoopsbench"
+    ],
+    "sourceObservationIds": [
+      "infoops-20260726-claude-opus-5-compliance"
+    ],
+    "methodUrl": "https://github.com/apolmig/agencytransfer/blob/main/ESTIMATED_SCORE.md",
+    "note": "Modelled proxy with missing components drawn from Uniform(0,1); not observed manipulation, human efficacy, agency transfer, or real-world harm."
+  },
+  {
+    "id": "hmc-proxy-v0.1-qwen3-8-max",
+    "modelId": "qwen3-8-max",
+    "estimateVersion": "hmc-proxy-v0.1",
+    "evidenceStatus": "insufficient-evidence",
+    "scorePct": null,
+    "lower80Pct": null,
+    "upper80Pct": null,
+    "lower95Pct": null,
+    "upper95Pct": null,
+    "observedWeight": 0,
+    "imputedWeight": 1,
+    "evidenceGrade": "D",
+    "componentObserved": {
+      "operational": false,
+      "agentic": false,
+      "persuasion": false,
+      "deception": false
+    },
+    "componentPct": {
+      "operational": null,
+      "agentic": null,
+      "persuasion": null,
+      "deception": null
+    },
+    "partialIdentificationLowerPct": 0,
+    "partialIdentificationUpperPct": 100,
+    "equalWeightsMedianPct": null,
+    "capabilityOnlyMedianPct": null,
+    "weightSensitive": false,
+    "basisBenchmarks": [],
+    "sourceObservationIds": [],
+    "methodUrl": "https://github.com/apolmig/agencytransfer/blob/main/ESTIMATED_SCORE.md",
+    "note": "No numeric proxy is shown because direct operational or agentic evidence is insufficient under v0.1 eligibility rules."
+  }
+]
