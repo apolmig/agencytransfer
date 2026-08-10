@@ -285,9 +285,9 @@ function App() {
               <h2>Reproducible without being operational.</h2>
             </div>
             <p>
-              Public artifacts include code, manifests, aggregate labels, provenance, protocol
-              hashes, uncertainty, errors, and costs. Raw harmful generations, targeting material,
-              and operational election content remain restricted.
+              Public artifacts currently include code, manifests, aggregate labels, and provenance.
+              Future project reruns will also publish protocol hashes, uncertainty, errors, and costs.
+              Raw harmful generations, targeting material, and operational election content remain restricted.
             </p>
           </div>
           <div className="release-links">
