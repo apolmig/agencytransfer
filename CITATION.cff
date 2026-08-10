@@ -11,8 +11,9 @@ repository-code: "https://github.com/apolmig/agencytransfer"
 url: "https://miguelguerrero.eu/agencytransfer/"
 license: Apache-2.0
 abstract: >-
-  An interactive, longitudinal evidence map of AI capabilities, safeguards,
-  and access conditions relevant to harmful influence and agency-transfer risk.
+  An interactive, retrospective release-series evidence map of AI capabilities,
+  safeguards, and access conditions relevant to harmful influence and
+  agency-transfer risk.
 keywords:
   - artificial intelligence
   - evaluation
