@@ -83,6 +83,10 @@ Read [METHODS.md](METHODS.md), [RESPONSIBLE_RELEASE.md](RESPONSIBLE_RELEASE.md),
 
 Use the metadata in [CITATION.cff](CITATION.cff). Each upstream result must also cite its original paper or system card; a project citation does not replace source attribution.
 
+## Hugging Face release
+
+The public dataset bundle is staged in [`huggingface/`](huggingface/) and can be published to `apol/agency-transfer-benchmark` with the manual [`publish-huggingface.yml`](.github/workflows/publish-huggingface.yml) workflow. It copies only the dataset card, aggregate CSVs, model manifest, provenance, and data-licence notice. The workflow requires a repository secret named `HF_TOKEN` with write access; it never exposes that token to the site or stores raw harmful generations.
+
 ## Licences
 
 Project code is released under Apache-2.0. Original project-authored aggregate data and metadata are released under CC BY 4.0, subject to the upstream rights and restrictions documented in [LICENSES/DATA.md](LICENSES/DATA.md). Upstream datasets are not relicensed.
