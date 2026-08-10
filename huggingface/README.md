@@ -10,8 +10,8 @@ tags:
   - ai-safety
   - manipulation
   - persuasion
-  - longitudinal
   - frontier-models
+  - release-series
 size_categories:
   - n<1K
 ---

@@ -11,7 +11,7 @@ repository-code: "https://github.com/apolmig/agencytransfer"
 url: "https://miguelguerrero.eu/agencytransfer/"
 license: Apache-2.0
 abstract: >-
-  A frontier-only, source-linked longitudinal evidence map of AI model
+  A frontier-only, source-linked retrospective release-series map of AI model
   behaviour, safeguards, access conditions, and system-level research questions
   relevant to harmful manipulation and election security.
 keywords:
