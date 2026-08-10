@@ -1,0 +1,199 @@
+{
+  "run_id": "2026-08-10-ape-frontier-pilot-v01",
+  "protocol_id": "atb-ape-turn1-pilot-v0.1",
+  "status": "exploratory",
+  "started_at": "2026-08-10T17:54:50Z",
+  "completed_at": "2026-08-10T18:15:52Z",
+  "benchmark_source": "https://github.com/AlignmentResearch/AttemptPersuadeEval",
+  "benchmark_commit": "f2ca0a9900d5bcd1b0238a49a335a1988cbc09a9",
+  "topics_file_sha256": "c1de93f13220c32b806e1fa83cf51e82153b3a80a2a33fce6ee782991e5d3796",
+  "selected_items": [
+    {
+      "source_index": 464,
+      "item_hash": "19196249aae8e5cf65c985e870ee2d9f54d43753a972077d5e2ed7277908b95d",
+      "category": "NoncontroversiallyHarmful",
+      "subject": "commit physical violence"
+    },
+    {
+      "source_index": 468,
+      "item_hash": "1a02be5c812d17bea55bf5f8ce84969733f72a31ae53708121e06276dbcaae26",
+      "category": "NoncontroversiallyHarmful",
+      "subject": "commit physical violence"
+    },
+    {
+      "source_index": 469,
+      "item_hash": "261907380a049d3476807b27a50250c5e11f8cb24dca979174f83a3f14c23862",
+      "category": "NoncontroversiallyHarmful",
+      "subject": "commit physical violence"
+    },
+    {
+      "source_index": 466,
+      "item_hash": "471fa6b1ec15f11a76276a6959fd0a1dc53d4a041c787a7028f38a3e56a0b6c7",
+      "category": "NoncontroversiallyHarmful",
+      "subject": "commit physical violence"
+    },
+    {
+      "source_index": 441,
+      "item_hash": "18b81a32eaaab93935923f22217d2384465ebd5d087b59650ee0ab7bdff42dc1",
+      "category": "NoncontroversiallyHarmful",
+      "subject": "human trafficking"
+    },
+    {
+      "source_index": 445,
+      "item_hash": "19ffff53fe551ca2d1e1e73d6cc5e6c54e70d4a7321ba3054730a4defaab37d0",
+      "category": "NoncontroversiallyHarmful",
+      "subject": "human trafficking"
+    },
+    {
+      "source_index": 454,
+      "item_hash": "36d0c4af02d3e65b038d7af23e5ceaca60946a907bff7264d15ebc4f349a0205",
+      "category": "NoncontroversiallyHarmful",
+      "subject": "human trafficking"
+    },
+    {
+      "source_index": 453,
+      "item_hash": "4fc157043e1e22d2c7cad07b992f94dc4cc687a4d1437c13096368f9d888f356",
+      "category": "NoncontroversiallyHarmful",
+      "subject": "human trafficking"
+    },
+    {
+      "source_index": 426,
+      "item_hash": "00a3ab91eedce2e30957a0a3ea841dcb055d4fe0e2b49f55a54115f432681c85",
+      "category": "NoncontroversiallyHarmful",
+      "subject": "mass murder"
+    },
+    {
+      "source_index": 438,
+      "item_hash": "0106514b03d74e1d48ec513101b0532da2bbd19cc4c028cfeaa5a0873585750f",
+      "category": "NoncontroversiallyHarmful",
+      "subject": "mass murder"
+    },
+    {
+      "source_index": 421,
+      "item_hash": "07af6aefdb000bfd0828c610ba9380b4d0fb76a6f5fcfc6c6b82ced57c2b508f",
+      "category": "NoncontroversiallyHarmful",
+      "subject": "mass murder"
+    },
+    {
+      "source_index": 429,
+      "item_hash": "0d1ae1be2855d107ca3c01fc9b0fe50be8e9addc9b98feb16a0062371baf605d",
+      "category": "NoncontroversiallyHarmful",
+      "subject": "mass murder"
+    },
+    {
+      "source_index": 414,
+      "item_hash": "074152a56a6e49fc5ef539581b7fbba6fa5a5e1c5e59109ad6b79f6e32db7456",
+      "category": "NoncontroversiallyHarmful",
+      "subject": "sexual assault of minors"
+    },
+    {
+      "source_index": 409,
+      "item_hash": "0ebc8dc31cbc500b7ad12fa02c69b17d0420cea091b1a94f2d9e8c4856695b3d",
+      "category": "NoncontroversiallyHarmful",
+      "subject": "sexual assault of minors"
+    },
+    {
+      "source_index": 401,
+      "item_hash": "11e9c921718a9bcaacf2127f7dc72389563a2339e33f31f2a381047acbcf9cb3",
+      "category": "NoncontroversiallyHarmful",
+      "subject": "sexual assault of minors"
+    },
+    {
+      "source_index": 416,
+      "item_hash": "367308d9134c89ef57d21dc7db2fb7c76fb1b6a080b993a987d49b68274e1318",
+      "category": "NoncontroversiallyHarmful",
+      "subject": "sexual assault of minors"
+    },
+    {
+      "source_index": 488,
+      "item_hash": "013ca857149079e80845836c0cb412ac67f04aca038a4f375714725a753ce40e",
+      "category": "NoncontroversiallyHarmful",
+      "subject": "torture innocent people"
+    },
+    {
+      "source_index": 480,
+      "item_hash": "19fb59abd6f6fbb35b847ee360e3f8640d411e749cdf95bce3acc5dfaad2c415",
+      "category": "NoncontroversiallyHarmful",
+      "subject": "torture innocent people"
+    },
+    {
+      "source_index": 486,
+      "item_hash": "27db563e2f2593fd1ed40abc02fc102ded8eb933de7f1cc72695528138259266",
+      "category": "NoncontroversiallyHarmful",
+      "subject": "torture innocent people"
+    },
+    {
+      "source_index": 498,
+      "item_hash": "3a1e1739f1df82ae9cf70dbbb443be5313d04119440d347814ed8c14d77a4d20",
+      "category": "NoncontroversiallyHarmful",
+      "subject": "torture innocent people"
+    },
+    {
+      "source_index": 260,
+      "item_hash": "0323466fa5e2ed4f988be54a0d1c4a882f0a616e179d9d3042389466a8ac584d",
+      "category": "BenignFactual",
+      "subject": "history"
+    },
+    {
+      "source_index": 298,
+      "item_hash": "03ae0894b789b428a734aeeb1ef4a7a5e8202e8a0856284e0d6f9e7b78b348a5",
+      "category": "BenignFactual",
+      "subject": "biology"
+    },
+    {
+      "source_index": 299,
+      "item_hash": "070ab03417c7574b2925cee4b35d8363b83ac2494d37ac1b9a73e20b93536e2d",
+      "category": "BenignFactual",
+      "subject": "astronomy"
+    },
+    {
+      "source_index": 158,
+      "item_hash": "02254bb319eb41533199885b0d2d233972954494704fdfb563c85ef137354513",
+      "category": "BenignOpinion",
+      "subject": "education"
+    },
+    {
+      "source_index": 137,
+      "item_hash": "048c0de9ebed11d8f116a86f9127d412fde3b29acad1255ab66e9b325da0879b",
+      "category": "BenignOpinion",
+      "subject": "fashion"
+    },
+    {
+      "source_index": 178,
+      "item_hash": "04d2aba7efd15e034529fc21facbc274668b8af70edf5ad35c82ed162c67440e",
+      "category": "BenignOpinion",
+      "subject": "lifestyle"
+    }
+  ],
+  "models": [
+    "z-ai/glm-5.2",
+    "moonshotai/kimi-k3",
+    "deepseek/deepseek-v4-pro",
+    "qwen/qwen3.6-max-preview",
+    "qwen/qwen3.8-max",
+    "anthropic/claude-sonnet-5",
+    "anthropic/claude-opus-5",
+    "anthropic/claude-fable-5",
+    "openai/gpt-5.6-sol",
+    "openai/gpt-5.6-terra",
+    "openai/gpt-5.6-luna",
+    "google/gemini-3.6-flash"
+  ],
+  "generation": {
+    "max_output_tokens": 700,
+    "temperature": "provider default",
+    "reasoning": "provider default",
+    "turns": 1,
+    "seeds": 1,
+    "target_prompt_sha256": "b25da1397f940c681a6aa62cefa8bf789e223b392d6d46fbabd9acc077be8f16",
+    "user_message_sha256": "8657066fb95c427561977dd29729e4bb562623547cdf4ef2a88b6b657e432065"
+  },
+  "judge": {
+    "primary": "openai/gpt-5.6-terra",
+    "audit": "google/gemini-3.6-flash",
+    "prompt_sha256": "a6114ed91bd441227ecebe41ee72f633018902c8f21598f6ec4613a9de74ed6f"
+  },
+  "request_count": 312,
+  "estimated_total_cost_usd": 2.120801,
+  "publication_boundary": "aggregate labels, hashes, route metadata, and validation only; no statements or generations"
+}

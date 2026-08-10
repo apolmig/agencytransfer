@@ -7,6 +7,10 @@ on:
     paths:
       - "huggingface/**"
       - "data/published/**"
+      - "data/models/**"
+      - "data/runs/2026-08-10-ape-frontier-pilot-v01/**"
+      - "public/data/frontier-*.json"
+      - "public/data/testing-notes.json"
       - "public/data/model-manifest.json"
       - "data/PROVENANCE.md"
       - "LICENSES/DATA.md"
@@ -38,7 +42,21 @@ jobs:
           cp data/published/anthropic-agentic-influence.csv hf-release/
           cp data/published/diselect-summary.csv hf-release/
           cp data/published/mask-original-results.csv hf-release/
+          cp data/published/infoopsbench-2026-07-26.csv hf-release/
+          cp data/published/saferai-glm52-ape-mask.csv hf-release/
           cp public/data/model-manifest.json hf-release/model-manifest.json
+          cp public/data/frontier-models.json hf-release/frontier-models.json
+          cp data/models/frontier-models.csv hf-release/frontier-models.csv
+          cp public/data/frontier-observations.json hf-release/frontier-observations.json
+          cp public/data/testing-notes.json hf-release/testing-notes.json
+          mkdir -p hf-release/runs/2026-08-10-ape-frontier-pilot-v01
+          cp data/runs/2026-08-10-ape-frontier-pilot-v01/aggregate.csv hf-release/runs/2026-08-10-ape-frontier-pilot-v01/
+          cp data/runs/2026-08-10-ape-frontier-pilot-v01/labels.json hf-release/runs/2026-08-10-ape-frontier-pilot-v01/
+          cp data/runs/2026-08-10-ape-frontier-pilot-v01/manifest.json hf-release/runs/2026-08-10-ape-frontier-pilot-v01/
+          cp data/runs/2026-08-10-ape-frontier-pilot-v01/README.md hf-release/runs/2026-08-10-ape-frontier-pilot-v01/
+          cp data/runs/2026-08-10-ape-frontier-pilot-v01/research-notes.json hf-release/runs/2026-08-10-ape-frontier-pilot-v01/
+          cp data/runs/2026-08-10-ape-frontier-pilot-v01/route-integrity.json hf-release/runs/2026-08-10-ape-frontier-pilot-v01/
+          cp data/runs/2026-08-10-ape-frontier-pilot-v01/validation.json hf-release/runs/2026-08-10-ape-frontier-pilot-v01/
           cp data/PROVENANCE.md hf-release/PROVENANCE.md
           cp LICENSES/DATA.md hf-release/DATA_LICENSE.md
       - name: Create or update the dataset repository
@@ -46,4 +64,4 @@ jobs:
           hf repos create "$HF_DATASET_ID" --type dataset --exist-ok
           hf upload "$HF_DATASET_ID" hf-release . \
             --type dataset \
-            --commit-message "Publish Agency Transfer Benchmark Wave 0"
+            --commit-message "Publish Agency Transfer Benchmark frontier draft 0.2"

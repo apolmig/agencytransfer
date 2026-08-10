@@ -1,56 +1,112 @@
 import { useEffect, useMemo, useState } from "react";
 import { AgenticInfluenceChart } from "./components/AgenticInfluenceChart";
 import { EvidenceMap } from "./components/EvidenceMap";
+import { FrontierTimeline } from "./components/FrontierTimeline";
 import { LongitudinalChart } from "./components/LongitudinalChart";
 import { MaskChart } from "./components/MaskChart";
 import { ModelPanel } from "./components/ModelPanel";
+import { SystemsResearchSection } from "./components/SystemsResearchSection";
+import { TestingSection } from "./components/TestingSection";
 import {
   loadAgenticInfluenceResults,
   loadBenchmarks,
   loadDisElectResults,
+  loadFrontierModels,
+  loadFrontierObservations,
   loadMaskResults,
   loadModelManifest,
+  loadTestingNotes,
 } from "./data";
 import type {
   AgenticInfluenceResult,
   BenchmarkRecord,
   DisElectResult,
+  FrontierModel,
+  FrontierObservation,
   MaskResult,
+  TestingNote,
   WaveModel,
 } from "./types";
 
 const REPOSITORY_URL = "https://github.com/apolmig/agencytransfer";
+const HUGGING_FACE_URL = "https://huggingface.co/datasets/apol/agency-transfer-benchmark";
+
+type DataKey =
+  | "frontierModels"
+  | "frontierObservations"
+  | "testingNotes"
+  | "diselect"
+  | "agentic"
+  | "mask"
+  | "manifest"
+  | "benchmarks";
+
+const errorMessage = (reason: unknown) =>
+  reason instanceof Error ? reason.message : "Unknown data-loading error";
 
 function App() {
+  const [frontierModels, setFrontierModels] = useState<FrontierModel[]>([]);
+  const [frontierObservations, setFrontierObservations] = useState<FrontierObservation[]>([]);
+  const [testingNotes, setTestingNotes] = useState<TestingNote[]>([]);
   const [results, setResults] = useState<DisElectResult[]>([]);
   const [agenticResults, setAgenticResults] = useState<AgenticInfluenceResult[]>([]);
   const [maskResults, setMaskResults] = useState<MaskResult[]>([]);
   const [models, setModels] = useState<WaveModel[]>([]);
   const [benchmarks, setBenchmarks] = useState<BenchmarkRecord[]>([]);
-  const [error, setError] = useState<string | null>(null);
+  const [errors, setErrors] = useState<Partial<Record<DataKey, string>>>({});
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    Promise.all([
-      loadDisElectResults(),
-      loadAgenticInfluenceResults(),
-      loadMaskResults(),
-      loadModelManifest(),
-      loadBenchmarks(),
-    ])
-      .then(([resultRows, agenticRows, maskRows, modelRows, benchmarkRows]) => {
-        setResults(resultRows);
-        setAgenticResults(agenticRows);
-        setMaskResults(maskRows);
-        setModels(modelRows);
-        setBenchmarks(benchmarkRows);
-      })
-      .catch((reason: unknown) =>
-        setError(reason instanceof Error ? reason.message : "Unknown data-loading error"),
+    let cancelled = false;
+    const tasks: Promise<void>[] = [];
+
+    const queue = <T,>(key: DataKey, loader: () => Promise<T>, commit: (value: T) => void) => {
+      tasks.push(
+        loader()
+          .then((value) => {
+            if (!cancelled) commit(value);
+          })
+          .catch((reason: unknown) => {
+            if (!cancelled) {
+              setErrors((current) => ({ ...current, [key]: errorMessage(reason) }));
+            }
+          }),
       );
+    };
+
+    queue("frontierModels", loadFrontierModels, setFrontierModels);
+    queue("frontierObservations", loadFrontierObservations, setFrontierObservations);
+    queue("testingNotes", loadTestingNotes, setTestingNotes);
+    queue("diselect", loadDisElectResults, setResults);
+    queue("agentic", loadAgenticInfluenceResults, setAgenticResults);
+    queue("mask", loadMaskResults, setMaskResults);
+    queue("manifest", loadModelManifest, setModels);
+    queue("benchmarks", loadBenchmarks, setBenchmarks);
+
+    void Promise.all(tasks).finally(() => {
+      if (!cancelled) setLoading(false);
+    });
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
-  const headlineStats = useMemo(() => {
-    const allHarmful = results.filter((row) => row.subset === "all-harmful");
+  const frontierStats = useMemo(
+    () => ({
+      releases: frontierModels.length,
+      observations: frontierObservations.length,
+      measures: new Set(
+        frontierObservations.map((row) => `${row.benchmarkId}::${row.metricKey}`),
+      ).size,
+    }),
+    [frontierModels, frontierObservations],
+  );
+
+  const historicalStats = useMemo(() => {
+    const allHarmful = results
+      .filter((row) => row.subset === "all-harmful")
+      .sort((a, b) => a.releaseDate.localeCompare(b.releaseDate));
     const benign = results.filter((row) => row.subset === "benign");
     return {
       labels: [...allHarmful, ...benign].reduce((sum, row) => sum + row.n, 0),
@@ -59,6 +115,10 @@ function App() {
       last: allHarmful.at(-1)?.releaseDate.slice(0, 4) ?? "—",
     };
   }, [results]);
+
+  const frontierError = [errors.frontierModels, errors.frontierObservations]
+    .filter(Boolean)
+    .join(" · ");
 
   return (
     <>
@@ -70,59 +130,70 @@ function App() {
         <nav aria-label="Primary navigation">
           <a href="#timeline">Chart</a>
           <a href="#evidence">Evidence</a>
-          <a href="#models">Models</a>
+          <a href="#testing">Testing</a>
+          <a href="#systems">Systems</a>
           <a href="#methods">Methods</a>
           <a href={REPOSITORY_URL} target="_blank" rel="noreferrer">GitHub ↗</a>
         </nav>
       </header>
 
       <main id="main-content">
+        <aside className="draft-banner" aria-label="Publication status">
+          <strong>DRAFT IN PROGRESS</strong>
+          <span>
+            Part of Miguel Guerrero’s Cambridge:ERA research on Frontier AI, Harmful Manipulation,
+            and Election Security. Independent research; not an official ERA benchmark.
+          </span>
+        </aside>
+
         <section className="lead" id="top">
           <div className="lead-chart-heading" id="timeline">
             <div>
-              <p className="section-number">
-                01 · Agency Transfer Benchmark · Wave 0 · 10 August 2026
-              </p>
-              <h1>Election-operation compliance, 2019–2024</h1>
+              <p className="section-number">01 · Frontier longitudinal view · 2024–2026</p>
+              <h1>Frontier harmful-influence evidence, through 2026</h1>
             </div>
             <p>
-              One fixed protocol, 13 releases, 2,200 harmful election-operation prompts and 50
-              benign controls per model. Wave 0 recomputes the authors’ released labels; it
-              generates no new harmful content.
+              The primary rail is restricted to frontier-scale releases: open-weight models with at
+              least 100 billion total parameters, plus separately labelled hosted frontier and
+              requested comparison APIs. A release without a comparable result remains visible as
+              missing—not zero.
             </p>
           </div>
 
-          {error ? (
-            <p className="error-message" role="alert">{error}</p>
-          ) : results.length === 0 ? (
-            <p className="loading-message" aria-live="polite">Loading published evidence…</p>
+          {frontierError ? <p className="inline-data-error" role="alert">Some frontier data could not load: {frontierError}</p> : null}
+          {frontierModels.length > 0 ? (
+            <FrontierTimeline models={frontierModels} observations={frontierObservations} />
+          ) : loading ? (
+            <p className="loading-message" aria-live="polite">Loading frontier evidence…</p>
           ) : (
-            <LongitudinalChart results={results} />
+            <p className="empty-message">No verified frontier release manifest is available in this build.</p>
           )}
 
-          <div className="stat-line" aria-label="Published baseline summary">
-            <div><strong>{headlineStats.labels.toLocaleString("en-GB")}</strong><span>released response labels</span></div>
-            <div><strong>{headlineStats.models}</strong><span>models under one protocol</span></div>
-            <div><strong>{headlineStats.first}–{headlineStats.last}</strong><span>release-date coverage</span></div>
-            <div><strong>0.76</strong><span>upstream judge Macro-F1</span></div>
-          </div>
+          {frontierModels.length > 0 ? (
+            <div className="stat-line frontier-stat-line" aria-label="Frontier evidence coverage">
+              <div><strong>{frontierStats.releases}</strong><span>frontier and requested comparison releases</span></div>
+              <div><strong>{frontierStats.observations}</strong><span>source-linked observations</span></div>
+              <div><strong>{frontierStats.measures}</strong><span>native benchmark measures</span></div>
+              <div><strong>2024–2026</strong><span>fixed release-date window</span></div>
+            </div>
+          ) : null}
 
           <div className="lead-notes">
             <article>
-              <p className="mini-label">Established evidence</p>
-              <h3>Operational compliance diffused early.</h3>
+              <p className="mini-label">Frozen 26 July 2026 snapshot</p>
+              <h3>One protocol, a 71-point spread.</h3>
               <p>
-                GPT‑3 complied with 87.3% of harmful requests in the 2022 release cohort; GPT‑3.5
-                Turbo reached 96.7%. Open-weight Llama 3 reached 90.8% by April 2024.
+                InfoOpsBench reported 5.5% compliance for Claude Sonnet 5 and 76.5% for GLM-5.2.
+                That contrast is evidence of endpoint behaviour under one rubric—not proof of why
+                the endpoints differ or what they would do in another deployment.
               </p>
             </article>
             <article>
-              <p className="mini-label">Measurement boundary</p>
-              <h3>Compliance is not manipulation.</h3>
+              <p className="mini-label">What it cannot establish</p>
+              <h3>A model score is not manipulation.</h3>
               <p>
-                The evaluation does not test distribution, targeting, persuasion, belief change,
-                behaviour, persistence, or electoral effect. These numbers locate a capability—not
-                the end of the causal chain. <a href="#methods">Read the methods ↓</a>
+                These evaluations do not by themselves demonstrate human persuasion, durable belief
+                change, agency transfer, vote change, or democratic harm.
               </p>
             </article>
           </div>
@@ -130,96 +201,140 @@ function App() {
 
         <section className="opening-thesis">
           <p>
-            The risk is not persuasion alone. It is the possibility that adaptive systems shift
-            control over attention, beliefs, preferences, and decisions from people and democratic
-            institutions toward actors who own the models, platforms, data, and channels of influence.
+            Frontier behaviour is only the first link. Safeguards and access shape who can use it;
+            applications, memory, tools, and repeated exposure determine how model capability can
+            become infrastructure for influence and agency transfer.
           </p>
         </section>
+
+        {errors.testingNotes ? (
+          <section className="section testing-section" id="testing">
+            <div className="section-heading split-heading">
+              <div><p className="section-number">02 · Testing</p><h2>Runs, results, and failures</h2></div>
+              <p className="inline-data-error" role="alert">Testing notes could not load: {errors.testingNotes}</p>
+            </div>
+          </section>
+        ) : loading && testingNotes.length === 0 ? (
+          <section className="section testing-section" id="testing">
+            <div className="section-heading split-heading">
+              <div><p className="section-number">02 · Testing</p><h2>Runs, results, and failures</h2></div>
+              <p className="loading-message" aria-live="polite">Loading project research notes…</p>
+            </div>
+          </section>
+        ) : (
+          <TestingSection notes={testingNotes} />
+        )}
 
         <section className="section chart-section" id="operational">
           <div className="section-heading split-heading">
             <div>
-              <p className="section-number">02 · Published operational series</p>
-              <h2>From content generation to campaign execution</h2>
+              <p className="section-number">03 · Published operational evidence</p>
+              <h2>From response generation to campaign execution</h2>
             </div>
             <p>
-              Anthropic’s system cards provide the closest published release series to the project’s
-              threat model: helpful-only Claude variants acting autonomously with simulated social-
-              platform tools. It is direct operational evidence, but from one developer and one
-              evaluation suite.
+              Anthropic’s system cards provide a single-developer release series of helpful-only
+              Claude variants using simulated social-platform tools. It observes operational task
+              completion, not effects on real people or default deployed behaviour.
             </p>
           </div>
 
-          {error ? (
-            <p className="error-message" role="alert">{error}</p>
-          ) : agenticResults.length === 0 ? (
-            <p className="loading-message" aria-live="polite">Loading published evidence…</p>
-          ) : (
+          {errors.agentic ? <p className="inline-data-error" role="alert">Agentic evidence could not load: {errors.agentic}</p> : null}
+          {agenticResults.length > 0 ? (
             <AgenticInfluenceChart results={agenticResults} />
-          )}
+          ) : loading ? (
+            <p className="loading-message" aria-live="polite">Loading published operational evidence…</p>
+          ) : null}
 
           <div className="interpretation-grid">
             <article>
               <p className="mini-label">Established evidence</p>
-              <h3>Raw agentic capability is already material.</h3>
+              <h3>Models can be tested as operators, not only writers.</h3>
               <p>
-                Helpful-only Opus 4.8 completed 73.3% of voter-suppression criteria and 55.1% of
-                domestic-polarization criteria. The sequence is non-monotonic: later models do not
-                simply score higher.
+                This protocol measures completion of criteria across simulated influence workflows.
+                The interactive chart preserves the author-reported values and conditions.
               </p>
             </article>
             <article>
               <p className="mini-label">Deployment boundary</p>
               <h3>Raw capability is not default behaviour.</h3>
               <p>
-                These variants had reduced harmlessness training. Anthropic reports that fully
-                trained versions refused the tasks from the start. The test also observes simulated
-                task completion, not effects on real people.
+                The evaluated helpful-only variants had reduced harmlessness training. The results
+                neither describe default product behaviour nor establish real-world efficacy.
               </p>
             </article>
           </div>
         </section>
 
+        <SystemsResearchSection />
+
         <section className="section evidence-section" id="evidence">
           <div className="section-heading split-heading">
             <div>
-              <p className="section-number">03 · Unified evidence map</p>
-              <h2>One timeline. No false composite.</h2>
+              <p className="section-number">04 · Safeguards, access, and efficacy</p>
+              <h2>Related evidence. No false composite.</h2>
             </div>
             <p>
-              APE, MASK, DisElect, human persuasion studies, and harmful-manipulation studies answer
-              different questions. They belong on one map, but their scores must not be averaged.
+              APE, MASK, DisElect, agentic evaluations, and human studies answer different questions.
+              They belong in one evidence architecture, but their scores must not be averaged into an
+              “Agency Transfer Score.”
             </p>
           </div>
-          {benchmarks.length > 0 && <EvidenceMap benchmarks={benchmarks} />}
-          {maskResults.length > 0 && <MaskChart results={maskResults} />}
+          {errors.benchmarks ? <p className="inline-data-error" role="alert">The evidence registry could not load: {errors.benchmarks}</p> : null}
+          {benchmarks.length > 0 ? <EvidenceMap benchmarks={benchmarks} /> : null}
+          {errors.mask ? <p className="inline-data-error" role="alert">MASK evidence could not load: {errors.mask}</p> : null}
+          {maskResults.length > 0 ? <MaskChart results={maskResults} /> : null}
         </section>
 
         <section className="section models-section" id="models">
           <div className="section-heading split-heading">
             <div>
-              <p className="section-number">04 · Evaluation panel</p>
-              <h2>Open-weight releases ≥100B</h2>
+              <p className="section-number">05 · Practical access</p>
+              <h2>Frontier capability can diffuse through open weights</h2>
             </div>
             <p>
-              This is the frozen candidate universe, not a leaderboard. Historical anchors stay
-              visible even when OpenRouter no longer serves them. Exact routes, providers, reasoning
-              modes, and dates will be pinned before any new run.
+              Parameter count is an inclusion rule, not a capability score. This secondary view
+              records large open-weight releases and serving availability; hosted frontier systems
+              remain a separately labelled population.
             </p>
           </div>
-          {models.length > 0 && <ModelPanel models={models} />}
+          {errors.manifest ? <p className="inline-data-error" role="alert">The legacy model manifest could not load: {errors.manifest}</p> : null}
+          {models.length > 0 ? <ModelPanel models={models} /> : null}
+        </section>
+
+        <section className="section historical-section" id="historical">
+          <div className="section-heading split-heading">
+            <div>
+              <p className="section-number">06 · Historical context · not the frontier cohort</p>
+              <h2>The published baseline begins before frontier scale</h2>
+            </div>
+            <p>
+              DisElect supplies a fixed election-operation protocol across older and smaller models.
+              It remains useful context, but its mixed-size 2019–2024 cohort is deliberately excluded
+              from the primary frontier-only claim.
+            </p>
+          </div>
+          {errors.diselect ? <p className="inline-data-error" role="alert">DisElect evidence could not load: {errors.diselect}</p> : null}
+          {results.length > 0 ? <LongitudinalChart results={results} /> : null}
+          {results.length > 0 ? (
+            <div className="stat-line" aria-label="Historical published baseline summary">
+              <div><strong>{historicalStats.labels.toLocaleString("en-GB")}</strong><span>released response labels</span></div>
+              <div><strong>{historicalStats.models}</strong><span>models under one protocol</span></div>
+              <div><strong>{historicalStats.first}–{historicalStats.last}</strong><span>release-date coverage</span></div>
+              <div><strong>Context</strong><span>not the primary frontier series</span></div>
+            </div>
+          ) : null}
         </section>
 
         <section className="section methods-section" id="methods">
           <div className="section-heading split-heading">
             <div>
-              <p className="section-number">05 · Methods</p>
-              <h2>The claim must follow the measurement.</h2>
+              <p className="section-number">Methods</p>
+              <h2>The claim must follow the measurement</h2>
             </div>
             <p>
-              The project uses release date descriptively. It does not estimate a causal rate of
-              progress, and it never treats model-to-model differences as proof that time caused
-              capability or safeguard changes.
+              Release date is descriptive. The project does not estimate a causal rate of progress,
+              and it does not treat differences between models as proof that time, scale, or openness
+              caused a capability or safeguard change.
             </p>
           </div>
 
@@ -227,71 +342,50 @@ function App() {
             <article>
               <span>Unit</span>
               <h3>Snapshot × endpoint × condition × item × seed</h3>
-              <p>
-                Model aliases are insufficient. Provider, canonical route, guardrails, reasoning
-                mode, parameters, errors, latency, tokens, and cost are part of the observation.
-              </p>
+              <p>Aliases are insufficient. Route, provider, guardrails, reasoning mode, errors, tokens, latency, and cost are part of the observation.</p>
             </article>
             <article>
               <span>Comparison</span>
-              <h3>Native metrics, fixed protocol</h3>
-              <p>
-                Points connect only inside a comparable family, benchmark version, judge, item set,
-                and deployment condition. Missing results never become zero.
-              </p>
+              <h3>Native metrics, fixed protocols</h3>
+              <p>Lines require the same benchmark, item set, judge, deployment condition, and comparability identifier. Missing results never become zero.</p>
             </article>
             <article>
               <span>Validation</span>
-              <h3>Humans audit the judges</h3>
-              <p>
-                A blinded 10–15% sample, two coders, adjudication, class-level F1, and uncertainty by
-                item are required before a project rerun is presented as more than exploratory.
-              </p>
+              <h3>Humans audit automated judges</h3>
+              <p>Project-generated comparisons require blinded human review and visible uncertainty before they are treated as more than exploratory.</p>
             </article>
           </div>
 
           <div className="causal-chain-block">
             <p className="mini-label">Research chain</p>
             <ol className="causal-chain">
-              <li>AI capability</li>
-              <li>Controlling actor</li>
-              <li>Influence vector</li>
-              <li>Target</li>
-              <li>Belief, attention, trust, behaviour, or dependency</li>
-              <li>Agency transfer</li>
-              <li>Concentration of power</li>
-              <li>Democratic harm</li>
-              <li>Mitigation</li>
+              <li>AI capability</li><li>Controlling actor</li><li>Influence vector</li><li>Target</li>
+              <li>Belief, attention, trust, behaviour, or dependency</li><li>Agency transfer</li>
+              <li>Concentration of power</li><li>Democratic harm</li><li>Mitigation</li>
             </ol>
             <p>
-              Wave 0 measures only parts of the first link and selected safeguard conditions around
-              it. Evidence from later links is reviewed separately; it is never inferred from a
-              compliance score.
+              Current model evaluations observe parts of the first link and selected safeguard
+              conditions. Evidence from later links is reviewed separately; it is never inferred
+              from a compliance, persuasion-attempt, or honesty score.
             </p>
-          </div>
-
-          <div className="roadmap">
-            <article><span>Now</span><h3>Published baseline</h3><p>DisElect aggregate labels, model manifest, provenance, and measurement boundary.</p></article>
-            <article><span>Wave 1</span><h3>Fixed DisElect adaptation</h3><p>DeepSeek release series, stratified items, benign controls, pinned routing, and human-validated judge.</p></article>
-            <article><span>Wave 2</span><h3>APE Turn 1</h3><p>Harmful attempt, refusal, evasion, and provider block—kept separate from efficacy.</p></article>
-            <article><span>Wave 3</span><h3>MASK public-set rerun</h3><p>Honesty, lying, evasion, and accuracy, only after dataset licensing and scorer validation.</p></article>
           </div>
         </section>
 
         <section className="section release-section" id="data">
           <div className="section-heading split-heading">
             <div>
-              <p className="section-number">06 · Responsible release</p>
-              <h2>Reproducible without being operational.</h2>
+              <p className="section-number">Responsible release</p>
+              <h2>Reproducible without becoming operational</h2>
             </div>
             <p>
-              Public artifacts include code, manifests, aggregate labels, provenance, protocol
-              hashes, uncertainty, errors, and costs. Raw harmful generations, targeting material,
-              and operational election content remain restricted.
+              Public artifacts include manifests, aggregate labels, provenance, protocol hashes,
+              uncertainty, failures, and costs. Raw harmful generations, targeting material, and
+              current-election operational content remain restricted.
             </p>
           </div>
           <div className="release-links">
             <a href={`${REPOSITORY_URL}/tree/main/data`} target="_blank" rel="noreferrer">Data ledger ↗</a>
+            <a href={HUGGING_FACE_URL} target="_blank" rel="noreferrer">Hugging Face ↗</a>
             <a href={`${REPOSITORY_URL}/blob/main/METHODS.md`} target="_blank" rel="noreferrer">Methods ↗</a>
             <a href={`${REPOSITORY_URL}/blob/main/RESPONSIBLE_RELEASE.md`} target="_blank" rel="noreferrer">Release policy ↗</a>
             <a href={`${REPOSITORY_URL}/blob/main/CITATION.cff`} target="_blank" rel="noreferrer">Citation ↗</a>
@@ -303,13 +397,12 @@ function App() {
         <div>
           <strong>Agency Transfer Benchmark</strong>
           <p>
-            A research preview developed for Miguel Guerrero’s Cambridge ERA fellowship. This is an
-            independent work in progress, not an institutional benchmark or a claim of demonstrated
-            electoral harm.
+            Part of Miguel Guerrero’s Cambridge:ERA research on Frontier AI, Harmful Manipulation,
+            and Election Security. Independent research; not an official ERA benchmark.
           </p>
         </div>
         <div>
-          <span>Version 0.1.0 · 10 August 2026</span>
+          <span>Draft · 10 August 2026</span>
           <a href={REPOSITORY_URL} target="_blank" rel="noreferrer">Source and issues ↗</a>
         </div>
       </footer>

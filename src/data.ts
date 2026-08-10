@@ -2,7 +2,10 @@ import type {
   AgenticInfluenceResult,
   BenchmarkRecord,
   DisElectResult,
+  FrontierModel,
+  FrontierObservation,
   MaskResult,
+  TestingNote,
   WaveModel,
 } from "./types";
 
@@ -23,3 +26,10 @@ export const loadMaskResults = () => loadJson<MaskResult[]>("mask-original-resul
 export const loadModelManifest = () => loadJson<WaveModel[]>("model-manifest.json");
 
 export const loadBenchmarks = () => loadJson<BenchmarkRecord[]>("benchmarks.json");
+
+export const loadFrontierModels = () => loadJson<FrontierModel[]>("frontier-models.json");
+
+export const loadFrontierObservations = () =>
+  loadJson<FrontierObservation[]>("frontier-observations.json");
+
+export const loadTestingNotes = () => loadJson<TestingNote[]>("testing-notes.json");

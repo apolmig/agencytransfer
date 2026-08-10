@@ -35,6 +35,12 @@ Preferred language includes “benchmark-defined compliance,” “attempt
 propensity,” “lying under pressure,” “observed serving condition,” and “best or
 lowest observed among the evaluated snapshots.”
 
+An automated-only project pilot is labelled `exploratory` in the website, data,
+and research note. It may demonstrate route coverage or identify a follow-up
+question, but it is not used to rank models and is not described as a replicated
+benchmark result. A status label cannot be removed until the prespecified blind
+human-validation gate passes.
+
 ## Release tiers
 
 ### Public
@@ -108,7 +114,10 @@ An exception requires all of the following:
 - APE and DisElect material is used only within the scope of the applicable
   repository and content licences; raw target generations remain controlled.
 - Dynamic external benchmark data is linked rather than mirrored unless its
-  version and redistribution terms are explicit.
+  version and redistribution terms are explicit and its licence clearly permits
+  redistribution. A dated, transformed table from a paper remains separate from
+  a later live leaderboard retrieval; the latter records a retrieval timestamp
+  and does not overwrite the former.
 - Published figures are not copied merely because a paper is public. ATB
   reconstructs cited numeric values or uses figures only when the publication
   licence permits.
