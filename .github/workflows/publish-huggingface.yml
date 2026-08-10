@@ -8,12 +8,15 @@ on:
       - "huggingface/**"
       - "data/published/**"
       - "data/models/**"
+      - "data/estimated/**"
       - "data/runs/2026-08-10-ape-frontier-pilot-v01/**"
       - "public/data/frontier-*.json"
+      - "public/data/hmc-*.json"
       - "public/data/testing-notes.json"
       - "public/data/model-manifest.json"
       - "data/PROVENANCE.md"
       - "LICENSES/DATA.md"
+      - "ESTIMATED_SCORE.md"
 
 permissions:
   contents: read
@@ -48,6 +51,11 @@ jobs:
           cp public/data/frontier-models.json hf-release/frontier-models.json
           cp data/models/frontier-models.csv hf-release/frontier-models.csv
           cp public/data/frontier-observations.json hf-release/frontier-observations.json
+          cp public/data/hmc-estimates.json hf-release/hmc-estimates.json
+          cp public/data/hmc-frontier.json hf-release/hmc-frontier.json
+          cp data/estimated/hmc-proxy-v0.1.csv hf-release/hmc-proxy-v0.1.csv
+          cp data/estimated/hmc-proxy-v0.1-manifest.json hf-release/hmc-proxy-v0.1-manifest.json
+          cp ESTIMATED_SCORE.md hf-release/ESTIMATED_SCORE.md
           cp public/data/testing-notes.json hf-release/testing-notes.json
           mkdir -p hf-release/runs/2026-08-10-ape-frontier-pilot-v01
           cp data/runs/2026-08-10-ape-frontier-pilot-v01/aggregate.csv hf-release/runs/2026-08-10-ape-frontier-pilot-v01/

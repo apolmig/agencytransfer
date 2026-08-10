@@ -3,6 +3,9 @@
     "id": "2026-08-10-ape-frontier-pilot-v01-glm-5-2",
     "title": "GLM-5.2 · one-turn APE-derived pilot",
     "status": "exploratory",
+    "validationStatus": "failed",
+    "validationMethod": "Automated primary judge with a preselected 20% second-judge audit; no blinded human validation.",
+    "validationArtifactUrl": "https://github.com/apolmig/agencytransfer/blob/main/data/runs/2026-08-10-ape-frontier-pilot-v01/validation.json",
     "date": "2026-08-10",
     "benchmark": "ATB APE-derived pilot v0.1",
     "models": [
@@ -27,6 +30,11 @@
         "type": "github"
       },
       {
+        "label": "Automated validation report",
+        "url": "https://github.com/apolmig/agencytransfer/blob/main/data/runs/2026-08-10-ape-frontier-pilot-v01/validation.json",
+        "type": "data"
+      },
+      {
         "label": "Full research note",
         "url": "https://github.com/apolmig/agencytransfer/blob/main/research/testing/2026-08-10-ape-frontier-pilot-v01-glm-5-2.md",
         "type": "methods"
@@ -42,6 +50,9 @@
     "id": "2026-08-10-ape-frontier-pilot-v01-kimi-k3",
     "title": "Kimi K3 · one-turn APE-derived pilot",
     "status": "exploratory",
+    "validationStatus": "failed",
+    "validationMethod": "Automated primary judge with a preselected 20% second-judge audit; no blinded human validation.",
+    "validationArtifactUrl": "https://github.com/apolmig/agencytransfer/blob/main/data/runs/2026-08-10-ape-frontier-pilot-v01/validation.json",
     "date": "2026-08-10",
     "benchmark": "ATB APE-derived pilot v0.1",
     "models": [
@@ -66,6 +77,11 @@
         "type": "github"
       },
       {
+        "label": "Automated validation report",
+        "url": "https://github.com/apolmig/agencytransfer/blob/main/data/runs/2026-08-10-ape-frontier-pilot-v01/validation.json",
+        "type": "data"
+      },
+      {
         "label": "Full research note",
         "url": "https://github.com/apolmig/agencytransfer/blob/main/research/testing/2026-08-10-ape-frontier-pilot-v01-kimi-k3.md",
         "type": "methods"
@@ -81,6 +97,9 @@
     "id": "2026-08-10-ape-frontier-pilot-v01-deepseek-v4-pro",
     "title": "DeepSeek V4 Pro · one-turn APE-derived pilot",
     "status": "exploratory",
+    "validationStatus": "failed",
+    "validationMethod": "Automated primary judge with a preselected 20% second-judge audit; no blinded human validation.",
+    "validationArtifactUrl": "https://github.com/apolmig/agencytransfer/blob/main/data/runs/2026-08-10-ape-frontier-pilot-v01/validation.json",
     "date": "2026-08-10",
     "benchmark": "ATB APE-derived pilot v0.1",
     "models": [
@@ -105,6 +124,11 @@
         "type": "github"
       },
       {
+        "label": "Automated validation report",
+        "url": "https://github.com/apolmig/agencytransfer/blob/main/data/runs/2026-08-10-ape-frontier-pilot-v01/validation.json",
+        "type": "data"
+      },
+      {
         "label": "Full research note",
         "url": "https://github.com/apolmig/agencytransfer/blob/main/research/testing/2026-08-10-ape-frontier-pilot-v01-deepseek-v4-pro.md",
         "type": "methods"
@@ -120,6 +144,9 @@
     "id": "2026-08-10-ape-frontier-pilot-v01-qwen3-6-max-preview",
     "title": "Qwen3.6 Max Preview · one-turn APE-derived pilot",
     "status": "exploratory",
+    "validationStatus": "failed",
+    "validationMethod": "Automated primary judge with a preselected 20% second-judge audit; no blinded human validation.",
+    "validationArtifactUrl": "https://github.com/apolmig/agencytransfer/blob/main/data/runs/2026-08-10-ape-frontier-pilot-v01/validation.json",
     "date": "2026-08-10",
     "benchmark": "ATB APE-derived pilot v0.1",
     "models": [
@@ -144,6 +171,11 @@
         "type": "github"
       },
       {
+        "label": "Automated validation report",
+        "url": "https://github.com/apolmig/agencytransfer/blob/main/data/runs/2026-08-10-ape-frontier-pilot-v01/validation.json",
+        "type": "data"
+      },
+      {
         "label": "Full research note",
         "url": "https://github.com/apolmig/agencytransfer/blob/main/research/testing/2026-08-10-ape-frontier-pilot-v01-qwen3-6-max-preview.md",
         "type": "methods"
@@ -159,6 +191,9 @@
     "id": "2026-08-10-ape-frontier-pilot-v01-qwen3-8-max",
     "title": "Qwen3.8 Max · one-turn APE-derived pilot",
     "status": "exploratory",
+    "validationStatus": "failed",
+    "validationMethod": "Automated primary judge with a preselected 20% second-judge audit; no blinded human validation.",
+    "validationArtifactUrl": "https://github.com/apolmig/agencytransfer/blob/main/data/runs/2026-08-10-ape-frontier-pilot-v01/validation.json",
     "date": "2026-08-10",
     "benchmark": "ATB APE-derived pilot v0.1",
     "models": [
@@ -183,6 +218,11 @@
         "type": "github"
       },
       {
+        "label": "Automated validation report",
+        "url": "https://github.com/apolmig/agencytransfer/blob/main/data/runs/2026-08-10-ape-frontier-pilot-v01/validation.json",
+        "type": "data"
+      },
+      {
         "label": "Full research note",
         "url": "https://github.com/apolmig/agencytransfer/blob/main/research/testing/2026-08-10-ape-frontier-pilot-v01-qwen3-8-max.md",
         "type": "methods"
@@ -198,6 +238,9 @@
     "id": "2026-08-10-ape-frontier-pilot-v01-claude-sonnet-5",
     "title": "Claude Sonnet 5 · one-turn APE-derived pilot",
     "status": "exploratory",
+    "validationStatus": "failed",
+    "validationMethod": "Automated primary judge with a preselected 20% second-judge audit; no blinded human validation.",
+    "validationArtifactUrl": "https://github.com/apolmig/agencytransfer/blob/main/data/runs/2026-08-10-ape-frontier-pilot-v01/validation.json",
     "date": "2026-08-10",
     "benchmark": "ATB APE-derived pilot v0.1",
     "models": [
@@ -222,6 +265,11 @@
         "type": "github"
       },
       {
+        "label": "Automated validation report",
+        "url": "https://github.com/apolmig/agencytransfer/blob/main/data/runs/2026-08-10-ape-frontier-pilot-v01/validation.json",
+        "type": "data"
+      },
+      {
         "label": "Full research note",
         "url": "https://github.com/apolmig/agencytransfer/blob/main/research/testing/2026-08-10-ape-frontier-pilot-v01-claude-sonnet-5.md",
         "type": "methods"
@@ -237,6 +285,9 @@
     "id": "2026-08-10-ape-frontier-pilot-v01-claude-opus-5",
     "title": "Claude Opus 5 · one-turn APE-derived pilot",
     "status": "exploratory",
+    "validationStatus": "failed",
+    "validationMethod": "Automated primary judge with a preselected 20% second-judge audit; no blinded human validation.",
+    "validationArtifactUrl": "https://github.com/apolmig/agencytransfer/blob/main/data/runs/2026-08-10-ape-frontier-pilot-v01/validation.json",
     "date": "2026-08-10",
     "benchmark": "ATB APE-derived pilot v0.1",
     "models": [
@@ -261,6 +312,11 @@
         "type": "github"
       },
       {
+        "label": "Automated validation report",
+        "url": "https://github.com/apolmig/agencytransfer/blob/main/data/runs/2026-08-10-ape-frontier-pilot-v01/validation.json",
+        "type": "data"
+      },
+      {
         "label": "Full research note",
         "url": "https://github.com/apolmig/agencytransfer/blob/main/research/testing/2026-08-10-ape-frontier-pilot-v01-claude-opus-5.md",
         "type": "methods"
@@ -276,6 +332,9 @@
     "id": "2026-08-10-ape-frontier-pilot-v01-claude-fable-5",
     "title": "Claude Fable 5 · one-turn APE-derived pilot",
     "status": "exploratory",
+    "validationStatus": "failed",
+    "validationMethod": "Automated primary judge with a preselected 20% second-judge audit; no blinded human validation.",
+    "validationArtifactUrl": "https://github.com/apolmig/agencytransfer/blob/main/data/runs/2026-08-10-ape-frontier-pilot-v01/validation.json",
     "date": "2026-08-10",
     "benchmark": "ATB APE-derived pilot v0.1",
     "models": [
@@ -300,6 +359,11 @@
         "type": "github"
       },
       {
+        "label": "Automated validation report",
+        "url": "https://github.com/apolmig/agencytransfer/blob/main/data/runs/2026-08-10-ape-frontier-pilot-v01/validation.json",
+        "type": "data"
+      },
+      {
         "label": "Full research note",
         "url": "https://github.com/apolmig/agencytransfer/blob/main/research/testing/2026-08-10-ape-frontier-pilot-v01-claude-fable-5.md",
         "type": "methods"
@@ -315,6 +379,9 @@
     "id": "2026-08-10-ape-frontier-pilot-v01-gpt-5-6-sol",
     "title": "GPT-5.6 Sol · one-turn APE-derived pilot",
     "status": "exploratory",
+    "validationStatus": "failed",
+    "validationMethod": "Automated primary judge with a preselected 20% second-judge audit; no blinded human validation.",
+    "validationArtifactUrl": "https://github.com/apolmig/agencytransfer/blob/main/data/runs/2026-08-10-ape-frontier-pilot-v01/validation.json",
     "date": "2026-08-10",
     "benchmark": "ATB APE-derived pilot v0.1",
     "models": [
@@ -339,6 +406,11 @@
         "type": "github"
       },
       {
+        "label": "Automated validation report",
+        "url": "https://github.com/apolmig/agencytransfer/blob/main/data/runs/2026-08-10-ape-frontier-pilot-v01/validation.json",
+        "type": "data"
+      },
+      {
         "label": "Full research note",
         "url": "https://github.com/apolmig/agencytransfer/blob/main/research/testing/2026-08-10-ape-frontier-pilot-v01-gpt-5-6-sol.md",
         "type": "methods"
@@ -354,6 +426,9 @@
     "id": "2026-08-10-ape-frontier-pilot-v01-gpt-5-6-terra",
     "title": "GPT-5.6 Terra · one-turn APE-derived pilot",
     "status": "exploratory",
+    "validationStatus": "failed",
+    "validationMethod": "Automated primary judge with a preselected 20% second-judge audit; no blinded human validation.",
+    "validationArtifactUrl": "https://github.com/apolmig/agencytransfer/blob/main/data/runs/2026-08-10-ape-frontier-pilot-v01/validation.json",
     "date": "2026-08-10",
     "benchmark": "ATB APE-derived pilot v0.1",
     "models": [
@@ -378,6 +453,11 @@
         "type": "github"
       },
       {
+        "label": "Automated validation report",
+        "url": "https://github.com/apolmig/agencytransfer/blob/main/data/runs/2026-08-10-ape-frontier-pilot-v01/validation.json",
+        "type": "data"
+      },
+      {
         "label": "Full research note",
         "url": "https://github.com/apolmig/agencytransfer/blob/main/research/testing/2026-08-10-ape-frontier-pilot-v01-gpt-5-6-terra.md",
         "type": "methods"
@@ -393,6 +473,9 @@
     "id": "2026-08-10-ape-frontier-pilot-v01-gpt-5-6-luna",
     "title": "GPT-5.6 Luna · one-turn APE-derived pilot",
     "status": "exploratory",
+    "validationStatus": "failed",
+    "validationMethod": "Automated primary judge with a preselected 20% second-judge audit; no blinded human validation.",
+    "validationArtifactUrl": "https://github.com/apolmig/agencytransfer/blob/main/data/runs/2026-08-10-ape-frontier-pilot-v01/validation.json",
     "date": "2026-08-10",
     "benchmark": "ATB APE-derived pilot v0.1",
     "models": [
@@ -417,6 +500,11 @@
         "type": "github"
       },
       {
+        "label": "Automated validation report",
+        "url": "https://github.com/apolmig/agencytransfer/blob/main/data/runs/2026-08-10-ape-frontier-pilot-v01/validation.json",
+        "type": "data"
+      },
+      {
         "label": "Full research note",
         "url": "https://github.com/apolmig/agencytransfer/blob/main/research/testing/2026-08-10-ape-frontier-pilot-v01-gpt-5-6-luna.md",
         "type": "methods"
@@ -432,6 +520,9 @@
     "id": "2026-08-10-ape-frontier-pilot-v01-gemini-3-6-flash",
     "title": "Gemini 3.6 Flash · one-turn APE-derived pilot",
     "status": "exploratory",
+    "validationStatus": "failed",
+    "validationMethod": "Automated primary judge with a preselected 20% second-judge audit; no blinded human validation.",
+    "validationArtifactUrl": "https://github.com/apolmig/agencytransfer/blob/main/data/runs/2026-08-10-ape-frontier-pilot-v01/validation.json",
     "date": "2026-08-10",
     "benchmark": "ATB APE-derived pilot v0.1",
     "models": [
@@ -454,6 +545,11 @@
         "label": "GitHub run artifacts",
         "url": "https://github.com/apolmig/agencytransfer/tree/main/data/runs/2026-08-10-ape-frontier-pilot-v01",
         "type": "github"
+      },
+      {
+        "label": "Automated validation report",
+        "url": "https://github.com/apolmig/agencytransfer/blob/main/data/runs/2026-08-10-ape-frontier-pilot-v01/validation.json",
+        "type": "data"
       },
       {
         "label": "Full research note",

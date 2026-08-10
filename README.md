@@ -7,16 +7,17 @@
 > independent research, not an official ERA benchmark.
 
 Agency Transfer Benchmark (ATB) is a source-linked, longitudinal map of model
-behaviour that may matter for harmful influence. The public site leads with a
-fixed 2024–2026 release timeline and keeps each benchmark in its native metric.
-It does **not** collapse compliance, persuasion attempts, honesty, or agentic
-task completion into a synthetic score.
+behaviour that may matter for harmful influence. The public Home page leads
+with a 2022–2026 release chart and an explicitly experimental modelled proxy.
+The proxy combines manipulation-relevant evidence with wide uncertainty; it is
+not an observed benchmark result, human-efficacy measure, or “Agency Transfer
+Score.” Every native benchmark remains available as a separate view.
 
 Explore the live project at **[miguelguerrero.eu/agencytransfer](https://miguelguerrero.eu/agencytransfer/)**.
 
 ## What the frontier view includes
 
-- **Open-weight frontier:** exact public checkpoints released in 2025–2026
+- **Open-weight frontier:** exact public checkpoints released in 2022–2026
   with at least 100 billion total parameters, plus only the historical anchors
   needed to interpret a published series.
 - **Hosted frontier:** provider-designated frontier APIs in a separate access
@@ -62,22 +63,16 @@ interface defaults, and repeated contact in applications such as customer
 service, elder care, and youth-facing services. Those scenarios are research
 hypotheses, not claims that a named deployment has caused harm.
 
-## 10 August 2026 OpenRouter pilot
+## 10 August 2026 OpenRouter pipeline pilot
 
-The first ATB-generated run sent the same 20 hash-selected
-noncontroversially harmful APE topics and six benign controls to 12 exact
-OpenRouter routes (312 target calls). The automated judge labelled 7 of 18
-usable DeepSeek V4 Pro responses and 1 of 20 Gemini 3.6 Flash responses as
-attempts; it labelled zero attempts for the other ten endpoints among their
-usable responses. Claude Fable 5 had only 7 usable harmful responses and
-Qwen3.8 Max had 13, so their zeroes are especially weak evidence. No target call
-had a transport failure.
+The first ATB-generated run tested 12 exact OpenRouter routes across 312 target
+calls. It exposed provider heterogeneity, uneven usable denominators, judge
+parse failures, and the need for blind human validation. It therefore failed
+the public comparative-result gate. No per-model pilot rate appears on the
+Testing page or contributes to the HMC proxy.
 
-The run cost estimate, including judges, was $2.1208. A preselected 20% audit
-produced 46 parseable second-judge pairs (14.7% of responses) after two audit-
-batch parse failures; agreement among those parsed pairs was 100%, but no blind
-human validation has yet been completed. The results are therefore
-**exploratory**, not a full APE replication or a ranking. Read the
+The artifacts remain public as an **exploratory pipeline audit**, not a full APE
+replication or a ranking. Read the
 [model-by-model notes](research/testing/README.md) and
 [aggregate artifacts](data/runs/2026-08-10-ape-frontier-pilot-v01/).
 
@@ -85,6 +80,7 @@ human validation has yet been completed. The results are therefore
 
 ```text
 data/models/          canonical frontier model registry
+data/estimated/       versioned proxy rows, manifest, hashes, and sensitivity
 data/published/       transformed, source-linked published observations
 data/runs/            aggregate-only project run artifacts
 evals/                bounded evaluation runner and frozen configs
@@ -94,6 +90,7 @@ scripts/              deterministic validation and preparation
 src/                  React/TypeScript website
 huggingface/          Hugging Face dataset card
 METHODS.md            estimands, comparability, and statistics
+ESTIMATED_SCORE.md    proxy formula, eligibility, uncertainty, and limitations
 SOURCES.md            primary-source and model-identity ledger
 OPENROUTER_PROTOCOL.md serving and route-integrity protocol
 RESPONSIBLE_RELEASE.md safety and publication boundary
@@ -105,6 +102,7 @@ Requirements: Node.js 24 and npm.
 
 ```bash
 npm ci
+npm run generate:estimate
 npm run validate:data
 npm run typecheck
 npm run build
@@ -144,8 +142,9 @@ remain access-controlled. Automated-only pilot results are labelled
 ## Scientific and release commitments
 
 - Compare only rows sharing an exact protocol and comparability group.
-- Keep benchmark-native metrics separate; never publish an “Agency Transfer
-  Score.”
+- Keep benchmark-native metrics separate. Any cross-source synthesis must be
+  separately versioned, explicitly modelled, reproducible, uncertainty-aware,
+  and never labelled an “Agency Transfer Score.”
 - Record requested and returned model identities, provider, evaluation date,
   errors, tokens, and cost.
 - Separate model refusal, provider block, transport failure, and invalid judge

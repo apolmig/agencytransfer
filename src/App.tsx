@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { AgenticInfluenceChart } from "./components/AgenticInfluenceChart";
 import { EvidenceMap } from "./components/EvidenceMap";
 import { FrontierTimeline } from "./components/FrontierTimeline";
+import { LiteratureReview } from "./components/LiteratureReview";
 import { LongitudinalChart } from "./components/LongitudinalChart";
 import { MaskChart } from "./components/MaskChart";
 import { ModelPanel } from "./components/ModelPanel";
@@ -13,6 +14,8 @@ import {
   loadDisElectResults,
   loadFrontierModels,
   loadFrontierObservations,
+  loadHmcEstimates,
+  loadHmcFrontier,
   loadMaskResults,
   loadModelManifest,
   loadTestingNotes,
@@ -23,6 +26,8 @@ import type {
   DisElectResult,
   FrontierModel,
   FrontierObservation,
+  HmcEstimate,
+  HmcFrontierPoint,
   MaskResult,
   TestingNote,
   WaveModel,
@@ -31,9 +36,12 @@ import type {
 const REPOSITORY_URL = "https://github.com/apolmig/agencytransfer";
 const HUGGING_FACE_URL = "https://huggingface.co/datasets/apol/agency-transfer-benchmark";
 
+type PageKey = "home" | "evidence" | "testing";
 type DataKey =
   | "frontierModels"
   | "frontierObservations"
+  | "hmcEstimates"
+  | "hmcFrontier"
   | "testingNotes"
   | "diselect"
   | "agentic"
@@ -44,368 +52,266 @@ type DataKey =
 const errorMessage = (reason: unknown) =>
   reason instanceof Error ? reason.message : "Unknown data-loading error";
 
+const currentPage = (): PageKey => {
+  const path = window.location.pathname.replace(/\/+$/, "");
+  if (/\/evidence(?:\.html)?$/.test(path)) return "evidence";
+  if (/\/testing(?:\.html)?$/.test(path)) return "testing";
+  return "home";
+};
+
+function DraftMark() {
+  return (
+    <div className="draft-mark" aria-label="Publication status">
+      <strong>DRAFT · IN PROGRESS</strong>
+      <span>Independent Cambridge:ERA research · not an official ERA benchmark</span>
+    </div>
+  );
+}
+
+function SiteHeader({ page }: { page: PageKey }) {
+  const base = import.meta.env.BASE_URL;
+  return (
+    <header className="site-header">
+      <a className="wordmark" href={base} aria-label="Agency Transfer Benchmark home">
+        <span aria-hidden="true">AT</span>
+        <strong>Agency Transfer Benchmark</strong>
+      </a>
+      <nav aria-label="Primary navigation">
+        <a href={base} aria-current={page === "home" ? "page" : undefined}>Chart</a>
+        <a href={`${base}evidence/`} aria-current={page === "evidence" ? "page" : undefined}>Evidence</a>
+        <a href={`${base}testing/`} aria-current={page === "testing" ? "page" : undefined}>Testing</a>
+      </nav>
+    </header>
+  );
+}
+
+function SiteFooter() {
+  return (
+    <footer className="site-footer">
+      <div>
+        <strong>Agency Transfer Benchmark</strong>
+        <p>Frontier AI, harmful manipulation, and election security. Independent research; draft and in progress.</p>
+      </div>
+      <div>
+        <span>Draft · 10 August 2026</span>
+        <a href={`${REPOSITORY_URL}/blob/main/ESTIMATED_SCORE.md`} target="_blank" rel="noreferrer">Method ↗</a>
+        <a href={HUGGING_FACE_URL} target="_blank" rel="noreferrer">Data ↗</a>
+        <a href={REPOSITORY_URL} target="_blank" rel="noreferrer">Source and issues ↗</a>
+      </div>
+    </footer>
+  );
+}
+
+interface HomeProps {
+  models: FrontierModel[];
+  observations: FrontierObservation[];
+  estimates: HmcEstimate[];
+  frontier: HmcFrontierPoint[];
+  loading: boolean;
+  error: string;
+}
+
+function HomePage({ models, observations, estimates, frontier, loading, error }: HomeProps) {
+  const eligible = estimates.filter((estimate) => estimate.evidenceStatus === "estimated").length;
+  return (
+    <main id="main-content">
+      <section className="lead home-lead" id="top">
+        <DraftMark />
+        <div className="home-title">
+          <h1>Estimated harmful-manipulation capability</h1>
+          <p>Frontier releases · 2022–2026 · Experimental proxy v0.1</p>
+        </div>
+
+        {error ? <p className="inline-data-error" role="alert">Some chart data could not load: {error}</p> : null}
+        {models.length > 0 && estimates.length > 0 ? (
+          <FrontierTimeline models={models} observations={observations} estimates={estimates} frontier={frontier} />
+        ) : loading ? (
+          <p className="loading-message" aria-live="polite">Loading the release series…</p>
+        ) : (
+          <p className="empty-message">No verified release series is available in this build.</p>
+        )}
+
+        <details className="hero-method-note">
+          <summary>How the estimate works</summary>
+          <div>
+            <p>
+              A weighted proxy combines operational harmful support (40%), agentic campaign execution (30%),
+              harmful persuasion attempts (20%), and deception under pressure (10%). Missing components are not
+              guessed from time or model size; they carry wide modelled uncertainty.
+            </p>
+            <p>
+              {eligible} of {models.length} releases currently pass the minimum evidence gate. All other releases
+              remain visible as hollow marks—missing, never zero.
+            </p>
+            <a href={`${REPOSITORY_URL}/blob/main/ESTIMATED_SCORE.md`} target="_blank" rel="noreferrer">Weights, uncertainty, sensitivity, and limits ↗</a>
+          </div>
+        </details>
+      </section>
+    </main>
+  );
+}
+
+interface EvidenceProps {
+  benchmarks: BenchmarkRecord[];
+  agenticResults: AgenticInfluenceResult[];
+  maskResults: MaskResult[];
+  diselectResults: DisElectResult[];
+  models: WaveModel[];
+  errors: Partial<Record<DataKey, string>>;
+}
+
+function EvidencePage({ benchmarks, agenticResults, maskResults, diselectResults, models, errors }: EvidenceProps) {
+  return (
+    <main id="main-content">
+      <section className="page-intro">
+        <DraftMark />
+        <p className="section-number">Evidence</p>
+        <h1>What the proxy can—and cannot—claim</h1>
+        <p>
+          No source measures harmful manipulation capability end to end. The literature separately observes
+          willingness, safeguards, task execution, persuasive effect, deception, or access. The chart is an
+          ATB-authored synthesis—not a score or conclusion reported by any cited paper.
+        </p>
+      </section>
+
+      <section className="section literature-section" id="literature">
+        <div className="section-heading split-heading">
+          <div><p className="section-number">01 · Literature review</p><h2>Papers behind the measurement model</h2></div>
+          <p>Primary sources are grouped by the construct they actually observe. Human-efficacy studies inform interpretation but are not converted into model scores.</p>
+        </div>
+        <LiteratureReview />
+      </section>
+
+      <section className="section evidence-section" id="map">
+        <div className="section-heading split-heading">
+          <div><p className="section-number">02 · Evidence map</p><h2>One timeline, separate constructs</h2></div>
+          <p>Native benchmark outcomes remain selectable on the Home chart and retain their own protocols, denominators, and directions.</p>
+        </div>
+        {errors.benchmarks ? <p className="inline-data-error" role="alert">The evidence registry could not load: {errors.benchmarks}</p> : null}
+        {benchmarks.length > 0 ? <EvidenceMap benchmarks={benchmarks} /> : null}
+      </section>
+
+      <section className="section chart-section" id="agentic">
+        <div className="section-heading split-heading">
+          <div><p className="section-number">03 · Agentic execution</p><h2>Campaign workflows, not human effects</h2></div>
+          <p>Anthropic’s helpful-only variants were tested in simulated social-platform workflows. These results measure task completion, not default safeguards or real-world persuasion.</p>
+        </div>
+        {errors.agentic ? <p className="inline-data-error" role="alert">Agentic evidence could not load: {errors.agentic}</p> : null}
+        {agenticResults.length > 0 ? <AgenticInfluenceChart results={agenticResults} /> : null}
+      </section>
+
+      <section className="section chart-section" id="deception">
+        <div className="section-heading split-heading">
+          <div><p className="section-number">04 · Deception</p><h2>Lying under pressure</h2></div>
+          <p>MASK tests honesty under belief conflict. It is relevant to manipulation risk, but it does not observe a target’s beliefs, choices, or agency.</p>
+        </div>
+        {errors.mask ? <p className="inline-data-error" role="alert">MASK evidence could not load: {errors.mask}</p> : null}
+        {maskResults.length > 0 ? <MaskChart results={maskResults} /> : null}
+      </section>
+
+      <section className="section historical-section" id="diselect">
+        <div className="section-heading split-heading">
+          <div><p className="section-number">05 · Election operations</p><h2>Historical harmful compliance</h2></div>
+          <p>DisElect provides a fixed election-operation protocol across older models. It measures response generation—not campaign success, vote change, or democratic harm.</p>
+        </div>
+        {errors.diselect ? <p className="inline-data-error" role="alert">DisElect evidence could not load: {errors.diselect}</p> : null}
+        {diselectResults.length > 0 ? <LongitudinalChart results={diselectResults} /> : null}
+      </section>
+
+      <SystemsResearchSection />
+
+      <section className="section models-section" id="access">
+        <div className="section-heading split-heading">
+          <div><p className="section-number">06 · Access</p><h2>Capability can diffuse through weights and APIs</h2></div>
+          <p>Parameter count is an inclusion rule, not a capability score. Open-weight and hosted frontier releases remain distinct populations.</p>
+        </div>
+        {errors.manifest ? <p className="inline-data-error" role="alert">The access manifest could not load: {errors.manifest}</p> : null}
+        {models.length > 0 ? <ModelPanel models={models} /> : null}
+      </section>
+    </main>
+  );
+}
+
 function App() {
   const [frontierModels, setFrontierModels] = useState<FrontierModel[]>([]);
   const [frontierObservations, setFrontierObservations] = useState<FrontierObservation[]>([]);
+  const [hmcEstimates, setHmcEstimates] = useState<HmcEstimate[]>([]);
+  const [hmcFrontier, setHmcFrontier] = useState<HmcFrontierPoint[]>([]);
   const [testingNotes, setTestingNotes] = useState<TestingNote[]>([]);
-  const [results, setResults] = useState<DisElectResult[]>([]);
+  const [diselectResults, setDisElectResults] = useState<DisElectResult[]>([]);
   const [agenticResults, setAgenticResults] = useState<AgenticInfluenceResult[]>([]);
   const [maskResults, setMaskResults] = useState<MaskResult[]>([]);
   const [models, setModels] = useState<WaveModel[]>([]);
   const [benchmarks, setBenchmarks] = useState<BenchmarkRecord[]>([]);
   const [errors, setErrors] = useState<Partial<Record<DataKey, string>>>({});
   const [loading, setLoading] = useState(true);
+  const page = currentPage();
 
   useEffect(() => {
     let cancelled = false;
     const tasks: Promise<void>[] = [];
-
     const queue = <T,>(key: DataKey, loader: () => Promise<T>, commit: (value: T) => void) => {
-      tasks.push(
-        loader()
-          .then((value) => {
-            if (!cancelled) commit(value);
-          })
-          .catch((reason: unknown) => {
-            if (!cancelled) {
-              setErrors((current) => ({ ...current, [key]: errorMessage(reason) }));
-            }
-          }),
-      );
+      tasks.push(loader().then((value) => {
+        if (!cancelled) commit(value);
+      }).catch((reason: unknown) => {
+        if (!cancelled) setErrors((current) => ({ ...current, [key]: errorMessage(reason) }));
+      }));
     };
 
     queue("frontierModels", loadFrontierModels, setFrontierModels);
     queue("frontierObservations", loadFrontierObservations, setFrontierObservations);
+    queue("hmcEstimates", loadHmcEstimates, setHmcEstimates);
+    queue("hmcFrontier", loadHmcFrontier, setHmcFrontier);
     queue("testingNotes", loadTestingNotes, setTestingNotes);
-    queue("diselect", loadDisElectResults, setResults);
+    queue("diselect", loadDisElectResults, setDisElectResults);
     queue("agentic", loadAgenticInfluenceResults, setAgenticResults);
     queue("mask", loadMaskResults, setMaskResults);
     queue("manifest", loadModelManifest, setModels);
     queue("benchmarks", loadBenchmarks, setBenchmarks);
 
-    void Promise.all(tasks).finally(() => {
-      if (!cancelled) setLoading(false);
-    });
-
-    return () => {
-      cancelled = true;
-    };
+    void Promise.all(tasks).finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
   }, []);
 
-  const frontierStats = useMemo(
-    () => ({
-      releases: frontierModels.length,
-      observations: frontierObservations.length,
-      measures: new Set(
-        frontierObservations.map((row) => `${row.benchmarkId}::${row.metricKey}`),
-      ).size,
-    }),
-    [frontierModels, frontierObservations],
-  );
-
-  const historicalStats = useMemo(() => {
-    const allHarmful = results
-      .filter((row) => row.subset === "all-harmful")
-      .sort((a, b) => a.releaseDate.localeCompare(b.releaseDate));
-    const benign = results.filter((row) => row.subset === "benign");
-    return {
-      labels: [...allHarmful, ...benign].reduce((sum, row) => sum + row.n, 0),
-      models: new Set(allHarmful.map((row) => row.model)).size,
-      first: allHarmful.at(0)?.releaseDate.slice(0, 4) ?? "—",
-      last: allHarmful.at(-1)?.releaseDate.slice(0, 4) ?? "—",
-    };
-  }, [results]);
-
-  const frontierError = [errors.frontierModels, errors.frontierObservations]
+  const frontierError = [errors.frontierModels, errors.frontierObservations, errors.hmcEstimates, errors.hmcFrontier]
     .filter(Boolean)
     .join(" · ");
 
   return (
     <>
-      <header className="site-header">
-        <a className="wordmark" href="#top" aria-label="Agency Transfer Benchmark home">
-          <span aria-hidden="true">AT</span>
-          <strong>Agency Transfer Benchmark</strong>
-        </a>
-        <nav aria-label="Primary navigation">
-          <a href="#timeline">Chart</a>
-          <a href="#evidence">Evidence</a>
-          <a href="#testing">Testing</a>
-          <a href="#systems">Systems</a>
-          <a href="#methods">Methods</a>
-          <a href={REPOSITORY_URL} target="_blank" rel="noreferrer">GitHub ↗</a>
-        </nav>
-      </header>
-
-      <main id="main-content">
-        <aside className="draft-banner" aria-label="Publication status">
-          <strong>DRAFT IN PROGRESS</strong>
-          <span>
-            Part of Miguel Guerrero’s Cambridge:ERA research on Frontier AI, Harmful Manipulation,
-            and Election Security. Independent research; not an official ERA benchmark.
-          </span>
-        </aside>
-
-        <section className="lead" id="top">
-          <div className="lead-chart-heading" id="timeline">
-            <div>
-              <p className="section-number">01 · Frontier longitudinal view · 2024–2026</p>
-              <h1>Frontier harmful-influence evidence, through 2026</h1>
-            </div>
-            <p>
-              The primary rail is restricted to frontier-scale releases: open-weight models with at
-              least 100 billion total parameters, plus separately labelled hosted frontier and
-              requested comparison APIs. A release without a comparable result remains visible as
-              missing—not zero.
-            </p>
-          </div>
-
-          {frontierError ? <p className="inline-data-error" role="alert">Some frontier data could not load: {frontierError}</p> : null}
-          {frontierModels.length > 0 ? (
-            <FrontierTimeline models={frontierModels} observations={frontierObservations} />
-          ) : loading ? (
-            <p className="loading-message" aria-live="polite">Loading frontier evidence…</p>
-          ) : (
-            <p className="empty-message">No verified frontier release manifest is available in this build.</p>
-          )}
-
-          {frontierModels.length > 0 ? (
-            <div className="stat-line frontier-stat-line" aria-label="Frontier evidence coverage">
-              <div><strong>{frontierStats.releases}</strong><span>frontier and requested comparison releases</span></div>
-              <div><strong>{frontierStats.observations}</strong><span>source-linked observations</span></div>
-              <div><strong>{frontierStats.measures}</strong><span>native benchmark measures</span></div>
-              <div><strong>2024–2026</strong><span>fixed release-date window</span></div>
-            </div>
-          ) : null}
-
-          <div className="lead-notes">
-            <article>
-              <p className="mini-label">Frozen 26 July 2026 snapshot</p>
-              <h3>One protocol, a 71-point spread.</h3>
-              <p>
-                InfoOpsBench reported 5.5% compliance for Claude Sonnet 5 and 76.5% for GLM-5.2.
-                That contrast is evidence of endpoint behaviour under one rubric—not proof of why
-                the endpoints differ or what they would do in another deployment.
-              </p>
-            </article>
-            <article>
-              <p className="mini-label">What it cannot establish</p>
-              <h3>A model score is not manipulation.</h3>
-              <p>
-                These evaluations do not by themselves demonstrate human persuasion, durable belief
-                change, agency transfer, vote change, or democratic harm.
-              </p>
-            </article>
-          </div>
-        </section>
-
-        <section className="opening-thesis">
-          <p>
-            Frontier behaviour is only the first link. Safeguards and access shape who can use it;
-            applications, memory, tools, and repeated exposure determine how model capability can
-            become infrastructure for influence and agency transfer.
-          </p>
-        </section>
-
-        {errors.testingNotes ? (
-          <section className="section testing-section" id="testing">
-            <div className="section-heading split-heading">
-              <div><p className="section-number">02 · Testing</p><h2>Runs, results, and failures</h2></div>
-              <p className="inline-data-error" role="alert">Testing notes could not load: {errors.testingNotes}</p>
-            </div>
+      <a className="skip-link" href="#main-content">Skip to content</a>
+      <SiteHeader page={page} />
+      {page === "home" ? (
+        <HomePage
+          models={frontierModels}
+          observations={frontierObservations}
+          estimates={hmcEstimates}
+          frontier={hmcFrontier}
+          loading={loading}
+          error={frontierError}
+        />
+      ) : page === "evidence" ? (
+        <EvidencePage
+          benchmarks={benchmarks}
+          agenticResults={agenticResults}
+          maskResults={maskResults}
+          diselectResults={diselectResults}
+          models={models}
+          errors={errors}
+        />
+      ) : (
+        <main id="main-content">
+          <section className="page-intro testing-page-intro">
+            <DraftMark />
+            <p className="section-number">Testing</p>
+            <h1>Confirmatory results only</h1>
+            <p>Exploratory runs stay in the audit trail. A comparison appears here only after route integrity, a frozen protocol, blinded human validation, and uncertainty checks pass.</p>
           </section>
-        ) : loading && testingNotes.length === 0 ? (
-          <section className="section testing-section" id="testing">
-            <div className="section-heading split-heading">
-              <div><p className="section-number">02 · Testing</p><h2>Runs, results, and failures</h2></div>
-              <p className="loading-message" aria-live="polite">Loading project research notes…</p>
-            </div>
-          </section>
-        ) : (
+          {errors.testingNotes ? <p className="inline-data-error standalone-error" role="alert">Testing notes could not load: {errors.testingNotes}</p> : null}
           <TestingSection notes={testingNotes} />
-        )}
-
-        <section className="section chart-section" id="operational">
-          <div className="section-heading split-heading">
-            <div>
-              <p className="section-number">03 · Published operational evidence</p>
-              <h2>From response generation to campaign execution</h2>
-            </div>
-            <p>
-              Anthropic’s system cards provide a single-developer release series of helpful-only
-              Claude variants using simulated social-platform tools. It observes operational task
-              completion, not effects on real people or default deployed behaviour.
-            </p>
-          </div>
-
-          {errors.agentic ? <p className="inline-data-error" role="alert">Agentic evidence could not load: {errors.agentic}</p> : null}
-          {agenticResults.length > 0 ? (
-            <AgenticInfluenceChart results={agenticResults} />
-          ) : loading ? (
-            <p className="loading-message" aria-live="polite">Loading published operational evidence…</p>
-          ) : null}
-
-          <div className="interpretation-grid">
-            <article>
-              <p className="mini-label">Established evidence</p>
-              <h3>Models can be tested as operators, not only writers.</h3>
-              <p>
-                This protocol measures completion of criteria across simulated influence workflows.
-                The interactive chart preserves the author-reported values and conditions.
-              </p>
-            </article>
-            <article>
-              <p className="mini-label">Deployment boundary</p>
-              <h3>Raw capability is not default behaviour.</h3>
-              <p>
-                The evaluated helpful-only variants had reduced harmlessness training. The results
-                neither describe default product behaviour nor establish real-world efficacy.
-              </p>
-            </article>
-          </div>
-        </section>
-
-        <SystemsResearchSection />
-
-        <section className="section evidence-section" id="evidence">
-          <div className="section-heading split-heading">
-            <div>
-              <p className="section-number">04 · Safeguards, access, and efficacy</p>
-              <h2>Related evidence. No false composite.</h2>
-            </div>
-            <p>
-              APE, MASK, DisElect, agentic evaluations, and human studies answer different questions.
-              They belong in one evidence architecture, but their scores must not be averaged into an
-              “Agency Transfer Score.”
-            </p>
-          </div>
-          {errors.benchmarks ? <p className="inline-data-error" role="alert">The evidence registry could not load: {errors.benchmarks}</p> : null}
-          {benchmarks.length > 0 ? <EvidenceMap benchmarks={benchmarks} /> : null}
-          {errors.mask ? <p className="inline-data-error" role="alert">MASK evidence could not load: {errors.mask}</p> : null}
-          {maskResults.length > 0 ? <MaskChart results={maskResults} /> : null}
-        </section>
-
-        <section className="section models-section" id="models">
-          <div className="section-heading split-heading">
-            <div>
-              <p className="section-number">05 · Practical access</p>
-              <h2>Frontier capability can diffuse through open weights</h2>
-            </div>
-            <p>
-              Parameter count is an inclusion rule, not a capability score. This secondary view
-              records large open-weight releases and serving availability; hosted frontier systems
-              remain a separately labelled population.
-            </p>
-          </div>
-          {errors.manifest ? <p className="inline-data-error" role="alert">The legacy model manifest could not load: {errors.manifest}</p> : null}
-          {models.length > 0 ? <ModelPanel models={models} /> : null}
-        </section>
-
-        <section className="section historical-section" id="historical">
-          <div className="section-heading split-heading">
-            <div>
-              <p className="section-number">06 · Historical context · not the frontier cohort</p>
-              <h2>The published baseline begins before frontier scale</h2>
-            </div>
-            <p>
-              DisElect supplies a fixed election-operation protocol across older and smaller models.
-              It remains useful context, but its mixed-size 2019–2024 cohort is deliberately excluded
-              from the primary frontier-only claim.
-            </p>
-          </div>
-          {errors.diselect ? <p className="inline-data-error" role="alert">DisElect evidence could not load: {errors.diselect}</p> : null}
-          {results.length > 0 ? <LongitudinalChart results={results} /> : null}
-          {results.length > 0 ? (
-            <div className="stat-line" aria-label="Historical published baseline summary">
-              <div><strong>{historicalStats.labels.toLocaleString("en-GB")}</strong><span>released response labels</span></div>
-              <div><strong>{historicalStats.models}</strong><span>models under one protocol</span></div>
-              <div><strong>{historicalStats.first}–{historicalStats.last}</strong><span>release-date coverage</span></div>
-              <div><strong>Context</strong><span>not the primary frontier series</span></div>
-            </div>
-          ) : null}
-        </section>
-
-        <section className="section methods-section" id="methods">
-          <div className="section-heading split-heading">
-            <div>
-              <p className="section-number">Methods</p>
-              <h2>The claim must follow the measurement</h2>
-            </div>
-            <p>
-              Release date is descriptive. The project does not estimate a causal rate of progress,
-              and it does not treat differences between models as proof that time, scale, or openness
-              caused a capability or safeguard change.
-            </p>
-          </div>
-
-          <div className="method-principles">
-            <article>
-              <span>Unit</span>
-              <h3>Snapshot × endpoint × condition × item × seed</h3>
-              <p>Aliases are insufficient. Route, provider, guardrails, reasoning mode, errors, tokens, latency, and cost are part of the observation.</p>
-            </article>
-            <article>
-              <span>Comparison</span>
-              <h3>Native metrics, fixed protocols</h3>
-              <p>Lines require the same benchmark, item set, judge, deployment condition, and comparability identifier. Missing results never become zero.</p>
-            </article>
-            <article>
-              <span>Validation</span>
-              <h3>Humans audit automated judges</h3>
-              <p>Project-generated comparisons require blinded human review and visible uncertainty before they are treated as more than exploratory.</p>
-            </article>
-          </div>
-
-          <div className="causal-chain-block">
-            <p className="mini-label">Research chain</p>
-            <ol className="causal-chain">
-              <li>AI capability</li><li>Controlling actor</li><li>Influence vector</li><li>Target</li>
-              <li>Belief, attention, trust, behaviour, or dependency</li><li>Agency transfer</li>
-              <li>Concentration of power</li><li>Democratic harm</li><li>Mitigation</li>
-            </ol>
-            <p>
-              Current model evaluations observe parts of the first link and selected safeguard
-              conditions. Evidence from later links is reviewed separately; it is never inferred
-              from a compliance, persuasion-attempt, or honesty score.
-            </p>
-          </div>
-        </section>
-
-        <section className="section release-section" id="data">
-          <div className="section-heading split-heading">
-            <div>
-              <p className="section-number">Responsible release</p>
-              <h2>Reproducible without becoming operational</h2>
-            </div>
-            <p>
-              Public artifacts include manifests, aggregate labels, provenance, protocol hashes,
-              uncertainty, failures, and costs. Raw harmful generations, targeting material, and
-              current-election operational content remain restricted.
-            </p>
-          </div>
-          <div className="release-links">
-            <a href={`${REPOSITORY_URL}/tree/main/data`} target="_blank" rel="noreferrer">Data ledger ↗</a>
-            <a href={HUGGING_FACE_URL} target="_blank" rel="noreferrer">Hugging Face ↗</a>
-            <a href={`${REPOSITORY_URL}/blob/main/METHODS.md`} target="_blank" rel="noreferrer">Methods ↗</a>
-            <a href={`${REPOSITORY_URL}/blob/main/RESPONSIBLE_RELEASE.md`} target="_blank" rel="noreferrer">Release policy ↗</a>
-            <a href={`${REPOSITORY_URL}/blob/main/CITATION.cff`} target="_blank" rel="noreferrer">Citation ↗</a>
-          </div>
-        </section>
-      </main>
-
-      <footer className="site-footer">
-        <div>
-          <strong>Agency Transfer Benchmark</strong>
-          <p>
-            Part of Miguel Guerrero’s Cambridge:ERA research on Frontier AI, Harmful Manipulation,
-            and Election Security. Independent research; not an official ERA benchmark.
-          </p>
-        </div>
-        <div>
-          <span>Draft · 10 August 2026</span>
-          <a href={REPOSITORY_URL} target="_blank" rel="noreferrer">Source and issues ↗</a>
-        </div>
-      </footer>
+        </main>
+      )}
+      <SiteFooter />
     </>
   );
 }

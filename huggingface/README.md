@@ -28,11 +28,13 @@ This aggregate-only dataset accompanies the interactive
 
 ## What is included
 
-- a canonical 2025–2026 frontier-model registry, separating open-weight
+- a canonical 2022–2026 frontier-model registry, separating open-weight
   checkpoints with at least 100B total parameters from hosted frontier APIs
   whose parameter counts are undisclosed;
 - source-linked published observations from InfoOpsBench v2, SaferAI APE/MASK,
   Anthropic's helpful-only agentic evaluation, MASK, and DisElect;
+- an experimental HMC proxy ledger with weights, modelled intervals, evidence
+  grades, sensitivity checks, source IDs, input hashes, and explicit gaps;
 - an exploratory 12-endpoint APE-derived OpenRouter pilot with aggregate labels,
   hashes, sanitised route metadata, cost, and validation status; and
 - one short research note per project-tested endpoint.
@@ -40,34 +42,14 @@ This aggregate-only dataset accompanies the interactive
 The records contain no raw harmful prompts or generations, personal data,
 credentials, targeting material, or current-election operational content.
 
-## Exploratory OpenRouter pilot — 10 August 2026
+## Exploratory OpenRouter pilot — excluded from comparative results
 
-Every endpoint received the same 20 hash-selected noncontroversially harmful
-APE topics and six benign controls. The table reports automated attempt labels
-among usable harmful responses. Provider routing, reasoning, and sampling were
-not pinned; human validation is incomplete. These values are a pipeline
-diagnostic, not a full APE replication or a model ranking.
-
-| Served endpoint | Attempt rate | Usable n / 20 | Refusals | Invalid |
-|---|---:|---:|---:|---:|
-| GLM-5.2 | 0.0% | 20 | 20 | 0 |
-| Kimi K3 | 0.0% | 20 | 20 | 0 |
-| DeepSeek V4 Pro | 38.9% | 18 | 11 | 2 |
-| Qwen3.6 Max Preview | 0.0% | 20 | 20 | 0 |
-| Qwen3.8 Max | 0.0% | 13 | 12 | 7 |
-| Claude Sonnet 5 | 0.0% | 18 | 17 | 2 |
-| Claude Opus 5 | 0.0% | 20 | 20 | 0 |
-| Claude Fable 5 | 0.0% | 7 | 7 | 13 |
-| GPT-5.6 Sol | 0.0% | 20 | 20 | 0 |
-| GPT-5.6 Terra | 0.0% | 20 | 8 | 0 |
-| GPT-5.6 Luna | 0.0% | 20 | 12 | 0 |
-| Gemini 3.6 Flash | 5.0% | 20 | 19 | 0 |
-
-The 312 target calls had no transport failures. Run-wide estimated cost,
-including automated judges, was $2.1208. A preselected 20% second-judge audit
-yielded 46 parseable pairs (14.7% of responses) after two audit-batch parse
-failures; agreement among those pairs was 100% (Cohen's κ = 1.0). Agreement
-between two automated models is not a substitute for human validation.
+The 312-call pilot tested the pipeline, not the models. It used one APE
+category, 20 harmful items per endpoint, provider-default routing, and automated
+labels without blind human validation. Usable denominators were uneven and two
+audit batches failed to parse. The run is therefore excluded from the public
+Testing result view and from the HMC proxy. Aggregate artifacts remain available
+for reproducibility and failure analysis.
 
 ## Files
 
@@ -75,6 +57,10 @@ between two automated models is not a substitute for human validation.
 |---|---|
 | `frontier-models.json` / `frontier-models.csv` | Canonical release, access, parameter, source, and route metadata |
 | `frontier-observations.json` | Published and project-generated observations in native metrics |
+| `hmc-estimates.json` / `hmc-proxy-v0.1.csv` | Experimental proxy medians, intervals, evidence grades, components, sensitivity, and source IDs |
+| `hmc-frontier.json` | Draw-wise stepwise frontier envelopes for all, open-weight, and hosted views |
+| `hmc-proxy-v0.1-manifest.json` | Fixed seed, weights, input hashes, counts, and limitations |
+| `ESTIMATED_SCORE.md` | Full proxy method and interpretation boundary |
 | `infoopsbench-2026-07-26.csv` | Frozen, transformed InfoOpsBench v2 paper snapshot |
 | `saferai-glm52-ape-mask.csv` | Transcribed APE/MASK cohort results |
 | `testing-notes.json` | Website research-note records |
@@ -86,9 +72,10 @@ between two automated models is not a substitute for human validation.
 
 ## Intended use and measurement boundary
 
-Use these files to reproduce the website, audit provenance, and compare rows
-only inside an exact protocol or `comparabilityGroup`. Do not average metrics
-across benchmarks. Missing results are not zeroes.
+Use these files to reproduce the website, audit provenance, and compare native
+rows only inside an exact protocol or `comparabilityGroup`. The separately
+versioned HMC proxy is an ATB-authored modelled synthesis, not an observed
+benchmark result or “Agency Transfer Score.” Missing results are not zeroes.
 
 InfoOps compliance is not human persuasion. APE detects attempted persuasion,
 not persuasive success. MASK lying is not the complement of honesty. Simulated
@@ -107,7 +94,8 @@ not interchangeable.
 ## Provenance, licensing, and citation
 
 Read [PROVENANCE.md](https://github.com/apolmig/agencytransfer/blob/main/data/PROVENANCE.md),
-[METHODS.md](https://github.com/apolmig/agencytransfer/blob/main/METHODS.md), and
+[METHODS.md](https://github.com/apolmig/agencytransfer/blob/main/METHODS.md),
+[ESTIMATED_SCORE.md](https://github.com/apolmig/agencytransfer/blob/main/ESTIMATED_SCORE.md), and
 [RESPONSIBLE_RELEASE.md](https://github.com/apolmig/agencytransfer/blob/main/RESPONSIBLE_RELEASE.md).
 Each reuse must cite both this project and the applicable primary source.
 

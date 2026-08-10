@@ -10,6 +10,10 @@ export interface TestingNoteRecord {
   id: string;
   title: string;
   status: TestingNoteStatus;
+  validationStatus: "pending" | "validated" | "failed";
+  validatedAt?: string;
+  validationMethod?: string;
+  validationArtifactUrl?: string;
   date: string;
   benchmark: string;
   models: string[];
@@ -22,100 +26,62 @@ export interface TestingNoteRecord {
   artifacts: TestingArtifactLink[];
 }
 
-interface TestingSectionProps {
-  notes: TestingNoteRecord[];
-}
+interface TestingSectionProps { notes: TestingNoteRecord[] }
 
-const statusLabel: Record<TestingNoteStatus, string> = {
-  planned: "Planned · no result",
-  running: "In progress · no final result",
-  complete: "Completed",
-  blocked: "Blocked · no result",
-  exploratory: "Exploratory",
-};
+const isValidatedResult = (note: TestingNoteRecord) =>
+  note.status === "complete" &&
+  note.validationStatus === "validated" &&
+  Boolean(note.validationArtifactUrl);
 
 const formatDate = (iso: string) => {
-  if (!iso) return "Date pending";
   const value = new Date(iso.includes("T") ? iso : `${iso}T00:00:00Z`);
   if (Number.isNaN(value.getTime())) return iso;
-  return new Intl.DateTimeFormat("en-GB", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-    timeZone: "UTC",
-  }).format(value);
+  return new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }).format(value);
 };
 
 export function TestingSection({ notes }: TestingSectionProps) {
-  const orderedNotes = [...notes].sort((a, b) => b.date.localeCompare(a.date));
+  const validated = notes.filter(isValidatedResult).sort((first, second) => second.date.localeCompare(first.date));
+  const exploratory = notes.filter((note) => !isValidatedResult(note));
 
   return (
-    <section className="section testing-section" id="testing" aria-labelledby="testing-heading">
+    <section className="section testing-section" id="validated-results" aria-labelledby="testing-heading">
       <div className="section-heading split-heading">
-        <div>
-          <p className="section-number">02 · Testing · Project-generated evidence</p>
-          <h2 id="testing-heading">Runs, results, and failures</h2>
-        </div>
-        <p>
-          Each note states the exact model condition, protocol, result boundary, and public
-          artifacts. Planned work is never presented as evidence; missing or blocked runs remain
-          visible.
-        </p>
+        <div><p className="section-number">Validation gate</p><h2 id="testing-heading">No outcome-tuned claims</h2></div>
+        <p>Statistical significance is not a target to tune toward. The protocol, sample size, judge validation, exclusions, and stopping rule must be frozen before a confirmatory run.</p>
       </div>
 
-      {orderedNotes.length === 0 ? (
-        <div className="testing-empty-state">
-          <p className="mini-label">No completed project run</p>
-          <p>Published evidence is shown elsewhere. This section will report new evaluations only after route integrity and validation checks pass.</p>
+      {validated.length === 0 ? (
+        <div className="testing-gate">
+          <p className="mini-label">No validated project result yet</p>
+          <h3>The pilot did not pass the publication gate.</h3>
+          <p>It was small, automated-only, provider-heterogeneous, and produced uneven usable denominators. It remains an engineering audit—not a ranked benchmark result.</p>
+          <ol>
+            <li><strong>1 · Freeze</strong><span>Protocol, routes, items, exclusions, power analysis, and stopping rule.</span></li>
+            <li><strong>2 · Validate</strong><span>Blind human audit of labels and inter-rater agreement.</span></li>
+            <li><strong>3 · Run</strong><span>Comparable endpoints with complete route and error logs.</span></li>
+            <li><strong>4 · Publish</strong><span>Effect sizes, uncertainty, failures, sensitivity, and preregistered analyses.</span></li>
+          </ol>
+          <a href="https://github.com/apolmig/agencytransfer/tree/main/research/testing" target="_blank" rel="noreferrer">Exploratory audit trail ({exploratory.length} notes) ↗</a>
         </div>
       ) : (
         <div className="testing-notes">
-          {orderedNotes.map((note) => {
-            const hasResult = note.status === "complete" || note.status === "exploratory";
-            return (
-              <article className="testing-note" data-status={note.status} id={`testing-${note.id}`} key={note.id}>
-                <div className="testing-note-heading">
-                  <div>
-                    <p className="mini-label">{statusLabel[note.status]} · {note.benchmark}</p>
-                    <h3>{note.title}</h3>
-                  </div>
-                  <time dateTime={note.date || undefined}>{formatDate(note.date)}</time>
-                </div>
-                <p className="testing-note-summary">{note.summary}</p>
-                <p className="testing-note-models">
-                  <strong>Models</strong> {note.models.length > 0 ? note.models.join(" · ") : "Not yet frozen"}
-                </p>
-
-                <details className="testing-note-details">
-                  <summary>Read the research note</summary>
-                  <dl>
-                    <div><dt>Question</dt><dd>{note.question}</dd></div>
-                    <div><dt>Protocol</dt><dd>{note.protocol}</dd></div>
-                    <div>
-                      <dt>Result</dt>
-                      <dd>{hasResult ? note.result : "No result is reported while this test is planned, running, or blocked."}</dd>
-                    </div>
-                    <div><dt>Interpretation</dt><dd>{hasResult ? note.interpretation : "Interpretation is deferred until the run and its validation are complete."}</dd></div>
-                  </dl>
-
-                  {note.limitations.length > 0 ? (
-                    <div className="testing-limitations">
-                      <h4>Limits</h4>
-                      <ul>{note.limitations.map((limitation) => <li key={limitation}>{limitation}</li>)}</ul>
-                    </div>
-                  ) : null}
-
-                  <div className="testing-artifacts" aria-label={`Artifacts for ${note.title}`}>
-                    {note.artifacts.length > 0 ? note.artifacts.map((artifact) => (
-                      <a href={artifact.url} key={`${artifact.type}-${artifact.url}`} target="_blank" rel="noreferrer">
-                        {artifact.label} <span aria-hidden="true">↗</span>
-                      </a>
-                    )) : <span>Public artifacts pending.</span>}
-                  </div>
-                </details>
-              </article>
-            );
-          })}
+          {validated.map((note) => (
+            <article className="testing-note" id={`testing-${note.id}`} key={note.id}>
+              <div className="testing-note-heading">
+                <div><p className="mini-label">Validated · {note.benchmark}</p><h3>{note.title}</h3></div>
+                <time dateTime={note.date}>{formatDate(note.date)}</time>
+              </div>
+              <p className="testing-note-summary">{note.summary}</p>
+              <dl className="validated-result-grid">
+                <div><dt>Result</dt><dd>{note.result}</dd></div>
+                <div><dt>Interpretation</dt><dd>{note.interpretation}</dd></div>
+                <div><dt>Limits</dt><dd>{note.limitations.join(" ")}</dd></div>
+              </dl>
+              <div className="testing-artifacts">
+                {note.artifacts.map((artifact) => <a href={artifact.url} key={artifact.url} target="_blank" rel="noreferrer">{artifact.label} ↗</a>)}
+              </div>
+            </article>
+          ))}
         </div>
       )}
     </section>

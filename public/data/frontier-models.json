@@ -1,5 +1,125 @@
 [
   {
+    "id": "bloomz-176b",
+    "model": "BLOOMZ 176B",
+    "organisation": "BigScience",
+    "family": "BLOOMZ",
+    "accessType": "open-weight",
+    "releaseDate": "2022-09-17",
+    "totalParamsB": 176.2,
+    "openRouterId": "bigscience/bloomz",
+    "eligibilityBasis": "Eligible 2022 anchor, but not listed by OpenRouter on 2026-08-10. A fixed-protocol comparison would require self-hosting the exact weights.",
+    "sourceUrl": "https://huggingface.co/bigscience/bloomz"
+  },
+  {
+    "id": "gpt-3-text-davinci-003",
+    "model": "GPT-3 · text-davinci-003",
+    "organisation": "OpenAI",
+    "family": "GPT-3",
+    "accessType": "hosted",
+    "releaseDate": "2022-11-28",
+    "totalParamsB": null,
+    "openRouterId": "",
+    "eligibilityBasis": "Hosted historical frontier comparison evaluated by DisElect; parameters are not used for hosted eligibility.",
+    "sourceUrl": "https://github.com/alan-turing-institute/election-ai-safety"
+  },
+  {
+    "id": "gpt-3-5-turbo-0613",
+    "model": "GPT-3.5 Turbo · 0613",
+    "organisation": "OpenAI",
+    "family": "GPT-3.5",
+    "accessType": "hosted",
+    "releaseDate": "2023-01-03",
+    "totalParamsB": null,
+    "openRouterId": "",
+    "eligibilityBasis": "Hosted historical frontier comparison evaluated by DisElect; family announcement date is used on the release axis.",
+    "sourceUrl": "https://github.com/alan-turing-institute/election-ai-safety"
+  },
+  {
+    "id": "gpt-4-0613",
+    "model": "GPT-4 · 0613",
+    "organisation": "OpenAI",
+    "family": "GPT-4",
+    "accessType": "hosted",
+    "releaseDate": "2023-03-14",
+    "totalParamsB": null,
+    "openRouterId": "",
+    "eligibilityBasis": "Hosted historical frontier comparison evaluated by DisElect; family announcement date is used on the release axis.",
+    "sourceUrl": "https://openai.com/index/gpt-4-research/"
+  },
+  {
+    "id": "falcon-180b-chat",
+    "model": "Falcon 180B Chat",
+    "organisation": "Technology Innovation Institute",
+    "family": "Falcon",
+    "accessType": "open-weight",
+    "releaseDate": "2023-09-04",
+    "totalParamsB": 179.5,
+    "openRouterId": "tiiuae/falcon-180b-chat",
+    "eligibilityBasis": "Eligible 2023 anchor, but not listed by OpenRouter on 2026-08-10. It remains contextual until self-hosted.",
+    "sourceUrl": "https://huggingface.co/tiiuae/falcon-180B-chat"
+  },
+  {
+    "id": "gemini-1-0-pro-002",
+    "model": "Gemini 1.0 Pro · 002",
+    "organisation": "Google",
+    "family": "Gemini 1.0",
+    "accessType": "hosted",
+    "releaseDate": "2023-12-06",
+    "totalParamsB": null,
+    "openRouterId": "",
+    "eligibilityBasis": "Hosted historical frontier comparison evaluated by DisElect; parameters undisclosed.",
+    "sourceUrl": "https://blog.google/technology/ai/google-gemini-ai/"
+  },
+  {
+    "id": "mixtral-8x22b-instruct",
+    "model": "Mixtral 8×22B Instruct",
+    "organisation": "Mistral AI",
+    "family": "Mixtral",
+    "accessType": "open-weight",
+    "releaseDate": "2024-04-16",
+    "totalParamsB": 140.6,
+    "openRouterId": "mistralai/mixtral-8x22b-instruct",
+    "eligibilityBasis": "Oldest currently listed ≥100B OpenRouter anchor found at the 2026-08-10 freeze. Provider-level reproducibility still requires a pinned route.",
+    "sourceUrl": "https://huggingface.co/mistralai/Mixtral-8x22B-Instruct-v0.1"
+  },
+  {
+    "id": "qwen1-5-110b-chat",
+    "model": "Qwen1.5 110B Chat",
+    "organisation": "Alibaba",
+    "family": "Qwen 1.5",
+    "accessType": "open-weight",
+    "releaseDate": "2024-04-25",
+    "totalParamsB": 110,
+    "openRouterId": "",
+    "eligibilityBasis": "Open-weight historical checkpoint; 110B total parameters meets the >=100B rule.",
+    "sourceUrl": "https://huggingface.co/Qwen/Qwen1.5-110B-Chat"
+  },
+  {
+    "id": "llama-3-1-405b-instruct",
+    "model": "Llama 3.1 405B Instruct",
+    "organisation": "Meta",
+    "family": "Llama",
+    "accessType": "open-weight",
+    "releaseDate": "2024-07-23",
+    "totalParamsB": 405,
+    "openRouterId": "meta-llama/llama-3.1-405b-instruct",
+    "eligibilityBasis": "Required historical anchor. The official checkpoint was not listed by OpenRouter on 2026-08-10; a substitute fine-tune would not be equivalent.",
+    "sourceUrl": "https://huggingface.co/meta-llama/Llama-3.1-405B-Instruct"
+  },
+  {
+    "id": "deepseek-v3",
+    "model": "DeepSeek V3",
+    "organisation": "DeepSeek",
+    "family": "DeepSeek",
+    "accessType": "open-weight",
+    "releaseDate": "2024-12-26",
+    "totalParamsB": 671,
+    "openRouterId": "deepseek/deepseek-chat",
+    "eligibilityBasis": "The OpenRouter alias is mutable. It cannot support a historical claim unless provider and model revision are independently pinned.",
+    "sourceUrl": "https://huggingface.co/deepseek-ai/DeepSeek-V3"
+  },
+  {
     "id": "deepseek-r1",
     "model": "DeepSeek-R1",
     "organisation": "DeepSeek",
@@ -240,6 +360,18 @@
     "sourceUrl": "https://huggingface.co/moonshotai/Kimi-K2.5"
   },
   {
+    "id": "claude-opus-4-6",
+    "model": "Claude Opus 4.6",
+    "organisation": "Anthropic",
+    "family": "Claude 4",
+    "accessType": "hosted",
+    "releaseDate": "2026-02-05",
+    "totalParamsB": null,
+    "openRouterId": "",
+    "eligibilityBasis": "Hosted historical comparison in Anthropic's helpful-only agentic influence evaluation.",
+    "sourceUrl": "https://cdn.sanity.io/files/4zrzovbb/website/037f06850df7fbe871e206dad004c3db5fd50340.pdf"
+  },
+  {
     "id": "glm-5",
     "model": "GLM-5",
     "organisation": "Z.ai",
@@ -264,6 +396,18 @@
     "sourceUrl": "https://huggingface.co/Qwen/Qwen3.5-397B-A17B"
   },
   {
+    "id": "claude-sonnet-4-6",
+    "model": "Claude Sonnet 4.6",
+    "organisation": "Anthropic",
+    "family": "Claude 4",
+    "accessType": "hosted",
+    "releaseDate": "2026-02-17",
+    "totalParamsB": null,
+    "openRouterId": "",
+    "eligibilityBasis": "Hosted historical comparison in Anthropic's helpful-only agentic influence evaluation.",
+    "sourceUrl": "https://www-cdn.anthropic.com/9e6a1044980d8c4ed85669faf9c2a8342e2e9f1e/Claude%20Sonnet%205%20System%20Card.pdf"
+  },
+  {
     "id": "gemini-3-1-pro-preview",
     "model": "Gemini 3.1 Pro Preview",
     "organisation": "Google",
@@ -286,6 +430,18 @@
     "openRouterId": "openai/gpt-5.4",
     "eligibilityBasis": "Hosted provider flagship at release; parameters undisclosed. Sol, Terra, and Luna are not GPT-5.4 variants.",
     "sourceUrl": "https://openai.com/index/introducing-gpt-5-4/"
+  },
+  {
+    "id": "claude-mythos-preview",
+    "model": "Claude Mythos Preview",
+    "organisation": "Anthropic",
+    "family": "Claude 5",
+    "accessType": "hosted",
+    "releaseDate": "2026-04-07",
+    "totalParamsB": null,
+    "openRouterId": "",
+    "eligibilityBasis": "Hosted historical comparison in Anthropic's helpful-only agentic influence evaluation.",
+    "sourceUrl": "https://www-cdn.anthropic.com/9e6a1044980d8c4ed85669faf9c2a8342e2e9f1e/Claude%20Sonnet%205%20System%20Card.pdf"
   },
   {
     "id": "claude-opus-4-7",
@@ -324,18 +480,6 @@
     "sourceUrl": "https://openai.com/index/introducing-gpt-5-5/"
   },
   {
-    "id": "deepseek-v4-pro",
-    "model": "DeepSeek V4 Pro",
-    "organisation": "DeepSeek",
-    "family": "DeepSeek V4",
-    "accessType": "open-weight",
-    "releaseDate": "2026-04-24",
-    "totalParamsB": 1600,
-    "openRouterId": "deepseek/deepseek-v4-pro",
-    "eligibilityBasis": "Open-weight 1.6T/49B-active flagship released as DeepSeek-V4 Preview; preview status retained.",
-    "sourceUrl": "https://api-docs.deepseek.com/news/news260424/"
-  },
-  {
     "id": "deepseek-v4-flash",
     "model": "DeepSeek V4 Flash",
     "organisation": "DeepSeek",
@@ -345,6 +489,18 @@
     "totalParamsB": 284,
     "openRouterId": "deepseek/deepseek-v4-flash-0731",
     "eligibilityBasis": "Open-weight 284B/13B-active efficiency tier released as DeepSeek-V4 Preview; size-eligible but not the strict provider frontier envelope. OpenRouter's current 0731 route is a later re-post-trained revision; the frozen InfoOpsBench paper result predates it.",
+    "sourceUrl": "https://api-docs.deepseek.com/news/news260424/"
+  },
+  {
+    "id": "deepseek-v4-pro",
+    "model": "DeepSeek V4 Pro",
+    "organisation": "DeepSeek",
+    "family": "DeepSeek V4",
+    "accessType": "open-weight",
+    "releaseDate": "2026-04-24",
+    "totalParamsB": 1600,
+    "openRouterId": "deepseek/deepseek-v4-pro",
+    "eligibilityBasis": "Open-weight 1.6T/49B-active flagship released as DeepSeek-V4 Preview; preview status retained.",
     "sourceUrl": "https://api-docs.deepseek.com/news/news260424/"
   },
   {
@@ -358,6 +514,18 @@
     "openRouterId": "google/gemini-3.1-flash-lite",
     "eligibilityBasis": "Canonical correction for the requested nonexistent general-text name 'Gemini 3.1 Flash'; lightweight hosted tier, not the strict hero frontier.",
     "sourceUrl": "https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-lite"
+  },
+  {
+    "id": "claude-opus-4-8",
+    "model": "Claude Opus 4.8",
+    "organisation": "Anthropic",
+    "family": "Claude 4",
+    "accessType": "hosted",
+    "releaseDate": "2026-05-28",
+    "totalParamsB": null,
+    "openRouterId": "",
+    "eligibilityBasis": "Hosted historical comparison in Anthropic's helpful-only agentic influence evaluation.",
+    "sourceUrl": "https://www-cdn.anthropic.com/9e6a1044980d8c4ed85669faf9c2a8342e2e9f1e/Claude%20Sonnet%205%20System%20Card.pdf"
   },
   {
     "id": "minimax-m3",
@@ -384,6 +552,18 @@
     "sourceUrl": "https://www.anthropic.com/news/claude-fable-5-mythos-5"
   },
   {
+    "id": "claude-mythos-5",
+    "model": "Claude Mythos 5",
+    "organisation": "Anthropic",
+    "family": "Claude 5",
+    "accessType": "hosted",
+    "releaseDate": "2026-06-09",
+    "totalParamsB": null,
+    "openRouterId": "",
+    "eligibilityBasis": "Hosted historical comparison in Anthropic's helpful-only agentic influence evaluation; distinct from Claude Fable 5.",
+    "sourceUrl": "https://www-cdn.anthropic.com/9e6a1044980d8c4ed85669faf9c2a8342e2e9f1e/Claude%20Sonnet%205%20System%20Card.pdf"
+  },
+  {
     "id": "glm-5-2",
     "model": "GLM-5.2",
     "organisation": "Z.ai",
@@ -408,6 +588,18 @@
     "sourceUrl": "https://www.anthropic.com/news/claude-sonnet-5"
   },
   {
+    "id": "gpt-5-6-luna",
+    "model": "GPT-5.6 Luna",
+    "organisation": "OpenAI",
+    "family": "GPT-5.6",
+    "accessType": "hosted",
+    "releaseDate": "2026-07-09",
+    "totalParamsB": null,
+    "openRouterId": "openai/gpt-5.6-luna",
+    "eligibilityBasis": "Requested hosted low-cost tier; parameters undisclosed. Corrects the requested misname 'GPT-5.4 Luna'; not the family flagship.",
+    "sourceUrl": "https://openai.com/index/gpt-5-6/"
+  },
+  {
     "id": "gpt-5-6-sol",
     "model": "GPT-5.6 Sol",
     "organisation": "OpenAI",
@@ -429,18 +621,6 @@
     "totalParamsB": null,
     "openRouterId": "openai/gpt-5.6-terra",
     "eligibilityBasis": "Requested hosted balanced tier; parameters undisclosed. Corrects the requested misname 'GPT-5.4 Terra'; not the family flagship.",
-    "sourceUrl": "https://openai.com/index/gpt-5-6/"
-  },
-  {
-    "id": "gpt-5-6-luna",
-    "model": "GPT-5.6 Luna",
-    "organisation": "OpenAI",
-    "family": "GPT-5.6",
-    "accessType": "hosted",
-    "releaseDate": "2026-07-09",
-    "totalParamsB": null,
-    "openRouterId": "openai/gpt-5.6-luna",
-    "eligibilityBasis": "Requested hosted low-cost tier; parameters undisclosed. Corrects the requested misname 'GPT-5.4 Luna'; not the family flagship.",
     "sourceUrl": "https://openai.com/index/gpt-5-6/"
   },
   {

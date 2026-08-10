@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import type { HmcEstimate, HmcFrontierPoint } from "../types";
 
 export type FrontierAccessType = "open-weight" | "hosted";
 
@@ -38,27 +39,76 @@ export interface FrontierTimelineObservation {
 interface FrontierTimelineProps {
   models: FrontierTimelineModel[];
   observations: FrontierTimelineObservation[];
-}
-
-interface SeriesOption {
-  key: string;
-  benchmarkId: string;
-  metricKey: string;
-  label: string;
+  estimates: HmcEstimate[];
+  frontier: HmcFrontierPoint[];
 }
 
 type AccessFilter = "all" | FrontierAccessType;
+type MeasureKey = "estimate" | "infoops" | "diselect" | "ape" | "mask" | "agentic";
+
+interface ChartPoint {
+  id: string;
+  modelId: string;
+  scorePct: number;
+  lowerPct: number | null;
+  upperPct: number | null;
+  lower95Pct: number | null;
+  upper95Pct: number | null;
+  metricLabel: string;
+  evaluationDate: string;
+  n: number | null;
+  sourceUrl: string;
+  note: string;
+  comparabilityGroup: string;
+  evidenceGrade: string | null;
+  observedWeight: number | null;
+  weightSensitive: boolean;
+}
+
+const MEASURES: Array<{ key: MeasureKey; label: string; axis: string; context: string }> = [
+  {
+    key: "estimate",
+    label: "Estimated synthesis",
+    axis: "HMC proxy estimate",
+    context: "Modelled median · 80% interval",
+  },
+  {
+    key: "infoops",
+    label: "Operational influence · InfoOpsBench",
+    axis: "Compliance",
+    context: "Models by release date · evaluated 26 Jul 2026",
+  },
+  {
+    key: "diselect",
+    label: "Election operations · DisElect",
+    axis: "Harmful compliance",
+    context: "Published aggregate labels · one protocol",
+  },
+  {
+    key: "ape",
+    label: "Persuasion attempts · APE",
+    axis: "Attempt rate",
+    context: "Three author-reported harmful strata",
+  },
+  {
+    key: "mask",
+    label: "Deception under pressure · MASK",
+    axis: "Lie rate",
+    context: "Author-reported benchmark outcomes",
+  },
+  {
+    key: "agentic",
+    label: "Campaign execution · Anthropic",
+    axis: "Task completion",
+    context: "Helpful-only variants · simulated workflows",
+  },
+];
 
 const WIDTH = 1200;
-const HEIGHT = 620;
-const MARGIN = { top: 42, right: 42, left: 70 };
-const SCORE_BOTTOM = 420;
-const RELEASE_RAIL_Y = 480;
-const START_TIME = new Date("2024-01-01T00:00:00Z").getTime();
-const END_TIME = new Date("2026-12-31T00:00:00Z").getTime();
-
-const seriesKey = (observation: FrontierTimelineObservation) =>
-  `${observation.benchmarkId}::${observation.metricKey}`;
+const HEIGHT = 410;
+const MARGIN = { top: 26, right: 66, left: 58 };
+const PLOT_BOTTOM = 310;
+const RUG_Y = 342;
 
 const dateTime = (iso: string) => {
   const value = new Date(iso.includes("T") ? iso : `${iso}T00:00:00Z`).getTime();
@@ -79,473 +129,437 @@ const formatDate = (iso: string) => {
 const formatParams = (value: number | null) =>
   value === null ? "Not disclosed" : `${value.toLocaleString("en-GB")}B`;
 
-const humanise = (value: string) =>
-  value.replaceAll("_", " ").replaceAll("-", " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
-
-const shortLabel = (value: string, max = 26) =>
+const shortLabel = (value: string, max = 24) =>
   value.length <= max ? value : `${value.slice(0, max - 1)}…`;
 
-const isInfoOpsCompliance = (option: SeriesOption) =>
-  /info\s*ops|infoops/i.test(option.benchmarkId) &&
-  /compl|compliance/i.test(`${option.metricKey} ${option.label}`);
-
-const activateWithKeyboard = (event: React.KeyboardEvent<SVGElement>, activate: () => void) => {
-  if (event.key === "Enter" || event.key === " ") {
-    event.preventDefault();
-    activate();
+const measureMatches = (measure: MeasureKey, observation: FrontierTimelineObservation) => {
+  if (measure === "infoops") {
+    return observation.benchmarkId === "infoopsbench" && observation.metricKey === "compliance_pct";
   }
+  if (measure === "diselect") return observation.benchmarkId === "diselect";
+  if (measure === "ape") return observation.benchmarkId === "ape-saferai";
+  if (measure === "mask") {
+    return ["mask-original", "mask-saferai"].includes(observation.benchmarkId) && observation.metricKey === "lie_pct";
+  }
+  if (measure === "agentic") return observation.benchmarkId === "anthropic-agentic-influence";
+  return false;
 };
 
-export function FrontierTimeline({ models, observations }: FrontierTimelineProps) {
-  const [selectedSeries, setSelectedSeries] = useState("");
-  const [sourceFilter, setSourceFilter] = useState("all");
+const stepLinePath = (
+  rows: HmcFrontierPoint[],
+  x: (releaseDate: string) => number,
+  y: (value: number) => number,
+  key: "scorePct" | "lower80Pct" | "upper80Pct",
+) => {
+  if (rows.length === 0) return "";
+  let path = `M ${x(rows[0].releaseDate)} ${y(rows[0][key])}`;
+  for (let index = 1; index < rows.length; index += 1) {
+    path += ` H ${x(rows[index].releaseDate)} V ${y(rows[index][key])}`;
+  }
+  return path;
+};
+
+const stepBandPath = (
+  rows: HmcFrontierPoint[],
+  x: (releaseDate: string) => number,
+  y: (value: number) => number,
+) => {
+  if (rows.length === 0) return "";
+  let path = `M ${x(rows[0].releaseDate)} ${y(rows[0].upper80Pct)}`;
+  for (let index = 1; index < rows.length; index += 1) {
+    path += ` H ${x(rows[index].releaseDate)} V ${y(rows[index].upper80Pct)}`;
+  }
+  const last = rows.at(-1)!;
+  path += ` L ${x(last.releaseDate)} ${y(last.lower80Pct)}`;
+  for (let index = rows.length - 2; index >= 0; index -= 1) {
+    path += ` H ${x(rows[index].releaseDate)} V ${y(rows[index].lower80Pct)}`;
+  }
+  return `${path} Z`;
+};
+
+const groupBy = <T,>(rows: T[], key: (row: T) => string) => {
+  const grouped = new Map<string, T[]>();
+  for (const row of rows) {
+    const group = grouped.get(key(row)) ?? [];
+    group.push(row);
+    grouped.set(key(row), group);
+  }
+  return grouped;
+};
+
+export function FrontierTimeline({ models, observations, estimates, frontier }: FrontierTimelineProps) {
+  const [measure, setMeasure] = useState<MeasureKey>("estimate");
   const [accessFilter, setAccessFilter] = useState<AccessFilter>("all");
-  const [selectedObservationId, setSelectedObservationId] = useState<string | null>(null);
+  const [selectedPointId, setSelectedPointId] = useState<string | null>(null);
   const [selectedModelId, setSelectedModelId] = useState<string | null>(null);
 
   const modelMap = useMemo(() => new Map(models.map((model) => [model.id, model])), [models]);
+  const estimateMap = useMemo(() => new Map(estimates.map((estimate) => [estimate.modelId, estimate])), [estimates]);
+  const selectedMeasure = MEASURES.find((option) => option.key === measure)!;
 
-  const seriesOptions = useMemo(() => {
-    const options = new Map<string, SeriesOption>();
-    for (const observation of observations) {
-      const key = seriesKey(observation);
-      if (!options.has(key)) {
-        options.set(key, {
-          key,
-          benchmarkId: observation.benchmarkId,
-          metricKey: observation.metricKey,
-          label: observation.metricLabel,
-        });
-      }
-    }
-    return [...options.values()].sort((a, b) => {
-      if (isInfoOpsCompliance(a) !== isInfoOpsCompliance(b)) return isInfoOpsCompliance(a) ? -1 : 1;
-      return `${a.benchmarkId} ${a.label}`.localeCompare(`${b.benchmarkId} ${b.label}`);
-    });
-  }, [observations]);
-
-  const defaultSeries = seriesOptions.find(isInfoOpsCompliance)?.key ?? seriesOptions[0]?.key ?? "";
-  const effectiveSeries = seriesOptions.some((option) => option.key === selectedSeries)
-    ? selectedSeries
-    : defaultSeries;
-  const selectedSeriesOption = seriesOptions.find((option) => option.key === effectiveSeries) ?? null;
-
-  const sourceOptions = useMemo(
-    () =>
-      [...new Set(observations.filter((row) => seriesKey(row) === effectiveSeries).map((row) => row.sourceType))]
-        .filter(Boolean)
-        .sort(),
-    [effectiveSeries, observations],
-  );
-  const effectiveSource = sourceFilter === "all" || sourceOptions.includes(sourceFilter)
-    ? sourceFilter
-    : "all";
-
-  const visibleModels = useMemo(
-    () =>
-      models
-        .filter((model) => {
-          const released = dateTime(model.releaseDate);
-          return released >= START_TIME && released <= END_TIME;
-        })
-        .filter((model) => accessFilter === "all" || model.accessType === accessFilter)
-        .sort((a, b) => a.releaseDate.localeCompare(b.releaseDate)),
-    [accessFilter, models],
-  );
-  const visibleModelIds = useMemo(
-    () => new Set(visibleModels.map((model) => model.id)),
-    [visibleModels],
-  );
-
-  const visibleObservations = useMemo(
-    () =>
-      observations
-        .filter((row) => seriesKey(row) === effectiveSeries)
-        .filter((row) => effectiveSource === "all" || row.sourceType === effectiveSource)
-        .filter((row) => visibleModelIds.has(row.modelId))
-        .filter((row) => Number.isFinite(row.scorePct))
-        .sort((a, b) => {
-          const first = modelMap.get(a.modelId)?.releaseDate ?? "";
-          const second = modelMap.get(b.modelId)?.releaseDate ?? "";
-          return first.localeCompare(second) || a.id.localeCompare(b.id);
-        }),
-    [effectiveSeries, effectiveSource, modelMap, observations, visibleModelIds],
-  );
-
-  const observationsByModel = useMemo(() => {
-    const grouped = new Map<string, FrontierTimelineObservation[]>();
-    for (const observation of visibleObservations) {
-      const rows = grouped.get(observation.modelId) ?? [];
-      rows.push(observation);
-      grouped.set(observation.modelId, rows);
-    }
-    return grouped;
-  }, [visibleObservations]);
-
-  const comparableSeries = useMemo(() => {
-    const grouped = new Map<string, FrontierTimelineObservation[]>();
-    for (const observation of visibleObservations) {
-      if (!observation.comparabilityGroup) continue;
-      const rows = grouped.get(observation.comparabilityGroup) ?? [];
-      rows.push(observation);
-      grouped.set(observation.comparabilityGroup, rows);
-    }
-    return [...grouped.entries()].filter(([, rows]) => rows.length > 1);
-  }, [visibleObservations]);
-
-  const selectedModelIsVisible = selectedModelId !== null && visibleModelIds.has(selectedModelId);
-  const activeObservation = selectedModelIsVisible
-    ? visibleObservations.find((row) => row.id === selectedObservationId) ??
-      observationsByModel.get(selectedModelId!)?.[0] ??
-      null
-    : visibleObservations.find((row) => row.id === selectedObservationId) ?? visibleObservations[0] ?? null;
-  const activeModel = activeObservation
-    ? modelMap.get(activeObservation.modelId) ?? null
-    : visibleModels.find((model) => model.id === selectedModelId) ?? visibleModels[0] ?? null;
-
+  const yearRange = useMemo(() => {
+    const years = models.map((model) => Number(model.releaseDate.slice(0, 4))).filter(Number.isFinite);
+    const start = Math.min(2022, ...years);
+    const end = Math.max(2026, ...years);
+    return { start, end, years: Array.from({ length: end - start + 1 }, (_, index) => start + index) };
+  }, [models]);
+  const startTime = dateTime(`${yearRange.start}-01-01`);
+  const endTime = dateTime(`${yearRange.end}-12-31`);
   const x = (releaseDate: string) =>
     MARGIN.left +
-    ((dateTime(releaseDate) - START_TIME) / (END_TIME - START_TIME)) *
+    ((dateTime(releaseDate) - startTime) / (endTime - startTime)) *
       (WIDTH - MARGIN.left - MARGIN.right);
   const y = (score: number) =>
-    MARGIN.top + ((100 - Math.max(0, Math.min(100, score))) / 100) * (SCORE_BOTTOM - MARGIN.top);
+    MARGIN.top + ((100 - Math.max(0, Math.min(100, score))) / 100) * (PLOT_BOTTOM - MARGIN.top);
 
-  const chooseObservation = (observation: FrontierTimelineObservation) => {
-    setSelectedObservationId(observation.id);
-    setSelectedModelId(observation.modelId);
+  const visibleModels = useMemo(
+    () => models
+      .filter((model) => accessFilter === "all" || model.accessType === accessFilter)
+      .sort((first, second) => first.releaseDate.localeCompare(second.releaseDate) || first.id.localeCompare(second.id)),
+    [accessFilter, models],
+  );
+  const visibleModelIds = useMemo(() => new Set(visibleModels.map((model) => model.id)), [visibleModels]);
+
+  const points = useMemo<ChartPoint[]>(() => {
+    if (measure === "estimate") {
+      return estimates
+        .filter((estimate) => visibleModelIds.has(estimate.modelId))
+        .filter((estimate) => estimate.evidenceStatus === "estimated" && estimate.scorePct !== null)
+        .map((estimate) => ({
+          id: estimate.id,
+          modelId: estimate.modelId,
+          scorePct: estimate.scorePct!,
+          lowerPct: estimate.lower80Pct,
+          upperPct: estimate.upper80Pct,
+          lower95Pct: estimate.lower95Pct,
+          upper95Pct: estimate.upper95Pct,
+          metricLabel: "HMC proxy estimate v0.1",
+          evaluationDate: "2026-08-10",
+          n: null,
+          sourceUrl: estimate.methodUrl,
+          note: estimate.note,
+          comparabilityGroup: "hmc-proxy-v0.1",
+          evidenceGrade: estimate.evidenceGrade,
+          observedWeight: estimate.observedWeight,
+          weightSensitive: estimate.weightSensitive,
+        }))
+        .sort((first, second) =>
+          (modelMap.get(first.modelId)?.releaseDate ?? "").localeCompare(modelMap.get(second.modelId)?.releaseDate ?? ""),
+        );
+    }
+    return observations
+      .filter((observation) => visibleModelIds.has(observation.modelId))
+      .filter((observation) => measureMatches(measure, observation))
+      .map((observation) => ({
+        id: observation.id,
+        modelId: observation.modelId,
+        scorePct: observation.scorePct,
+        lowerPct: observation.lowerPct,
+        upperPct: observation.upperPct,
+        lower95Pct: null,
+        upper95Pct: null,
+        metricLabel: observation.metricLabel,
+        evaluationDate: observation.evaluationDate,
+        n: observation.n,
+        sourceUrl: observation.sourceUrl,
+        note: observation.note,
+        comparabilityGroup: `${observation.comparabilityGroup}::${observation.metricKey}`,
+        evidenceGrade: null,
+        observedWeight: null,
+        weightSensitive: false,
+      }))
+      .sort((first, second) =>
+        (modelMap.get(first.modelId)?.releaseDate ?? "").localeCompare(modelMap.get(second.modelId)?.releaseDate ?? "") ||
+        first.id.localeCompare(second.id),
+      );
+  }, [estimates, measure, modelMap, observations, visibleModelIds]);
+
+  const pointMap = useMemo(() => new Map(points.map((point) => [point.id, point])), [points]);
+  const activePoint = selectedPointId ? pointMap.get(selectedPointId) ?? null : null;
+  const activeModel = activePoint
+    ? modelMap.get(activePoint.modelId) ?? null
+    : selectedModelId
+      ? modelMap.get(selectedModelId) ?? null
+      : null;
+  const estimateForActiveModel = activeModel ? estimateMap.get(activeModel.id) ?? null : null;
+
+  const nativePaths = useMemo(
+    () => [...groupBy(points, (point) => point.comparabilityGroup).values()].filter((rows) => rows.length > 1),
+    [points],
+  );
+  const frontierRows = useMemo(
+    () => frontier
+      .filter((row) => measure === "estimate" && row.accessFilter === accessFilter)
+      .sort((first, second) => first.releaseDate.localeCompare(second.releaseDate)),
+    [accessFilter, frontier, measure],
+  );
+  const latestFrontier = frontierRows.at(-1) ?? null;
+  const resultModelIds = useMemo(() => new Set(points.map((point) => point.modelId)), [points]);
+
+  const tableRows: Array<{ model: FrontierTimelineModel; point: ChartPoint | null }> = measure === "estimate"
+    ? visibleModels.map((model) => ({ model, point: points.find((point) => point.modelId === model.id) ?? null }))
+    : visibleModels.flatMap<{ model: FrontierTimelineModel; point: ChartPoint | null }>((model) => {
+      const modelPoints = points.filter((point) => point.modelId === model.id);
+      return modelPoints.length > 0
+        ? modelPoints.map((point) => ({ model, point }))
+        : [{ model, point: null }];
+    });
+
+  const choosePoint = (point: ChartPoint) => {
+    setSelectedPointId(point.id);
+    setSelectedModelId(point.modelId);
   };
+
   const chooseModel = (model: FrontierTimelineModel) => {
     setSelectedModelId(model.id);
-    setSelectedObservationId(observationsByModel.get(model.id)?.[0]?.id ?? null);
+    setSelectedPointId(points.find((point) => point.modelId === model.id)?.id ?? null);
   };
-
-  const tableRows = visibleModels.flatMap<{
-    model: FrontierTimelineModel;
-    observation: FrontierTimelineObservation | null;
-  }>((model) => {
-    const rows = observationsByModel.get(model.id) ?? [];
-    return rows.length > 0
-      ? rows.map((observation) => ({ model, observation }))
-      : [{ model, observation: null }];
-  });
 
   return (
     <div className="chart-shell frontier-timeline-shell">
-      <div className="chart-intro-row">
-        <p className="chart-measure">
-          <strong>{selectedSeriesOption?.label ?? "Frontier benchmark coverage"}</strong>
-          <span>
-            {selectedSeriesOption
-              ? `${selectedSeriesOption.benchmarkId} · native metric, not a cross-benchmark score`
-              : "No numeric observation is currently available; release coverage remains visible."}
-          </span>
-        </p>
-        <p className="chart-legend" aria-label="Chart legend">
-          <span><i className="legend-dot open" aria-hidden="true" /> Open-weight shape</span>
-          <span><i className="legend-dot hosted" aria-hidden="true" /> Hosted API shape</span>
-          <span><i className="legend-source published" aria-hidden="true" /> Published result</span>
-          <span><i className="legend-source project" aria-hidden="true" /> ATB result</span>
-          <span><i className="legend-dot frontier-missing-legend" aria-hidden="true" /> Not tested</span>
-          <span><i className="legend-line" aria-hidden="true" /> Exact comparable protocol</span>
-        </p>
-      </div>
-
-      <div className="chart-controls frontier-chart-controls" role="group" aria-label="Frontier timeline filters">
+      <div className="frontier-toolbar" role="group" aria-label="Chart filters">
         <label>
-          Benchmark measure
-          <select value={effectiveSeries} onChange={(event) => setSelectedSeries(event.target.value)}>
-            {seriesOptions.length === 0 ? <option value="">No results loaded</option> : null}
-            {seriesOptions.map((option) => (
-              <option key={option.key} value={option.key}>
-                {option.benchmarkId} · {option.label}
-              </option>
-            ))}
+          <span>Measure</span>
+          <select
+            value={measure}
+            onChange={(event) => {
+              setMeasure(event.target.value as MeasureKey);
+              setSelectedPointId(null);
+              setSelectedModelId(null);
+            }}
+          >
+            {MEASURES.map((option) => <option key={option.key} value={option.key}>{option.label}</option>)}
           </select>
         </label>
         <label>
-          Source
-          <select value={effectiveSource} onChange={(event) => setSourceFilter(event.target.value)}>
-            <option value="all">All result sources</option>
-            {sourceOptions.map((source) => (
-              <option key={source} value={source}>{humanise(source)}</option>
-            ))}
-          </select>
-        </label>
-        <label>
-          Access
-          <select value={accessFilter} onChange={(event) => setAccessFilter(event.target.value as AccessFilter)}>
+          <span>Models</span>
+          <select
+            value={accessFilter}
+            onChange={(event) => {
+              setAccessFilter(event.target.value as AccessFilter);
+              setSelectedPointId(null);
+              setSelectedModelId(null);
+            }}
+          >
             <option value="all">All frontier releases</option>
-            <option value="open-weight">Open-weight</option>
-            <option value="hosted">Hosted API</option>
+            <option value="open-weight">Open-weight ≥100B</option>
+            <option value="hosted">Hosted frontier</option>
           </select>
         </label>
+        <p><strong>{selectedMeasure.axis}</strong><span>{selectedMeasure.context}</span></p>
       </div>
 
-      <p className="chart-scroll-hint">Scroll the fixed 2024–2026 timeline horizontally on smaller screens.</p>
+      <p className="chart-scroll-hint">Scroll the 2022–2026 release axis horizontally.</p>
 
       <div className="chart-scroller frontier-chart-scroller">
         <svg
           className="longitudinal-chart frontier-timeline"
           viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
-          role="group"
+          role="img"
           aria-labelledby="frontier-chart-title frontier-chart-description"
         >
-          <title id="frontier-chart-title">Frontier AI benchmark observations by model release date, 2024 to 2026</title>
+          <title id="frontier-chart-title">{selectedMeasure.label}, frontier AI releases from 2022 to 2026</title>
           <desc id="frontier-chart-description">
-            The vertical scale shows the selected benchmark&apos;s native percentage. The release rail
-            shows every eligible model in the selected access class. Hollow rail markers mean that no
-            comparable result exists in the current view; they do not represent zero.
+            Scores use a zero to one hundred vertical scale. The estimated view shows eligible model-level proxy medians,
+            eighty percent modelled intervals, and a monotonic frontier envelope. Hollow release marks mean insufficient
+            evidence in the current view, not a score of zero. An accessible table follows the chart.
           </desc>
 
           {[0, 25, 50, 75, 100].map((tick) => (
             <g key={tick} aria-hidden="true">
               <line className="grid-line" x1={MARGIN.left} x2={WIDTH - MARGIN.right} y1={y(tick)} y2={y(tick)} />
-              <text className="axis-label y-label" x={MARGIN.left - 14} y={y(tick) + 4}>{tick}%</text>
+              <text className="axis-label y-label" x={MARGIN.left - 10} y={y(tick) + 4}>{tick}</text>
             </g>
           ))}
 
-          {[2024, 2025, 2026].map((year) => {
+          {yearRange.years.map((year) => {
             const position = x(`${year}-01-01`);
             return (
               <g key={year} aria-hidden="true">
-                <line className="year-line" x1={position} x2={position} y1={MARGIN.top} y2={RELEASE_RAIL_Y + 10} />
-                <text className="axis-label frontier-year-label" x={position} y={HEIGHT - 18}>{year}</text>
+                <line className="year-line" x1={position} x2={position} y1={MARGIN.top} y2={RUG_Y + 9} />
+                <text className="axis-label frontier-year-label" x={position} y={HEIGHT - 16}>{year}</text>
               </g>
             );
           })}
 
-          {comparableSeries.map(([group, rows]) => (
+          {measure === "estimate" && frontierRows.length > 0 ? (
+            <>
+              <path className="frontier-estimate-band" d={stepBandPath(frontierRows, x, y)} aria-hidden="true" />
+              <path className="frontier-estimate-line" d={stepLinePath(frontierRows, x, y, "scorePct")} aria-hidden="true" />
+            </>
+          ) : null}
+
+          {measure !== "estimate" ? nativePaths.map((rows) => (
             <polyline
-              key={group}
-              className="family-path frontier-comparable-path"
-              points={rows
-                .map((row) => {
-                  const model = modelMap.get(row.modelId);
-                  return model ? `${x(model.releaseDate)},${y(row.scorePct)}` : "";
-                })
-                .filter(Boolean)
-                .join(" ")}
+              key={rows[0].comparabilityGroup}
+              className="frontier-native-path"
+              points={rows.map((point) => {
+                const model = modelMap.get(point.modelId);
+                return model ? `${x(model.releaseDate)},${y(point.scorePct)}` : "";
+              }).filter(Boolean).join(" ")}
               aria-hidden="true"
             />
-          ))}
+          )) : null}
 
-          {visibleObservations.map((observation) => {
-            const model = modelMap.get(observation.modelId);
+          {points.map((point) => {
+            const model = modelMap.get(point.modelId);
             if (!model) return null;
             const px = x(model.releaseDate);
-            const py = y(observation.scorePct);
-            const selected = activeObservation?.id === observation.id;
-            const hasInterval = observation.lowerPct !== null && observation.upperPct !== null;
-            const activate = () => chooseObservation(observation);
-            const ariaLabel = `${model.model}, ${observation.metricLabel}, ${observation.scorePct.toFixed(1)} percent, evaluated ${formatDate(observation.evaluationDate)}`;
-            const atbGenerated = /atb|rerun|project/i.test(observation.sourceType);
+            const py = y(point.scorePct);
+            const selected = activePoint?.id === point.id;
+            const hasInterval = point.lowerPct !== null && point.upperPct !== null;
             return (
               <g
-                className={`frontier-observation-group ${selected ? "is-active" : ""}`}
-                key={observation.id}
+                className={`frontier-observation-group ${measure === "estimate" ? "is-estimate" : "is-observed"} ${selected ? "is-active" : ""}`}
+                key={point.id}
+                onMouseEnter={() => choosePoint(point)}
+                onClick={() => choosePoint(point)}
+                aria-hidden="true"
               >
                 {hasInterval ? (
-                  <g className="frontier-interval" aria-hidden="true">
-                    <line x1={px} x2={px} y1={y(observation.upperPct!)} y2={y(observation.lowerPct!)} />
-                    <line x1={px - 5} x2={px + 5} y1={y(observation.upperPct!)} y2={y(observation.upperPct!)} />
-                    <line x1={px - 5} x2={px + 5} y1={y(observation.lowerPct!)} y2={y(observation.lowerPct!)} />
-                  </g>
+                  <line className="frontier-point-interval" x1={px} x2={px} y1={y(point.upperPct!)} y2={y(point.lowerPct!)} />
                 ) : null}
+                <circle className="frontier-point-hit" cx={px} cy={py} r={14} />
                 {model.accessType === "hosted" ? (
                   <rect
-                    className={`frontier-observation-point ${atbGenerated ? "source-atb" : "source-published"}`}
-                    x={px - (selected ? 7 : 5.5)}
-                    y={py - (selected ? 7 : 5.5)}
-                    width={selected ? 14 : 11}
-                    height={selected ? 14 : 11}
+                    className="frontier-observation-point"
+                    x={px - (selected ? 6 : 4.5)}
+                    y={py - (selected ? 6 : 4.5)}
+                    width={selected ? 12 : 9}
+                    height={selected ? 12 : 9}
                     transform={`rotate(45 ${px} ${py})`}
-                    tabIndex={0}
-                    role="button"
-                    aria-pressed={selected}
-                    aria-label={ariaLabel}
-                    onMouseEnter={activate}
-                    onFocus={activate}
-                    onClick={activate}
-                    onKeyDown={(event) => activateWithKeyboard(event, activate)}
                   />
                 ) : (
-                  <circle
-                    className={`frontier-observation-point ${atbGenerated ? "source-atb" : "source-published"}`}
-                    cx={px}
-                    cy={py}
-                    r={selected ? 7 : 5.5}
-                    tabIndex={0}
-                    role="button"
-                    aria-pressed={selected}
-                    aria-label={ariaLabel}
-                    onMouseEnter={activate}
-                    onFocus={activate}
-                    onClick={activate}
-                    onKeyDown={(event) => activateWithKeyboard(event, activate)}
-                  />
+                  <circle className="frontier-observation-point" cx={px} cy={py} r={selected ? 6 : 4.5} />
                 )}
                 {selected ? (
-                  <text className="point-label frontier-selected-label" x={px} y={py - 17} aria-hidden="true">
-                    {shortLabel(model.model)} · {observation.scorePct.toFixed(1)}%
+                  <text className="point-label frontier-selected-label" x={px} y={py - 15}>
+                    {shortLabel(model.model)} · {point.scorePct.toFixed(1)}
                   </text>
                 ) : null}
               </g>
             );
           })}
 
-          <line
-            className="frontier-release-rail"
-            x1={MARGIN.left}
-            x2={WIDTH - MARGIN.right}
-            y1={RELEASE_RAIL_Y}
-            y2={RELEASE_RAIL_Y}
-            aria-hidden="true"
-          />
-          <text className="frontier-rail-title" x={MARGIN.left} y={RELEASE_RAIL_Y - 18} aria-hidden="true">
-            Frontier releases · hollow marker = no comparable result in this view
-          </text>
+          {latestFrontier ? (
+            <text
+              className="frontier-line-label"
+              x={x(latestFrontier.releaseDate) + 10}
+              y={y(latestFrontier.scorePct) - 8}
+              aria-hidden="true"
+            >
+              frontier {latestFrontier.scorePct.toFixed(0)}
+            </text>
+          ) : null}
 
+          <line className="frontier-release-rail" x1={MARGIN.left} x2={WIDTH - MARGIN.right} y1={RUG_Y} y2={RUG_Y} aria-hidden="true" />
           {visibleModels.map((model, index) => {
             const px = x(model.releaseDate);
-            const sameDayModels = visibleModels.filter((candidate) => candidate.releaseDate === model.releaseDate);
-            const sameDayIndex = sameDayModels.findIndex((candidate) => candidate.id === model.id);
-            const railY = RELEASE_RAIL_Y + (sameDayIndex - (sameDayModels.length - 1) / 2) * 11;
-            const hasResult = observationsByModel.has(model.id);
+            const sameDay = visibleModels.filter((candidate) => candidate.releaseDate === model.releaseDate);
+            const sameDayIndex = sameDay.findIndex((candidate) => candidate.id === model.id);
+            const py = RUG_Y + (sameDayIndex - (sameDay.length - 1) / 2) * 8;
+            const hasResult = resultModelIds.has(model.id);
             const selected = activeModel?.id === model.id;
-            const activate = () => chooseModel(model);
             return (
               <g
                 className={`frontier-release-group ${hasResult ? "has-result" : "is-missing"} ${selected ? "is-active" : ""}`}
                 key={model.id}
+                onMouseEnter={() => chooseModel(model)}
+                onClick={() => chooseModel(model)}
+                aria-hidden="true"
               >
+                <circle className="frontier-rug-hit" cx={px} cy={py} r={9} />
                 {model.accessType === "hosted" ? (
-                  <rect
-                    className="frontier-release-tick"
-                    x={px - (selected ? 4.75 : 3.75)}
-                    y={railY - (selected ? 4.75 : 3.75)}
-                    width={selected ? 9.5 : 7.5}
-                    height={selected ? 9.5 : 7.5}
-                    transform={`rotate(45 ${px} ${railY})`}
-                    tabIndex={0}
-                    role="button"
-                    aria-pressed={selected}
-                    aria-label={`${model.model}, released ${formatDate(model.releaseDate)}, ${hasResult ? "result available" : "no comparable result in this view"}`}
-                    onMouseEnter={activate}
-                    onFocus={activate}
-                    onClick={activate}
-                    onKeyDown={(event) => activateWithKeyboard(event, activate)}
-                  />
+                  <rect className="frontier-release-tick" x={px - 2.5} y={py - 2.5} width={5} height={5} transform={`rotate(45 ${px} ${py})`} />
                 ) : (
-                  <circle
-                    className="frontier-release-tick"
-                    cx={px}
-                    cy={railY}
-                    r={selected ? 6.5 : 5}
-                    tabIndex={0}
-                    role="button"
-                    aria-pressed={selected}
-                    aria-label={`${model.model}, released ${formatDate(model.releaseDate)}, ${hasResult ? "result available" : "no comparable result in this view"}`}
-                    onMouseEnter={activate}
-                    onFocus={activate}
-                    onClick={activate}
-                    onKeyDown={(event) => activateWithKeyboard(event, activate)}
-                  />
+                  <circle className="frontier-release-tick" cx={px} cy={py} r={3.1} />
                 )}
-                {selected ? (
-                  <text
-                    className="frontier-release-label"
-                    x={px}
-                    y={railY + 24 + (index % 2) * 16}
-                    aria-hidden="true"
-                  >
-                    {shortLabel(model.model, 22)}
-                  </text>
+                {selected && !activePoint ? (
+                  <text className="frontier-release-label" x={px} y={py + 17 + (index % 2) * 11}>{shortLabel(model.model, 20)}</text>
                 ) : null}
               </g>
             );
           })}
 
-          <text
-            className="axis-title"
-            transform={`translate(18 ${(MARGIN.top + SCORE_BOTTOM) / 2}) rotate(-90)`}
-            aria-hidden="true"
-          >
-            Selected benchmark metric
+          <text className="axis-title" transform={`translate(16 ${(MARGIN.top + PLOT_BOTTOM) / 2}) rotate(-90)`} aria-hidden="true">
+            {selectedMeasure.axis} · 0–100
           </text>
         </svg>
       </div>
 
-      {activeModel ? (
-        <div className="chart-detail frontier-chart-detail" aria-live="polite">
-          <div>
-            <span className="detail-kicker">Selected release</span>
-            <strong>{activeModel.model}</strong>
-            <span>{activeModel.organisation} · {activeModel.openRouterId || "No OpenRouter route recorded"}</span>
-          </div>
-          {activeObservation ? (
-            <>
-              <dl>
-                <div><dt>Score</dt><dd>{activeObservation.scorePct.toFixed(1)}%</dd></div>
-                <div><dt>Interval</dt><dd>{activeObservation.lowerPct !== null && activeObservation.upperPct !== null ? `${activeObservation.lowerPct.toFixed(1)}–${activeObservation.upperPct.toFixed(1)}%` : "Not reported"}</dd></div>
-                <div><dt>Items</dt><dd>{activeObservation.n.toLocaleString("en-GB")}</dd></div>
-                <div><dt>Released</dt><dd>{formatDate(activeModel.releaseDate)}</dd></div>
-                <div><dt>Evaluated</dt><dd>{formatDate(activeObservation.evaluationDate)}</dd></div>
-              </dl>
-              <p className="frontier-detail-note">
-                {activeObservation.note || "No additional interpretation is recorded."}{" "}
-                <a href={activeObservation.sourceUrl} target="_blank" rel="noreferrer">Primary source ↗</a>
-                {activeObservation.artifactUrl ? <> · <a href={activeObservation.artifactUrl} target="_blank" rel="noreferrer">Run artifact ↗</a></> : null}
-              </p>
-            </>
-          ) : (
-            <div className="frontier-missing-detail">
-              <p className="mini-label">Missing observation</p>
-              <p>No comparable result exists for this release under the current metric and source filters. This is missing data, not a score of zero.</p>
-            </div>
-          )}
-        </div>
-      ) : null}
+      <div className="frontier-chart-key" aria-label="Chart key">
+        {measure === "estimate" ? <span><i className="key-estimate" aria-hidden="true" /> Frontier estimate + 80% interval</span> : null}
+        <span><i className="legend-dot open" aria-hidden="true" /> Open-weight</span>
+        <span><i className="legend-dot hosted" aria-hidden="true" /> Hosted</span>
+        <span><i className="legend-dot frontier-missing-legend" aria-hidden="true" /> Insufficient evidence</span>
+      </div>
 
-      <p className="chart-caption">
-        The horizontal domain is fixed at 1 January 2024–31 December 2026. Dates order model
-        releases retrospectively; they do not estimate a causal rate of progress. Lines connect only
-        observations carrying the exact same non-empty comparability-group identifier. Published and
-        project-generated results remain distinct measurement conditions.
+      <div className="frontier-compact-detail" aria-live="polite">
+        {activeModel && activePoint ? (
+          <p>
+            <strong>{activeModel.model}</strong>
+            <span>{activePoint.metricLabel} · {activePoint.scorePct.toFixed(1)}%</span>
+            {activePoint.lowerPct !== null && activePoint.upperPct !== null ? <span>80% {activePoint.lowerPct.toFixed(1)}–{activePoint.upperPct.toFixed(1)}</span> : null}
+            {activePoint.lower95Pct !== null && activePoint.upper95Pct !== null ? <span>95% {activePoint.lower95Pct.toFixed(1)}–{activePoint.upper95Pct.toFixed(1)}</span> : null}
+            {activePoint.evidenceGrade ? <span>grade {activePoint.evidenceGrade} · {Math.round((activePoint.observedWeight ?? 0) * 100)}% observed weight</span> : null}
+            <a href={activePoint.sourceUrl} target="_blank" rel="noreferrer">Source ↗</a>
+          </p>
+        ) : activeModel ? (
+          <p>
+            <strong>{activeModel.model}</strong>
+            <span>{estimateForActiveModel?.note ?? "No comparable result in this view."}</span>
+            <a href={activeModel.sourceUrl} target="_blank" rel="noreferrer">Model source ↗</a>
+          </p>
+        ) : (
+          <p><span>Hover or select a mark for score, interval, evidence grade, and source.</span></p>
+        )}
+      </div>
+
+      <p className="frontier-caveat">
+        {measure === "estimate"
+          ? "Experimental model-level proxy—not observed persuasion, agency transfer, vote change, or real-world harm. The frontier envelope is monotonic by construction."
+          : "Observed percentages retain each benchmark's own protocol and direction; they are not directly comparable across measures."}
+        {" "}<a href="https://github.com/apolmig/agencytransfer/blob/main/ESTIMATED_SCORE.md" target="_blank" rel="noreferrer">Method ↗</a>
       </p>
 
-      <details className="data-table-details">
-        <summary>View accessible frontier table ({visibleModels.length} releases; {visibleObservations.length} results)</summary>
+      <details className="data-table-details frontier-data-details">
+        <summary>Data and limitations ({visibleModels.length} releases; {points.length} plotted results)</summary>
         <div className="table-wrap">
           <table>
             <thead>
               <tr>
                 <th scope="col">Release</th>
                 <th scope="col">Model</th>
-                <th scope="col">Access</th>
+                <th scope="col">Type</th>
                 <th scope="col">Parameters</th>
-                <th scope="col">Benchmark / metric</th>
+                <th scope="col">Measure</th>
                 <th scope="col">Result</th>
-                <th scope="col">Evaluation / source</th>
+                <th scope="col">Evidence</th>
               </tr>
             </thead>
             <tbody>
-              {tableRows.map(({ model, observation }) => (
-                <tr key={`${model.id}-${observation?.id ?? "missing"}`}>
-                  <td>{model.releaseDate}</td>
-                  <th scope="row"><a href={model.sourceUrl} target="_blank" rel="noreferrer">{model.model}</a></th>
-                  <td>{model.accessType}</td>
-                  <td>{formatParams(model.totalParamsB)}</td>
-                  <td>{observation ? `${observation.benchmarkId} · ${observation.metricLabel}` : "No comparable result"}</td>
-                  <td>{observation ? `${observation.scorePct.toFixed(1)}% (n=${observation.n.toLocaleString("en-GB")})` : "—"}</td>
-                  <td>
-                    {observation ? (
-                      <a href={observation.sourceUrl} target="_blank" rel="noreferrer">
-                        {observation.evaluationDate} · {humanise(observation.sourceType)}
-                      </a>
-                    ) : "Missing—not zero"}
-                  </td>
-                </tr>
-              ))}
+              {tableRows.map(({ model, point }) => {
+                const estimate = estimateMap.get(model.id);
+                return (
+                  <tr key={`${model.id}-${point?.id ?? "missing"}`}>
+                    <td>{model.releaseDate}</td>
+                    <th scope="row"><a href={model.sourceUrl} target="_blank" rel="noreferrer">{model.model}</a></th>
+                    <td>{model.accessType}</td>
+                    <td>{formatParams(model.totalParamsB)}</td>
+                    <td>{point?.metricLabel ?? "No comparable result"}</td>
+                    <td>{point ? `${point.scorePct.toFixed(1)}%` : "—"}</td>
+                    <td>
+                      {measure === "estimate"
+                        ? estimate?.evidenceStatus === "estimated"
+                          ? `Grade ${estimate.evidenceGrade}; ${Math.round(estimate.observedWeight * 100)}% observed weight`
+                          : "Insufficient evidence—not zero"
+                        : point
+                          ? `${formatDate(point.evaluationDate)} · n=${point.n?.toLocaleString("en-GB") ?? "—"}`
+                          : "Missing—not zero"}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
