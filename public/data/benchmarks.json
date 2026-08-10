@@ -1,0 +1,93 @@
+[
+  {
+    "id": "diselect",
+    "name": "DisElect",
+    "construct": "Operational election-content compliance",
+    "metric": "Refuse / soft-refuse / incoherent / comply",
+    "observes": "Whether a model produces requested components of a localised election-disinformation workflow.",
+    "doesNotObserve": "Persuasion, exposure, reach, belief change, vote change, agency transfer, or electoral effect.",
+    "evidenceLayer": "capability",
+    "status": "live",
+    "publicationDate": "2025-03-17",
+    "modelPeriod": "2019–2024 model releases",
+    "sourceUrl": "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0317421"
+  },
+  {
+    "id": "anthropic-agentic-influence",
+    "name": "Anthropic agentic influence",
+    "construct": "Raw capability to execute a simulated influence campaign",
+    "metric": "Average share of 70 fixed success criteria completed",
+    "observes": "End-to-end performance in voter-suppression and domestic-polarization scenarios with simulated platform tools and friction.",
+    "doesNotObserve": "Deployed-model safeguards, real campaign reach, human persuasion, belief or vote change, or electoral effect.",
+    "evidenceLayer": "capability",
+    "status": "live",
+    "publicationDate": "2026-06-30",
+    "modelPeriod": "Seven Claude releases, February–June 2026",
+    "sourceUrl": "https://www-cdn.anthropic.com/9e6a1044980d8c4ed85669faf9c2a8342e2e9f1e/Claude%20Sonnet%205%20System%20Card.pdf"
+  },
+  {
+    "id": "ape",
+    "name": "APE",
+    "construct": "Propensity to attempt persuasion",
+    "metric": "Attempt / no attempt / refusal",
+    "observes": "Whether a prompted model attempts to shape beliefs or behaviour across benign and harmful topics.",
+    "doesNotObserve": "Persuasion success, exploitation of a real person, durable belief change, or manipulation efficacy.",
+    "evidenceLayer": "safeguard",
+    "status": "ingestion",
+    "publicationDate": "2025-06-03",
+    "modelPeriod": "2024–2025 model releases",
+    "sourceUrl": "https://arxiv.org/abs/2506.02873"
+  },
+  {
+    "id": "mask",
+    "name": "MASK",
+    "construct": "Honesty under pressure",
+    "metric": "Consistency-based honesty",
+    "observes": "Whether a model contradicts an elicited belief when pressured or incentivised to lie.",
+    "doesNotObserve": "Factual accuracy, persuasion, harmful manipulation, human response, or electoral use.",
+    "evidenceLayer": "safeguard",
+    "status": "live",
+    "publicationDate": "2025-03-05",
+    "modelPeriod": "Cross-sectional published cohort",
+    "sourceUrl": "https://arxiv.org/abs/2503.03750"
+  },
+  {
+    "id": "gdm-harmful-manipulation",
+    "name": "DeepMind harmful manipulation",
+    "construct": "Manipulative propensity and human efficacy",
+    "metric": "Cue prevalence plus belief or behaviour outcomes",
+    "observes": "Context-specific manipulative behaviour and effects in nine controlled studies with 10,101 participants.",
+    "doesNotObserve": "Default safeguards on prohibited content, electoral deployment, population-scale effects, or durable agency transfer.",
+    "evidenceLayer": "efficacy",
+    "status": "external",
+    "publicationDate": "2026-03-26",
+    "modelPeriod": "Single tested system; multiple domains and locales",
+    "sourceUrl": "https://arxiv.org/abs/2603.25326"
+  },
+  {
+    "id": "anthropic-persuasiveness",
+    "name": "Anthropic persuasiveness",
+    "construct": "Short-run opinion shift after a written argument",
+    "metric": "Change on a 1–7 support scale",
+    "observes": "Relative persuasiveness of arguments from Claude generations and human writers on emerging policy issues.",
+    "doesNotObserve": "Harmful manipulation, multi-turn targeting, behaviour, persistence, or real-world political outcomes.",
+    "evidenceLayer": "efficacy",
+    "status": "external",
+    "publicationDate": "2024-04-09",
+    "modelPeriod": "Claude 1–3 generations",
+    "sourceUrl": "https://www.anthropic.com/research/measuring-model-persuasiveness"
+  },
+  {
+    "id": "infoopsbench",
+    "name": "InfoOpsBench",
+    "construct": "Operational support for information operations",
+    "metric": "Task-level capability and safeguard outcomes",
+    "observes": "Contemporary model performance across information-operation tasks under a common external protocol.",
+    "doesNotObserve": "Human persuasion, campaign reach, electoral effect, agency transfer, or historical snapshots not actually tested.",
+    "evidenceLayer": "capability",
+    "status": "external",
+    "publicationDate": "2026-08-03",
+    "modelPeriod": "Contemporary model cohort",
+    "sourceUrl": "https://arxiv.org/abs/2607.28503"
+  }
+]
