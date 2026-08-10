@@ -54,7 +54,7 @@ export function LongitudinalChart({ results }: Props) {
   const [metric, setMetric] = useState<MetricKey>("complyPct");
   const [subset, setSubset] = useState<HarmfulSubset>("all-harmful");
   const [access, setAccess] = useState<AccessFilter>("all");
-  const [activeModel, setActiveModel] = useState<string | null>("Llama 3");
+  const [activeModel, setActiveModel] = useState<string | null>(null);
 
   const rows = useMemo(() => {
     const effectiveSubset = metric === "benignCompletionPct" ? "benign" : subset;
@@ -66,6 +66,12 @@ export function LongitudinalChart({ results }: Props) {
 
   const timeRange = useMemo(() => {
     const dates = rows.map((row) => new Date(`${row.releaseDate}T00:00:00Z`).getTime());
+    if (dates.length === 0) {
+      return [
+        new Date("2019-01-01T00:00:00Z").getTime(),
+        new Date("2024-12-31T00:00:00Z").getTime(),
+      ] as const;
+    }
     const min = Math.min(...dates);
     const max = Math.max(...dates);
     const pad = Math.max((max - min) * 0.04, 1000 * 60 * 60 * 24 * 45);
@@ -95,7 +101,7 @@ export function LongitudinalChart({ results }: Props) {
     return [...grouped.entries()].filter(([, familyRows]) => familyRows.length > 1);
   }, [rows]);
 
-  const active = rows.find((row) => row.model === activeModel) ?? rows.at(-1) ?? null;
+  const active = rows.find((row) => row.model === activeModel) ?? rows.at(0) ?? null;
 
   const downloadCurrentView = () => {
     const headers = [
@@ -148,53 +154,6 @@ export function LongitudinalChart({ results }: Props) {
 
   return (
     <div className="chart-shell">
-      <div className="chart-controls" role="group" aria-label="Chart controls">
-        <fieldset>
-          <legend>Measure</legend>
-          <div className="segmented-control">
-            {(Object.keys(metricCopy) as MetricKey[]).map((key) => (
-              <button
-                className={metric === key ? "is-active" : ""}
-                key={key}
-                type="button"
-                aria-pressed={metric === key}
-                onClick={() => setMetric(key)}
-              >
-                {metricCopy[key].label}
-              </button>
-            ))}
-          </div>
-        </fieldset>
-        <label>
-          Task set
-          <select
-            value={subset}
-            disabled={metric === "benignCompletionPct"}
-            onChange={(event) => setSubset(event.target.value as HarmfulSubset)}
-          >
-            {(Object.keys(subsetCopy) as HarmfulSubset[]).map((key) => (
-              <option key={key} value={key}>
-                {subsetCopy[key]}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label>
-          Access
-          <select
-            value={access}
-            onChange={(event) => setAccess(event.target.value as AccessFilter)}
-          >
-            <option value="all">All models</option>
-            <option value="open-weight">Open-weight</option>
-            <option value="hosted">Hosted API</option>
-          </select>
-        </label>
-        <button className="text-button" type="button" onClick={downloadCurrentView}>
-          Download current CSV
-        </button>
-      </div>
-
       <div className="chart-intro-row">
         <p className="chart-measure">
           <strong>{metricCopy[metric].label}</strong>
@@ -206,6 +165,8 @@ export function LongitudinalChart({ results }: Props) {
           <span><i className="legend-line" aria-hidden="true" /> Same model family</span>
         </p>
       </div>
+
+      <p className="chart-scroll-hint">Scroll the timeline horizontally on smaller screens.</p>
 
       <div className="chart-scroller">
         <svg
@@ -342,6 +303,53 @@ export function LongitudinalChart({ results }: Props) {
             Original model announcement date used by the source paper
           </text>
         </svg>
+      </div>
+
+      <div className="chart-controls" role="group" aria-label="Chart controls">
+        <fieldset>
+          <legend>Measure</legend>
+          <div className="segmented-control">
+            {(Object.keys(metricCopy) as MetricKey[]).map((key) => (
+              <button
+                className={metric === key ? "is-active" : ""}
+                key={key}
+                type="button"
+                aria-pressed={metric === key}
+                onClick={() => setMetric(key)}
+              >
+                {metricCopy[key].label}
+              </button>
+            ))}
+          </div>
+        </fieldset>
+        <label>
+          Task set
+          <select
+            value={subset}
+            disabled={metric === "benignCompletionPct"}
+            onChange={(event) => setSubset(event.target.value as HarmfulSubset)}
+          >
+            {(Object.keys(subsetCopy) as HarmfulSubset[]).map((key) => (
+              <option key={key} value={key}>
+                {subsetCopy[key]}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          Access
+          <select
+            value={access}
+            onChange={(event) => setAccess(event.target.value as AccessFilter)}
+          >
+            <option value="all">All models</option>
+            <option value="open-weight">Open-weight</option>
+            <option value="hosted">Hosted API</option>
+          </select>
+        </label>
+        <button className="text-button" type="button" onClick={downloadCurrentView}>
+          Download current CSV
+        </button>
       </div>
 
       {active && (
