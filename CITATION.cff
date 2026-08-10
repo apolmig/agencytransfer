@@ -5,7 +5,7 @@ type: software
 version: 0.2.0-draft
 date-released: 2026-08-10
 authors:
-  - family-names: "Guerrero"
+  - family-names: "Guerrero Manchón"
     given-names: "Miguel"
 repository-code: "https://github.com/apolmig/agencytransfer"
 url: "https://miguelguerrero.eu/agencytransfer/"

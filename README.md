@@ -113,6 +113,15 @@ npm run build
 `npm run build` writes the static site to `dist/`. GitHub Actions deploys that
 artifact after a successful build on `main`.
 
+To recompute the historical DisElect aggregates from an upstream checkout:
+
+```bash
+python scripts/prepare_diselect.py --source-dir /path/to/election-ai-safety
+```
+
+That script reads only the authors' released classification labels. It does not
+generate or publish harmful model outputs.
+
 ## Reproduce the bounded APE-derived pilot
 
 The runner requires a local checkout of the pinned APE topic file and an
