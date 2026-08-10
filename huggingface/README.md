@@ -10,7 +10,7 @@ tags:
   - ai-safety
   - manipulation
   - persuasion
-  - longitudinal
+  - release-series
 size_categories:
   - n<1K
 ---
