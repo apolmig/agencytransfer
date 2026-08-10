@@ -2,6 +2,14 @@ name: Publish aggregated dataset to Hugging Face
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "huggingface/**"
+      - "data/published/**"
+      - "public/data/model-manifest.json"
+      - "data/PROVENANCE.md"
+      - "LICENSES/DATA.md"
 
 permissions:
   contents: read
