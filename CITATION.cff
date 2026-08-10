@@ -5,10 +5,10 @@ type: software
 version: 0.1.0
 date-released: 2026-08-10
 authors:
-  - family-names: "Guerrero"
+  - family-names: "Guerrero Manchón"
     given-names: "Miguel"
 repository-code: "https://github.com/apolmig/agencytransfer"
-url: "https://apolmig.github.io/agencytransfer/"
+url: "https://miguelguerrero.eu/agencytransfer/"
 license: Apache-2.0
 abstract: >-
   An interactive, longitudinal evidence map of AI capabilities, safeguards,

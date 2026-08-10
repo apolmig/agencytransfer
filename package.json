@@ -2,8 +2,8 @@
   "name": "agency-transfer-benchmark",
   "private": true,
   "version": "0.1.0",
-  "description": "Interactive longitudinal evidence map of AI capabilities relevant to harmful influence and agency-transfer risk.",
-  "homepage": "https://apolmig.github.io/agencytransfer/",
+  "description": "Interactive release-series evidence map of AI capabilities relevant to harmful influence and agency-transfer risk.",
+  "homepage": "https://miguelguerrero.eu/agencytransfer/",
   "repository": {
     "type": "git",
     "url": "https://github.com/apolmig/agencytransfer.git"
