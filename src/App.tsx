@@ -68,7 +68,7 @@ function App() {
           <strong>Agency Transfer Benchmark</strong>
         </a>
         <nav aria-label="Primary navigation">
-          <a href="#timeline">Timeline</a>
+          <a href="#timeline">Chart</a>
           <a href="#evidence">Evidence</a>
           <a href="#models">Models</a>
           <a href="#methods">Methods</a>
@@ -77,23 +77,64 @@ function App() {
       </header>
 
       <main id="main-content">
-        <section className="hero" id="top">
-          <div className="hero-copy">
-            <p className="eyebrow">Research preview · Wave 0 · 10 August 2026</p>
-            <h1>Agency Transfer<br />Benchmark</h1>
-            <p className="dek">
-              A longitudinal evidence map of AI capabilities, safeguards, and access conditions
-              that can enable harmful manipulation.
+        <section className="lead" id="top">
+          <div className="lead-masthead">
+            <div>
+              <p className="eyebrow">Research preview · Wave 0 · 10 August 2026</p>
+              <h1>Agency Transfer Benchmark</h1>
+            </div>
+            <p className="lead-dek">
+              A longitudinal evidence map of capabilities, safeguards, and access conditions that
+              can enable harmful manipulation.
             </p>
           </div>
-          <aside className="hero-note">
+
+          <div className="lead-chart-heading" id="timeline">
+            <div>
+              <p className="section-number">01 · Longitudinal baseline</p>
+              <h2>Election-operation compliance, 2019–2024</h2>
+            </div>
             <p>
-              <strong>This is not a manipulation leaderboard.</strong> Current benchmarks observe
-              enabling conditions. They do not directly measure agency transfer, durable human
-              influence, vote change, or democratic harm.
+              One fixed protocol, 13 releases, 2,200 harmful election-operation prompts and 50
+              benign controls per model. Wave 0 recomputes the authors’ released labels; it
+              generates no new harmful content.
             </p>
-            <a href="#methods">Read the measurement boundary ↓</a>
-          </aside>
+          </div>
+
+          {error ? (
+            <p className="error-message" role="alert">{error}</p>
+          ) : results.length === 0 ? (
+            <p className="loading-message" aria-live="polite">Loading published evidence…</p>
+          ) : (
+            <LongitudinalChart results={results} />
+          )}
+
+          <div className="stat-line" aria-label="Published baseline summary">
+            <div><strong>{headlineStats.labels.toLocaleString("en-GB")}</strong><span>released response labels</span></div>
+            <div><strong>{headlineStats.models}</strong><span>models under one protocol</span></div>
+            <div><strong>{headlineStats.first}–{headlineStats.last}</strong><span>release-date coverage</span></div>
+            <div><strong>0.76</strong><span>upstream judge Macro-F1</span></div>
+          </div>
+
+          <div className="lead-notes">
+            <article>
+              <p className="mini-label">Established evidence</p>
+              <h3>Operational compliance diffused early.</h3>
+              <p>
+                GPT‑3 complied with 87.3% of harmful requests in the 2022 release cohort; GPT‑3.5
+                Turbo reached 96.7%. Open-weight Llama 3 reached 90.8% by April 2024.
+              </p>
+            </article>
+            <article>
+              <p className="mini-label">Measurement boundary</p>
+              <h3>Compliance is not manipulation.</h3>
+              <p>
+                The evaluation does not test distribution, targeting, persuasion, belief change,
+                behaviour, persistence, or electoral effect. These numbers locate a capability—not
+                the end of the causal chain. <a href="#methods">Read the methods ↓</a>
+              </p>
+            </article>
+          </div>
         </section>
 
         <section className="opening-thesis">
@@ -104,10 +145,10 @@ function App() {
           </p>
         </section>
 
-        <section className="section chart-section" id="timeline">
+        <section className="section chart-section" id="operational">
           <div className="section-heading split-heading">
             <div>
-              <p className="section-number">01 · Published operational series</p>
+              <p className="section-number">02 · Published operational series</p>
               <h2>From content generation to campaign execution</h2>
             </div>
             <p>
@@ -146,51 +187,12 @@ function App() {
               </p>
             </article>
           </div>
-
-          <div className="subseries-heading">
-            <p className="section-number">01B · Historical capability baseline</p>
-            <h2>Election-operation compliance, 2019–2024</h2>
-            <p>
-              DisElect supplies the longer retrospective baseline: one protocol, 13 models, 2,200
-              harmful election-operation prompts and 50 benign controls per model. Wave 0 recomputes
-              only the authors’ released labels; it generates no new harmful content.
-            </p>
-          </div>
-          {results.length > 0 && <LongitudinalChart results={results} />}
-
-          <div className="stat-line" aria-label="Published baseline summary">
-            <div><strong>{headlineStats.labels.toLocaleString("en-GB")}</strong><span>released response labels</span></div>
-            <div><strong>{headlineStats.models}</strong><span>models under one protocol</span></div>
-            <div><strong>{headlineStats.first}–{headlineStats.last}</strong><span>release-date coverage</span></div>
-            <div><strong>0.76</strong><span>upstream judge Macro-F1</span></div>
-          </div>
-
-          <div className="interpretation-grid">
-            <article>
-              <p className="mini-label">Established evidence</p>
-              <h3>Operational compliance diffused early.</h3>
-              <p>
-                Under the published protocol, GPT‑3 complied with 87.3% of harmful requests in the
-                2022 release cohort; GPT‑3.5 Turbo reached 96.7%. Open-weight Llama 3 reached 90.8%
-                by April 2024.
-              </p>
-            </article>
-            <article>
-              <p className="mini-label">What remains unknown</p>
-              <h3>Compliance is not manipulation.</h3>
-              <p>
-                The evaluation does not test distribution, targeting, persuasion, belief change,
-                behaviour, persistence, or electoral effect. Its judge also has material error.
-                These numbers locate a capability—not the end of the causal chain.
-              </p>
-            </article>
-          </div>
         </section>
 
         <section className="section evidence-section" id="evidence">
           <div className="section-heading split-heading">
             <div>
-              <p className="section-number">02 · Unified evidence map</p>
+              <p className="section-number">03 · Unified evidence map</p>
               <h2>One timeline. No false composite.</h2>
             </div>
             <p>
@@ -205,7 +207,7 @@ function App() {
         <section className="section models-section" id="models">
           <div className="section-heading split-heading">
             <div>
-              <p className="section-number">03 · Evaluation panel</p>
+              <p className="section-number">04 · Evaluation panel</p>
               <h2>Open-weight releases ≥100B</h2>
             </div>
             <p>
@@ -220,7 +222,7 @@ function App() {
         <section className="section methods-section" id="methods">
           <div className="section-heading split-heading">
             <div>
-              <p className="section-number">04 · Methods</p>
+              <p className="section-number">05 · Methods</p>
               <h2>The claim must follow the measurement.</h2>
             </div>
             <p>
@@ -288,7 +290,7 @@ function App() {
         <section className="section release-section" id="data">
           <div className="section-heading split-heading">
             <div>
-              <p className="section-number">05 · Responsible release</p>
+              <p className="section-number">06 · Responsible release</p>
               <h2>Reproducible without being operational.</h2>
             </div>
             <p>
