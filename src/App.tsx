@@ -78,21 +78,12 @@ function App() {
 
       <main id="main-content">
         <section className="lead" id="top">
-          <div className="lead-masthead">
-            <div>
-              <p className="eyebrow">Research preview · Wave 0 · 10 August 2026</p>
-              <h1>Agency Transfer Benchmark</h1>
-            </div>
-            <p className="lead-dek">
-              A longitudinal evidence map of capabilities, safeguards, and access conditions that
-              can enable harmful manipulation.
-            </p>
-          </div>
-
           <div className="lead-chart-heading" id="timeline">
             <div>
-              <p className="section-number">01 · Longitudinal baseline</p>
-              <h2>Election-operation compliance, 2019–2024</h2>
+              <p className="section-number">
+                01 · Agency Transfer Benchmark · Wave 0 · 10 August 2026
+              </p>
+              <h1>Election-operation compliance, 2019–2024</h1>
             </div>
             <p>
               One fixed protocol, 13 releases, 2,200 harmful election-operation prompts and 50
