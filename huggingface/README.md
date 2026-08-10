@@ -14,6 +14,40 @@ tags:
   - release-series
 size_categories:
   - n<1K
+configs:
+  - config_name: hmc_proxy
+    default: true
+    data_files:
+      - split: train
+        path: "hmc-proxy-v0.1.csv"
+  - config_name: frontier_models
+    data_files:
+      - split: train
+        path: "frontier-models.csv"
+  - config_name: infoopsbench
+    data_files:
+      - split: train
+        path: "infoopsbench-2026-07-26.csv"
+  - config_name: ape_mask_glm52
+    data_files:
+      - split: train
+        path: "saferai-glm52-ape-mask.csv"
+  - config_name: agentic_influence
+    data_files:
+      - split: train
+        path: "anthropic-agentic-influence.csv"
+  - config_name: diselect
+    data_files:
+      - split: train
+        path: "diselect-summary.csv"
+  - config_name: mask_original
+    data_files:
+      - split: train
+        path: "mask-original-results.csv"
+  - config_name: openrouter_pilot
+    data_files:
+      - split: train
+        path: "runs/2026-08-10-ape-frontier-pilot-v01/aggregate.csv"
 ---
 
 # Agency Transfer Benchmark — frontier draft 0.2
@@ -52,6 +86,10 @@ Testing result view and from the HMC proxy. Aggregate artifacts remain available
 for reproducibility and failure analysis.
 
 ## Files
+
+The Hub Viewer exposes each tabular artifact as a separate configuration. Its
+`train` label is a technical container required by the Viewer, not a claim that
+these evaluation results form a model-training split.
 
 | File | Description |
 |---|---|
