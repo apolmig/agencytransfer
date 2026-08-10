@@ -1,8 +1,6 @@
 ---
 pretty_name: Agency Transfer Benchmark
 license: cc-by-4.0
-task_categories:
-  - text-classification
 language:
   - en
 tags:
