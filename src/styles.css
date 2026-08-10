@@ -919,8 +919,9 @@ td code {
 }
 
 .benchmark-card h3 {
-  margin-top: 42px;
-  font-size: 2.25rem;
+  margin-top: 24px;
+  font-size: clamp(1.5rem, 2.2vw, 1.85rem);
+  line-height: 1.04;
 }
 
 .benchmark-construct {
@@ -1248,8 +1249,8 @@ td code {
 .site-footer {
   display: grid;
   grid-template-columns: minmax(0, 1.2fr) minmax(250px, 0.4fr);
-  gap: 60px;
-  padding: 46px 0 80px;
+  gap: 44px;
+  padding: 32px 0 48px;
 }
 
 .site-footer strong {
@@ -1580,7 +1581,7 @@ td code {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: clamp(28px, 5vw, 70px);
-  margin-top: 72px;
+  margin-top: 48px;
   border-top: 1px solid var(--ink);
 }
 
@@ -1591,7 +1592,7 @@ td code {
 
 .systems-scenario .mini-label {
   min-height: 26px;
-  margin-bottom: 36px;
+  margin-bottom: 22px;
 }
 
 .systems-scenario > p:last-child {
@@ -1938,17 +1939,16 @@ td code {
 }
 
 .wordmark {
-  gap: 9px;
+  gap: 0;
 }
 
 .wordmark > span {
-  width: 29px;
-  height: 29px;
-  font-size: 0.65rem;
+  display: none;
 }
 
 .wordmark strong {
-  font-size: 0.88rem;
+  font-size: 0.91rem;
+  letter-spacing: -0.015em;
 }
 
 .site-header nav {
@@ -1958,7 +1958,7 @@ td code {
 }
 
 .site-header nav a[aria-current="page"] {
-  color: var(--draft-red);
+  color: var(--ink);
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 6px;
@@ -2083,14 +2083,15 @@ td code {
 }
 
 .frontier-estimate-band {
-  fill: rgba(107, 32, 37, 0.09);
+  fill: rgba(17, 17, 17, 0.06);
   stroke: none;
 }
 
 .frontier-estimate-line {
   fill: none;
-  stroke: var(--draft-red);
+  stroke: var(--ink);
   stroke-width: 2.2;
+  stroke-dasharray: 7 4;
   stroke-linejoin: miter;
 }
 
@@ -2125,14 +2126,23 @@ td code {
 }
 
 .frontier-observation-group.is-active .frontier-observation-point {
-  fill: var(--draft-red);
-  stroke: var(--draft-red);
+  fill: var(--ink);
+  stroke: var(--ink);
   stroke-width: 2;
+}
+
+.frontier-observation-group:focus-visible {
+  outline: none;
+}
+
+.frontier-observation-group:focus-visible .frontier-observation-point {
+  stroke: var(--ink);
+  stroke-width: 2.5;
 }
 
 .frontier-selected-label,
 .frontier-line-label {
-  fill: var(--draft-red);
+  fill: var(--ink);
   font-family: var(--sans);
   font-size: 10px;
   font-weight: 650;
@@ -2161,8 +2171,8 @@ td code {
 }
 
 .frontier-release-group.is-active .frontier-release-tick {
-  fill: var(--draft-red);
-  stroke: var(--draft-red);
+  fill: var(--ink);
+  stroke: var(--ink);
 }
 
 .frontier-chart-key {
@@ -2185,8 +2195,8 @@ td code {
   display: inline-block;
   width: 24px;
   height: 8px;
-  border-top: 2px solid var(--draft-red);
-  background: rgba(107, 32, 37, 0.09);
+  border-top: 2px solid var(--ink);
+  background: rgba(17, 17, 17, 0.06);
 }
 
 .frontier-compact-detail {
@@ -2272,33 +2282,59 @@ td code {
 .page-intro {
   width: min(1320px, 91vw);
   margin-inline: auto;
-  padding: 10px 0 clamp(58px, 7vw, 88px);
+  padding: 8px 0 clamp(38px, 4.5vw, 58px);
   border-bottom: 1px solid var(--ink);
 }
 
 .page-intro .draft-mark {
-  margin-bottom: clamp(42px, 7vw, 88px);
+  margin-bottom: clamp(26px, 3.5vw, 44px);
 }
 
 .page-intro .section-number {
-  margin-bottom: 14px;
+  margin-bottom: 10px;
 }
 
 .page-intro h1 {
-  max-width: 900px;
+  max-width: 760px;
   margin: 0;
-  font-size: clamp(2.35rem, 5.3vw, 5rem);
+  font-size: clamp(1.9rem, 3vw, 2.8rem);
   font-weight: 400;
-  letter-spacing: -0.06em;
-  line-height: 0.93;
+  letter-spacing: -0.045em;
+  line-height: 0.98;
 }
 
 .page-intro > p:last-child {
-  max-width: 760px;
-  margin: 28px 0 0;
+  max-width: 700px;
+  margin: 20px 0 0;
   color: var(--muted);
-  font-size: 1rem;
+  font-size: 0.94rem;
   line-height: 1.55;
+}
+
+.page-intro ~ .section {
+  padding-block: clamp(44px, 5.5vw, 74px);
+}
+
+.page-intro ~ .section .section-heading {
+  margin-bottom: clamp(30px, 4vw, 46px);
+}
+
+.page-intro ~ .section .split-heading {
+  grid-template-columns: minmax(0, 1.16fr) minmax(280px, 0.58fr);
+  gap: clamp(32px, 6vw, 86px);
+}
+
+.page-intro ~ .section .section-heading h2 {
+  max-width: 720px;
+  font-size: clamp(1.65rem, 2.4vw, 2.15rem);
+  letter-spacing: -0.045em;
+  line-height: 1.01;
+}
+
+.page-intro ~ .section .section-heading > p {
+  max-width: 460px;
+  font-size: 0.9rem;
+  line-height: 1.5;
 }
 
 .literature-table-wrap {
@@ -2348,41 +2384,41 @@ td code {
 
 .testing-gate {
   border-top: 1px solid var(--ink);
-  padding: 28px 0 8px;
+  padding: 22px 0 6px;
 }
 
 .testing-gate > h3 {
   max-width: 720px;
   margin: 0;
-  font-size: clamp(1.75rem, 3vw, 2.7rem);
+  font-size: clamp(1.45rem, 2.25vw, 2rem);
   font-weight: 400;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.035em;
 }
 
 .testing-gate > p:not(.mini-label) {
   max-width: 720px;
-  margin: 18px 0 36px;
+  margin: 14px 0 28px;
   color: var(--muted);
+  font-size: 0.9rem;
   line-height: 1.55;
 }
 
 .testing-gate ol {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  margin: 0 0 22px;
+  gap: clamp(18px, 3vw, 42px);
+  margin: 0 0 24px;
   padding: 0;
-  border-top: 1px solid var(--rule-dark);
-  border-bottom: 1px solid var(--rule-dark);
   list-style: none;
 }
 
 .testing-gate li {
   display: grid;
-  gap: 8px;
-  min-height: 118px;
+  gap: 7px;
+  min-height: 0;
   align-content: start;
-  padding: 18px;
-  border-right: 1px solid var(--rule);
+  padding: 12px 0 0;
+  border-top: 1px solid var(--rule-dark);
 }
 
 .testing-gate li:last-child {
@@ -2390,7 +2426,7 @@ td code {
 }
 
 .testing-gate li strong {
-  color: var(--draft-red);
+  color: var(--ink);
   font-family: var(--sans);
   font-size: 0.65rem;
   letter-spacing: 0.06em;
@@ -2434,12 +2470,17 @@ td code {
     grid-template-columns: repeat(2, 1fr);
   }
 
+  .page-intro ~ .section .split-heading {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
   .testing-gate li:nth-child(2) {
     border-right: 0;
   }
 
   .testing-gate li:nth-child(-n + 2) {
-    border-bottom: 1px solid var(--rule);
+    border-bottom: 0;
   }
 }
 
@@ -2452,6 +2493,13 @@ td code {
   .site-header nav {
     flex: 0 0 auto;
     gap: 14px;
+  }
+
+  .wordmark strong {
+    display: block;
+    max-width: 128px;
+    font-size: 0.76rem;
+    line-height: 1.05;
   }
 
   .home-lead {
@@ -2514,11 +2562,85 @@ td code {
   }
 
   .page-intro .draft-mark {
-    margin-bottom: 48px;
+    margin-bottom: 30px;
   }
 
   .page-intro h1 {
-    font-size: clamp(2.35rem, 13vw, 3.6rem);
+    font-size: clamp(1.9rem, 8vw, 2.25rem);
+  }
+
+  .page-intro ~ .section {
+    padding-block: 42px;
+  }
+
+  .page-intro ~ .section .section-heading h2 {
+    font-size: clamp(1.55rem, 7vw, 1.95rem);
+  }
+
+  .literature-table {
+    min-width: 0;
+  }
+
+  .literature-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .literature-table tbody,
+  .literature-table tr,
+  .literature-table th,
+  .literature-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .literature-table tr {
+    padding: 18px 0;
+    border-top: 1px solid var(--rule-dark);
+  }
+
+  .literature-table th,
+  .literature-table td {
+    padding: 0;
+    border: 0;
+  }
+
+  .literature-table tbody th {
+    margin-bottom: 14px;
+    font-size: 1rem;
+  }
+
+  .literature-table tbody td {
+    margin-top: 10px;
+    font-size: 0.78rem;
+  }
+
+  .literature-table tbody td::before {
+    display: block;
+    margin-bottom: 3px;
+    color: var(--faint);
+    font-family: var(--sans);
+    font-size: 0.58rem;
+    font-weight: 650;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .literature-table tbody td:nth-child(2)::before {
+    content: "Measures";
+  }
+
+  .literature-table tbody td:nth-child(3)::before {
+    content: "Boundary";
+  }
+
+  .literature-table tbody td:nth-child(4)::before {
+    content: "Use here";
   }
 
   .testing-gate ol {
@@ -2528,7 +2650,7 @@ td code {
   .testing-gate li {
     min-height: 0;
     border-right: 0;
-    border-bottom: 1px solid var(--rule);
+    border-bottom: 0;
   }
 
   .testing-gate li:last-child {

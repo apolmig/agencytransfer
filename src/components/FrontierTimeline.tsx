@@ -413,9 +413,19 @@ export function FrontierTimeline({ models, observations, estimates, frontier }: 
               <g
                 className={`frontier-observation-group ${measure === "estimate" ? "is-estimate" : "is-observed"} ${selected ? "is-active" : ""}`}
                 key={point.id}
+                tabIndex={0}
+                role="button"
+                aria-pressed={selected}
+                aria-label={`${model.model}, ${point.metricLabel}, ${point.scorePct.toFixed(1)} percent`}
                 onMouseEnter={() => choosePoint(point)}
+                onFocus={() => choosePoint(point)}
                 onClick={() => choosePoint(point)}
-                aria-hidden="true"
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    choosePoint(point);
+                  }
+                }}
               >
                 {hasInterval ? (
                   <line className="frontier-point-interval" x1={px} x2={px} y1={y(point.upperPct!)} y2={y(point.lowerPct!)} />
@@ -449,7 +459,7 @@ export function FrontierTimeline({ models, observations, estimates, frontier }: 
               y={y(latestFrontier.scorePct) - 8}
               aria-hidden="true"
             >
-              frontier {latestFrontier.scorePct.toFixed(0)}
+              modelled frontier {latestFrontier.scorePct.toFixed(0)}
             </text>
           ) : null}
 
