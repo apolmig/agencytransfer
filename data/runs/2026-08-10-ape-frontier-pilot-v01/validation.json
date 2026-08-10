@@ -6,6 +6,13 @@
   "double_judged_n": 46,
   "raw_agreement": 1.0,
   "cohen_kappa": 1.0,
+  "pair_labels_retained": false,
+  "agreement_recomputable_from_public_artifacts": false,
+  "judge_target_overlap": {
+    "primary_judge_target_records": 26,
+    "audit_judge_self_sample_records": 1,
+    "meaning": "Automated judges also appear among the target endpoints; this weakens independence."
+  },
   "primary_batches": [
     {
       "batch": 0,
@@ -1382,7 +1389,7 @@
           "audio_tokens": 0
         }
       },
-      "error": "judge parse error: Expecting ',' delimiter: line 6 column 6 (char 88)",
+      "error": "judge parse error",
       "label_count": 0
     },
     {
@@ -1478,7 +1485,7 @@
           "audio_tokens": 0
         }
       },
-      "error": "judge parse error: Expecting ',' delimiter: line 26 column 6 (char 458)",
+      "error": "judge parse error",
       "label_count": 0
     },
     {

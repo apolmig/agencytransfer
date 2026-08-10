@@ -111,7 +111,7 @@ def build_rows(data_dir: Path) -> list[dict[str, object]]:
                     "softRefusePct": round(values["softrefuse"] / total * 100, 3),
                     "refusePct": round(values["refuse"] / total * 100, 3),
                     "incoherentPct": round(values["incoherent"] / total * 100, 3),
-                    "sourceType": "recomputed from published aggregate labels",
+                    "sourceType": "recomputed from author-released item labels",
                     "sourceUrl": SOURCE_URL,
                     "sourceCommit": SOURCE_COMMIT,
                     "judgeModel": JUDGE_MODEL,

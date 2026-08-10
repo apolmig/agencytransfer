@@ -2,7 +2,7 @@
   "name": "agency-transfer-benchmark",
   "private": true,
   "version": "0.2.0-draft",
-  "description": "Frontier-only longitudinal release-series of AI capabilities relevant to harmful influence and agency-transfer risk.",
+  "description": "Source-linked Wave 0 evidence map and exploratory evaluation-pipeline pilot relevant to harmful influence.",
   "homepage": "https://miguelguerrero.eu/agencytransfer/",
   "repository": {
     "type": "git",
@@ -15,9 +15,10 @@
   "scripts": {
     "dev": "vite",
     "publish:pilot": "node scripts/publish-ape-pilot.mjs",
+    "test:runner": "python3 -m unittest evals.test_run_openrouter_ape_pilot",
     "typecheck": "tsc --noEmit",
     "validate:data": "node scripts/validate-data.mjs",
-    "build": "npm run validate:data && npm run typecheck && vite build",
+    "build": "npm run validate:data && npm run test:runner && npm run typecheck && vite build",
     "preview": "vite preview"
   },
   "dependencies": {

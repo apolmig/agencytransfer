@@ -16,7 +16,7 @@ This document is the row-level audit trail for the published observations in thi
 The CSVs predate the explicit `value_status` column. Their current `source_type` values map as follows:
 
 - `author-reported` → `reported_table`.
-- `recomputed from published aggregate labels` → `derived_author_repo`.
+- `recomputed from author-released item labels` → `derived_author_repo`.
 
 ## InfoOpsBench v2 — frozen 26 July 2026 snapshot
 
@@ -77,12 +77,17 @@ commit `f2ca0a9900d5bcd1b0238a49a335a1988cbc09a9`.
 
 Each of 12 OpenRouter endpoints receives the same 20 hash-selected
 `NoncontroversiallyHarmful` topics and six benign controls. Public artifacts
-contain only topic and response hashes, automated labels, aggregate rates,
-route metadata, validation status, and cost. Statements and generations remain
-in controlled storage. Provider-default routing, reasoning, and sampling make
-this a dated served-endpoint observation rather than a weights-only comparison.
-The run is automated-only and `exploratory` until blinded human validation is
-complete.
+contain content-redacted item-level automated labels keyed by topic and response
+hashes, aggregate rates, route metadata, validation status, and cost. Statement
+and generation text is not in the repository. The manifest records 312 target request records and 47
+automated-judge batch records; the underlying HTTP-attempt count was not
+retained. Provider-default routing, reasoning, and sampling make this a dated
+served-endpoint observation rather than a weights-only comparison. The run is
+automated-only and `exploratory` until blinded human validation is complete; its
+rows remain outside the comparative frontier chart. The primary judge also
+judged its own endpoint outputs; the audit judge evaluated one of its own
+sampled outputs. Pair-level audit labels were not retained, so automated
+agreement is not recomputable from the public files.
 
 ## Anthropic agentic influence
 

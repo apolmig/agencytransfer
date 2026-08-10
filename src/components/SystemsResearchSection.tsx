@@ -1,15 +1,15 @@
-const systemScenarios = [
+const systemQuestions = [
   {
-    title: "Customer service",
-    copy: "Use a controlled Qwen3.6 Max Preview configuration as one candidate backbone to test whether organisational prompts, memory, escalation rules, and commercial objectives create cumulative pressure absent from a one-turn evaluation.",
+    title: "Memory and repetition",
+    copy: "Hold the model and prompt fixed, then vary whether prior interactions are available. Measure changes in refusal, attempted influence, and user-reported trust across repeated sessions.",
   },
   {
-    title: "Elder care",
-    copy: "Use a controlled Sonnet 5 configuration as one candidate backbone to study repeated reliance, synthetic intimacy, delegated choices, and the ability to contest or leave an assistant-mediated relationship, under an appropriate ethics protocol.",
+    title: "Objectives and tools",
+    copy: "Compare otherwise matched systems with different objectives, tool access, and escalation rules. Keep model behaviour distinct from application-level effects.",
   },
   {
-    title: "Minors",
-    copy: "Examine age assurance, repeated exposure, recommendation defaults, dependency, and safety gaps outside conventional chat interfaces. No testing with minors is proposed without independent ethics review.",
+    title: "User control",
+    copy: "Test whether disclosure, contestability, memory controls, and easy exit reduce measured influence without making the system unusable.",
   },
 ];
 
@@ -19,39 +19,36 @@ export function SystemsResearchSection() {
       <div className="section-heading split-heading">
         <div>
           <p className="section-number">Planned research direction · not current evidence</p>
-          <h2 id="systems-heading">The model is not the system</h2>
+          <h2 id="systems-heading">From model response to system behaviour</h2>
         </div>
         <p>
-          Current benchmarks isolate selected model behaviours. Real-world influence can also emerge
-          from the surrounding application: its memory, tools, objectives, interface, defaults,
-          recommender, and repeated contact with a person. As AI becomes infrastructure, that effect
-          may be incremental and persuasive long before it resembles a single conspicuous chat.
+          Current benchmarks isolate selected model behaviours. Future work will vary one system
+          feature at a time—such as memory, tools, objectives, defaults, or repeated contact—and
+          measure the result separately from the base model response.
         </p>
       </div>
 
       <div className="causal-chain-block systems-causal-block">
         <p className="mini-label">Plausible system-level pathway · to be tested</p>
         <ol className="causal-chain systems-causal-chain">
-          <li>Model capability</li>
-          <li>Prompts, memory, tools, and objectives</li>
-          <li>Repeated and personalised interaction</li>
-          <li>Attention, trust, preference, behaviour, or dependency</li>
-          <li>Agency transfer</li>
-          <li>Concentrated power and democratic harm</li>
+          <li>Model response</li>
+          <li>System condition</li>
+          <li>Repeated interaction</li>
+          <li>Measured human outcome</li>
+          <li>Decision authority</li>
         </ol>
         <p>
-          A model score establishes none of the later links. The research task is to identify which
-          system choices create, amplify, constrain, or reverse them—and which actor controls those
-          choices.
+          A model score establishes none of the later links. Each link needs its own protocol,
+          comparison condition, and evidence.
         </p>
       </div>
 
-      <div className="systems-scenarios" aria-label="Planned system research scenarios">
-        {systemScenarios.map((scenario) => (
-          <article className="systems-scenario" key={scenario.title}>
-            <p className="mini-label">Planned scenario · not evidence of harm</p>
-            <h3>{scenario.title}</h3>
-            <p>{scenario.copy}</p>
+      <div className="systems-scenarios" aria-label="Planned system research questions">
+        {systemQuestions.map((question) => (
+          <article className="systems-scenario" key={question.title}>
+            <p className="mini-label">Planned test · no result yet</p>
+            <h3>{question.title}</h3>
+            <p>{question.copy}</p>
           </article>
         ))}
       </div>
@@ -59,8 +56,8 @@ export function SystemsResearchSection() {
       <aside className="systems-boundary">
         <p className="mini-label">Measurement boundary</p>
         <p>
-          These scenarios are hypotheses for future evaluation. They do not claim that a named model,
-          provider, or existing deployment has changed anyone&apos;s beliefs or transferred agency.
+          These are testable hypotheses for future evaluation. They do not claim that a named model,
+          provider, or deployment has changed anyone&apos;s beliefs or transferred decision authority.
         </p>
       </aside>
     </section>

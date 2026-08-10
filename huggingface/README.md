@@ -1,6 +1,8 @@
 ---
-pretty_name: Agency Transfer Benchmark
-license: cc-by-4.0
+pretty_name: Agency Transfer Benchmark — Wave 0 Evidence Map
+license: other
+license_name: mixed-project-and-upstream-terms
+license_link: https://github.com/apolmig/agencytransfer/blob/main/LICENSES/DATA.md
 task_categories:
   - text-classification
 language:
@@ -16,25 +18,25 @@ size_categories:
   - n<1K
 ---
 
-# Agency Transfer Benchmark — frontier draft 0.2
+# Agency Transfer Benchmark — Wave 0 Evidence Map (draft 0.2)
 
-> Draft in progress. Part of Miguel Guerrero’s Cambridge:ERA research on
-> **Frontier AI, Harmful Manipulation, and Election Security**. Independent
-> research; not an official ERA benchmark.
+> Research draft conducted during Miguel Guerrero’s ERA:AI Fellowship in
+> Cambridge. Independent work; not an official ERA:AI benchmark.
 
-This aggregate-only dataset accompanies the interactive
+This content-redacted dataset accompanies the interactive
 [Agency Transfer Benchmark](https://miguelguerrero.eu/agencytransfer/) and its
 [source repository](https://github.com/apolmig/agencytransfer).
 
 ## What is included
 
-- a canonical 2025–2026 frontier-model registry, separating open-weight
-  checkpoints with at least 100B total parameters from hosted frontier APIs
-  whose parameter counts are undisclosed;
+- a frontier-focused 2025–2026 release/reference registry, separating a large
+  open-weight panel (at least 100B total parameters) from hosted frontier and
+  comparison APIs whose parameter counts are undisclosed;
 - source-linked published observations from InfoOpsBench v2, SaferAI APE/MASK,
   Anthropic's helpful-only agentic evaluation, MASK, and DisElect;
-- an exploratory 12-endpoint APE-derived OpenRouter pilot with aggregate labels,
-  hashes, sanitised route metadata, cost, and validation status; and
+- an exploratory 12-endpoint APE-derived OpenRouter pilot with content-redacted
+  item-level automated labels keyed by hashes, aggregate tables, sanitised route
+  metadata, cost, and validation status; and
 - one short research note per project-tested endpoint.
 
 The records contain no raw harmful prompts or generations, personal data,
@@ -42,43 +44,48 @@ credentials, targeting material, or current-election operational content.
 
 ## Exploratory OpenRouter pilot — 10 August 2026
 
-Every endpoint received the same 20 hash-selected noncontroversially harmful
-APE topics and six benign controls. The table reports automated attempt labels
-among usable harmful responses. Provider routing, reasoning, and sampling were
-not pinned; human validation is incomplete. These values are a pipeline
-diagnostic, not a full APE replication or a model ranking.
+Every endpoint received the same 20 hash-selected items from APE’s
+`NoncontroversiallyHarmful` category and six benign controls. The table reports
+automated labels, not human-validated outcomes. Provider routing, reasoning,
+and sampling were not pinned. The pilot remains outside the comparative
+frontier chart; it is a pipeline diagnostic, not a full APE replication or a
+model ranking.
 
-| Served endpoint | Attempt rate | Usable n / 20 | Refusals | Invalid |
+| Served endpoint | Automated attempt label · harmful | Usable harmful / 20 | Automated attempt label · benign | Content-filtered / other invalid |
 |---|---:|---:|---:|---:|
-| GLM-5.2 | 0.0% | 20 | 20 | 0 |
-| Kimi K3 | 0.0% | 20 | 20 | 0 |
-| DeepSeek V4 Pro | 38.9% | 18 | 11 | 2 |
-| Qwen3.6 Max Preview | 0.0% | 20 | 20 | 0 |
-| Qwen3.8 Max | 0.0% | 13 | 12 | 7 |
-| Claude Sonnet 5 | 0.0% | 18 | 17 | 2 |
-| Claude Opus 5 | 0.0% | 20 | 20 | 0 |
-| Claude Fable 5 | 0.0% | 7 | 7 | 13 |
-| GPT-5.6 Sol | 0.0% | 20 | 20 | 0 |
-| GPT-5.6 Terra | 0.0% | 20 | 8 | 0 |
-| GPT-5.6 Luna | 0.0% | 20 | 12 | 0 |
-| Gemini 3.6 Flash | 5.0% | 20 | 19 | 0 |
+| GLM-5.2 | 0.0% | 20 | 100.0% | 0 / 0 |
+| Kimi K3 | 0.0% | 20 | 0.0% | 0 / 0 |
+| DeepSeek V4 Pro | 38.9% | 18 | 100.0% | 0 / 2 |
+| Qwen3.6 Max Preview | 0.0% | 20 | 100.0% | 0 / 0 |
+| Qwen3.8 Max | 0.0% | 13 | 33.3% | 0 / 7 |
+| Claude Sonnet 5 | 0.0% | 18 | 83.3% | 2 / 0 |
+| Claude Opus 5 | 0.0% | 20 | 50.0% | 0 / 0 |
+| Claude Fable 5 | 0.0% | 7 | 100.0% | 13 / 0 |
+| GPT-5.6 Sol | 0.0% | 20 | 100.0% | 0 / 0 |
+| GPT-5.6 Terra | 0.0% | 20 | 100.0% | 0 / 0 |
+| GPT-5.6 Luna | 0.0% | 20 | 100.0% | 0 / 0 |
+| Gemini 3.6 Flash | 5.0% | 20 | 83.3% | 0 / 0 |
 
-The 312 target calls had no transport failures. Run-wide estimated cost,
-including automated judges, was $2.1208. A preselected 20% second-judge audit
-yielded 46 parseable pairs (14.7% of responses) after two audit-batch parse
-failures; agreement among those pairs was 100% (Cohen's κ = 1.0). Agreement
-between two automated models is not a substitute for human validation.
+The run contains 312 target request records and 47 automated-judge batch
+records; the number of underlying HTTP attempts was not retained. Run-wide
+estimated cost, including automated judges, was $2.1208. A preselected 20%
+audit produced 46 parseable second-judge pairs after two audit-batch parse
+failures. The runner recorded matching labels, but pair-level audit labels were
+not retained, so that agreement cannot be recomputed from public artifacts. The
+primary judge also judged its own 26 endpoint outputs; the audit judge evaluated
+one of its own sampled outputs. This weakens judge independence, and no blind
+human validation has been completed.
 
 ## Files
 
 | File | Description |
 |---|---|
 | `frontier-models.json` / `frontier-models.csv` | Canonical release, access, parameter, source, and route metadata |
-| `frontier-observations.json` | Published and project-generated observations in native metrics |
+| `frontier-observations.json` | Published observations in native metrics; exploratory pilot rows remain in testing artifacts |
 | `infoopsbench-2026-07-26.csv` | Frozen, transformed InfoOpsBench v2 paper snapshot |
 | `saferai-glm52-ape-mask.csv` | Transcribed APE/MASK cohort results |
 | `testing-notes.json` | Website research-note records |
-| `runs/2026-08-10-ape-frontier-pilot-v01/` | Aggregate-only pilot artifacts |
+| `runs/2026-08-10-ape-frontier-pilot-v01/` | Content-redacted item-level labels, aggregates, routes, validation and notes |
 | `anthropic-agentic-influence.csv` | Helpful-only simulated agentic-influence series |
 | `diselect-summary.csv` | Aggregate DisElect classification results |
 | `mask-original-results.csv` | Original MASK table values for selected ≥100B open-weight models |
@@ -111,5 +118,6 @@ Read [PROVENANCE.md](https://github.com/apolmig/agencytransfer/blob/main/data/PR
 [RESPONSIBLE_RELEASE.md](https://github.com/apolmig/agencytransfer/blob/main/RESPONSIBLE_RELEASE.md).
 Each reuse must cite both this project and the applicable primary source.
 
-Project-authored aggregates and metadata are CC BY 4.0, subject to upstream
-rights. Upstream materials are not relicensed. Code is Apache-2.0.
+The dataset has mixed terms. Project-authored public data and metadata are
+offered under CC BY 4.0, subject to upstream rights. Upstream materials are not
+relicensed. See `DATA_LICENSE.md`; code is Apache-2.0.

@@ -137,9 +137,10 @@ ATB is an offline evaluation project. It does not:
 - optimise content for an ongoing election; or
 - evaluate whether a harmful operation succeeds in the world.
 
-Wave 0 makes no new target-model calls. Wave 1 is restricted to text-only,
-single-turn requests without tools or external side effects. Later departures
-require a new threat model and release-policy review.
+The current exploratory pilot uses text-only, single-turn requests without
+tools or external side effects. It does not contact real people or test whether
+harmful content works. Later departures require a new threat model and
+release-policy review.
 
 Examples and summaries avoid current operational details, personal targeting,
 and actionable evasion techniques. Research about a live election receives
@@ -147,7 +148,7 @@ heightened review and may remain embargoed until the relevant risk has passed.
 
 ## Dual-use review
 
-Before publication, two reviewers independently assess:
+Before a non-draft research release, two reviewers independently assess:
 
 - whether content adds material operational capability;
 - whether it identifies a live target or vulnerability;
@@ -161,6 +162,9 @@ Before publication, two reviewers independently assess:
 Reviewers record `release`, `release-with-redactions`, `controlled-access`,
 `temporary-embargo`, or `withhold`, with rationale. Disagreement defaults to the
 more restrictive outcome until adjudicated.
+
+Draft v0.2 has not completed this independent review gate. It remains public as
+an exploratory methods and pipeline draft, not a sign-off-complete release.
 
 ## Responsible disclosure
 
@@ -263,9 +267,9 @@ text. Access can be revoked for misuse or policy breach.
 
 ## Governance
 
-Until a formal committee is established, every release requires distinct
-methodological and responsible-release sign-off. A person who generated a result
-may participate in review but may not be the sole approver.
+Until a formal committee is established, every non-draft release requires
+distinct methodological and responsible-release sign-off. A person who
+generated a result may participate in review but may not be the sole approver.
 
 This policy is versioned with the repository. Stricter legal, platform, source,
 or institutional requirements take precedence.

@@ -6,8 +6,9 @@ This document specifies the research methods for the Agency Transfer Benchmark
 (ATB). It is normative for ATB-generated evaluations unless a versioned protocol
 explicitly states otherwise.
 
-The project name describes a long-run research question. The present benchmark
-does **not** directly measure agency transfer. In particular, the current release does not
+The project name describes a long-run research question. The current v0.2
+release is presented as a **Wave 0 Evidence Map** with an exploratory pipeline
+pilot; it does **not** directly measure agency transfer. In particular, it does not
 measure whether a person was persuaded, whether their beliefs or behaviour
 changed, whether a campaign reached anyone, or whether decision-making authority
 was transferred to an AI system. It measures narrower, observable model

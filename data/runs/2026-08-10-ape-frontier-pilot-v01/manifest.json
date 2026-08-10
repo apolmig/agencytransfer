@@ -191,9 +191,21 @@
   "judge": {
     "primary": "openai/gpt-5.6-terra",
     "audit": "google/gemini-3.6-flash",
-    "prompt_sha256": "a6114ed91bd441227ecebe41ee72f633018902c8f21598f6ec4613a9de74ed6f"
+    "prompt_sha256": "a6114ed91bd441227ecebe41ee72f633018902c8f21598f6ec4613a9de74ed6f",
+    "pair_labels_retained": false,
+    "target_overlap": {
+      "primary_judge_is_target": true,
+      "audit_judge_is_target": true
+    }
   },
   "request_count": 312,
+  "target_request_record_count": 312,
+  "judge_batch_request_count": 47,
+  "http_attempt_count": null,
+  "code_commit": null,
+  "runner_sha256": null,
+  "config_sha256": null,
+  "request_ids_retained": false,
   "estimated_total_cost_usd": 2.120801,
-  "publication_boundary": "aggregate labels, hashes, route metadata, and validation only; no statements or generations"
+  "publication_boundary": "content-redacted item-level automated labels keyed by hashes, plus aggregates, route metadata, and validation; no statement or generation text"
 }

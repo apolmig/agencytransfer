@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""Run a bounded, aggregate-only APE-derived pilot through OpenRouter.
+"""Run a bounded, content-redacted APE-derived pilot through OpenRouter.
 
 Raw generations are written only to a caller-supplied private directory. The
-public run directory receives hashes, route metadata, labels, aggregates and
-validation statistics; it never receives benchmark statements or generations.
+public run directory receives item-level labels keyed by hashes, route metadata,
+aggregates and validation statistics; it never receives benchmark statements or
+generations.
 """
 
 from __future__ import annotations
@@ -147,6 +148,33 @@ def response_text(result: dict[str, Any] | None) -> str:
         return ""
 
 
+def public_error(value: str | None) -> str | None:
+    """Return a non-sensitive error category for public artifacts."""
+    if not value:
+        return None
+    if value.startswith("OpenRouter HTTP"):
+        return value.split(":", 1)[0]
+    if value.startswith("judge parse error"):
+        return "judge parse error"
+    return "request error"
+
+
+def validate_output_paths(run_dir: Path, raw_dir: Path) -> tuple[Path, Path]:
+    """Keep private generations outside both the checkout and public run tree."""
+    repository_root = Path(__file__).resolve().parents[1]
+    resolved_run = run_dir.resolve()
+    resolved_raw = raw_dir.resolve()
+    if resolved_raw == repository_root or repository_root in resolved_raw.parents:
+        raise ValueError("--raw-dir must be outside the repository checkout")
+    if (
+        resolved_raw == resolved_run
+        or resolved_raw in resolved_run.parents
+        or resolved_run in resolved_raw.parents
+    ):
+        raise ValueError("--raw-dir and --run-dir must be separate directory trees")
+    return resolved_run, resolved_raw
+
+
 def extract_json_object(value: str) -> dict[str, Any]:
     stripped = value.strip()
     stripped = re.sub(r"^```(?:json)?\s*|\s*```$", "", stripped, flags=re.IGNORECASE)
@@ -206,7 +234,7 @@ async def judge_records(
             "provider": result.get("provider") if result else None,
             "latency_seconds": round(latency, 3),
             "usage": result.get("usage", {}) if result else {},
-            "error": error,
+            "error": public_error(error),
             "label_count": len(parsed),
         }
         return parsed, metadata
@@ -249,14 +277,13 @@ def cohen_kappa(pairs: list[tuple[str, str]]) -> float | None:
 
 
 async def run(args: argparse.Namespace) -> None:
+    run_dir, raw_dir = validate_output_paths(args.run_dir, args.raw_dir)
     api_key = os.environ.get("OPENROUTER_API_KEY")
     if not api_key:
         raise SystemExit("OPENROUTER_API_KEY is required")
 
     config = read_json(args.config)
     topics = select_topics(load_topics(args.topics), config)
-    run_dir: Path = args.run_dir
-    raw_dir: Path = args.raw_dir
     run_dir.mkdir(parents=True, exist_ok=True)
     raw_dir.mkdir(parents=True, exist_ok=True)
     started_at = utc_now()
@@ -313,7 +340,13 @@ async def run(args: argparse.Namespace) -> None:
         )
     write_json(raw_dir / "raw-responses.private.json", records)
 
-    judgeable = [row for row in records if row["response"] and not row["transport_error"]]
+    judgeable = [
+        row
+        for row in records
+        if row["response"]
+        and not row["transport_error"]
+        and row["finish_reason"] != "content_filter"
+    ]
     print(f"Judging {len(judgeable)} usable responses", flush=True)
     primary_labels, primary_metadata = await judge_records(
         api_key,
@@ -350,6 +383,9 @@ async def run(args: argparse.Namespace) -> None:
         benign_rows = [row for row in model_rows if row["category"] != "NoncontroversiallyHarmful"]
         labels = Counter(row["label"] for row in harmful_rows)
         benign_labels = Counter(row["label"] for row in benign_rows)
+        content_filter_count = sum(
+            row["finish_reason"] == "content_filter" for row in harmful_rows
+        )
         usable_harmful = sum(labels[label] for label in ("attempt", "no_attempt", "refusal"))
         lower, upper = wilson_interval(labels["attempt"], usable_harmful)
         cost = sum(float(row.get("usage", {}).get("cost", 0) or 0) for row in model_rows)
@@ -362,6 +398,8 @@ async def run(args: argparse.Namespace) -> None:
                 "no_attempt_count": labels["no_attempt"],
                 "refusal_count": labels["refusal"],
                 "invalid_count": labels["invalid"],
+                "content_filter_count": content_filter_count,
+                "other_invalid_count": labels["invalid"] - content_filter_count,
                 "attempt_pct": round(100 * labels["attempt"] / usable_harmful, 1) if usable_harmful else None,
                 "attempt_ci95_lower": round(lower, 1) if lower is not None else None,
                 "attempt_ci95_upper": round(upper, 1) if upper is not None else None,
@@ -386,7 +424,11 @@ async def run(args: argparse.Namespace) -> None:
 
     aggregate_path = run_dir / "aggregate.csv"
     with aggregate_path.open("w", newline="", encoding="utf-8") as handle:
-        writer = csv.DictWriter(handle, fieldnames=list(aggregates[0].keys()))
+        writer = csv.DictWriter(
+            handle,
+            fieldnames=list(aggregates[0].keys()),
+            lineterminator="\n",
+        )
         writer.writeheader()
         writer.writerows(aggregates)
 
@@ -411,6 +453,8 @@ async def run(args: argparse.Namespace) -> None:
         }
         for row in records
     ]
+    for row in public_rows:
+        row["transport_error"] = public_error(row["transport_error"])
     write_json(run_dir / "labels.json", public_rows)
     write_json(run_dir / "route-integrity.json", route_rows)
     validation = {
@@ -421,6 +465,19 @@ async def run(args: argparse.Namespace) -> None:
         "double_judged_n": len(pairs),
         "raw_agreement": round(agreement, 4) if agreement is not None else None,
         "cohen_kappa": round(cohen_kappa(pairs), 4) if cohen_kappa(pairs) is not None else None,
+        "pair_labels_retained": False,
+        "agreement_recomputable_from_public_artifacts": False,
+        "judge_target_overlap": {
+            "primary_judge_target_records": sum(
+                row["requested_model"] == config["judge_model"] for row in records
+            ),
+            "audit_judge_self_sample_records": sum(
+                row["requested_model"] == config["audit_judge_model"]
+                and row["observation_id"] in audit_labels
+                for row in audit_sample
+            ),
+            "meaning": "Automated judges also appear among the target endpoints; this weakens independence.",
+        },
         "primary_batches": primary_metadata,
         "audit_batches": audit_metadata,
         "human_validation": "not yet completed",
@@ -464,10 +521,22 @@ async def run(args: argparse.Namespace) -> None:
             "primary": config["judge_model"],
             "audit": config["audit_judge_model"],
             "prompt_sha256": sha256_text(JUDGE_PROMPT),
+            "pair_labels_retained": False,
+            "target_overlap": {
+                "primary_judge_is_target": config["judge_model"] in config["models"],
+                "audit_judge_is_target": config["audit_judge_model"] in config["models"],
+            },
         },
         "request_count": len(records),
+        "target_request_record_count": len(records),
+        "judge_batch_request_count": len(primary_metadata) + len(audit_metadata),
+        "http_attempt_count": None,
         "estimated_total_cost_usd": round(total_cost, 6),
-        "publication_boundary": "aggregate labels, hashes, route metadata, and validation only; no statements or generations",
+        "code_commit": os.environ.get("GITHUB_SHA"),
+        "runner_sha256": sha256_text(Path(__file__).read_text(encoding="utf-8")),
+        "config_sha256": sha256_text(args.config.read_text(encoding="utf-8")),
+        "request_ids_retained": False,
+        "publication_boundary": "content-redacted item-level automated labels keyed by hashes, plus aggregates, route metadata, and validation; no statement or generation text",
     }
     write_json(run_dir / "manifest.json", manifest)
     print(

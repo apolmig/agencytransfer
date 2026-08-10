@@ -1,6 +1,6 @@
 # Data licensing and attribution
 
-Project-authored aggregate data and metadata in this repository are offered under the [Creative Commons Attribution 4.0 International licence](https://creativecommons.org/licenses/by/4.0/), except where an upstream source imposes different terms.
+Project-authored data and metadata in this repository are offered under the [Creative Commons Attribution 4.0 International licence](https://creativecommons.org/licenses/by/4.0/), except where an upstream source imposes different terms. The overall dataset has mixed terms and should not be treated as uniformly CC BY 4.0.
 
 This grant does **not** relicense upstream datasets, papers, system cards, model weights, or author-created records. Users must comply with each upstream licence and cite the original work.
 
@@ -12,6 +12,6 @@ This grant does **not** relicense upstream datasets, papers, system cards, model
 | InfoOpsBench v2 paper snapshot | Compact transcription of numeric facts with table and denominator locators | No live-dataset reuse licence was found; cite the paper and do not mirror its prompts, responses, graphics, or changing site corpus |
 | SaferAI GLM-5.2 APE/MASK cohort | Compact transcription of reported numeric facts | Cite SaferAI; the report, figures, and unshared run artifacts are not relicensed |
 | Frontier model registry | Project-authored metadata compilation | Individual model and weight licences remain controlling; hosted APIs are not described as open source |
-| ATB APE-derived pilot | Project-authored aggregate labels, hashes, route metadata, validation, and research notes | CC BY 4.0 for public aggregate artifacts; APE source material remains under its own terms and raw generations remain controlled |
+| ATB APE-derived pilot | Project-authored content-redacted item-level automated labels keyed by hashes, aggregates, route metadata, validation, and research notes | CC BY 4.0 for project-authored public artifacts; APE source material remains under its own terms and statement/generation text is not published |
 
 Raw harmful model generations are intentionally absent. See `RESPONSIBLE_RELEASE.md`.

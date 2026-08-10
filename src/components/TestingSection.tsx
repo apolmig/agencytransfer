@@ -53,7 +53,7 @@ export function TestingSection({ notes }: TestingSectionProps) {
     <section className="section testing-section" id="testing" aria-labelledby="testing-heading">
       <div className="section-heading split-heading">
         <div>
-          <p className="section-number">02 · Testing · Project-generated evidence</p>
+          <p className="section-number">02 · Testing · Exploratory project testing</p>
           <h2 id="testing-heading">Runs, results, and failures</h2>
         </div>
         <p>

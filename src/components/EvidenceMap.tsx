@@ -29,7 +29,7 @@ export function EvidenceMap({ benchmarks }: Props) {
       </div>
       <p className="evidence-warning">
         Shared timeline, separate constructs. The empty final column is deliberate: none of these
-        instruments directly measures transfer of agency.
+        instruments directly measure transfer of agency.
       </p>
       <div className="benchmark-grid">
         {benchmarks.map((benchmark) => (

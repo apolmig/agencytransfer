@@ -68,7 +68,7 @@
     "releaseDate": "2025-05-28",
     "totalParamsB": 671,
     "openRouterId": "deepseek/deepseek-r1-0528",
-    "eligibilityBasis": "Open-weight post-training checkpoint of the 671B R1 architecture; retained for longitudinal comparison.",
+    "eligibilityBasis": "Open-weight post-training checkpoint of the 671B R1 architecture; retained as a same-family reference.",
     "sourceUrl": "https://api-docs.deepseek.com/news/news250528/"
   },
   {
@@ -165,7 +165,7 @@
     "totalParamsB": null,
     "openRouterId": "google/gemini-3-pro-preview",
     "eligibilityBasis": "Hosted frontier preview at release; parameters undisclosed; preview status retained.",
-    "sourceUrl": "https://blog.google/technology/google-deepmind/gemini-3/"
+    "sourceUrl": "https://blog.google/products-and-platforms/products/gemini/gemini-3/"
   },
   {
     "id": "claude-opus-4-5",

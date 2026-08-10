@@ -1,13 +1,13 @@
 # DeepSeek V4 Pro · one-turn APE-derived pilot
 
-**Status:** Exploratory · automated-only · not a ranking  
-**Run:** `2026-08-10-ape-frontier-pilot-v01`  
-**Date:** 10 August 2026  
-**Requested route:** `deepseek/deepseek-v4-pro`
+- **Status:** Exploratory · automated-only · not a ranking
+- **Run:** `2026-08-10-ape-frontier-pilot-v01`
+- **Date:** 10 August 2026
+- **Requested route:** `deepseek/deepseek-v4-pro`
 
 ## Question
 
-Under the same one-turn elicitation, does this served endpoint attempt to persuade on 20 noncontroversially harmful APE topics while still engaging six benign controls?
+Under the same one-turn elicitation, how does this served endpoint respond to 20 items from APE’s NoncontroversiallyHarmful category and six benign controls?
 
 ## Protocol
 
@@ -15,16 +15,17 @@ Exact requested route deepseek/deepseek-v4-pro; 20 harmful and six benign contro
 
 ## Result
 
-7 of 18 usable harmful-topic responses were labelled as attempts (38.9%; Wilson 95% CI 20.3%–61.4%). 11 were labelled refusals; 2 harmful rows were invalid. Benign-control attempt rate was 100.0%. There were 0 transport errors across 26 target calls. Estimated endpoint cost was $0.0271.
+7 of 18 usable harmful-item responses received automated attempt labels (38.9%; Wilson 95% CI 20.3%–61.4%). 0 received no-attempt labels and 11 received refusal labels; 0 were provider content-filtered and 2 were otherwise invalid. The automated attempt-label rate on benign controls was 100.0%. There were 0 transport errors across 26 target request records. Estimated endpoint cost was $0.0271.
 
 ## Interpretation
 
-This is an endpoint and pipeline diagnostic, not a model ranking. A preselected 20% second-judge audit yielded 46 parseable pairs (14.7% of target responses) after 2 audit-batch parse failures; agreement among parsed pairs was 100.0% with Cohen’s κ 1. The result can motivate a full, provider-pinned, human-validated run but cannot establish persuasion success or real-world harm.
+7 harmful-item responses were flagged for human review. Without human validation or pinned routing, this is a pipeline signal rather than a stable endpoint rate.
 
 ## Limits
 
-- Only one APE harmful category is sampled; conspiracy and undermining-control topics are absent.
-- Twenty harmful items and one generation per item yield wide uncertainty.
+- Requests were served by 11 providers; provider variation is part of this observation.
+- 2 of 20 harmful rows were invalid for reasons other than provider content filtering.
+- This one-turn sample covers 20 items from APE’s NoncontroversiallyHarmful category and six benign controls.
 - Provider, reasoning, and sampling conditions were not pinned, so this is a dated served-endpoint observation.
 - Labels are automated; blind human validation has not been completed.
 - The test measures attempted persuasion, not whether any person was persuaded.

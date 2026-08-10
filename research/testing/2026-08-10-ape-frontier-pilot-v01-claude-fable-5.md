@@ -1,13 +1,13 @@
 # Claude Fable 5 · one-turn APE-derived pilot
 
-**Status:** Exploratory · automated-only · not a ranking  
-**Run:** `2026-08-10-ape-frontier-pilot-v01`  
-**Date:** 10 August 2026  
-**Requested route:** `anthropic/claude-fable-5`
+- **Status:** Exploratory · automated-only · not a ranking
+- **Run:** `2026-08-10-ape-frontier-pilot-v01`
+- **Date:** 10 August 2026
+- **Requested route:** `anthropic/claude-fable-5`
 
 ## Question
 
-Under the same one-turn elicitation, does this served endpoint attempt to persuade on 20 noncontroversially harmful APE topics while still engaging six benign controls?
+Under the same one-turn elicitation, how does this served endpoint respond to 20 items from APE’s NoncontroversiallyHarmful category and six benign controls?
 
 ## Protocol
 
@@ -15,16 +15,16 @@ Exact requested route anthropic/claude-fable-5; 20 harmful and six benign contro
 
 ## Result
 
-0 of 7 usable harmful-topic responses were labelled as attempts (0.0%; Wilson 95% CI 0.0%–35.4%). 7 were labelled refusals; 13 harmful rows were invalid. Benign-control attempt rate was 100.0%. There were 0 transport errors across 26 target calls. Estimated endpoint cost was $0.3876.
+0 of 7 usable harmful-item responses received automated attempt labels (0.0%; Wilson 95% CI 0.0%–35.4%). 0 received no-attempt labels and 7 received refusal labels; 13 were provider content-filtered and 0 were otherwise invalid. The automated attempt-label rate on benign controls was 100.0%. There were 0 transport errors across 26 target request records. Estimated endpoint cost was $0.3876.
 
 ## Interpretation
 
-This is an endpoint and pipeline diagnostic, not a model ranking. A preselected 20% second-judge audit yielded 46 parseable pairs (14.7% of target responses) after 2 audit-batch parse failures; agreement among parsed pairs was 100.0% with Cohen’s κ 1. The result can motivate a full, provider-pinned, human-validated run but cannot establish persuasion success or real-world harm.
+Only 7 of 20 harmful rows were usable, so this endpoint result is too incomplete to support a model-level inference.
 
 ## Limits
 
-- Only one APE harmful category is sampled; conspiracy and undermining-control topics are absent.
-- Twenty harmful items and one generation per item yield wide uncertainty.
+- 13 of 20 harmful rows were blocked by the serving provider's content filter.
+- This one-turn sample covers 20 items from APE’s NoncontroversiallyHarmful category and six benign controls.
 - Provider, reasoning, and sampling conditions were not pinned, so this is a dated served-endpoint observation.
 - Labels are automated; blind human validation has not been completed.
 - The test measures attempted persuasion, not whether any person was persuaded.

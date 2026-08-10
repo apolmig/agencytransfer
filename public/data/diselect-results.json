@@ -21,7 +21,7 @@
     "softRefusePct": 56.273,
     "refusePct": 0.182,
     "incoherentPct": 37.136,
-    "sourceType": "recomputed from published aggregate labels",
+    "sourceType": "recomputed from author-released item labels",
     "sourceUrl": "https://github.com/alan-turing-institute/election-ai-safety",
     "sourceCommit": "915a8f8c22fb9cd8a2e4ae6824513760f0468f69",
     "judgeModel": "GPT-3.5 Turbo (zero-shot; upstream protocol)"
@@ -48,7 +48,7 @@
     "softRefusePct": 18.0,
     "refusePct": 0.0,
     "incoherentPct": 78.0,
-    "sourceType": "recomputed from published aggregate labels",
+    "sourceType": "recomputed from author-released item labels",
     "sourceUrl": "https://github.com/alan-turing-institute/election-ai-safety",
     "sourceCommit": "915a8f8c22fb9cd8a2e4ae6824513760f0468f69",
     "judgeModel": "GPT-3.5 Turbo (zero-shot; upstream protocol)"
@@ -75,7 +75,7 @@
     "softRefusePct": 57.091,
     "refusePct": 0.091,
     "incoherentPct": 33.364,
-    "sourceType": "recomputed from published aggregate labels",
+    "sourceType": "recomputed from author-released item labels",
     "sourceUrl": "https://github.com/alan-turing-institute/election-ai-safety",
     "sourceCommit": "915a8f8c22fb9cd8a2e4ae6824513760f0468f69",
     "judgeModel": "GPT-3.5 Turbo (zero-shot; upstream protocol)"
@@ -102,7 +102,7 @@
     "softRefusePct": 55.455,
     "refusePct": 0.273,
     "incoherentPct": 40.909,
-    "sourceType": "recomputed from published aggregate labels",
+    "sourceType": "recomputed from author-released item labels",
     "sourceUrl": "https://github.com/alan-turing-institute/election-ai-safety",
     "sourceCommit": "915a8f8c22fb9cd8a2e4ae6824513760f0468f69",
     "judgeModel": "GPT-3.5 Turbo (zero-shot; upstream protocol)"
@@ -129,7 +129,7 @@
     "softRefusePct": 23.591,
     "refusePct": 0.545,
     "incoherentPct": 71.455,
-    "sourceType": "recomputed from published aggregate labels",
+    "sourceType": "recomputed from author-released item labels",
     "sourceUrl": "https://github.com/alan-turing-institute/election-ai-safety",
     "sourceCommit": "915a8f8c22fb9cd8a2e4ae6824513760f0468f69",
     "judgeModel": "GPT-3.5 Turbo (zero-shot; upstream protocol)"
@@ -156,7 +156,7 @@
     "softRefusePct": 6.0,
     "refusePct": 0.0,
     "incoherentPct": 94.0,
-    "sourceType": "recomputed from published aggregate labels",
+    "sourceType": "recomputed from author-released item labels",
     "sourceUrl": "https://github.com/alan-turing-institute/election-ai-safety",
     "sourceCommit": "915a8f8c22fb9cd8a2e4ae6824513760f0468f69",
     "judgeModel": "GPT-3.5 Turbo (zero-shot; upstream protocol)"
@@ -183,7 +183,7 @@
     "softRefusePct": 24.636,
     "refusePct": 0.818,
     "incoherentPct": 71.273,
-    "sourceType": "recomputed from published aggregate labels",
+    "sourceType": "recomputed from author-released item labels",
     "sourceUrl": "https://github.com/alan-turing-institute/election-ai-safety",
     "sourceCommit": "915a8f8c22fb9cd8a2e4ae6824513760f0468f69",
     "judgeModel": "GPT-3.5 Turbo (zero-shot; upstream protocol)"
@@ -210,7 +210,7 @@
     "softRefusePct": 22.545,
     "refusePct": 0.273,
     "incoherentPct": 71.636,
-    "sourceType": "recomputed from published aggregate labels",
+    "sourceType": "recomputed from author-released item labels",
     "sourceUrl": "https://github.com/alan-turing-institute/election-ai-safety",
     "sourceCommit": "915a8f8c22fb9cd8a2e4ae6824513760f0468f69",
     "judgeModel": "GPT-3.5 Turbo (zero-shot; upstream protocol)"
@@ -237,7 +237,7 @@
     "softRefusePct": 52.773,
     "refusePct": 0.545,
     "incoherentPct": 41.409,
-    "sourceType": "recomputed from published aggregate labels",
+    "sourceType": "recomputed from author-released item labels",
     "sourceUrl": "https://github.com/alan-turing-institute/election-ai-safety",
     "sourceCommit": "915a8f8c22fb9cd8a2e4ae6824513760f0468f69",
     "judgeModel": "GPT-3.5 Turbo (zero-shot; upstream protocol)"
@@ -264,7 +264,7 @@
     "softRefusePct": 20.0,
     "refusePct": 0.0,
     "incoherentPct": 54.0,
-    "sourceType": "recomputed from published aggregate labels",
+    "sourceType": "recomputed from author-released item labels",
     "sourceUrl": "https://github.com/alan-turing-institute/election-ai-safety",
     "sourceCommit": "915a8f8c22fb9cd8a2e4ae6824513760f0468f69",
     "judgeModel": "GPT-3.5 Turbo (zero-shot; upstream protocol)"
@@ -291,7 +291,7 @@
     "softRefusePct": 55.273,
     "refusePct": 0.364,
     "incoherentPct": 37.636,
-    "sourceType": "recomputed from published aggregate labels",
+    "sourceType": "recomputed from author-released item labels",
     "sourceUrl": "https://github.com/alan-turing-institute/election-ai-safety",
     "sourceCommit": "915a8f8c22fb9cd8a2e4ae6824513760f0468f69",
     "judgeModel": "GPT-3.5 Turbo (zero-shot; upstream protocol)"
@@ -318,7 +318,7 @@
     "softRefusePct": 50.273,
     "refusePct": 0.727,
     "incoherentPct": 45.182,
-    "sourceType": "recomputed from published aggregate labels",
+    "sourceType": "recomputed from author-released item labels",
     "sourceUrl": "https://github.com/alan-turing-institute/election-ai-safety",
     "sourceCommit": "915a8f8c22fb9cd8a2e4ae6824513760f0468f69",
     "judgeModel": "GPT-3.5 Turbo (zero-shot; upstream protocol)"
@@ -345,7 +345,7 @@
     "softRefusePct": 39.409,
     "refusePct": 0.455,
     "incoherentPct": 41.636,
-    "sourceType": "recomputed from published aggregate labels",
+    "sourceType": "recomputed from author-released item labels",
     "sourceUrl": "https://github.com/alan-turing-institute/election-ai-safety",
     "sourceCommit": "915a8f8c22fb9cd8a2e4ae6824513760f0468f69",
     "judgeModel": "GPT-3.5 Turbo (zero-shot; upstream protocol)"
@@ -372,7 +372,7 @@
     "softRefusePct": 2.0,
     "refusePct": 0.0,
     "incoherentPct": 42.0,
-    "sourceType": "recomputed from published aggregate labels",
+    "sourceType": "recomputed from author-released item labels",
     "sourceUrl": "https://github.com/alan-turing-institute/election-ai-safety",
     "sourceCommit": "915a8f8c22fb9cd8a2e4ae6824513760f0468f69",
     "judgeModel": "GPT-3.5 Turbo (zero-shot; upstream protocol)"
@@ -399,7 +399,7 @@
     "softRefusePct": 35.727,
     "refusePct": 0.091,
     "incoherentPct": 42.818,
-    "sourceType": "recomputed from published aggregate labels",
+    "sourceType": "recomputed from author-released item labels",
     "sourceUrl": "https://github.com/alan-turing-institute/election-ai-safety",
     "sourceCommit": "915a8f8c22fb9cd8a2e4ae6824513760f0468f69",
     "judgeModel": "GPT-3.5 Turbo (zero-shot; upstream protocol)"
@@ -426,7 +426,7 @@
     "softRefusePct": 43.091,
     "refusePct": 0.818,
     "incoherentPct": 40.455,
-    "sourceType": "recomputed from published aggregate labels",
+    "sourceType": "recomputed from author-released item labels",
     "sourceUrl": "https://github.com/alan-turing-institute/election-ai-safety",
     "sourceCommit": "915a8f8c22fb9cd8a2e4ae6824513760f0468f69",
     "judgeModel": "GPT-3.5 Turbo (zero-shot; upstream protocol)"
@@ -453,7 +453,7 @@
     "softRefusePct": 12.682,
     "refusePct": 0.0,
     "incoherentPct": 0.0,
-    "sourceType": "recomputed from published aggregate labels",
+    "sourceType": "recomputed from author-released item labels",
     "sourceUrl": "https://github.com/alan-turing-institute/election-ai-safety",
     "sourceCommit": "915a8f8c22fb9cd8a2e4ae6824513760f0468f69",
     "judgeModel": "GPT-3.5 Turbo (zero-shot; upstream protocol)"
@@ -480,7 +480,7 @@
     "softRefusePct": 0.0,
     "refusePct": 0.0,
     "incoherentPct": 0.0,
-    "sourceType": "recomputed from published aggregate labels",
+    "sourceType": "recomputed from author-released item labels",
     "sourceUrl": "https://github.com/alan-turing-institute/election-ai-safety",
     "sourceCommit": "915a8f8c22fb9cd8a2e4ae6824513760f0468f69",
     "judgeModel": "GPT-3.5 Turbo (zero-shot; upstream protocol)"
@@ -507,7 +507,7 @@
     "softRefusePct": 5.909,
     "refusePct": 0.0,
     "incoherentPct": 0.0,
-    "sourceType": "recomputed from published aggregate labels",
+    "sourceType": "recomputed from author-released item labels",
     "sourceUrl": "https://github.com/alan-turing-institute/election-ai-safety",
     "sourceCommit": "915a8f8c22fb9cd8a2e4ae6824513760f0468f69",
     "judgeModel": "GPT-3.5 Turbo (zero-shot; upstream protocol)"
@@ -534,7 +534,7 @@
     "softRefusePct": 19.455,
     "refusePct": 0.0,
     "incoherentPct": 0.0,
-    "sourceType": "recomputed from published aggregate labels",
+    "sourceType": "recomputed from author-released item labels",
     "sourceUrl": "https://github.com/alan-turing-institute/election-ai-safety",
     "sourceCommit": "915a8f8c22fb9cd8a2e4ae6824513760f0468f69",
     "judgeModel": "GPT-3.5 Turbo (zero-shot; upstream protocol)"
@@ -561,7 +561,7 @@
     "softRefusePct": 3.227,
     "refusePct": 0.045,
     "incoherentPct": 0.0,
-    "sourceType": "recomputed from published aggregate labels",
+    "sourceType": "recomputed from author-released item labels",
     "sourceUrl": "https://github.com/alan-turing-institute/election-ai-safety",
     "sourceCommit": "915a8f8c22fb9cd8a2e4ae6824513760f0468f69",
     "judgeModel": "GPT-3.5 Turbo (zero-shot; upstream protocol)"
@@ -588,7 +588,7 @@
     "softRefusePct": 0.0,
     "refusePct": 2.0,
     "incoherentPct": 0.0,
-    "sourceType": "recomputed from published aggregate labels",
+    "sourceType": "recomputed from author-released item labels",
     "sourceUrl": "https://github.com/alan-turing-institute/election-ai-safety",
     "sourceCommit": "915a8f8c22fb9cd8a2e4ae6824513760f0468f69",
     "judgeModel": "GPT-3.5 Turbo (zero-shot; upstream protocol)"
@@ -615,7 +615,7 @@
     "softRefusePct": 2.364,
     "refusePct": 0.091,
     "incoherentPct": 0.0,
-    "sourceType": "recomputed from published aggregate labels",
+    "sourceType": "recomputed from author-released item labels",
     "sourceUrl": "https://github.com/alan-turing-institute/election-ai-safety",
     "sourceCommit": "915a8f8c22fb9cd8a2e4ae6824513760f0468f69",
     "judgeModel": "GPT-3.5 Turbo (zero-shot; upstream protocol)"
@@ -642,7 +642,7 @@
     "softRefusePct": 4.091,
     "refusePct": 0.0,
     "incoherentPct": 0.0,
-    "sourceType": "recomputed from published aggregate labels",
+    "sourceType": "recomputed from author-released item labels",
     "sourceUrl": "https://github.com/alan-turing-institute/election-ai-safety",
     "sourceCommit": "915a8f8c22fb9cd8a2e4ae6824513760f0468f69",
     "judgeModel": "GPT-3.5 Turbo (zero-shot; upstream protocol)"
@@ -669,7 +669,7 @@
     "softRefusePct": 8.591,
     "refusePct": 0.0,
     "incoherentPct": 0.0,
-    "sourceType": "recomputed from published aggregate labels",
+    "sourceType": "recomputed from author-released item labels",
     "sourceUrl": "https://github.com/alan-turing-institute/election-ai-safety",
     "sourceCommit": "915a8f8c22fb9cd8a2e4ae6824513760f0468f69",
     "judgeModel": "GPT-3.5 Turbo (zero-shot; upstream protocol)"
@@ -696,7 +696,7 @@
     "softRefusePct": 2.0,
     "refusePct": 0.0,
     "incoherentPct": 0.0,
-    "sourceType": "recomputed from published aggregate labels",
+    "sourceType": "recomputed from author-released item labels",
     "sourceUrl": "https://github.com/alan-turing-institute/election-ai-safety",
     "sourceCommit": "915a8f8c22fb9cd8a2e4ae6824513760f0468f69",
     "judgeModel": "GPT-3.5 Turbo (zero-shot; upstream protocol)"
@@ -723,7 +723,7 @@
     "softRefusePct": 3.636,
     "refusePct": 0.0,
     "incoherentPct": 0.0,
-    "sourceType": "recomputed from published aggregate labels",
+    "sourceType": "recomputed from author-released item labels",
     "sourceUrl": "https://github.com/alan-turing-institute/election-ai-safety",
     "sourceCommit": "915a8f8c22fb9cd8a2e4ae6824513760f0468f69",
     "judgeModel": "GPT-3.5 Turbo (zero-shot; upstream protocol)"
@@ -750,7 +750,7 @@
     "softRefusePct": 13.545,
     "refusePct": 0.0,
     "incoherentPct": 0.0,
-    "sourceType": "recomputed from published aggregate labels",
+    "sourceType": "recomputed from author-released item labels",
     "sourceUrl": "https://github.com/alan-turing-institute/election-ai-safety",
     "sourceCommit": "915a8f8c22fb9cd8a2e4ae6824513760f0468f69",
     "judgeModel": "GPT-3.5 Turbo (zero-shot; upstream protocol)"
@@ -777,7 +777,7 @@
     "softRefusePct": 5.273,
     "refusePct": 55.227,
     "incoherentPct": 0.091,
-    "sourceType": "recomputed from published aggregate labels",
+    "sourceType": "recomputed from author-released item labels",
     "sourceUrl": "https://github.com/alan-turing-institute/election-ai-safety",
     "sourceCommit": "915a8f8c22fb9cd8a2e4ae6824513760f0468f69",
     "judgeModel": "GPT-3.5 Turbo (zero-shot; upstream protocol)"
@@ -804,7 +804,7 @@
     "softRefusePct": 6.0,
     "refusePct": 8.0,
     "incoherentPct": 4.0,
-    "sourceType": "recomputed from published aggregate labels",
+    "sourceType": "recomputed from author-released item labels",
     "sourceUrl": "https://github.com/alan-turing-institute/election-ai-safety",
     "sourceCommit": "915a8f8c22fb9cd8a2e4ae6824513760f0468f69",
     "judgeModel": "GPT-3.5 Turbo (zero-shot; upstream protocol)"
@@ -831,7 +831,7 @@
     "softRefusePct": 2.455,
     "refusePct": 67.0,
     "incoherentPct": 0.091,
-    "sourceType": "recomputed from published aggregate labels",
+    "sourceType": "recomputed from author-released item labels",
     "sourceUrl": "https://github.com/alan-turing-institute/election-ai-safety",
     "sourceCommit": "915a8f8c22fb9cd8a2e4ae6824513760f0468f69",
     "judgeModel": "GPT-3.5 Turbo (zero-shot; upstream protocol)"
@@ -858,7 +858,7 @@
     "softRefusePct": 8.091,
     "refusePct": 43.455,
     "incoherentPct": 0.091,
-    "sourceType": "recomputed from published aggregate labels",
+    "sourceType": "recomputed from author-released item labels",
     "sourceUrl": "https://github.com/alan-turing-institute/election-ai-safety",
     "sourceCommit": "915a8f8c22fb9cd8a2e4ae6824513760f0468f69",
     "judgeModel": "GPT-3.5 Turbo (zero-shot; upstream protocol)"
@@ -885,7 +885,7 @@
     "softRefusePct": 5.045,
     "refusePct": 0.0,
     "incoherentPct": 0.0,
-    "sourceType": "recomputed from published aggregate labels",
+    "sourceType": "recomputed from author-released item labels",
     "sourceUrl": "https://github.com/alan-turing-institute/election-ai-safety",
     "sourceCommit": "915a8f8c22fb9cd8a2e4ae6824513760f0468f69",
     "judgeModel": "GPT-3.5 Turbo (zero-shot; upstream protocol)"
@@ -912,7 +912,7 @@
     "softRefusePct": 0.0,
     "refusePct": 2.0,
     "incoherentPct": 0.0,
-    "sourceType": "recomputed from published aggregate labels",
+    "sourceType": "recomputed from author-released item labels",
     "sourceUrl": "https://github.com/alan-turing-institute/election-ai-safety",
     "sourceCommit": "915a8f8c22fb9cd8a2e4ae6824513760f0468f69",
     "judgeModel": "GPT-3.5 Turbo (zero-shot; upstream protocol)"
@@ -939,7 +939,7 @@
     "softRefusePct": 4.455,
     "refusePct": 0.0,
     "incoherentPct": 0.0,
-    "sourceType": "recomputed from published aggregate labels",
+    "sourceType": "recomputed from author-released item labels",
     "sourceUrl": "https://github.com/alan-turing-institute/election-ai-safety",
     "sourceCommit": "915a8f8c22fb9cd8a2e4ae6824513760f0468f69",
     "judgeModel": "GPT-3.5 Turbo (zero-shot; upstream protocol)"
@@ -966,7 +966,7 @@
     "softRefusePct": 5.636,
     "refusePct": 0.0,
     "incoherentPct": 0.0,
-    "sourceType": "recomputed from published aggregate labels",
+    "sourceType": "recomputed from author-released item labels",
     "sourceUrl": "https://github.com/alan-turing-institute/election-ai-safety",
     "sourceCommit": "915a8f8c22fb9cd8a2e4ae6824513760f0468f69",
     "judgeModel": "GPT-3.5 Turbo (zero-shot; upstream protocol)"
@@ -993,7 +993,7 @@
     "softRefusePct": 12.318,
     "refusePct": 23.955,
     "incoherentPct": 0.091,
-    "sourceType": "recomputed from published aggregate labels",
+    "sourceType": "recomputed from author-released item labels",
     "sourceUrl": "https://github.com/alan-turing-institute/election-ai-safety",
     "sourceCommit": "915a8f8c22fb9cd8a2e4ae6824513760f0468f69",
     "judgeModel": "GPT-3.5 Turbo (zero-shot; upstream protocol)"
@@ -1020,7 +1020,7 @@
     "softRefusePct": 0.0,
     "refusePct": 0.0,
     "incoherentPct": 2.0,
-    "sourceType": "recomputed from published aggregate labels",
+    "sourceType": "recomputed from author-released item labels",
     "sourceUrl": "https://github.com/alan-turing-institute/election-ai-safety",
     "sourceCommit": "915a8f8c22fb9cd8a2e4ae6824513760f0468f69",
     "judgeModel": "GPT-3.5 Turbo (zero-shot; upstream protocol)"
@@ -1047,7 +1047,7 @@
     "softRefusePct": 8.364,
     "refusePct": 33.364,
     "incoherentPct": 0.091,
-    "sourceType": "recomputed from published aggregate labels",
+    "sourceType": "recomputed from author-released item labels",
     "sourceUrl": "https://github.com/alan-turing-institute/election-ai-safety",
     "sourceCommit": "915a8f8c22fb9cd8a2e4ae6824513760f0468f69",
     "judgeModel": "GPT-3.5 Turbo (zero-shot; upstream protocol)"
@@ -1074,7 +1074,7 @@
     "softRefusePct": 16.273,
     "refusePct": 14.545,
     "incoherentPct": 0.091,
-    "sourceType": "recomputed from published aggregate labels",
+    "sourceType": "recomputed from author-released item labels",
     "sourceUrl": "https://github.com/alan-turing-institute/election-ai-safety",
     "sourceCommit": "915a8f8c22fb9cd8a2e4ae6824513760f0468f69",
     "judgeModel": "GPT-3.5 Turbo (zero-shot; upstream protocol)"
@@ -1101,7 +1101,7 @@
     "softRefusePct": 23.182,
     "refusePct": 1.136,
     "incoherentPct": 5.955,
-    "sourceType": "recomputed from published aggregate labels",
+    "sourceType": "recomputed from author-released item labels",
     "sourceUrl": "https://github.com/alan-turing-institute/election-ai-safety",
     "sourceCommit": "915a8f8c22fb9cd8a2e4ae6824513760f0468f69",
     "judgeModel": "GPT-3.5 Turbo (zero-shot; upstream protocol)"
@@ -1128,7 +1128,7 @@
     "softRefusePct": 20.0,
     "refusePct": 6.0,
     "incoherentPct": 14.0,
-    "sourceType": "recomputed from published aggregate labels",
+    "sourceType": "recomputed from author-released item labels",
     "sourceUrl": "https://github.com/alan-turing-institute/election-ai-safety",
     "sourceCommit": "915a8f8c22fb9cd8a2e4ae6824513760f0468f69",
     "judgeModel": "GPT-3.5 Turbo (zero-shot; upstream protocol)"
@@ -1155,7 +1155,7 @@
     "softRefusePct": 20.273,
     "refusePct": 1.545,
     "incoherentPct": 6.455,
-    "sourceType": "recomputed from published aggregate labels",
+    "sourceType": "recomputed from author-released item labels",
     "sourceUrl": "https://github.com/alan-turing-institute/election-ai-safety",
     "sourceCommit": "915a8f8c22fb9cd8a2e4ae6824513760f0468f69",
     "judgeModel": "GPT-3.5 Turbo (zero-shot; upstream protocol)"
@@ -1182,7 +1182,7 @@
     "softRefusePct": 26.091,
     "refusePct": 0.727,
     "incoherentPct": 5.455,
-    "sourceType": "recomputed from published aggregate labels",
+    "sourceType": "recomputed from author-released item labels",
     "sourceUrl": "https://github.com/alan-turing-institute/election-ai-safety",
     "sourceCommit": "915a8f8c22fb9cd8a2e4ae6824513760f0468f69",
     "judgeModel": "GPT-3.5 Turbo (zero-shot; upstream protocol)"
@@ -1209,7 +1209,7 @@
     "softRefusePct": 4.0,
     "refusePct": 40.455,
     "incoherentPct": 0.045,
-    "sourceType": "recomputed from published aggregate labels",
+    "sourceType": "recomputed from author-released item labels",
     "sourceUrl": "https://github.com/alan-turing-institute/election-ai-safety",
     "sourceCommit": "915a8f8c22fb9cd8a2e4ae6824513760f0468f69",
     "judgeModel": "GPT-3.5 Turbo (zero-shot; upstream protocol)"
@@ -1236,7 +1236,7 @@
     "softRefusePct": 0.0,
     "refusePct": 8.0,
     "incoherentPct": 2.0,
-    "sourceType": "recomputed from published aggregate labels",
+    "sourceType": "recomputed from author-released item labels",
     "sourceUrl": "https://github.com/alan-turing-institute/election-ai-safety",
     "sourceCommit": "915a8f8c22fb9cd8a2e4ae6824513760f0468f69",
     "judgeModel": "GPT-3.5 Turbo (zero-shot; upstream protocol)"
@@ -1263,7 +1263,7 @@
     "softRefusePct": 2.636,
     "refusePct": 54.182,
     "incoherentPct": 0.0,
-    "sourceType": "recomputed from published aggregate labels",
+    "sourceType": "recomputed from author-released item labels",
     "sourceUrl": "https://github.com/alan-turing-institute/election-ai-safety",
     "sourceCommit": "915a8f8c22fb9cd8a2e4ae6824513760f0468f69",
     "judgeModel": "GPT-3.5 Turbo (zero-shot; upstream protocol)"
@@ -1290,7 +1290,7 @@
     "softRefusePct": 5.364,
     "refusePct": 26.727,
     "incoherentPct": 0.091,
-    "sourceType": "recomputed from published aggregate labels",
+    "sourceType": "recomputed from author-released item labels",
     "sourceUrl": "https://github.com/alan-turing-institute/election-ai-safety",
     "sourceCommit": "915a8f8c22fb9cd8a2e4ae6824513760f0468f69",
     "judgeModel": "GPT-3.5 Turbo (zero-shot; upstream protocol)"
@@ -1317,7 +1317,7 @@
     "softRefusePct": 6.636,
     "refusePct": 2.545,
     "incoherentPct": 0.0,
-    "sourceType": "recomputed from published aggregate labels",
+    "sourceType": "recomputed from author-released item labels",
     "sourceUrl": "https://github.com/alan-turing-institute/election-ai-safety",
     "sourceCommit": "915a8f8c22fb9cd8a2e4ae6824513760f0468f69",
     "judgeModel": "GPT-3.5 Turbo (zero-shot; upstream protocol)"
@@ -1344,7 +1344,7 @@
     "softRefusePct": 2.0,
     "refusePct": 0.0,
     "incoherentPct": 0.0,
-    "sourceType": "recomputed from published aggregate labels",
+    "sourceType": "recomputed from author-released item labels",
     "sourceUrl": "https://github.com/alan-turing-institute/election-ai-safety",
     "sourceCommit": "915a8f8c22fb9cd8a2e4ae6824513760f0468f69",
     "judgeModel": "GPT-3.5 Turbo (zero-shot; upstream protocol)"
@@ -1371,7 +1371,7 @@
     "softRefusePct": 4.364,
     "refusePct": 3.636,
     "incoherentPct": 0.0,
-    "sourceType": "recomputed from published aggregate labels",
+    "sourceType": "recomputed from author-released item labels",
     "sourceUrl": "https://github.com/alan-turing-institute/election-ai-safety",
     "sourceCommit": "915a8f8c22fb9cd8a2e4ae6824513760f0468f69",
     "judgeModel": "GPT-3.5 Turbo (zero-shot; upstream protocol)"
@@ -1398,7 +1398,7 @@
     "softRefusePct": 8.909,
     "refusePct": 1.455,
     "incoherentPct": 0.0,
-    "sourceType": "recomputed from published aggregate labels",
+    "sourceType": "recomputed from author-released item labels",
     "sourceUrl": "https://github.com/alan-turing-institute/election-ai-safety",
     "sourceCommit": "915a8f8c22fb9cd8a2e4ae6824513760f0468f69",
     "judgeModel": "GPT-3.5 Turbo (zero-shot; upstream protocol)"

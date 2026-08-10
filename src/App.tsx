@@ -125,7 +125,7 @@ function App() {
       <header className="site-header">
         <a className="wordmark" href="#top" aria-label="Agency Transfer Benchmark home">
           <span aria-hidden="true">AT</span>
-          <strong>Agency Transfer Benchmark</strong>
+          <strong>Agency Transfer · Wave 0 Evidence Map</strong>
         </a>
         <nav aria-label="Primary navigation">
           <a href="#timeline">Chart</a>
@@ -141,22 +141,22 @@ function App() {
         <aside className="draft-banner" aria-label="Publication status">
           <strong>DRAFT IN PROGRESS</strong>
           <span>
-            Part of Miguel Guerrero’s Cambridge:ERA research on Frontier AI, Harmful Manipulation,
-            and Election Security. Independent research; not an official ERA benchmark.
+            Research conducted during Miguel Guerrero’s ERA:AI Fellowship in Cambridge.
+            Independent work; not an official ERA:AI benchmark.
           </span>
         </aside>
 
         <section className="lead" id="top">
           <div className="lead-chart-heading" id="timeline">
             <div>
-              <p className="section-number">01 · Frontier longitudinal view · 2024–2026</p>
-              <h1>Frontier harmful-influence evidence, through 2026</h1>
+              <p className="section-number">01 · Release/reference view · data through 10 August 2026</p>
+              <h1>Harmful-influence evidence across a frontier-focused registry</h1>
             </div>
             <p>
-              The primary rail is restricted to frontier-scale releases: open-weight models with at
-              least 100 billion total parameters, plus separately labelled hosted frontier and
-              requested comparison APIs. A release without a comparable result remains visible as
-              missing—not zero.
+              The rail combines a large open-weight panel (at least 100 billion total parameters)
+              with separately labelled hosted frontier and comparison APIs. The threshold is a
+              sampling rule, not a frontier definition. A release without a comparable result
+              remains visible as missing—not zero.
             </p>
           </div>
 
@@ -171,7 +171,7 @@ function App() {
 
           {frontierModels.length > 0 ? (
             <div className="stat-line frontier-stat-line" aria-label="Frontier evidence coverage">
-              <div><strong>{frontierStats.releases}</strong><span>frontier and requested comparison releases</span></div>
+              <div><strong>{frontierStats.releases}</strong><span>frontier and comparison registry entries</span></div>
               <div><strong>{frontierStats.observations}</strong><span>source-linked observations</span></div>
               <div><strong>{frontierStats.measures}</strong><span>native benchmark measures</span></div>
               <div><strong>2024–2026</strong><span>fixed release-date window</span></div>
@@ -181,7 +181,7 @@ function App() {
           <div className="lead-notes">
             <article>
               <p className="mini-label">Frozen 26 July 2026 snapshot</p>
-              <h3>One protocol, a 71-point spread.</h3>
+              <h3>InfoOpsBench reports 5.5%–76.5% compliance under one protocol.</h3>
               <p>
                 InfoOpsBench reported 5.5% compliance for Claude Sonnet 5 and 76.5% for GLM-5.2.
                 That contrast is evidence of endpoint behaviour under one rubric—not proof of why
@@ -201,9 +201,8 @@ function App() {
 
         <section className="opening-thesis">
           <p>
-            Frontier behaviour is only the first link. Safeguards and access shape who can use it;
-            applications, memory, tools, and repeated exposure determine how model capability can
-            become infrastructure for influence and agency transfer.
+            Model behaviour is one evidence layer. System design, access, repeated exposure, and
+            human outcomes are tracked separately.
           </p>
         </section>
 
@@ -271,7 +270,7 @@ function App() {
           <div className="section-heading split-heading">
             <div>
               <p className="section-number">04 · Safeguards, access, and efficacy</p>
-              <h2>Related evidence. No false composite.</h2>
+              <h2>Related evidence, kept separate</h2>
             </div>
             <p>
               APE, MASK, DisElect, agentic evaluations, and human studies answer different questions.
@@ -289,7 +288,7 @@ function App() {
           <div className="section-heading split-heading">
             <div>
               <p className="section-number">05 · Practical access</p>
-              <h2>Frontier capability can diffuse through open weights</h2>
+              <h2>Access conditions for large open-weight models</h2>
             </div>
             <p>
               Parameter count is an inclusion rule, not a capability score. This secondary view
@@ -310,7 +309,7 @@ function App() {
             <p>
               DisElect supplies a fixed election-operation protocol across older and smaller models.
               It remains useful context, but its mixed-size 2019–2024 cohort is deliberately excluded
-              from the primary frontier-only claim.
+              from the primary frontier registry.
             </p>
           </div>
           {errors.diselect ? <p className="inline-data-error" role="alert">DisElect evidence could not load: {errors.diselect}</p> : null}
@@ -329,7 +328,7 @@ function App() {
           <div className="section-heading split-heading">
             <div>
               <p className="section-number">Methods</p>
-              <h2>The claim must follow the measurement</h2>
+              <h2>Methods and comparability</h2>
             </div>
             <p>
               Release date is descriptive. The project does not estimate a causal rate of progress,
@@ -375,12 +374,13 @@ function App() {
           <div className="section-heading split-heading">
             <div>
               <p className="section-number">Responsible release</p>
-              <h2>Reproducible without becoming operational</h2>
+              <h2>Public and restricted artifacts</h2>
             </div>
             <p>
-              Public artifacts include manifests, aggregate labels, provenance, protocol hashes,
-              uncertainty, failures, and costs. Raw harmful generations, targeting material, and
-              current-election operational content remain restricted.
+              Public artifacts include manifests, content-redacted item-level automated labels
+              keyed by hashes, aggregates, provenance, uncertainty, failures, and costs. Statement
+              and generation text, targeting material, and current-election operational content are
+              not published.
             </p>
           </div>
           <div className="release-links">
@@ -395,10 +395,10 @@ function App() {
 
       <footer className="site-footer">
         <div>
-          <strong>Agency Transfer Benchmark</strong>
+          <strong>Agency Transfer Benchmark · Wave 0 Evidence Map</strong>
           <p>
-            Part of Miguel Guerrero’s Cambridge:ERA research on Frontier AI, Harmful Manipulation,
-            and Election Security. Independent research; not an official ERA benchmark.
+            Research conducted during Miguel Guerrero’s ERA:AI Fellowship in Cambridge.
+            Independent work; not an official ERA:AI benchmark.
           </p>
         </div>
         <div>

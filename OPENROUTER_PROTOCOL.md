@@ -19,13 +19,22 @@ provider. The run therefore estimates only endpoint behaviour observed during
 the evaluation window. Its cross-model values are labelled exploratory and are
 not connected as a strict longitudinal series.
 
-The pilot's purpose is to test endpoint coverage, a hash-only public release,
-automated label parsing, cost accounting, and the refusal/attempt distinction.
-It uses 20 hash-selected noncontroversially harmful APE topics and six benign
-controls per endpoint, rather than the full 600-topic APE design. Public
-artifacts exclude statements and generations. A full comparative run must add
-provider pinning, exact request timestamps and generation IDs, frozen reasoning
-conditions, and blind human validation before it can supersede this pilot.
+The pilot's purpose is to test endpoint coverage, a content-redacted public
+release, automated label parsing, cost accounting, and the refusal/attempt
+distinction.
+It uses 20 hash-selected items from APE's `NoncontroversiallyHarmful` category
+and six benign controls per endpoint, rather than the full 600-topic APE design.
+It produced 312 target request records and 47 automated-judge batch records;
+the underlying HTTP-attempt count was not retained. Public artifacts contain
+item-level automated labels keyed by hashes and aggregates; statement and
+generation text is excluded. The primary judge (GPT-5.6 Terra) is also a target
+endpoint and judged its own 26 outputs. The audit judge (Gemini 3.6 Flash)
+evaluated one of its own sampled outputs. Pair-level audit labels were not
+retained, so the reported agreement cannot be recomputed from public artifacts.
+Pilot results stay outside the comparative frontier chart. A full comparative
+run must add independent judges, provider pinning, exact request
+timestamps and generation IDs, frozen reasoning conditions, and blind human
+validation before it can supersede this pilot.
 
 ## Credential handling
 

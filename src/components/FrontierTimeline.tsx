@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, type KeyboardEvent } from "react";
 
 export type FrontierAccessType = "open-weight" | "hosted";
 
@@ -89,7 +89,7 @@ const isInfoOpsCompliance = (option: SeriesOption) =>
   /info\s*ops|infoops/i.test(option.benchmarkId) &&
   /compl|compliance/i.test(`${option.metricKey} ${option.label}`);
 
-const activateWithKeyboard = (event: React.KeyboardEvent<SVGElement>, activate: () => void) => {
+const activateWithKeyboard = (event: KeyboardEvent<SVGElement>, activate: () => void) => {
   if (event.key === "Enter" || event.key === " ") {
     event.preventDefault();
     activate();
@@ -233,7 +233,7 @@ export function FrontierTimeline({ models, observations }: FrontierTimelineProps
     <div className="chart-shell frontier-timeline-shell">
       <div className="chart-intro-row">
         <p className="chart-measure">
-          <strong>{selectedSeriesOption?.label ?? "Frontier benchmark coverage"}</strong>
+          <strong>{selectedSeriesOption?.label ?? "Registry benchmark coverage"}</strong>
           <span>
             {selectedSeriesOption
               ? `${selectedSeriesOption.benchmarkId} · native metric, not a cross-benchmark score`
@@ -250,7 +250,7 @@ export function FrontierTimeline({ models, observations }: FrontierTimelineProps
         </p>
       </div>
 
-      <div className="chart-controls frontier-chart-controls" role="group" aria-label="Frontier timeline filters">
+      <div className="chart-controls frontier-chart-controls" role="group" aria-label="Release and reference timeline filters">
         <label>
           Benchmark measure
           <select value={effectiveSeries} onChange={(event) => setSelectedSeries(event.target.value)}>
@@ -274,7 +274,7 @@ export function FrontierTimeline({ models, observations }: FrontierTimelineProps
         <label>
           Access
           <select value={accessFilter} onChange={(event) => setAccessFilter(event.target.value as AccessFilter)}>
-            <option value="all">All frontier releases</option>
+            <option value="all">All registry entries</option>
             <option value="open-weight">Open-weight</option>
             <option value="hosted">Hosted API</option>
           </select>
@@ -290,7 +290,7 @@ export function FrontierTimeline({ models, observations }: FrontierTimelineProps
           role="group"
           aria-labelledby="frontier-chart-title frontier-chart-description"
         >
-          <title id="frontier-chart-title">Frontier AI benchmark observations by model release date, 2024 to 2026</title>
+          <title id="frontier-chart-title">Benchmark observations by model release date, 2024 to 2026</title>
           <desc id="frontier-chart-description">
             The vertical scale shows the selected benchmark&apos;s native percentage. The release rail
             shows every eligible model in the selected access class. Hollow rail markers mean that no
@@ -402,7 +402,7 @@ export function FrontierTimeline({ models, observations }: FrontierTimelineProps
             aria-hidden="true"
           />
           <text className="frontier-rail-title" x={MARGIN.left} y={RELEASE_RAIL_Y - 18} aria-hidden="true">
-            Frontier releases · hollow marker = no comparable result in this view
+            Registry entries · hollow marker = no comparable result in this view
           </text>
 
           {visibleModels.map((model, index) => {
@@ -514,7 +514,7 @@ export function FrontierTimeline({ models, observations }: FrontierTimelineProps
       </p>
 
       <details className="data-table-details">
-        <summary>View accessible frontier table ({visibleModels.length} releases; {visibleObservations.length} results)</summary>
+        <summary>View accessible release/reference table ({visibleModels.length} entries; {visibleObservations.length} results)</summary>
         <div className="table-wrap">
           <table>
             <thead>

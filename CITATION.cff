@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 message: "If you use this software or its project-authored data, cite it and the relevant upstream sources."
-title: "Agency Transfer Benchmark"
+title: "Agency Transfer Benchmark: Wave 0 Evidence Map"
 type: software
 version: 0.2.0-draft
 date-released: 2026-08-10
@@ -11,9 +11,10 @@ repository-code: "https://github.com/apolmig/agencytransfer"
 url: "https://miguelguerrero.eu/agencytransfer/"
 license: Apache-2.0
 abstract: >-
-  A frontier-only, source-linked retrospective release-series map of AI model
-  behaviour, safeguards, access conditions, and system-level research questions
-  relevant to harmful manipulation and election security.
+  A source-linked evidence map of AI model behaviour, safeguards, access
+  conditions, and system-level research questions relevant to harmful
+  manipulation and election security, with an exploratory evaluation-pipeline
+  pilot.
 keywords:
   - artificial intelligence
   - evaluation
