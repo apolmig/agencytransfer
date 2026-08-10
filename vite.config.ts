@@ -6,6 +6,11 @@ const entry = (path: string) => new URL(path, import.meta.url).pathname;
 export default defineConfig({
   plugins: [react()],
   base: "/agencytransfer/",
+  server: {
+    host: "0.0.0.0",
+    port: 4173,
+    allowedHosts: ["terminal.local"],
+  },
   build: {
     sourcemap: true,
     rollupOptions: {

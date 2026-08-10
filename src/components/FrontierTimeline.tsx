@@ -360,9 +360,10 @@ export function FrontierTimeline({ models, observations, estimates, frontier }: 
         >
           <title id="frontier-chart-title">{selectedMeasure.label}, frontier AI releases from 2022 to 2026</title>
           <desc id="frontier-chart-description">
-            Scores use a zero to one hundred vertical scale. The estimated view shows eligible model-level proxy medians,
-            eighty percent modelled intervals, and a monotonic frontier envelope. Hollow release marks mean insufficient
-            evidence in the current view, not a score of zero. An accessible table follows the chart.
+            {measure === "estimate"
+              ? "Scores use a zero to one hundred vertical scale. The estimated view shows eligible model-level proxy medians, eighty percent modelled intervals, and a monotonic frontier envelope."
+              : `The selected ${selectedMeasure.label} view shows benchmark-native percentages on a zero to one hundred vertical scale.`}
+            {" "}Hollow release marks mean insufficient evidence in the current view, not a score of zero. An accessible table follows the chart.
           </desc>
 
           {[0, 25, 50, 75, 100].map((tick) => (
