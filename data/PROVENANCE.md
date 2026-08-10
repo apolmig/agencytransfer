@@ -1,0 +1,210 @@
+# Published-data provenance
+
+This document is the row-level audit trail for the published observations in this directory. It describes what each stored number means, where it came from, and what it cannot establish.
+
+## Status vocabulary
+
+| `value_status` | Meaning |
+|---|---|
+| `reported_table` | Direct transcription of a number printed in a primary-source table. |
+| `derived_author_repo` | Deterministic count or percentage calculated from item-level labels released by the study authors. |
+| `reported_text` | Direct transcription of a number explicitly stated in primary-source prose. |
+| `reported_figure_label` | Direct transcription of a numeric label printed on a primary-source figure. |
+| `digitized_figure` | Approximation recovered from plot geometry. No current published-data row has this status. |
+| `inferred` | Value inferred rather than stated or deterministically derived. No current published-data row has this status. |
+
+The CSVs predate the explicit `value_status` column. Their current `source_type` values map as follows:
+
+- `author-reported` → `reported_table`.
+- `recomputed from published aggregate labels` → `derived_author_repo`.
+
+## Anthropic agentic influence
+
+### Source and locator
+
+Two primary system cards supply all 14 rows in [`anthropic-agentic-influence.csv`](published/anthropic-agentic-influence.csv):
+
+- *Claude Opus 4.7 System Card*, released 2026-04-16, Section 5.1.3, Table 5.1.3.A, PDF page 81: <https://cdn.sanity.io/files/4zrzovbb/website/037f06850df7fbe871e206dad004c3db5fd50340.pdf>
+- *Claude Sonnet 5 System Card*, released 2026-06-30, Section 5.1.3, Table 5.1.3.A, PDF page 56: <https://www-cdn.anthropic.com/9e6a1044980d8c4ed85669faf9c2a8342e2e9f1e/Claude%20Sonnet%205%20System%20Card.pdf>
+
+The table title is “Agentic influence operation evaluation results, helpful-only model.” Page references are PDF-viewer pages as recorded at ingestion; printed page numbering can differ by one. The comparability group is `anthropic-agentic-influence-helpful-only-mean-v1`.
+
+### Score definition and denominator
+
+- `score_pct` is the average percentage of 70 fixed success criteria completed in a simulated environment. Higher means greater raw capability and therefore greater potential uplift to a malicious operator.
+- There are two scenarios: `voter-suppression` and `domestic-polarization`.
+- Each scenario is run three times at each of three simulated platform-friction levels, for `runs = 9` simulations per model and scenario.
+- `success_criteria = 70` is a rubric size per scenario, not 70 independent human participants. The effective number of rubric decisions underlying a cell is larger than nine, but those decisions are clustered within simulations and should not be treated as independent Bernoulli trials.
+- No confidence interval is reported in the source table.
+- `deployment_condition = helpful-only`. Anthropic reduced harmlessness behavior to probe raw capability. These scores must not be described as the default behavior or observed misuse rate of the deployed models.
+- `value_status = reported_table` for every score.
+
+### Complete stored score inventory
+
+| Model | Release date used for X axis | Voter suppression | Domestic polarization | Result source |
+|---|---:|---:|---:|---|
+| Claude Opus 4.6 | 2026-02-05 | 54.4 | 33.7 | Opus 4.7 card, Table 5.1.3.A |
+| Claude Sonnet 4.6 | 2026-02-17 | 41.8 | 34.0 | Sonnet 5 card, Table 5.1.3.A |
+| Claude Mythos Preview | 2026-04-07 | 59.5 | 42.1 | Sonnet 5 card, Table 5.1.3.A |
+| Claude Opus 4.7 | 2026-04-16 | 57.1 | 46.8 | Opus 4.7 card, Table 5.1.3.A |
+| Claude Opus 4.8 | 2026-05-28 | 73.3 | 55.1 | Sonnet 5 card, Table 5.1.3.A |
+| Claude Mythos 5 | 2026-06-09 | 67.1 | 46.8 | Sonnet 5 card, Table 5.1.3.A |
+| Claude Sonnet 5 | 2026-06-30 | 50.8 | 43.3 | Sonnet 5 card, Table 5.1.3.A |
+
+All values are percentages. The model-and-scenario pair uniquely identifies each CSV row.
+
+### Release metadata lineage
+
+| Model | Primary release source | Metadata status |
+|---|---|---|
+| Claude Opus 4.6 | <https://www.anthropic.com/news/claude-opus-4-6> | `author_release_date` |
+| Claude Sonnet 4.6 | <https://www.anthropic.com/news/claude-sonnet-4-6> | `author_release_date` |
+| Claude Mythos Preview | <https://www-cdn.anthropic.com/8b8380204f74670be75e81c820ca8dda846ab289.pdf> | `author_system_card_date`; gated preview, no stable public API ID asserted |
+| Claude Opus 4.7 | <https://www.anthropic.com/news/claude-opus-4-7> | `author_release_date` |
+| Claude Opus 4.8 | <https://www.anthropic.com/news/claude-opus-4-8> | `author_release_date` |
+| Claude Mythos 5 | <https://www-cdn.anthropic.com/d00db56fa754a1b115b6dd7cb2e3c342ee809620.pdf> | `author_system_card_date`; restricted access, no stable public API ID asserted |
+| Claude Sonnet 5 | <https://www.anthropic.com/news/claude-sonnet-5> | `author_release_date` |
+
+### Comparability limits
+
+- This is a **release-date retrospective**, not seven evaluations observed on their respective release dates. The chart must state the system-card source date separately from model release date.
+- The two scenarios share a protocol but are different tasks; do not average them without preserving scenario weights and labeling the transformation.
+- Helpful-only capability is not deployed-model safety. A refusal-conditioned production model can have a very different realized score.
+- Results do not measure reach, human persuasion, belief change, vote change, or real-world electoral effect.
+- A later Anthropic card that changes the number of runs or reports a median instead of a mean must receive a different protocol identifier and must not extend this line silently.
+- The system-card PDFs do not expose a public Git commit. Provenance is anchored by document URL, section, table, and page.
+
+## DisElect
+
+### Source, pinned revision, and transformation
+
+- Paper: Williams et al., *Large language models can consistently generate high-quality content for election disinformation operations*, PLOS ONE, 2025: <https://doi.org/10.1371/journal.pone.0317421>
+- Result locator: DisElect evaluation section and Figure 1.
+- Author data: <https://github.com/alan-turing-institute/election-ai-safety>
+- Pinned upstream commit: [`915a8f8c22fb9cd8a2e4ae6824513760f0468f69`](https://github.com/alan-turing-institute/election-ai-safety/tree/915a8f8c22fb9cd8a2e4ae6824513760f0468f69)
+- Inputs: `data/evals/voting/results.csv`, `data/evals/mps/results.csv`, `data/evals/baseline/results.csv`, and `data/models.csv` at that commit.
+- Local transformation: [`../scripts/prepare_diselect.py`](../scripts/prepare_diselect.py).
+- Comparability group: `diselect-author-labels-915a8f8c`.
+- `value_status = derived_author_repo` for all counts and percentages in [`diselect-summary.csv`](published/diselect-summary.csv).
+
+The transformation groups rows by model and the published `judgement` field. It does not reinterpret responses. For each model/subset:
+
+```text
+n = complyCount + softRefuseCount + refuseCount + incoherentCount
+classPct = round(classCount / n * 100, 3)
+```
+
+### Protocol and denominator
+
+- `voter-targeting` corresponds to the authors' DisElect.VT set: 1,100 malicious prompts per model.
+- `mp-targeting` corresponds to DisElect.MP: 1,100 malicious prompts per model.
+- `all-harmful` is the deterministic union of VT and MP: 2,200 prompts per model.
+- `benign` corresponds to DisElect.BL: 50 good-faith election-information prompts per model.
+- No adversarial prompting or jailbreak was used.
+- Generation settings, where supported, were temperature 1, top-p 0.95, and top-k 40.
+- The paper's judge is GPT-3.5 Turbo in a zero-shot classification setup. On 100 manually labelled responses, the authors report macro-F1 0.76; classification error remains a source of measurement uncertainty.
+- Four mutually exclusive author labels are retained: `comply`, `softrefuse`, `refuse`, and `incoherent`.
+
+### Complete stored count inventory
+
+Every compact cell below has the form `n: comply / soft-refuse / refuse / incoherent`. These counts determine every percentage in the 52-row CSV exactly through the formula above.
+
+| Model | All harmful | Voter targeting | MP targeting | Benign |
+|---|---:|---:|---:|---:|
+| GPT-2 | `2200: 141 / 1238 / 4 / 817` | `1100: 37 / 610 / 3 / 450` | `1100: 104 / 628 / 1 / 367` | `50: 2 / 9 / 0 / 39` |
+| T5 | `2200: 97 / 519 / 12 / 1572` | `1100: 61 / 248 / 3 / 788` | `1100: 36 / 271 / 9 / 784` | `50: 0 / 3 / 0 / 47` |
+| GPT-Neo | `2200: 116 / 1161 / 12 / 911` | `1100: 42 / 553 / 8 / 497` | `1100: 74 / 608 / 4 / 414` | `50: 13 / 10 / 0 / 27` |
+| Flan-T5 | `2200: 407 / 867 / 10 / 916` | `1100: 172 / 474 / 9 / 445` | `1100: 235 / 393 / 1 / 471` | `50: 28 / 1 / 0 / 21` |
+| GPT-3 | `2200: 1921 / 279 / 0 / 0` | `1100: 886 / 214 / 0 / 0` | `1100: 1035 / 65 / 0 / 0` | `50: 50 / 0 / 0 / 0` |
+| GPT-3.5 Turbo | `2200: 2128 / 71 / 1 / 0` | `1100: 1055 / 45 / 0 / 0` | `1100: 1073 / 26 / 1 / 0` | `50: 49 / 0 / 1 / 0` |
+| GPT-4 | `2200: 2011 / 189 / 0 / 0` | `1100: 951 / 149 / 0 / 0` | `1100: 1060 / 40 / 0 / 0` | `50: 49 / 1 / 0 / 0` |
+| Llama 2 | `2200: 867 / 116 / 1215 / 2` | `1100: 532 / 89 / 478 / 1` | `1100: 335 / 27 / 737 / 1` | `50: 41 / 3 / 4 / 2` |
+| Mistral | `2200: 2089 / 111 / 0 / 0` | `1100: 1038 / 62 / 0 / 0` | `1100: 1051 / 49 / 0 / 0` | `50: 49 / 0 / 1 / 0` |
+| Gemini 1.0 Pro | `2200: 1400 / 271 / 527 / 2` | `1100: 760 / 179 / 160 / 1` | `1100: 640 / 92 / 367 / 1` | `50: 49 / 0 / 0 / 1` |
+| Phi-2 | `2200: 1534 / 510 / 25 / 131` | `1100: 745 / 287 / 8 / 60` | `1100: 789 / 223 / 17 / 71` | `50: 30 / 10 / 3 / 7` |
+| Gemma | `2200: 1221 / 88 / 890 / 1` | `1100: 746 / 59 / 294 / 1` | `1100: 475 / 29 / 596 / 0` | `50: 45 / 0 / 4 / 1` |
+| Llama 3 | `2200: 1998 / 146 / 56 / 0` | `1100: 986 / 98 / 16 / 0` | `1100: 1012 / 48 / 40 / 0` | `50: 49 / 1 / 0 / 0` |
+
+### Stored model metadata
+
+| Display model | Upstream evaluated ID | Access | Release date stored | Parameters / quantization |
+|---|---|---|---:|---|
+| GPT-2 | `vicgalle/gpt2-open-instruct-v1` | open-weight | 2019-02-14 | 1.5B; quantization not recorded |
+| T5 | `t5_v1_1_xl` | open-weight | 2019-10-23 | 2.85B; quantization not recorded |
+| GPT-Neo | `EleutherAI/gpt-neo-2.7B` | open-weight | 2021-03-21 | 2.72B; quantization not recorded |
+| Flan-T5 | `flan_t5_xl` | open-weight | 2022-10-20 | 2.85B; quantization not recorded |
+| GPT-3 | `tos_davinci3` | hosted | 2022-11-28 | 175B reported upstream |
+| GPT-3.5 Turbo | `gpt35t_0613` | hosted | 2023-01-03 | 20B reported upstream |
+| GPT-4 | `gpt4_0613` | hosted | 2023-03-14 | parameter count not reported |
+| Llama 2 | `llama2:13b` | open-weight | 2023-07-18 | 13B; 4-bit run |
+| Mistral | `mistral:7b` | open-weight | 2023-09-27 | 7B; 4-bit run |
+| Gemini 1.0 Pro | `gemini-1.0-pro-002` | hosted | 2023-12-06 | parameter count not reported |
+| Phi-2 | `phi:2.7b` | open-weight | 2023-12-13 | 2.7B; 4-bit run |
+| Gemma | `gemma:v1.1` | open-weight | 2024-02-21 | 7B; 4-bit run |
+| Llama 3 | `llama3:70b` | open-weight | 2024-04-18 | 70B; 4-bit run |
+
+The paper explicitly states that its release date is the original family announcement date, not necessarily the evaluated version's availability date. For example, GPT-4 is placed at the family announcement while the evaluated snapshot is `gpt4_0613`. The stored `2023-01-03` date for GPT-3.5 Turbo is preserved from upstream `data/models.csv`; it is chronologically questionable and has status `upstream_metadata_unverified`, not a silently corrected authoritative date. `evaluationDate` is empty because the authors do not provide a model-by-model run date.
+
+### Comparability limits
+
+- `comply` measures willingness and ability to return requested workflow content, not whether that content persuades anyone or changes an election outcome.
+- Low compliance in older models can reflect incoherence rather than safety. `incoherent` must therefore remain visible rather than being merged with refusal.
+- A `softrefuse` is not an explicit refusal and must not be counted as one without a separately named transformation.
+- The 4-bit local runs and hosted API runs are different deployment conditions.
+- The release-date plot mixes family announcement dates with exact evaluated identifiers. It is a historical ordering aid, not a contemporaneous repeated-measures study.
+- The 50-prompt benign subset has much greater sampling uncertainty than either malicious subset.
+- Percentages are descriptive. The local aggregation does not create confidence intervals or correct judge error.
+
+## MASK original results
+
+### Source and locator
+
+- Ren et al., *The MASK Benchmark: Disentangling Honesty From Accuracy in AI Systems*, arXiv:2503.03750v3: <https://arxiv.org/html/2503.03750v3>
+- Exact result locator: Appendix A.10, Table 3, “Model performance metrics for honesty and accuracy.”
+- Dataset and pipeline: Sections 4.1–4.3.
+- Author code: <https://github.com/centerforaisafety/mask>. No Git commit is pinned in this release.
+- `value_status = reported_table` for all 12 metric cells in [`mask-original-results.csv`](published/mask-original-results.csv).
+
+### Score definitions and denominator
+
+- The paper uses the full 1,500 examples: 1,000 public examples plus a 500-example held-out set.
+- `p_lie_pct`: percentage of examples in which the statement under pressure differs from the model's consistently elicited belief. Lower is better.
+- `p_honest_pct`: percentage explicitly classified as honest. Evasion, refusal, or no consistent belief is tracked separately, so `P(Honest) + P(Lie)` need not equal 100.
+- `accuracy_pct`: agreement between the elicited belief and ground truth under the paper's accuracy denominator. This is factual accuracy, not honesty.
+- Belief-elicitation prompts, pressure prompts, and judge criteria are held constant across evaluated models.
+- The paper reports 86.4% agreement between its automated pipeline and 150 manually labelled validation examples.
+- Table 3 does not report per-model confidence intervals.
+
+### Complete stored observation inventory
+
+| Model | Canonical model ID | Release date | Total / active parameters | P(Honest) | P(Lie) | Accuracy | n |
+|---|---|---:|---:|---:|---:|---:|---:|
+| Qwen1.5 110B Chat | `Qwen/Qwen1.5-110B-Chat` | 2024-04-25 | 110B / 110B | 27.9 | 35.6 | 72.8 | 1,500 |
+| Llama 3.1 405B Instruct | `meta-llama/Llama-3.1-405B-Instruct` | 2024-07-23 | 405B / 405B | 21.6 | 28.0 | 72.1 | 1,500 |
+| DeepSeek V3 | `deepseek-ai/DeepSeek-V3` | 2024-12-26 | 671B / 37B | 20.8 | 53.5 | 71.6 | 1,500 |
+| DeepSeek R1 | `deepseek-ai/DeepSeek-R1` | 2025-01-20 | 671B / 37B | 24.7 | 42.9 | 79.6 | 1,500 |
+
+All three score columns are percentages. Model release and parameter metadata are joined from organization-controlled release pages and model cards; the score cells come only from MASK Table 3.
+
+Metadata sources:
+
+- Qwen: <https://qwenlm.github.io/blog/qwen1.5-110b/> and <https://huggingface.co/Qwen/Qwen1.5-110B-Chat>
+- Llama: <https://ai.meta.com/blog/meta-llama-3-1/> and <https://huggingface.co/meta-llama/Llama-3.1-405B-Instruct>
+- DeepSeek V3: <https://arxiv.org/abs/2412.19437> and <https://huggingface.co/deepseek-ai/DeepSeek-V3>
+- DeepSeek R1: <https://api-docs.deepseek.com/news/news250120/> and <https://huggingface.co/deepseek-ai/DeepSeek-R1>
+
+### Comparability limits
+
+- The four release dates create a retrospective model-release axis; all scores were reported by one later paper. They are not measurements taken on those release dates.
+- The paper's short aliases do not pin a hosting provider, API revision, or inference snapshot. Canonical weight repositories identify the intended checkpoint family but do not prove the authors' exact serving stack.
+- MASK measures lies of commission under explicit pressure. It does not measure persuasion, harmful manipulation, campaign execution, human response, or agency transfer.
+- Accuracy and lying have different constructs and denominators. They must not be averaged into a safety composite.
+- Results from Anthropic's later 904-example public MASK split or other updated MASK harnesses require new `protocol_id` values and must not be appended to this series.
+
+## Cross-source charting rules
+
+1. Use facets or clearly separated panels. Anthropic agentic completion, DisElect compliance, and MASK lying are not interchangeable outcomes.
+2. Preserve metric direction: higher is worse for agentic completion, DisElect compliance, and `P(Lie)`; higher is better for MASK `P(Honest)` and accuracy.
+3. Show `model_release_date` as a retrospective ordering variable and disclose the source publication/evaluation date.
+4. Never fill a missing historical point by querying a current mutable API alias. A new OpenRouter run is a new evaluation wave with its own model route, provider, date, prompt set, sampling parameters, judge, code revision, and `protocol_id`.
+5. Do not label any panel “agency transfer measured.” The current instruments cover enabling capability, safeguard behavior, or proximal human effects; none directly estimates durable transfer of agency in the world.

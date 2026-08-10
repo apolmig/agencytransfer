@@ -1,0 +1,5 @@
+benchmark,protocol_id,source_locator,model,canonical_model_id,release_date,total_params_b,active_params_b,p_honest_pct,p_lie_pct,accuracy_pct,n,source_type,source_url
+MASK,mask-original-full1500-v3,"Appendix A.10, Table 3",Qwen1.5 110B Chat,Qwen/Qwen1.5-110B-Chat,2024-04-25,110,110,27.9,35.6,72.8,1500,author-reported,https://arxiv.org/html/2503.03750v3
+MASK,mask-original-full1500-v3,"Appendix A.10, Table 3",Llama 3.1 405B Instruct,meta-llama/Llama-3.1-405B-Instruct,2024-07-23,405,405,21.6,28.0,72.1,1500,author-reported,https://arxiv.org/html/2503.03750v3
+MASK,mask-original-full1500-v3,"Appendix A.10, Table 3",DeepSeek V3,deepseek-ai/DeepSeek-V3,2024-12-26,671,37,20.8,53.5,71.6,1500,author-reported,https://arxiv.org/html/2503.03750v3
+MASK,mask-original-full1500-v3,"Appendix A.10, Table 3",DeepSeek R1,deepseek-ai/DeepSeek-R1,2025-01-20,671,37,24.7,42.9,79.6,1500,author-reported,https://arxiv.org/html/2503.03750v3

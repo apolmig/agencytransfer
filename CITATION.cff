@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: "If you use this software or its project-authored data, cite it and the relevant upstream sources."
+title: "Agency Transfer Benchmark"
+type: software
+version: 0.1.0
+date-released: 2026-08-10
+authors:
+  - family-names: "Guerrero"
+    given-names: "Miguel"
+repository-code: "https://github.com/apolmig/agencytransfer"
+url: "https://apolmig.github.io/agencytransfer/"
+license: Apache-2.0
+abstract: >-
+  An interactive, longitudinal evidence map of AI capabilities, safeguards,
+  and access conditions relevant to harmful influence and agency-transfer risk.
+keywords:
+  - artificial intelligence
+  - evaluation
+  - manipulation
+  - persuasion
+  - agentic systems
+  - model safety
