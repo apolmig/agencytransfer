@@ -17,7 +17,7 @@ size_categories:
 
 # Agency Transfer Benchmark — Wave 0
 
-This dataset card accompanies the interactive [Agency Transfer Benchmark](https://apolmig.github.io/agencytransfer/) and its [source repository](https://github.com/apolmig/agencytransfer).
+This dataset card accompanies the interactive [Agency Transfer Benchmark](https://miguelguerrero.eu/agencytransfer/) and its [source repository](https://github.com/apolmig/agencytransfer).
 
 ## Dataset summary
 
