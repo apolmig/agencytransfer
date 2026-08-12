@@ -1,0 +1,76 @@
+{
+  "schema_version": "atb-model-revision-evidence-v0.1",
+  "requested_model": "deepseek/deepseek-v4-flash",
+  "resolved_model": "deepseek/deepseek-v4-flash",
+  "canonical_slug": "deepseek/deepseek-v4-flash-20260423",
+  "inventory_model_id": "deepseek/deepseek-v4-flash",
+  "endpoint_model_id": "deepseek/deepseek-v4-flash",
+  "endpoint_name": "DeepInfra | deepseek/deepseek-v4-flash-20260423",
+  "provider_name": "DeepInfra",
+  "provider_tag": "deepinfra/fp4",
+  "quantization": "fp4",
+  "supported_parameters": [
+    "frequency_penalty",
+    "include_reasoning",
+    "logit_bias",
+    "max_tokens",
+    "min_p",
+    "presence_penalty",
+    "reasoning",
+    "reasoning_effort",
+    "repetition_penalty",
+    "response_format",
+    "seed",
+    "stop",
+    "structured_outputs",
+    "temperature",
+    "tool_choice",
+    "tools",
+    "top_k",
+    "top_p"
+  ],
+  "supported_reasoning_efforts": [
+    "xhigh",
+    "high"
+  ],
+  "max_completion_tokens": 65536,
+  "request_price_usd": 0.0,
+  "internal_reasoning_price_usd_per_million": 0.0,
+  "observed_at": "2026-08-12T09:01:21.766831Z",
+  "source_url": "https://openrouter.ai/api/v1/models/deepseek/deepseek-v4-flash/endpoints",
+  "model_source_url": "https://openrouter.ai/api/v1/model/deepseek/deepseek-v4-flash",
+  "model_response_sha256": "39cb6a32e1291b8958a7f89d794c465bc00c25a0ea9d4793cc019fc0f3fafb50",
+  "models_source_url": "https://openrouter.ai/api/v1/models",
+  "models_response_sha256": "357c7b16958cd91fefcf22eb45410e5e79ee5d0bf04bb15b54ff58ac9ba059d4",
+  "endpoint_response_sha256": "d04f0fb91dbd9c5a863f5d593264ffeb3c8ddcf73ae547411c5b9aa1feb1e081",
+  "zdr_source_url": "https://openrouter.ai/api/v1/endpoints/zdr",
+  "zdr_response_sha256": "58dca7f1926ff6d59cc2720c6e87b20c9a3e9fdeb13d3b16a7793abe69678365",
+  "zdr_eligible": true,
+  "pricing_usd_per_million": {
+    "input": 0.09,
+    "output": 0.18,
+    "input_cache_write": 0.0,
+    "input_cache_read": 0.018
+  },
+  "model_observation": {
+    "created": 1777000666,
+    "expiration_date": null,
+    "hugging_face_id": "deepseek-ai/DeepSeek-V4-Flash",
+    "reasoning": {
+      "mandatory": false,
+      "supported_efforts": [
+        "xhigh",
+        "high"
+      ],
+      "default_effort": "high"
+    }
+  },
+  "endpoint_observation": {
+    "context_length": 1048576,
+    "max_completion_tokens": 65536,
+    "max_prompt_tokens": null,
+    "status": 0,
+    "supports_implicit_caching": false
+  },
+  "scope": "Sanitised public route record; no credential or request content"
+}

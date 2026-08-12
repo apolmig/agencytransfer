@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import os
 import re
 import subprocess
@@ -79,10 +80,18 @@ class DatasetSpec(StrictModel):
 
 
 class RouteMaxPriceSpec(StrictModel):
-    """OpenRouter's per-million-token provider price ceiling."""
+    """OpenRouter's token and fixed-request provider price ceilings."""
 
     prompt: float = Field(gt=0)
     completion: float = Field(gt=0)
+    request: float = Field(ge=0)
+
+    @field_validator("prompt", "completion", "request")
+    @classmethod
+    def finite_price_ceiling(cls, value: float) -> float:
+        if not math.isfinite(value):
+            raise ValueError("OpenRouter price ceilings must be finite")
+        return value
 
 
 class RouteSpec(StrictModel):
@@ -126,6 +135,9 @@ class ModelRevisionSpec(StrictModel):
     """Committed evidence that a paid model id resolved to a fixed snapshot."""
 
     resolved_model: str = Field(pattern=r"^[a-zA-Z0-9][a-zA-Z0-9._:/-]{0,255}$")
+    canonical_slug: str | None = Field(
+        default=None, pattern=r"^[a-zA-Z0-9][a-zA-Z0-9._:/-]{0,255}$"
+    )
     inventory_model_id: str | None = Field(
         default=None, pattern=r"^[a-zA-Z0-9][a-zA-Z0-9._:/-]{0,255}$"
     )
@@ -137,8 +149,20 @@ class ModelRevisionSpec(StrictModel):
     provider_tag: str | None = Field(default=None, pattern=r"^[a-z0-9][a-z0-9._/-]{0,63}$")
     quantization: str | None = Field(default=None, pattern=r"^[a-z0-9][a-z0-9._-]{0,31}$")
     supported_parameters: list[str] = Field(default_factory=list)
+    supported_reasoning_efforts: list[str] = Field(default_factory=list)
+    max_completion_tokens: int | None = Field(default=None, gt=0)
+    request_price_usd: float | None = Field(default=None, ge=0)
+    internal_reasoning_price_usd_per_million: float | None = Field(default=None, ge=0)
     observed_at: str = Field(pattern=r"^20\d{2}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$")
     source_url: str = Field(pattern=r"^https://")
+    model_source_url: str | None = Field(default=None, pattern=r"^https://")
+    model_response_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+    models_source_url: str | None = Field(default=None, pattern=r"^https://")
+    models_response_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+    endpoint_response_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+    zdr_source_url: str | None = Field(default=None, pattern=r"^https://")
+    zdr_response_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+    zdr_eligible: bool | None = None
     evidence_path: str = Field(pattern=r"^evals/model-revisions/[a-zA-Z0-9._/-]+\.json$")
     evidence_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
 
@@ -157,6 +181,22 @@ class ModelRevisionSpec(StrictModel):
             raise ValueError("supported parameters must be sorted and unique")
         if any(not re.fullmatch(r"[a-z][a-z0-9_]{0,63}", item) for item in value):
             raise ValueError("supported parameters must use stable API field names")
+        return value
+
+    @field_validator("supported_reasoning_efforts")
+    @classmethod
+    def stable_reasoning_efforts(cls, value: list[str]) -> list[str]:
+        if len(value) != len(set(value)):
+            raise ValueError("supported reasoning efforts must be unique")
+        if any(not re.fullmatch(r"[a-z][a-z0-9_-]{0,31}", item) for item in value):
+            raise ValueError("supported reasoning efforts must use stable lowercase names")
+        return value
+
+    @field_validator("request_price_usd", "internal_reasoning_price_usd_per_million")
+    @classmethod
+    def finite_provider_price(cls, value: float | None) -> float | None:
+        if value is not None and not math.isfinite(value):
+            raise ValueError("provider prices must be finite")
         return value
 
 
@@ -285,10 +325,13 @@ class ModelCondition(StrictModel):
             model_tokens = set(re.split(r"[^a-z0-9]+", served_model.lower()))
             if mutable_tokens.intersection(model_tokens):
                 raise ValueError("immutable conditions cannot contain mutable model aliases")
+            immutable_identity = served_model
+            if self.model.startswith("openrouter/") and self.revision is not None:
+                immutable_identity = self.revision.canonical_slug or served_model
             explicit_revision = re.search(
                 r"(?:20\d{2}[-_]?\d{2}(?:[-_]?\d{2})?|(?<!\d)\d{8}(?!\d)|"
                 r"(?<![\d.])\d{4}(?![\d.])|[-_:]v?\d{3,}(?:$|[-_:]))",
-                served_model,
+                immutable_identity,
             )
             if not explicit_revision:
                 raise ValueError(
@@ -371,6 +414,7 @@ class RunSpec(StrictModel):
     sample_token_limit: int = Field(gt=0)
     planned_run_cost_envelope_usd: float = Field(ge=0)
     planned_run_token_envelope: int = Field(gt=0)
+    provider_key_limit_usd: float | None = Field(default=None, gt=0)
     log_model_api: bool = False
 
 
@@ -502,12 +546,24 @@ class ProtocolManifest(StrictModel):
                     raise ValueError("frozen OpenRouter conditions require Inspect pricing")
                 if (
                     revision is None
+                    or not revision.canonical_slug
                     or not revision.inventory_model_id
                     or not revision.endpoint_model_id
                     or not revision.endpoint_name
                     or not revision.provider_name
                     or not revision.provider_tag
                     or not revision.quantization
+                    or revision.max_completion_tokens is None
+                    or revision.request_price_usd is None
+                    or revision.internal_reasoning_price_usd_per_million is None
+                    or not revision.model_source_url
+                    or not revision.model_response_sha256
+                    or not revision.models_source_url
+                    or not revision.models_response_sha256
+                    or not revision.endpoint_response_sha256
+                    or not revision.zdr_source_url
+                    or not revision.zdr_response_sha256
+                    or revision.zdr_eligible is not True
                 ):
                     raise ValueError(
                         "frozen OpenRouter conditions require endpoint resolution evidence"
@@ -530,16 +586,32 @@ class ProtocolManifest(StrictModel):
                     raise ValueError(
                         "OpenRouter endpoint evidence must use the requested snapshot inventory"
                     )
+                if revision.model_source_url != (
+                    f"https://openrouter.ai/api/v1/model/{requested_model}"
+                ):
+                    raise ValueError("OpenRouter model evidence must use the invocable model id")
+                if revision.models_source_url != "https://openrouter.ai/api/v1/models":
+                    raise ValueError("OpenRouter model inventory must use the official API")
+                if revision.zdr_source_url != "https://openrouter.ai/api/v1/endpoints/zdr":
+                    raise ValueError("OpenRouter ZDR evidence must use the official inventory")
                 if (
-                    revision.inventory_model_id != revision.resolved_model
+                    requested_model != revision.resolved_model
+                    or revision.inventory_model_id != revision.resolved_model
                     or revision.endpoint_model_id != revision.resolved_model
                 ):
                     raise ValueError(
-                        "OpenRouter inventory and endpoint model ids must match resolved_model"
+                        "OpenRouter requested, resolved, inventory, and endpoint ids must match"
                     )
+                canonical_tokens = set(re.split(r"[^a-z0-9]+", revision.canonical_slug.lower()))
+                if {"auto", "beta", "experimental", "free", "latest", "preview"}.intersection(
+                    canonical_tokens
+                ):
+                    raise ValueError("OpenRouter canonical identity cannot be a mutable alias")
                 required_parameters = set(condition.generate_config).difference(
                     {"attempt_timeout", "timeout"}
                 )
+                if "reasoning_effort" in required_parameters:
+                    required_parameters.add("reasoning")
                 if condition in self.models and self.task.kind == "diselect":
                     required_parameters.update({"temperature", "max_tokens"})
                 elif condition in self.models and self.task.kind == "ape":
@@ -550,12 +622,37 @@ class ProtocolManifest(StrictModel):
                         "OpenRouter endpoint evidence lacks required parameters: "
                         + ", ".join(missing)
                     )
+                requested_effort = condition.generate_config.get("reasoning_effort")
+                if (
+                    requested_effort is not None
+                    and requested_effort not in revision.supported_reasoning_efforts
+                ):
+                    raise ValueError(
+                        "OpenRouter model evidence does not support the frozen reasoning effort"
+                    )
+                requested_max_tokens = condition.generate_config.get("max_tokens")
+                if condition in self.models and self.task.kind == "diselect":
+                    requested_max_tokens = self.task.args["max_tokens"]
+                if (
+                    isinstance(requested_max_tokens, bool)
+                    or not isinstance(requested_max_tokens, int)
+                    or requested_max_tokens <= 0
+                    or revision.max_completion_tokens < requested_max_tokens
+                ):
+                    raise ValueError(
+                        "OpenRouter endpoint cannot satisfy the frozen completion-token limit"
+                    )
                 if (
                     route.max_price.prompt < pricing.input
                     or route.max_price.completion < pricing.output
+                    or route.max_price.request < revision.request_price_usd
                 ):
                     raise ValueError(
                         "OpenRouter max_price cannot be lower than the frozen Inspect pricing"
+                    )
+                if revision.request_price_usd != 0 or route.max_price.request != 0:
+                    raise ValueError(
+                        "frozen OpenRouter conditions currently reject fixed request prices"
                     )
             if self.task.kind == "diselect" and not self.dataset.selected_inventory_sha256:
                 raise ValueError(
@@ -626,12 +723,10 @@ class ProtocolManifest(StrictModel):
                     "sampling contract can be verified"
                 )
             if self.task.kind == "diselect" and any(
-                not {"temperature", "max_tokens"}.issubset(condition.generate_config)
+                "max_tokens" not in condition.generate_config
                 for condition in self.model_roles.values()
             ):
-                raise ValueError(
-                    "frozen DisElect grader roles require explicit temperature and max_tokens"
-                )
+                raise ValueError("frozen DisElect grader roles require explicit max_tokens")
             if self.task.kind == "ape" and any(
                 "max_tokens" not in condition.generate_config for condition in conditions
             ):
@@ -651,6 +746,11 @@ class ProtocolManifest(StrictModel):
                 > self.run.planned_run_cost_envelope_usd + 1e-9
             ):
                 raise ValueError("per-sample cost limit exceeds the planned run envelope")
+            if paid_conditions:
+                if self.run.provider_key_limit_usd is None:
+                    raise ValueError("frozen paid protocols require a provider key hard cap")
+                if self.run.planned_run_cost_envelope_usd > self.run.provider_key_limit_usd + 1e-9:
+                    raise ValueError("planned run cost exceeds the provider key hard cap")
         if self.task.kind == "canary":
             if any(not condition.model.startswith("mockllm/") for condition in self.models):
                 raise ValueError("the public canary must use mock models only")
@@ -703,6 +803,23 @@ def sha256_file(path: Path) -> str:
         for block in iter(lambda: handle.read(1024 * 1024), b""):
             digest.update(block)
     return digest.hexdigest()
+
+
+def _provider_price(pricing: Any, field: str, *, per_million: bool) -> float:
+    if not isinstance(pricing, dict):
+        raise ValueError("provider pricing must be an object")
+    value = pricing.get(field)
+    if value is None:
+        return 0.0
+    if isinstance(value, bool):
+        raise ValueError(f"provider price {field} is invalid")
+    try:
+        result = float(value)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(f"provider price {field} is invalid") from exc
+    if not math.isfinite(result) or result < 0:
+        raise ValueError(f"provider price {field} is invalid")
+    return result * 1_000_000 if per_million else result
 
 
 def sha256_manifest(path: Path) -> str:
@@ -835,6 +952,7 @@ def verify_model_revision_evidence(manifest: ProtocolManifest, repo_root: Path) 
                 f"model revision evidence is not valid JSON for {condition.condition_id}"
             ) from exc
         expected_evidence = {
+            "schema_version": "atb-model-revision-evidence-v0.1",
             "requested_model": condition.model.partition("/")[2],
             "resolved_model": revision.resolved_model,
             "observed_at": revision.observed_at,
@@ -846,6 +964,7 @@ def verify_model_revision_evidence(manifest: ProtocolManifest, repo_root: Path) 
         if condition.model.startswith("openrouter/"):
             expected_evidence.update(
                 {
+                    "canonical_slug": revision.canonical_slug,
                     "inventory_model_id": revision.inventory_model_id,
                     "endpoint_model_id": revision.endpoint_model_id,
                     "endpoint_name": revision.endpoint_name,
@@ -853,6 +972,20 @@ def verify_model_revision_evidence(manifest: ProtocolManifest, repo_root: Path) 
                     "provider_tag": revision.provider_tag,
                     "quantization": revision.quantization,
                     "supported_parameters": revision.supported_parameters,
+                    "supported_reasoning_efforts": revision.supported_reasoning_efforts,
+                    "max_completion_tokens": revision.max_completion_tokens,
+                    "request_price_usd": revision.request_price_usd,
+                    "internal_reasoning_price_usd_per_million": (
+                        revision.internal_reasoning_price_usd_per_million
+                    ),
+                    "model_source_url": revision.model_source_url,
+                    "model_response_sha256": revision.model_response_sha256,
+                    "models_source_url": revision.models_source_url,
+                    "models_response_sha256": revision.models_response_sha256,
+                    "endpoint_response_sha256": revision.endpoint_response_sha256,
+                    "zdr_source_url": revision.zdr_source_url,
+                    "zdr_response_sha256": revision.zdr_response_sha256,
+                    "zdr_eligible": revision.zdr_eligible,
                 }
             )
         if not isinstance(evidence, dict) or any(
@@ -861,6 +994,168 @@ def verify_model_revision_evidence(manifest: ProtocolManifest, repo_root: Path) 
             raise ValueError(
                 f"model revision evidence does not match {condition.condition_id} exactly"
             )
+        if condition.model.startswith("openrouter/"):
+            raw_responses = {
+                "model": (
+                    revision.model_response_sha256,
+                    revision.model_source_url,
+                ),
+                "models": (
+                    revision.models_response_sha256,
+                    revision.models_source_url,
+                ),
+                "endpoint": (
+                    revision.endpoint_response_sha256,
+                    revision.source_url,
+                ),
+                "zdr": (
+                    revision.zdr_response_sha256,
+                    revision.zdr_source_url,
+                ),
+            }
+            raw_payloads: dict[str, Any] = {}
+            for name, (raw_hash, source_url) in raw_responses.items():
+                if raw_hash is None or source_url is None:
+                    raise ValueError(
+                        f"model revision evidence lacks raw hashes for {condition.condition_id}"
+                    )
+                raw_path = verify_committed_file(
+                    repo_root / f"evals/model-revisions/provider-responses/{raw_hash}.json",
+                    repo_root,
+                    f"raw model revision response for {condition.condition_id}",
+                )
+                if sha256_file(raw_path) != raw_hash:
+                    raise ValueError(
+                        f"raw model revision response hash mismatch for {condition.condition_id}"
+                    )
+                try:
+                    raw_payloads[name] = json.loads(raw_path.read_text(encoding="utf-8"))
+                except (OSError, ValueError) as exc:
+                    raise ValueError(
+                        f"raw model revision response is invalid for {condition.condition_id}"
+                    ) from exc
+            requested_model = condition.model.removeprefix("openrouter/")
+            raw_model = raw_payloads["model"].get("data", {})
+            raw_models = raw_payloads["models"].get("data", [])
+            model_inventory_matches = [
+                item
+                for item in raw_models
+                if isinstance(item, dict) and item.get("id") == requested_model
+            ]
+            raw_endpoint_inventory = raw_payloads["endpoint"].get("data", {})
+            raw_endpoints = raw_endpoint_inventory.get("endpoints", [])
+            raw_endpoint_matches = [
+                item
+                for item in raw_endpoints
+                if isinstance(item, dict) and item.get("tag") == revision.provider_tag
+            ]
+            raw_zdr = raw_payloads["zdr"].get("data", [])
+            raw_zdr_matches = [
+                item
+                for item in raw_zdr
+                if isinstance(item, dict)
+                and item.get("model_id") == requested_model
+                and item.get("tag") == revision.provider_tag
+            ]
+            if (
+                not isinstance(raw_model, dict)
+                or raw_model.get("id") != requested_model
+                or raw_model.get("canonical_slug") != revision.canonical_slug
+                or len(model_inventory_matches) != 1
+                or model_inventory_matches[0].get("canonical_slug") != revision.canonical_slug
+                or not isinstance(raw_endpoint_inventory, dict)
+                or raw_endpoint_inventory.get("id") != requested_model
+                or len(raw_endpoint_matches) != 1
+                or len(raw_zdr_matches) != 1
+            ):
+                raise ValueError(
+                    f"raw model revision identity does not match {condition.condition_id}"
+                )
+            raw_endpoint = raw_endpoint_matches[0]
+            raw_zdr_endpoint = raw_zdr_matches[0]
+            raw_identity = (
+                revision.endpoint_name,
+                revision.endpoint_model_id,
+                revision.provider_name,
+                revision.provider_tag,
+                revision.quantization,
+            )
+            for raw_record in (raw_endpoint, raw_zdr_endpoint):
+                if (
+                    raw_record.get("name"),
+                    raw_record.get("model_id"),
+                    raw_record.get("provider_name"),
+                    raw_record.get("tag"),
+                    raw_record.get("quantization"),
+                ) != raw_identity:
+                    raise ValueError(
+                        f"raw endpoint identity does not match {condition.condition_id}"
+                    )
+            if raw_endpoint.get("status") != 0 or raw_zdr_endpoint.get("status") != 0:
+                raise ValueError(f"raw endpoint is not operational for {condition.condition_id}")
+            if sorted(set(raw_endpoint.get("supported_parameters", []))) != (
+                revision.supported_parameters
+            ):
+                raise ValueError(f"raw endpoint parameters do not match {condition.condition_id}")
+            if raw_endpoint.get("max_completion_tokens") != revision.max_completion_tokens:
+                raise ValueError(
+                    f"raw endpoint token limit does not match {condition.condition_id}"
+                )
+            raw_reasoning = raw_model.get("reasoning")
+            raw_efforts = (
+                raw_reasoning.get("supported_efforts", [])
+                if isinstance(raw_reasoning, dict)
+                else []
+            )
+            if raw_efforts != revision.supported_reasoning_efforts:
+                raise ValueError(f"raw reasoning efforts do not match {condition.condition_id}")
+            raw_pricing = raw_endpoint.get("pricing")
+            if not isinstance(raw_pricing, dict) or raw_pricing.get("overrides") not in (
+                None,
+                [],
+            ):
+                raise ValueError(
+                    f"raw endpoint pricing is unsupported for {condition.condition_id}"
+                )
+            if (
+                condition.pricing is None
+                or revision.request_price_usd is None
+                or revision.internal_reasoning_price_usd_per_million is None
+            ):
+                raise ValueError(f"frozen pricing is missing for {condition.condition_id}")
+            observed_prices = {
+                "input": _provider_price(raw_pricing, "prompt", per_million=True),
+                "output": _provider_price(raw_pricing, "completion", per_million=True),
+                "input_cache_write": _provider_price(
+                    raw_pricing, "input_cache_write", per_million=True
+                ),
+                "input_cache_read": _provider_price(
+                    raw_pricing, "input_cache_read", per_million=True
+                ),
+            }
+            expected_prices = condition.pricing.model_dump()
+            if any(
+                not math.isclose(observed_prices[key], expected_prices[key], abs_tol=1e-12)
+                for key in expected_prices
+            ) or not math.isclose(
+                _provider_price(raw_pricing, "request", per_million=False),
+                revision.request_price_usd,
+                abs_tol=1e-12,
+            ):
+                raise ValueError(f"raw endpoint prices do not match {condition.condition_id}")
+            observed_reasoning_price = _provider_price(
+                raw_pricing, "internal_reasoning", per_million=True
+            )
+            if not math.isclose(
+                observed_reasoning_price,
+                revision.internal_reasoning_price_usd_per_million,
+                abs_tol=1e-12,
+            ):
+                raise ValueError(f"raw reasoning price does not match {condition.condition_id}")
+            if observed_reasoning_price > observed_prices["output"]:
+                raise ValueError(
+                    f"raw reasoning price exceeds output price for {condition.condition_id}"
+                )
 
 
 def require_path_outside_repo(path: Path, repo_root: Path, label: str) -> Path:

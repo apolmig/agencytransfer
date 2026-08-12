@@ -15,6 +15,7 @@ import secrets
 import stat
 import subprocess
 import tomllib
+from datetime import UTC, datetime
 from hashlib import sha256
 from pathlib import Path
 from typing import Any
@@ -39,6 +40,13 @@ from atb_eval.manifest import (
     verify_committed_file,
     verify_model_revision_evidence,
     verify_source_checkout,
+)
+from atb_eval.paid_execution import (
+    FreshRouteCapture,
+    persist_fresh_openrouter_route_capture,
+    verify_fresh_openrouter_route_capture,
+    verify_paid_execution_authorization,
+    verify_paid_execution_permit_current,
 )
 from atb_eval.scorers import ACTIONABILITY_PROMPT, RESPONSE_CLASS_PROMPT
 from atb_eval.tasks.canary import inspect_canary
@@ -81,6 +89,11 @@ def parse_args() -> argparse.Namespace:
         "--allow-paid",
         action="store_true",
         help="Acknowledge that the frozen manifest may make paid API calls.",
+    )
+    parser.add_argument(
+        "--paid-permit",
+        type=Path,
+        help="Owner-only external JSON permit required for paid execution.",
     )
     return parser.parse_args()
 
@@ -703,7 +716,7 @@ def official_base_url(condition: ModelCondition, value: str | None) -> bool:
 
 
 def openrouter_route_metadata_matches(response: Any, condition: ModelCondition) -> bool:
-    """Bind a successful OpenRouter response to its requested alias and endpoint."""
+    """Bind a successful OpenRouter response to its invocable model ID and endpoint."""
 
     revision = condition.revision
     if not isinstance(response, dict) or revision is None:
@@ -1255,6 +1268,7 @@ def execute(
     manifest_hash: str,
     provenance: dict[str, str | bool],
     execution_id: str | None = None,
+    route_receipt_sha256: str | None = None,
 ) -> bool:
     roles = {
         role: build_model(condition, manifest.run.max_connections, manifest.run.max_retries)
@@ -1284,6 +1298,13 @@ def execute(
         "atb_execution_id": execution_id,
         "release_tier": manifest.release.raw_logs.value,
     }
+    if manifest.is_paid and any(
+        condition.model.startswith("openrouter/")
+        for condition in [*manifest.models, *manifest.model_roles.values()]
+    ):
+        if route_receipt_sha256 is None or len(route_receipt_sha256) != 64:
+            raise ValueError("paid OpenRouter execution requires a fresh route receipt")
+        metadata["atb_openrouter_route_receipt_sha256"] = route_receipt_sha256
     models = [
         build_model(condition, manifest.run.max_connections, manifest.run.max_retries)
         for condition in ordered_conditions
@@ -1552,18 +1573,67 @@ def main() -> None:
         verify_model_revision_evidence(manifest, repo_root)
         if manifest.is_paid and not args.allow_paid:
             raise ValueError("paid execution requires --allow-paid")
+        if manifest.is_paid and args.paid_permit is None:
+            raise ValueError("paid execution requires --paid-permit")
         if manifest.task.kind != "canary" and provenance["code_dirty"]:
             raise ValueError("non-canary execution requires a clean code checkout")
+        if manifest.is_paid and "OPENROUTER_MANAGEMENT_KEY" in os.environ:
+            raise ValueError("OPENROUTER_MANAGEMENT_KEY must not be present during paid execution")
         if missing := missing_credentials(manifest):
             names = ", ".join(missing)
             raise ValueError(f"missing required credential environment variables: {names}")
         if manifest.is_paid and (overrides := forbidden_runtime_overrides()):
             names = ", ".join(overrides)
             raise ValueError(f"unsafe provider/runtime environment overrides are set: {names}")
+        fresh_route_capture: FreshRouteCapture | None = None
+        if manifest.is_paid:
+            verify_paid_execution_authorization(
+                manifest,
+                manifest_hash,
+                provenance,
+                args.paid_permit,
+                repo_root,
+            )
+            fresh_route_capture = verify_fresh_openrouter_route_capture(
+                manifest,
+                repo_root,
+                observed_at=datetime.now(UTC).isoformat().replace("+00:00", "Z"),
+                manifest_sha256=manifest_hash,
+            )
+            # Re-read the external permit and provider balance after the public
+            # capture so expiration, replacement, or concurrent spend cannot
+            # hide in the recapture interval.
+            verify_paid_execution_authorization(
+                manifest,
+                manifest_hash,
+                provenance,
+                args.paid_permit,
+                repo_root,
+            )
+            if repository_provenance(repo_root) != provenance:
+                raise ValueError("repository state changed during paid execution authorization")
         previous_umask = os.umask(0o077)
         try:
             ensure_private_permissions(log_dir, create=True)
             ensure_private_permissions(run_log_dir, create=True)
+            if manifest.is_paid and repository_provenance(repo_root) != provenance:
+                raise ValueError("repository state changed before paid execution")
+            route_receipt_sha256 = None
+            if fresh_route_capture is not None:
+                route_receipt_sha256 = persist_fresh_openrouter_route_capture(
+                    fresh_route_capture,
+                    run_log_dir,
+                )
+            if manifest.is_paid and repository_provenance(repo_root) != provenance:
+                raise ValueError("repository state changed immediately before paid execution")
+            if manifest.is_paid:
+                verify_paid_execution_permit_current(
+                    manifest,
+                    manifest_hash,
+                    provenance,
+                    args.paid_permit,
+                    repo_root,
+                )
             if not execute(
                 manifest,
                 task,
@@ -1571,6 +1641,7 @@ def main() -> None:
                 manifest_hash,
                 provenance,
                 execution_id,
+                route_receipt_sha256,
             ):
                 raise RuntimeError("Inspect eval set did not complete successfully")
             ensure_private_permissions(run_log_dir, create=False)

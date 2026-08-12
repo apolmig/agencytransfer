@@ -12,6 +12,7 @@ import stat
 import subprocess
 from collections import Counter, defaultdict
 from dataclasses import dataclass
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any, Literal
 
@@ -19,6 +20,7 @@ from inspect_ai.log import read_eval_log
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from atb_eval.manifest import (
+    ModelCondition,
     ProtocolManifest,
     ProtocolStatus,
     load_manifest_with_hash,
@@ -44,6 +46,7 @@ from atb_eval.runner import (
     paired_dataset_identity,
     recorded_event_usage,
     recorded_log_usage,
+    recorded_openrouter_billed_costs,
     required_sample_roles,
     retry_events_routes_match,
     sample_model_inputs_match,
@@ -517,9 +520,7 @@ def _condition_log_configuration_failures(
                 failures.append(f"{condition.condition_id}: role {role} arguments do not match")
             if not official_base_url(expected_role, actual_role.base_url):
                 failures.append(f"{condition.condition_id}: role {role} used a custom base URL")
-            expected_role_config = dict(expected_role.generate_config)
-            expected_role_config.setdefault("max_connections", manifest.run.max_connections)
-            expected_role_config.setdefault("max_retries", manifest.run.max_retries)
+            expected_role_config = effective_generate_config(expected_role, manifest)
             if not generate_config_matches(actual_role.config, expected_role_config):
                 failures.append(
                     f"{condition.condition_id}: role {role} generation config does not match"
@@ -679,6 +680,138 @@ def _score_integrity(sample: Any, score: Any, value: str | None) -> tuple[list[s
     return failures, expected_failure
 
 
+def _fresh_provider_price(pricing: Any, field: str, *, per_million: bool) -> float | None:
+    if not isinstance(pricing, dict):
+        return None
+    value = pricing.get(field)
+    if value is None:
+        return 0.0
+    if isinstance(value, bool):
+        return None
+    try:
+        result = float(value)
+    except (TypeError, ValueError):
+        return None
+    if not math.isfinite(result) or result < 0:
+        return None
+    return result * 1_000_000 if per_million else result
+
+
+def _fresh_route_raw_matches(
+    condition: ModelCondition,
+    evidence: Any,
+    raw_files: dict[str, Path],
+) -> bool:
+    """Reproject a retained fresh capture instead of trusting its receipt index."""
+
+    revision = condition.revision
+    if revision is None or condition.pricing is None or not isinstance(evidence, dict):
+        return False
+    if evidence.get("schema_version") != "atb-model-revision-evidence-v0.1":
+        return False
+    required_fields = {
+        "model_response_sha256",
+        "models_response_sha256",
+        "endpoint_response_sha256",
+        "zdr_response_sha256",
+    }
+    if set(raw_files) != required_fields:
+        return False
+    try:
+        raw = {
+            field: json.loads(path.read_text(encoding="utf-8")) for field, path in raw_files.items()
+        }
+    except (OSError, json.JSONDecodeError):
+        return False
+    requested = condition.model.removeprefix("openrouter/")
+    model = raw["model_response_sha256"].get("data")
+    models = raw["models_response_sha256"].get("data")
+    endpoint_inventory = raw["endpoint_response_sha256"].get("data")
+    zdr = raw["zdr_response_sha256"].get("data")
+    if (
+        not isinstance(model, dict)
+        or model.get("id") != requested
+        or model.get("canonical_slug") != revision.canonical_slug
+        or not isinstance(models, list)
+        or len(
+            [
+                item
+                for item in models
+                if isinstance(item, dict)
+                and item.get("id") == requested
+                and item.get("canonical_slug") == revision.canonical_slug
+            ]
+        )
+        != 1
+        or not isinstance(endpoint_inventory, dict)
+        or endpoint_inventory.get("id") != requested
+        or not isinstance(zdr, list)
+    ):
+        return False
+    endpoints = endpoint_inventory.get("endpoints")
+    endpoint_matches = [
+        item
+        for item in endpoints or []
+        if isinstance(item, dict) and item.get("tag") == revision.provider_tag
+    ]
+    zdr_matches = [
+        item
+        for item in zdr
+        if isinstance(item, dict)
+        and item.get("model_id") == requested
+        and item.get("tag") == revision.provider_tag
+    ]
+    if len(endpoint_matches) != 1 or len(zdr_matches) != 1:
+        return False
+    endpoint = endpoint_matches[0]
+    raw_identity = (
+        revision.endpoint_name,
+        revision.endpoint_model_id,
+        revision.provider_name,
+        revision.provider_tag,
+        revision.quantization,
+    )
+    if any(
+        (
+            item.get("name"),
+            item.get("model_id"),
+            item.get("provider_name"),
+            item.get("tag"),
+            item.get("quantization"),
+        )
+        != raw_identity
+        for item in (endpoint, zdr_matches[0])
+    ):
+        return False
+    reasoning = model.get("reasoning")
+    efforts = reasoning.get("supported_efforts", []) if isinstance(reasoning, dict) else []
+    pricing = endpoint.get("pricing")
+    observed_prices = {
+        "input": _fresh_provider_price(pricing, "prompt", per_million=True),
+        "output": _fresh_provider_price(pricing, "completion", per_million=True),
+        "input_cache_write": _fresh_provider_price(pricing, "input_cache_write", per_million=True),
+        "input_cache_read": _fresh_provider_price(pricing, "input_cache_read", per_million=True),
+    }
+    reasoning_price = _fresh_provider_price(pricing, "internal_reasoning", per_million=True)
+    return (
+        endpoint.get("status") == 0
+        and zdr_matches[0].get("status") == 0
+        and sorted(set(endpoint.get("supported_parameters", []))) == revision.supported_parameters
+        and endpoint.get("max_completion_tokens") == revision.max_completion_tokens
+        and efforts == revision.supported_reasoning_efforts
+        and isinstance(pricing, dict)
+        and pricing.get("overrides") in (None, [])
+        and all(
+            observed_prices[key] == value for key, value in condition.pricing.model_dump().items()
+        )
+        and _fresh_provider_price(pricing, "request", per_million=False)
+        == revision.request_price_usd
+        and reasoning_price == revision.internal_reasoning_price_usd_per_million
+        and reasoning_price is not None
+        and reasoning_price <= condition.pricing.output
+    )
+
+
 def _derive_log_evidence(
     candidate: ReleaseCandidate,
     manifest: ProtocolManifest,
@@ -698,6 +831,234 @@ def _derive_log_evidence(
             RecordedUsage(total_tokens=0, total_cost_usd=0),
         )
 
+    route_receipt_sha256: str | None = None
+    route_receipt_observed_at: datetime | None = None
+    if manifest.is_paid and any(
+        condition.model.startswith("openrouter/")
+        for condition in [*manifest.models, *manifest.model_roles.values()]
+    ):
+        receipt_paths = sorted(log_dir.rglob("openrouter-route-capture/receipt.json"))
+        if len(receipt_paths) != 1:
+            failures.append("paid OpenRouter evidence requires exactly one route receipt")
+        else:
+            receipt_path = receipt_paths[0]
+            capture_dir = receipt_path.parent
+            try:
+                receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+            except (OSError, json.JSONDecodeError):
+                receipt = None
+            if not isinstance(receipt, dict):
+                failures.append("paid OpenRouter route receipt is not valid JSON")
+            else:
+                route_receipt_sha256 = sha256_file(receipt_path)
+                try:
+                    route_receipt_observed_at = datetime.fromisoformat(
+                        str(receipt.get("observed_at", "")).removesuffix("Z") + "+00:00"
+                    )
+                except ValueError:
+                    route_receipt_observed_at = None
+                if (
+                    receipt.get("schema_version") != "atb-openrouter-route-receipt-v0.1"
+                    or receipt.get("protocol_id") != manifest.protocol_id
+                    or receipt.get("manifest_sha256") != manifest_hash
+                    or not isinstance(receipt.get("observed_at"), str)
+                    or re.fullmatch(
+                        r"20\d{2}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z",
+                        receipt["observed_at"],
+                    )
+                    is None
+                    or route_receipt_observed_at is None
+                    or route_receipt_observed_at.utcoffset()
+                    != UTC.utcoffset(route_receipt_observed_at)
+                ):
+                    failures.append("paid OpenRouter route receipt identity does not match")
+
+                artifacts = receipt.get("artifacts")
+                artifact_hashes: dict[str, str] = {}
+                if not isinstance(artifacts, list):
+                    failures.append("paid OpenRouter route receipt lacks an artifact inventory")
+                else:
+                    for item in artifacts:
+                        if not isinstance(item, dict) or set(item) != {
+                            "path",
+                            "sha256",
+                            "size_bytes",
+                        }:
+                            failures.append("paid OpenRouter route receipt has an invalid artifact")
+                            continue
+                        relative = item["path"]
+                        digest = item["sha256"]
+                        size = item["size_bytes"]
+                        relative_path = Path(relative) if isinstance(relative, str) else Path("/")
+                        if (
+                            not isinstance(relative, str)
+                            or relative_path.is_absolute()
+                            or ".." in relative_path.parts
+                            or relative in artifact_hashes
+                            or not isinstance(digest, str)
+                            or re.fullmatch(r"[a-f0-9]{64}", digest) is None
+                            or isinstance(size, bool)
+                            or not isinstance(size, int)
+                            or size < 0
+                        ):
+                            failures.append("paid OpenRouter route receipt has an invalid artifact")
+                            continue
+                        artifact_path = capture_dir / relative_path
+                        if (
+                            artifact_path.is_symlink()
+                            or not artifact_path.is_file()
+                            or artifact_path.stat().st_size != size
+                            or sha256_file(artifact_path) != digest
+                        ):
+                            failures.append("paid OpenRouter route receipt artifact does not match")
+                            continue
+                        artifact_hashes[relative] = digest
+                    actual_artifacts = {
+                        path.relative_to(capture_dir).as_posix()
+                        for path in capture_dir.rglob("*")
+                        if path.is_file() and path != receipt_path
+                    }
+                    if actual_artifacts != set(artifact_hashes):
+                        failures.append("paid OpenRouter route receipt artifact set does not match")
+
+                condition_receipts = receipt.get("conditions")
+                expected_condition_ids = {
+                    condition.condition_id
+                    for condition in [*manifest.models, *manifest.model_roles.values()]
+                    if condition.model.startswith("openrouter/")
+                }
+                seen_receipts: set[str] = set()
+                if not isinstance(condition_receipts, list):
+                    failures.append("paid OpenRouter route receipt lacks condition evidence")
+                else:
+                    conditions_by_id = {
+                        condition.condition_id: condition
+                        for condition in [*manifest.models, *manifest.model_roles.values()]
+                        if condition.model.startswith("openrouter/")
+                    }
+                    for item in condition_receipts:
+                        if not isinstance(item, dict):
+                            failures.append(
+                                "paid OpenRouter route receipt condition evidence is invalid"
+                            )
+                            continue
+                        condition_id = item.get("condition_id")
+                        evidence_path = item.get("evidence_path")
+                        evidence_hash = item.get("evidence_sha256")
+                        raw_hashes = item.get("raw_response_sha256")
+                        configured = (
+                            conditions_by_id.get(condition_id)
+                            if isinstance(condition_id, str)
+                            else None
+                        )
+                        evidence_artifact = (
+                            capture_dir / evidence_path if isinstance(evidence_path, str) else None
+                        )
+                        try:
+                            evidence = (
+                                json.loads(evidence_artifact.read_text(encoding="utf-8"))
+                                if evidence_artifact is not None
+                                else None
+                            )
+                        except (OSError, json.JSONDecodeError):
+                            evidence = None
+                        revision = configured.revision if configured is not None else None
+                        expected_evidence = (
+                            {
+                                "schema_version": "atb-model-revision-evidence-v0.1",
+                                "requested_model": configured.model.removeprefix("openrouter/"),
+                                "resolved_model": revision.resolved_model,
+                                "canonical_slug": revision.canonical_slug,
+                                "inventory_model_id": revision.inventory_model_id,
+                                "endpoint_model_id": revision.endpoint_model_id,
+                                "endpoint_name": revision.endpoint_name,
+                                "provider_name": revision.provider_name,
+                                "provider_tag": revision.provider_tag,
+                                "quantization": revision.quantization,
+                                "supported_parameters": revision.supported_parameters,
+                                "supported_reasoning_efforts": (
+                                    revision.supported_reasoning_efforts
+                                ),
+                                "max_completion_tokens": revision.max_completion_tokens,
+                                "request_price_usd": revision.request_price_usd,
+                                "internal_reasoning_price_usd_per_million": (
+                                    revision.internal_reasoning_price_usd_per_million
+                                ),
+                                "observed_at": receipt.get("observed_at"),
+                                "source_url": revision.source_url,
+                                "model_source_url": revision.model_source_url,
+                                "models_source_url": revision.models_source_url,
+                                "zdr_source_url": revision.zdr_source_url,
+                                "zdr_eligible": True,
+                                "pricing_usd_per_million": (
+                                    configured.pricing.model_dump()
+                                    if configured.pricing is not None
+                                    else None
+                                ),
+                            }
+                            if configured is not None and revision is not None
+                            else None
+                        )
+                        if (
+                            not isinstance(condition_id, str)
+                            or condition_id in seen_receipts
+                            or not isinstance(evidence_path, str)
+                            or artifact_hashes.get(evidence_path) != evidence_hash
+                            or not isinstance(raw_hashes, dict)
+                            or set(raw_hashes)
+                            != {
+                                "model_response_sha256",
+                                "models_response_sha256",
+                                "endpoint_response_sha256",
+                                "zdr_response_sha256",
+                            }
+                            or any(
+                                artifact_hashes.get(f"provider-responses/{digest}.json") != digest
+                                for digest in raw_hashes.values()
+                                if isinstance(digest, str)
+                            )
+                            or any(not isinstance(digest, str) for digest in raw_hashes.values())
+                            or not isinstance(evidence, dict)
+                            or not isinstance(expected_evidence, dict)
+                            or any(
+                                evidence.get(key) != value
+                                for key, value in expected_evidence.items()
+                            )
+                            or any(
+                                evidence.get(field) != digest
+                                for field, digest in raw_hashes.items()
+                            )
+                        ):
+                            failures.append(
+                                "paid OpenRouter route receipt condition evidence is invalid"
+                            )
+                            continue
+                        raw_files: dict[str, Path] = {}
+                        if isinstance(raw_hashes, dict):
+                            raw_files = {
+                                field: capture_dir / f"provider-responses/{digest}.json"
+                                for field, digest in raw_hashes.items()
+                                if isinstance(digest, str)
+                            }
+                        try:
+                            raw_matches = configured is not None and _fresh_route_raw_matches(
+                                configured,
+                                evidence,
+                                raw_files,
+                            )
+                        except (AttributeError, OSError, TypeError, ValueError):
+                            raw_matches = False
+                        if not raw_matches:
+                            failures.append(
+                                "paid OpenRouter route receipt raw projection is invalid"
+                            )
+                            continue
+                        seen_receipts.add(condition_id)
+                    if seen_receipts != expected_condition_ids:
+                        failures.append(
+                            "paid OpenRouter route receipt condition set does not match"
+                        )
+
     conditions = {condition.condition_id: condition for condition in manifest.models}
     seen_conditions: Counter[str] = Counter()
     attempt_counts: Counter[tuple[str, str]] = Counter()
@@ -714,6 +1075,7 @@ def _derive_log_evidence(
     recorded_tokens = 0
     recorded_cost = 0.0
     event_usage: dict[str, tuple[int, float, str]] = {}
+    billed_event_usage: dict[str, tuple[float, str]] = {}
     failed_conditions: Counter[str] = Counter()
     run_ids: set[str] = set()
     eval_ids: set[str] = set()
@@ -739,15 +1101,33 @@ def _derive_log_evidence(
         try:
             tokens, cost = recorded_log_usage(log, require_cost=manifest.is_paid)
             events = recorded_event_usage(log, require_cost=manifest.is_paid)
+            billed_events = recorded_openrouter_billed_costs(log)
             recorded_tokens += tokens
             recorded_cost += cost
             for event_id, value in events.items():
                 if event_id in event_usage and event_usage[event_id] != value:
                     failures.append(f"{path.name}: reused ModelEvent content is inconsistent")
                 event_usage[event_id] = value
+            for event_id, value in billed_events.items():
+                if event_id in billed_event_usage and billed_event_usage[event_id] != value:
+                    failures.append(f"{path.name}: reused OpenRouter billed usage is inconsistent")
+                billed_event_usage[event_id] = value
         except ValueError as exc:
             failures.append(f"{path.name}: {exc}")
         metadata = log.eval.metadata or {}
+        if route_receipt_observed_at is not None:
+            try:
+                log_created = datetime.fromisoformat(str(log.eval.created))
+                if log_created.tzinfo is None:
+                    raise ValueError
+                capture_age = log_created.astimezone(UTC) - route_receipt_observed_at
+            except (TypeError, ValueError):
+                failures.append(f"{path.name}: log creation timestamp is invalid")
+            else:
+                if capture_age < timedelta(0) or capture_age > timedelta(minutes=10):
+                    failures.append(
+                        f"{path.name}: fresh OpenRouter route receipt is outside the run window"
+                    )
         matching_conditions = [
             condition
             for condition in manifest.models
@@ -783,6 +1163,8 @@ def _derive_log_evidence(
             "atb_environment_lock_sha256": candidate.environment_lock_sha256,
             "atb_execution_id": candidate.execution_id,
         }
+        if route_receipt_sha256 is not None:
+            required_metadata["atb_openrouter_route_receipt_sha256"] = route_receipt_sha256
         if log.invalidated:
             failures.append(f"{path.name}: Inspect log is invalidated")
         for key, expected in required_metadata.items():
@@ -949,6 +1331,9 @@ def _derive_log_evidence(
         failures.append("recorded tokens exceed the frozen run envelope")
     if recorded_cost > manifest.run.planned_run_cost_envelope_usd + 1e-9:
         failures.append("recorded cost exceeds the frozen run envelope")
+    billed_cost = sum(value[0] for value in billed_event_usage.values())
+    if billed_cost > manifest.run.planned_run_cost_envelope_usd + 1e-9:
+        failures.append("OpenRouter billed cost exceeds the frozen run envelope")
     event_tokens = sum(value[0] for value in event_usage.values())
     event_cost = sum(value[1] for value in event_usage.values())
     if recorded_tokens != event_tokens or not math.isclose(recorded_cost, event_cost, abs_tol=1e-9):

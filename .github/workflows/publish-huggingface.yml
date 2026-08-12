@@ -50,8 +50,8 @@ jobs:
 
       - name: Lint evaluation code
         run: |
-          uv run --frozen ruff format --check evals/atb_eval scripts/prepare_diselect.py tests/evals
-          uv run --frozen ruff check evals/atb_eval scripts/prepare_diselect.py tests/evals
+          uv run --frozen ruff format --check evals/atb_eval scripts/capture_openrouter_routes.py scripts/prepare_diselect.py tests/evals
+          uv run --frozen ruff check evals/atb_eval scripts/capture_openrouter_routes.py scripts/prepare_diselect.py tests/evals
 
       - name: Run evaluation tests
         run: uv run --frozen pytest

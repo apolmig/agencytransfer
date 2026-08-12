@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 from types import SimpleNamespace
 
+import atb_eval.manifest as manifest_module
 import httpx
 import pytest
 from atb_eval.manifest import (
@@ -16,7 +17,9 @@ from atb_eval.manifest import (
     load_manifest,
     require_controlled_log_dir,
     require_path_outside_repo,
+    sha256_file,
     verify_committed_file,
+    verify_model_revision_evidence,
 )
 from atb_eval.runner import (
     build_model,
@@ -73,7 +76,7 @@ def test_draft_protocols_are_schema_valid() -> None:
 
 def test_diselect_route_preflight_is_bounded_and_nonpublic() -> None:
     manifest = load_manifest(REPO_ROOT / "evals/manifests/diselect-route-preflight-v0.1.json")
-    assert manifest.status is ProtocolStatus.DRAFT
+    assert manifest.status is ProtocolStatus.FROZEN
     assert manifest.task.kind == "diselect"
     assert manifest.task.args["harmful_per_stratum"] == 0
     assert manifest.task.args["benign_count"] == 1
@@ -82,13 +85,67 @@ def test_diselect_route_preflight_is_bounded_and_nonpublic() -> None:
     assert manifest.run.max_connections == 1
     assert manifest.run.max_retries == 0
     assert manifest.run.planned_run_cost_envelope_usd == 0.04
+    assert manifest.run.provider_key_limit_usd == 0.04
     assert manifest.release.public_aggregate_candidate is False
     assert {condition.model for condition in manifest.models} == {
-        "openrouter/deepseek/deepseek-v4-flash-20260423",
-        "openrouter/deepseek/deepseek-v4-flash-20260731",
+        "openrouter/deepseek/deepseek-v4-flash",
+        "openrouter/deepseek/deepseek-v4-flash-0731",
     }
-    assert all(condition.revision is None for condition in manifest.models)
-    assert manifest.model_roles["grader"].revision is None
+    assert all(condition.revision is not None for condition in manifest.models)
+    assert manifest.model_roles["grader"].revision is not None
+    assert manifest.model_roles["grader"].route.provider_only == ["google-vertex/global"]
+    for condition in [*manifest.models, *manifest.model_roles.values()]:
+        revision = condition.revision
+        assert revision is not None
+        evidence_path = REPO_ROOT / revision.evidence_path
+        evidence = json.loads(evidence_path.read_text(encoding="utf-8"))
+        assert sha256_file(evidence_path) == revision.evidence_sha256
+        assert evidence["requested_model"] == condition.model.removeprefix("openrouter/")
+        assert evidence["canonical_slug"] == revision.canonical_slug
+        assert evidence["provider_tag"] == condition.route.provider_only[0]
+        assert evidence["zdr_eligible"] is True
+
+
+def test_model_revision_verifier_reprojects_archived_raw(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    manifest = load_manifest(REPO_ROOT / "evals/manifests/diselect-route-preflight-v0.1.json")
+    monkeypatch.setattr(
+        manifest_module,
+        "verify_committed_file",
+        lambda path, *args, **kwargs: path,
+    )
+    verify_model_revision_evidence(manifest, REPO_ROOT)
+
+
+def test_model_revision_verifier_rejects_hidden_fixed_request_price(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    manifest = load_manifest(REPO_ROOT / "evals/manifests/diselect-route-preflight-v0.1.json")
+    revision = manifest.models[0].revision
+    assert revision is not None and revision.endpoint_response_sha256 is not None
+    raw_hash = revision.endpoint_response_sha256
+    raw_path = REPO_ROOT / f"evals/model-revisions/provider-responses/{raw_hash}.json"
+    payload = json.loads(raw_path.read_text(encoding="utf-8"))
+    endpoint = next(
+        item for item in payload["data"]["endpoints"] if item["tag"] == revision.provider_tag
+    )
+    endpoint["pricing"]["request"] = "0.50"
+    tampered = tmp_path / f"{raw_hash}.json"
+    tampered.write_text(json.dumps(payload), encoding="utf-8")
+    real_sha256_file = manifest_module.sha256_file
+
+    def fake_committed(path: Path, *args: object, **kwargs: object) -> Path:
+        return tampered if path.name == tampered.name else path
+
+    def fake_sha256(path: Path) -> str:
+        return raw_hash if path == tampered else real_sha256_file(path)
+
+    monkeypatch.setattr(manifest_module, "verify_committed_file", fake_committed)
+    monkeypatch.setattr(manifest_module, "sha256_file", fake_sha256)
+    with pytest.raises(ValueError, match="raw endpoint prices do not match"):
+        verify_model_revision_evidence(manifest, REPO_ROOT)
 
 
 def test_openrouter_requires_one_provider_and_no_fallback() -> None:
@@ -341,7 +398,7 @@ def test_openrouter_adapter_preserves_additive_router_metadata(
     condition = ModelCondition.model_validate(
         {
             "condition_id": "deepseek-0423-adapter",
-            "model": "openrouter/deepseek/deepseek-v4-flash-20260423",
+            "model": "openrouter/deepseek/deepseek-v4-flash",
             "immutable": True,
             "api_key_env": "OPENROUTER_API_KEY",
             "route": {
@@ -351,10 +408,11 @@ def test_openrouter_adapter_preserves_additive_router_metadata(
                 "data_collection": "deny",
                 "zdr": True,
                 "quantizations": ["fp4"],
-                "max_price": {"prompt": 0.09, "completion": 0.18},
+                "max_price": {"prompt": 0.09, "completion": 0.18, "request": 0.0},
             },
             "revision": {
                 "resolved_model": "deepseek/deepseek-v4-flash",
+                "canonical_slug": "deepseek/deepseek-v4-flash-20260423",
                 "inventory_model_id": "deepseek/deepseek-v4-flash",
                 "endpoint_model_id": "deepseek/deepseek-v4-flash",
                 "endpoint_name": "DeepInfra | deepseek/deepseek-v4-flash-20260423",
@@ -364,8 +422,7 @@ def test_openrouter_adapter_preserves_additive_router_metadata(
                 "supported_parameters": ["max_tokens", "seed", "temperature", "top_p"],
                 "observed_at": "2026-08-12T00:00:00Z",
                 "source_url": (
-                    "https://openrouter.ai/api/v1/models/deepseek/"
-                    "deepseek-v4-flash-20260423/endpoints"
+                    "https://openrouter.ai/api/v1/models/deepseek/deepseek-v4-flash/endpoints"
                 ),
                 "evidence_path": "evals/model-revisions/test-fixture.json",
                 "evidence_sha256": "a" * 64,
@@ -401,8 +458,8 @@ def test_openrouter_adapter_preserves_additive_router_metadata(
                     "cost": 0.0001,
                 },
                 "openrouter_metadata": {
-                    "requested": "deepseek/deepseek-v4-flash-20260423",
-                    "strategy": "alias",
+                    "requested": "deepseek/deepseek-v4-flash",
+                    "strategy": "direct",
                     "region": "iad",
                     "attempt": 1,
                     "is_byok": False,
@@ -455,7 +512,7 @@ def test_openrouter_adapter_preserves_additive_router_metadata(
     headers = captured["headers"]
     assert isinstance(body, dict)
     assert isinstance(headers, dict)
-    assert body["model"] == "deepseek/deepseek-v4-flash-20260423"
+    assert body["model"] == "deepseek/deepseek-v4-flash"
     assert body["provider"] == condition.inspect_model_args()["provider"]
     assert headers["x-openrouter-metadata"] == "enabled"
     assert call.request["extra_headers"]["X-OpenRouter-Metadata"] == "enabled"
@@ -845,12 +902,13 @@ def _openrouter_condition(condition_id: str, *, max_tokens: int | None = None) -
                 "data_collection": "deny",
                 "zdr": True,
                 "quantizations": ["fp4"],
-                "max_price": {"prompt": 2.0, "completion": 8.0},
+                "max_price": {"prompt": 2.0, "completion": 8.0, "request": 0.0},
             },
         }
     )
     condition["revision"].update(
         {
+            "canonical_slug": "openai/gpt-test-20250101",
             "resolved_model": "openai/gpt-test-2025-01-01",
             "inventory_model_id": "openai/gpt-test-2025-01-01",
             "endpoint_model_id": "openai/gpt-test-2025-01-01",
@@ -861,11 +919,25 @@ def _openrouter_condition(condition_id: str, *, max_tokens: int | None = None) -
             "source_url": (
                 "https://openrouter.ai/api/v1/models/openai/gpt-test-2025-01-01/endpoints"
             ),
+            "model_source_url": ("https://openrouter.ai/api/v1/model/openai/gpt-test-2025-01-01"),
+            "model_response_sha256": "b" * 64,
+            "models_source_url": "https://openrouter.ai/api/v1/models",
+            "models_response_sha256": "c" * 64,
+            "endpoint_response_sha256": "d" * 64,
+            "zdr_source_url": "https://openrouter.ai/api/v1/endpoints/zdr",
+            "zdr_response_sha256": "e" * 64,
+            "zdr_eligible": True,
             "supported_parameters": [
                 "max_tokens",
+                "reasoning",
+                "reasoning_effort",
                 "seed",
                 "temperature",
             ],
+            "supported_reasoning_efforts": ["high", "minimal"],
+            "max_completion_tokens": 4096,
+            "request_price_usd": 0.0,
+            "internal_reasoning_price_usd_per_million": 0.0,
         }
     )
     return condition
@@ -885,6 +957,7 @@ def _frozen_diselect_payload() -> dict:
             "model_roles": {"grader": grader},
         }
     )
+    payload["run"]["provider_key_limit_usd"] = 10.0
     return payload
 
 
@@ -1005,7 +1078,7 @@ def test_frozen_openrouter_requires_privacy_quantization_and_price_caps() -> Non
     provider = manifest.models[0].inspect_model_args()["provider"]
     assert provider["zdr"] is True
     assert provider["quantizations"] == ["fp4"]
-    assert provider["max_price"] == {"prompt": 2.0, "completion": 8.0}
+    assert provider["max_price"] == {"prompt": 2.0, "completion": 8.0, "request": 0.0}
 
     expected = {"seed": 42, "temperature": 0.0, "max_tokens": 700}
     request = {
@@ -1050,6 +1123,44 @@ def test_frozen_openrouter_price_cap_cannot_undercut_inspect_pricing() -> None:
         ProtocolManifest.model_validate(payload)
 
 
+def test_frozen_openrouter_rejects_nonzero_fixed_request_prices() -> None:
+    payload = _frozen_diselect_payload()
+    target = _openrouter_condition("target")
+    target["route"]["max_price"]["request"] = 0.01
+    target["revision"]["request_price_usd"] = 0.01
+    grader = _openrouter_condition("role-grader", max_tokens=700)
+    grader["generate_config"]["temperature"] = 0.0
+    payload["models"] = [target]
+    payload["model_roles"] = {"grader": grader}
+    with pytest.raises(ValidationError, match="reject fixed request prices"):
+        ProtocolManifest.model_validate(payload)
+
+
+def test_frozen_openrouter_binds_reasoning_effort_domain() -> None:
+    payload = _frozen_diselect_payload()
+    target = _openrouter_condition("target")
+    target["generate_config"]["reasoning_effort"] = "minimal"
+    target["revision"]["supported_reasoning_efforts"] = ["high"]
+    grader = _openrouter_condition("role-grader", max_tokens=700)
+    grader["generate_config"]["temperature"] = 0.0
+    payload["models"] = [target]
+    payload["model_roles"] = {"grader": grader}
+    with pytest.raises(ValidationError, match="does not support the frozen reasoning effort"):
+        ProtocolManifest.model_validate(payload)
+
+
+def test_frozen_openrouter_binds_completion_token_limit() -> None:
+    payload = _frozen_diselect_payload()
+    target = _openrouter_condition("target")
+    target["revision"]["max_completion_tokens"] = 699
+    grader = _openrouter_condition("role-grader", max_tokens=700)
+    grader["generate_config"]["temperature"] = 0.0
+    payload["models"] = [target]
+    payload["model_roles"] = {"grader": grader}
+    with pytest.raises(ValidationError, match="completion-token limit"):
+        ProtocolManifest.model_validate(payload)
+
+
 def test_frozen_openrouter_revision_joins_exact_inventory_and_endpoint_ids() -> None:
     payload = _frozen_diselect_payload()
     target = _openrouter_condition("target")
@@ -1060,7 +1171,7 @@ def test_frozen_openrouter_revision_joins_exact_inventory_and_endpoint_ids() -> 
 
     wrong_inventory = json.loads(json.dumps(payload))
     wrong_inventory["models"][0]["revision"]["inventory_model_id"] = "other/model"
-    with pytest.raises(ValidationError, match="inventory and endpoint model ids"):
+    with pytest.raises(ValidationError, match="inventory, and endpoint ids"):
         ProtocolManifest.model_validate(wrong_inventory)
 
     wrong_source = json.loads(json.dumps(payload))

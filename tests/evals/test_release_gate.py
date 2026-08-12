@@ -6,10 +6,13 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
+from atb_eval.manifest import load_manifest
 from atb_eval.release_gate import (
     LoggedResponse,
     ReleaseCandidate,
     ValidationEvidence,
+    _condition_log_configuration_failures,
+    _fresh_route_raw_matches,
     _native_class_support_failures,
     _score_integrity,
     _stratified_probability_sample,
@@ -17,6 +20,8 @@ from atb_eval.release_gate import (
     evaluate_release_candidate,
     verify_release_evidence,
 )
+from atb_eval.runner import effective_generate_config
+from inspect_ai.model import GenerateConfig
 from jsonschema import Draft202012Validator
 from pydantic import ValidationError
 
@@ -200,6 +205,46 @@ def test_failed_grader_cannot_supply_a_native_score() -> None:
     assert cause == "grader_model_error"
 
 
+def test_release_gate_accepts_effective_openrouter_role_headers(monkeypatch) -> None:
+    manifest = load_manifest(REPO_ROOT / "evals/manifests/diselect-route-preflight-v0.1.json")
+    condition = manifest.models[0]
+    grader = manifest.model_roles["grader"]
+    task_args = {**manifest.task.args, "source_revision": manifest.dataset.source_revision}
+    eval_config = {
+        "sample_shuffle": manifest.run.sample_shuffle,
+        "epochs": manifest.run.epochs,
+        "fail_on_error": manifest.run.fail_on_error,
+        "retry_on_error": manifest.run.retry_on_error,
+        "token_limit": manifest.run.sample_token_limit,
+        "cost_limit": manifest.run.sample_cost_limit_usd,
+        "max_samples": 1,
+        "max_tasks": len(manifest.models),
+        "log_model_api": manifest.run.log_model_api,
+    }
+    log = SimpleNamespace(
+        eval=SimpleNamespace(
+            model=condition.model,
+            model_args=condition.inspect_model_args(),
+            model_base_url="https://openrouter.ai/api/v1",
+            model_generate_config=GenerateConfig(**effective_generate_config(condition, manifest)),
+            model_roles={
+                "grader": SimpleNamespace(
+                    model=grader.model,
+                    args=grader.inspect_model_args(),
+                    base_url="https://openrouter.ai/api/v1",
+                    config=GenerateConfig(**effective_generate_config(grader, manifest)),
+                )
+            },
+            task_args=task_args,
+            config=SimpleNamespace(model_dump=lambda: eval_config),
+            scorers=[SimpleNamespace(name="diselect_response_class")],
+        )
+    )
+    monkeypatch.setattr("atb_eval.release_gate.logged_packages_match", lambda *_: True)
+
+    assert _condition_log_configuration_failures(log, condition, manifest) == []
+
+
 def test_validation_metrics_use_inverse_probability_weights() -> None:
     macro_f1, per_class = _validation_metrics(
         ["comply", "refuse"], ["comply", "comply"], [1.0, 3.0]
@@ -350,3 +395,23 @@ def test_fake_candidate_cannot_pass_without_frozen_external_evidence(tmp_path: P
     assert "frozen manifest does not permit a public aggregate candidate" in failures
     assert "no Inspect .eval logs were supplied" in failures
     assert "human-validation evidence file is missing" in failures
+
+
+def test_release_receipt_reprojects_fresh_raw_provider_evidence() -> None:
+    manifest = load_manifest(REPO_ROOT / "evals/manifests/diselect-route-preflight-v0.1.json")
+    condition = manifest.models[0]
+    revision = condition.revision
+    assert revision is not None
+    evidence = json.loads((REPO_ROOT / revision.evidence_path).read_text(encoding="utf-8"))
+    raw_files = {
+        field: REPO_ROOT / f"evals/model-revisions/provider-responses/{digest}.json"
+        for field, digest in {
+            "model_response_sha256": revision.model_response_sha256,
+            "models_response_sha256": revision.models_response_sha256,
+            "endpoint_response_sha256": revision.endpoint_response_sha256,
+            "zdr_response_sha256": revision.zdr_response_sha256,
+        }.items()
+        if digest is not None
+    }
+    assert _fresh_route_raw_matches(condition, evidence, raw_files)
+    assert not _fresh_route_raw_matches(condition, {}, raw_files)
