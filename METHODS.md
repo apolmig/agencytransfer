@@ -25,7 +25,7 @@ ATB separates four evidence layers:
 
 Native results from these layers are never presented as directly comparable
 observations. A separately versioned experimental proxy may combine them only
-when its weights, imputations, uncertainty, evidence grade, sensitivity, and
+when its weights, imputations, uncertainty, coverage tier, sensitivity, and
 source IDs are public. The current specification is
 [`HMC proxy estimate v0.1`](ESTIMATED_SCORE.md). It is not an observed benchmark
 result, human-efficacy measure, or evidence of real-world harm.
@@ -100,7 +100,7 @@ provider presents it as a frontier or flagship model, or when it is necessary to
 interpret a same-protocol published result. It is never represented as having
 passed the 100B rule. Lower-cost and lower-latency tiers may appear behind a
 secondary filter when a source or project run evaluates them, but they do not
-define the primary capability envelope.
+define the primary release panel.
 
 The canonical retrospective registry begins in 2022 and runs through 2026.
 Historical releases appear when they are indispensable anchors for a published
@@ -165,6 +165,24 @@ may be published under the requirements above and must preserve native views.
 A within-instrument contrast may be reported when prespecified. For example,
 DisElect selectivity may be expressed as benign completion minus harmful
 compliance. Such a contrast remains a DisElect outcome.
+
+## Benchmark linking and measurement invariance
+
+Ho et al. (2025) model an observed benchmark result as
+`sigmoid(alpha_b * (C_m - D_b))`, using overlapping model evaluations to place
+benchmark difficulty and model capability on a shared scale. ATB adopts the
+network requirement—model configurations must bridge instruments—but does not
+assume that APE attempts, MASK lies, harmful compliance, and agentic task
+completion are indicators of one trait.
+
+The deterministic
+[`benchmark-stitching readiness gate`](research/methods/BENCHMARK_STITCHING.md)
+checks model/instrument overlap, within-construct anchors, protocol invariance,
+and split-invariant weighting. As of 12 August 2026 it blocks fitting. Native
+item-level and instrument-level results are primary; the HMC proxy is not a
+stitching model. Any later fit is exploratory until out-of-sample performance,
+residual structure, measurement invariance, anchor sensitivity, and
+leave-one-family/source robustness are demonstrated.
 
 ## Benchmark implementation
 
@@ -249,6 +267,12 @@ hoc after inspection of the outputs. The run cannot be upgraded into a
 comparison by retroactive human labelling; a valid rerun requires a new protocol
 and data collection.
 
+The native one-turn scorer in the currently pinned `inspect-evals==0.16.0`
+represents some evaluator parse failures as zero attempt or zero persuasion.
+ATB treats this as incompatible missingness, not as evidence of no attempt. No
+APE protocol may freeze until a versioned adapter produces an explicit unscored
+outcome and fixture-level equivalence tests cover the remaining native paths.
+
 ### MASK
 
 MASK is treated as an evaluation of behaviour under benchmark-defined pressure.
@@ -260,6 +284,12 @@ honesty.
 The public 1,000-item dataset is not assumed equivalent to the 1,500-item set
 used for the paper's principal results. ATB runs on the public set are labelled
 `ATB public-set rerun` and are not pooled with paper scores.
+
+The installed native MASK task resolves its two judge models inside the scorer,
+not as route-verifiable ATB model roles. ATB therefore has no executable MASK
+manifest yet. A public-set adaptation must pin target and both judges as
+separate auditable conditions and freeze exact stable IDs; a numeric task limit
+does not define a stratified subset.
 
 ## Sampling, randomisation, and replication
 
@@ -330,7 +360,7 @@ If a judge must be replaced, old and new judges are run on a bridge set of at
 least 200 items, including the human-coded subset. Historical labels are not
 silently overwritten.
 
-Inspect Scout scanners may be run after or alongside evaluation to flag missing
+Inspect Scout scanners may be run offline after evaluation to flag missing
 target calls, empty responses, refusals, parser failures, loops, eval awareness,
 and other anomalies. They are QA instruments, not benchmark scorers. Scanner
 flags do not enter native outcomes, rank models, validate judges, or establish
@@ -410,8 +440,9 @@ more favourable trend.
 
 ## Visualisation rules
 
-- The Home chart may default to the separately versioned HMC proxy with its
-  modelled interval, evidence gate, missing releases, and method link visible.
+- The Home chart defaults to a benchmark-native result. The separately versioned
+  HMC proxy remains selectable with its modelled interval, coverage rule,
+  missing releases, and method link visible.
 - Native metrics remain selectable and never inherit the proxy's interpretation.
 - The proxy frontier is a stepwise running maximum with no smoothing and is
   labelled monotonic by construction.
@@ -480,5 +511,7 @@ designed to test.
   [repository](https://github.com/centerforaisafety/mask), and
   [public dataset](https://huggingface.co/datasets/cais/MASK)
 - [Google DeepMind harmful-manipulation study](https://arxiv.org/abs/2603.25326)
+- [Epoch–DeepMind benchmark-stitching paper](https://arxiv.org/html/2512.00193v1)
+  and [official code](https://github.com/epoch-research/benchmark-stitching)
 - [OpenRouter model metadata](https://openrouter.ai/docs/guides/overview/models)
   and [provider routing](https://openrouter.ai/docs/guides/routing/provider-selection)

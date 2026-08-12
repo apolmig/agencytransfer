@@ -74,8 +74,18 @@ def test_draft_protocols_are_schema_valid() -> None:
         assert manifest.models == []
 
 
-def test_diselect_route_preflight_is_bounded_and_nonpublic() -> None:
-    manifest = load_manifest(REPO_ROOT / "evals/manifests/diselect-route-preflight-v0.1.json")
+@pytest.mark.parametrize(
+    ("manifest_name", "provider_key_limit_usd"),
+    [
+        ("diselect-route-preflight-v0.1.json", 0.04),
+        ("diselect-route-preflight-v0.2.json", 30.0),
+    ],
+)
+def test_diselect_route_preflight_is_bounded_and_nonpublic(
+    manifest_name: str,
+    provider_key_limit_usd: float,
+) -> None:
+    manifest = load_manifest(REPO_ROOT / "evals/manifests" / manifest_name)
     assert manifest.status is ProtocolStatus.FROZEN
     assert manifest.task.kind == "diselect"
     assert manifest.task.args["harmful_per_stratum"] == 0
@@ -85,7 +95,7 @@ def test_diselect_route_preflight_is_bounded_and_nonpublic() -> None:
     assert manifest.run.max_connections == 1
     assert manifest.run.max_retries == 0
     assert manifest.run.planned_run_cost_envelope_usd == 0.04
-    assert manifest.run.provider_key_limit_usd == 0.04
+    assert manifest.run.provider_key_limit_usd == provider_key_limit_usd
     assert manifest.release.public_aggregate_candidate is False
     assert {condition.model for condition in manifest.models} == {
         "openrouter/deepseek/deepseek-v4-flash",

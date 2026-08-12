@@ -5,6 +5,11 @@ runner for new model evaluations. The earlier
 `run_openrouter_ape_pilot.py` and its v0.1 config are frozen historical evidence
 of a failed pipeline audit; they are not extended into a result series.
 
+The frozen environment currently uses `inspect-ai==0.3.257`,
+`inspect-evals==0.16.0`, and `inspect-scout==0.4.46`. Inspect owns tasks,
+solvers, scorers, model roles, retries, `.eval` logs, and primary outcomes.
+Scout only reads completed Inspect logs offline.
+
 The current migration establishes four boundaries:
 
 1. committed protocol manifests are distinct from runtime credentials and logs;
@@ -75,7 +80,7 @@ DisElect.
 
 ### Paid route preflight (frozen, not yet executed)
 
-`diselect-route-preflight-v0.1.json` is a transport canary, not a scientific
+`diselect-route-preflight-v0.2.json` is a transport canary, not a scientific
 run. It schedules one benign control against the two invocable DeepSeek V4 Flash
 IDs, binds each ID to its permanent canonical slug, pins both to DeepInfra/fp4,
 and pins the Gemini grader to the ZDR-eligible Google Vertex endpoint.
@@ -92,16 +97,21 @@ uv run python scripts/capture_openrouter_routes.py \
   --output-dir /controlled/atb/route-capture
 ```
 
-A controlled execution must use a rotated inference-only key with a lifetime
-per-key cap of USD 0.04 configured with `include_byok_in_limit=true`. The runner
-verifies that cap through `GET /api/v1/key`, requires an authorization denial
+A controlled v0.2 execution may use an inference-only key with a lifetime
+per-key cap no greater than USD 30 configured with
+`include_byok_in_limit=true`. That limit bounds the credential's total exposure;
+it is not the authorization for this run. A separate permit must exactly match
+the USD 0.04 planned-run envelope. The runner verifies the lifetime cap through
+`GET /api/v1/key`, requires an authorization denial
 from the management-only key-list API, rejects a management key on the
 evaluation host, and repeats the public route capture immediately before
 spending. Any canonical-ID, route, ZDR, supported-parameter, reasoning-effort,
 completion-limit, token-price, or fixed-request-price drift blocks the run. The
 complete fresh public capture is retained with owner-only permissions beside
 the Inspect logs; a content hash of its receipt is embedded in every log. The
-Inspect envelope remains a post-response safeguard, not a billing guarantee.
+Inspect envelope and permit remain post-response/local safeguards, not a
+transactional provider billing guarantee. The original frozen v0.1 manifest is
+retained unchanged and still requires a dedicated USD 0.04 lifetime key.
 
 The external permit is a mode-`0600` JSON file outside the repository. It records
 the operator's deliberate acknowledgement and binds it to the exact protocol,
@@ -110,7 +120,7 @@ canonical manifest hash, clean Git commit, and maximum USD 0.04 run envelope:
 ```json
 {
   "schema_version": "atb-paid-execution-permit-v0.1",
-  "protocol_id": "atb-diselect-route-preflight-v0.1",
+  "protocol_id": "atb-diselect-route-preflight-v0.2",
   "manifest_sha256": "<canonical manifest SHA-256>",
   "code_commit": "<40-character merged commit>",
   "acknowledged_by": "<operator identity>",
@@ -128,7 +138,7 @@ On the controlled host, with no proxy variables and no management key present:
 
 ```bash
 uv run atb-eval \
-  --manifest evals/manifests/diselect-route-preflight-v0.1.json \
+  --manifest evals/manifests/diselect-route-preflight-v0.2.json \
   --source-dir /controlled/election-ai-safety \
   --log-dir /controlled/atb/logs/diselect-route-preflight \
   --execute --allow-paid \
@@ -149,7 +159,7 @@ Validate the bounded plan without network calls:
 
 ```bash
 uv run atb-eval \
-  --manifest evals/manifests/diselect-route-preflight-v0.1.json \
+  --manifest evals/manifests/diselect-route-preflight-v0.2.json \
   --source-dir /controlled/election-ai-safety \
   --log-dir /controlled/atb/logs/diselect-route-preflight
 ```
@@ -176,9 +186,24 @@ runner hashes the 600-topic file and requires the native Inspect cache to match
 its ID-to-category-and-content mapping. APE measures attempt propensity, not
 persuasive effect.
 
+There is an additional freeze blocker in `inspect-evals==0.16.0`: some evaluator
+parse failures in the native one-turn scorer are represented as zero attempt or
+zero persuasion instead of explicit uncertainty. ATB will not treat those zeros
+as outcomes. A versioned adapter must preserve evaluator failure as unscored and
+pass fixture-level equivalence tests before any APE manifest can be frozen.
+
+## Native MASK status
+
+`inspect_evals.mask` is installed but is not yet an ATB task. Its public task
+uses a gated 1,000-item dataset and resolves binary and numeric judges by model
+name inside the scorer, rather than through the explicit Inspect roles required
+by the ATB route gate. A future `ATB public-set adaptation` therefore needs a
+role-aware adapter, exact stable-ID inventory, explicit failure outcomes, and
+route-event validation. `--limit 40` is not a frozen stratified MASK-40 design.
+
 ## Scout QA
 
-Scout is a post-hoc QA lane, not a benchmark scorer:
+Scout is an offline post-hoc QA lane, not a benchmark scorer:
 
 ```bash
 uv run scout scan evals/atb_eval/scanners.py \

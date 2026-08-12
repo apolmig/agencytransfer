@@ -697,6 +697,18 @@ def _fresh_provider_price(pricing: Any, field: str, *, per_million: bool) -> flo
     return result * 1_000_000 if per_million else result
 
 
+def _fresh_price_matches(observed: float | None, expected: float | None) -> bool:
+    """Compare provider prices without making binary float identity an invariant."""
+
+    return (
+        observed is not None
+        and expected is not None
+        and math.isfinite(observed)
+        and math.isfinite(expected)
+        and math.isclose(observed, expected, rel_tol=1e-12, abs_tol=1e-12)
+    )
+
+
 def _fresh_route_raw_matches(
     condition: ModelCondition,
     evidence: Any,
@@ -802,11 +814,17 @@ def _fresh_route_raw_matches(
         and isinstance(pricing, dict)
         and pricing.get("overrides") in (None, [])
         and all(
-            observed_prices[key] == value for key, value in condition.pricing.model_dump().items()
+            _fresh_price_matches(observed_prices[key], value)
+            for key, value in condition.pricing.model_dump().items()
         )
-        and _fresh_provider_price(pricing, "request", per_million=False)
-        == revision.request_price_usd
-        and reasoning_price == revision.internal_reasoning_price_usd_per_million
+        and _fresh_price_matches(
+            _fresh_provider_price(pricing, "request", per_million=False),
+            revision.request_price_usd,
+        )
+        and _fresh_price_matches(
+            reasoning_price,
+            revision.internal_reasoning_price_usd_per_million,
+        )
         and reasoning_price is not None
         and reasoning_price <= condition.pricing.output
     )

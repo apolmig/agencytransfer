@@ -1,0 +1,292 @@
+{
+  "schemaVersion": "atb-stitching-readiness-v0.1",
+  "asOf": "2026-08-12",
+  "status": "not-ready",
+  "fittingPerformed": false,
+  "publicationBoundary": "No latent capability or benchmark-difficulty scores may be produced from this report.",
+  "conceptualSource": {
+    "title": "A Rosetta Stone for AI Benchmarks",
+    "authors": "Ho, Denain, Atanasov, Albanie, and Shah",
+    "arxiv": "2512.00193v1",
+    "url": "https://arxiv.org/html/2512.00193v1",
+    "codeUrl": "https://github.com/epoch-research/benchmark-stitching"
+  },
+  "inputs": {
+    "frontierObservations": {
+      "path": "public/data/frontier-observations.json",
+      "sha256": "f2b45d0012c6f188a0847b21e5fd5a400f958d3dbc01c68d05c01d18680a692e"
+    },
+    "constructMap": {
+      "path": "research/methods/benchmark-constructs-v0.1.json",
+      "sha256": "2a666a0fed35165de02b745e994878bef01633a9f1811bd0e3ab4b2f7f8ebcb8"
+    }
+  },
+  "coverage": {
+    "observationCount": 45,
+    "modelCount": 26,
+    "instrumentCount": 6,
+    "instruments": [
+      "anthropic-agentic-influence",
+      "ape-saferai",
+      "diselect",
+      "infoopsbench",
+      "mask-original",
+      "mask-saferai"
+    ],
+    "multiInstrumentModels": [
+      {
+        "modelId": "claude-opus-4-7",
+        "instruments": [
+          "anthropic-agentic-influence",
+          "ape-saferai",
+          "mask-saferai"
+        ]
+      },
+      {
+        "modelId": "claude-sonnet-5",
+        "instruments": [
+          "anthropic-agentic-influence",
+          "infoopsbench"
+        ]
+      },
+      {
+        "modelId": "glm-5-2",
+        "instruments": [
+          "ape-saferai",
+          "infoopsbench",
+          "mask-saferai"
+        ]
+      },
+      {
+        "modelId": "gpt-5-5",
+        "instruments": [
+          "ape-saferai",
+          "mask-saferai"
+        ]
+      }
+    ],
+    "minimumDistinctInstrumentsPerModel": 4,
+    "modelsMeetingPaperOverlapAnalogue": [],
+    "pairwiseInstrumentOverlap": [
+      {
+        "left": "anthropic-agentic-influence",
+        "right": "ape-saferai",
+        "sharedModelCount": 1,
+        "sharedModels": [
+          "claude-opus-4-7"
+        ]
+      },
+      {
+        "left": "anthropic-agentic-influence",
+        "right": "diselect",
+        "sharedModelCount": 0,
+        "sharedModels": []
+      },
+      {
+        "left": "anthropic-agentic-influence",
+        "right": "infoopsbench",
+        "sharedModelCount": 1,
+        "sharedModels": [
+          "claude-sonnet-5"
+        ]
+      },
+      {
+        "left": "anthropic-agentic-influence",
+        "right": "mask-original",
+        "sharedModelCount": 0,
+        "sharedModels": []
+      },
+      {
+        "left": "anthropic-agentic-influence",
+        "right": "mask-saferai",
+        "sharedModelCount": 1,
+        "sharedModels": [
+          "claude-opus-4-7"
+        ]
+      },
+      {
+        "left": "ape-saferai",
+        "right": "diselect",
+        "sharedModelCount": 0,
+        "sharedModels": []
+      },
+      {
+        "left": "ape-saferai",
+        "right": "infoopsbench",
+        "sharedModelCount": 1,
+        "sharedModels": [
+          "glm-5-2"
+        ]
+      },
+      {
+        "left": "ape-saferai",
+        "right": "mask-original",
+        "sharedModelCount": 0,
+        "sharedModels": []
+      },
+      {
+        "left": "ape-saferai",
+        "right": "mask-saferai",
+        "sharedModelCount": 3,
+        "sharedModels": [
+          "claude-opus-4-7",
+          "glm-5-2",
+          "gpt-5-5"
+        ]
+      },
+      {
+        "left": "diselect",
+        "right": "infoopsbench",
+        "sharedModelCount": 0,
+        "sharedModels": []
+      },
+      {
+        "left": "diselect",
+        "right": "mask-original",
+        "sharedModelCount": 0,
+        "sharedModels": []
+      },
+      {
+        "left": "diselect",
+        "right": "mask-saferai",
+        "sharedModelCount": 0,
+        "sharedModels": []
+      },
+      {
+        "left": "infoopsbench",
+        "right": "mask-original",
+        "sharedModelCount": 0,
+        "sharedModels": []
+      },
+      {
+        "left": "infoopsbench",
+        "right": "mask-saferai",
+        "sharedModelCount": 1,
+        "sharedModels": [
+          "glm-5-2"
+        ]
+      },
+      {
+        "left": "mask-original",
+        "right": "mask-saferai",
+        "sharedModelCount": 0,
+        "sharedModels": []
+      }
+    ],
+    "constructCoverage": [
+      {
+        "constructId": "harmful-operational-support",
+        "evidenceLayer": "safeguard-conditioned model behaviour",
+        "instruments": [
+          "diselect",
+          "infoopsbench"
+        ],
+        "instrumentCount": 2,
+        "anchorModelCount": 0,
+        "anchorModels": [],
+        "pairwiseOverlap": [
+          {
+            "left": "diselect",
+            "right": "infoopsbench",
+            "sharedModelCount": 0,
+            "sharedModels": []
+          }
+        ],
+        "fitTogetherNow": false
+      },
+      {
+        "constructId": "persuasion-attempt-propensity",
+        "evidenceLayer": "safeguard-conditioned model behaviour",
+        "instruments": [
+          "ape-saferai"
+        ],
+        "instrumentCount": 1,
+        "anchorModelCount": 0,
+        "anchorModels": [],
+        "pairwiseOverlap": [],
+        "fitTogetherNow": false
+      },
+      {
+        "constructId": "deceptive-behaviour",
+        "evidenceLayer": "safeguard-conditioned model behaviour",
+        "instruments": [
+          "mask-original",
+          "mask-saferai"
+        ],
+        "instrumentCount": 2,
+        "anchorModelCount": 0,
+        "anchorModels": [],
+        "pairwiseOverlap": [
+          {
+            "left": "mask-original",
+            "right": "mask-saferai",
+            "sharedModelCount": 0,
+            "sharedModels": []
+          }
+        ],
+        "fitTogetherNow": false
+      },
+      {
+        "constructId": "agentic-influence-execution",
+        "evidenceLayer": "operational capability",
+        "instruments": [
+          "anthropic-agentic-influence"
+        ],
+        "instrumentCount": 1,
+        "anchorModelCount": 0,
+        "anchorModels": [],
+        "pairwiseOverlap": [],
+        "fitTogetherNow": false
+      }
+    ]
+  },
+  "criteria": [
+    {
+      "id": "paper-overlap-analogue",
+      "pass": false,
+      "actual": "0 models appear in at least 4 instruments",
+      "boundary": "This follows the paper's >3-benchmark filter as a diagnostic; it is necessary here, not sufficient."
+    },
+    {
+      "id": "same-construct-anchor-overlap",
+      "pass": false,
+      "actual": [
+        {
+          "constructId": "harmful-operational-support",
+          "anchorModelCount": 0,
+          "fitTogetherNow": false
+        },
+        {
+          "constructId": "deceptive-behaviour",
+          "anchorModelCount": 0,
+          "fitTogetherNow": false
+        }
+      ],
+      "boundary": "Anchor overlap is necessary but does not override construct review; cross-construct overlap cannot identify a one-dimensional harmful-manipulation scale."
+    },
+    {
+      "id": "protocol-invariance",
+      "pass": false,
+      "actual": "not established",
+      "boundary": "Prompt, scaffold, judge, serving condition, and metric direction must be harmonised or modelled."
+    },
+    {
+      "id": "item-level-or-split-invariant-weighting",
+      "pass": false,
+      "actual": "not established",
+      "boundary": "Aggregate-score stitching can overweight a benchmark merely because it was split into several aggregates."
+    },
+    {
+      "id": "design-frozen-before-fitting",
+      "pass": false,
+      "actual": "not frozen",
+      "boundary": "Inclusion rules, anchors, estimands, and missingness must be frozen before fitted outputs are inspected."
+    }
+  ],
+  "limitations": [
+    "The public observations mix author-reported and project-curated protocols.",
+    "Release date, evaluation date, checkpoint, endpoint, scaffold, and safeguards are not interchangeable.",
+    "APE, MASK, DisElect, InfoOpsBench, and agentic influence do not measure one demonstrated latent construct.",
+    "A readiness pass would justify model fitting and sensitivity analysis, not a claim of persuasion, agency transfer, or democratic harm."
+  ]
+}

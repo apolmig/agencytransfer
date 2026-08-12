@@ -28,7 +28,7 @@ from atb_eval.paid_execution import (
 from atb_eval.runner import parse_args
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-MANIFEST_PATH = REPO_ROOT / "evals/manifests/diselect-route-preflight-v0.1.json"
+MANIFEST_PATH = REPO_ROOT / "evals/manifests/diselect-route-preflight-v0.2.json"
 COMMIT = "a" * 40
 NOW = datetime(2026, 8, 12, 12, 0, tzinfo=UTC)
 
@@ -89,8 +89,8 @@ def key_opener(payload: object, *, management_status: int = 403):
 
 def valid_key_data(**overrides: object) -> dict[str, object]:
     data: dict[str, object] = {
-        "limit": 0.04,
-        "limit_remaining": 0.04,
+        "limit": 30.0,
+        "limit_remaining": 30.0,
         "limit_reset": None,
         "include_byok_in_limit": True,
         "expires_at": None,
@@ -174,8 +174,9 @@ def test_permit_rejects_hardlinks_and_duplicate_json_keys(tmp_path: Path) -> Non
         ({"acknowledged_at": "2026-08-12T12:05:00Z"}, None, NOW, "in the future"),
         ({"expires_at": "2026-08-12T12:00:00Z"}, None, NOW, "expired"),
         ({"expires_at": "2026-08-14T12:00:00Z"}, None, NOW, "24 hours"),
-        ({"maximum_cost_usd": 0.03}, None, NOW, "does not cover"),
-        ({"maximum_cost_usd": 0.11}, None, NOW, "exceeds"),
+        ({"maximum_cost_usd": 0.03}, None, NOW, "exactly match"),
+        ({"maximum_cost_usd": 0.05}, None, NOW, "exactly match"),
+        ({"maximum_cost_usd": 30.01}, None, NOW, "exactly match"),
     ],
 )
 def test_permit_is_bound_to_exact_execution_state(
@@ -213,7 +214,7 @@ def test_openrouter_key_status_request_does_not_expose_key_in_result() -> None:
         "inference-secret",
         opener=key_opener({"data": valid_key_data()}),
     )
-    assert data["limit"] == 0.04
+    assert data["limit"] == 30.0
     assert "inference-secret" not in repr(data)
 
 
@@ -246,8 +247,8 @@ def test_openrouter_key_must_have_lifetime_cap_and_sufficient_balance() -> None:
         environment={"OPENROUTER_API_KEY": "inference-secret"},
         opener=key_opener({"data": valid_key_data()}),
     )
-    assert budget.limit_usd == 0.04
-    assert budget.remaining_usd == 0.04
+    assert budget.limit_usd == 30.0
+    assert budget.remaining_usd == 30.0
 
 
 @pytest.mark.parametrize("denial_status", [401, 403])
@@ -272,7 +273,7 @@ def test_management_key_probe_fails_closed(unexpected_status: int) -> None:
     ("data", "message"),
     [
         (valid_key_data(limit=None, limit_remaining=None), "finite number"),
-        (valid_key_data(limit=0.05), "exceeds"),
+        (valid_key_data(limit=30.01), "exceeds"),
         (valid_key_data(limit_remaining=0.03), "below"),
         (valid_key_data(limit_reset="daily"), "lifetime"),
         (valid_key_data(include_byok_in_limit=False), "include BYOK"),
@@ -289,7 +290,7 @@ def test_management_key_probe_fails_closed(unexpected_status: int) -> None:
             valid_key_data(expires_at="2026-08-12T11:59:00Z"),
             "expired",
         ),
-        (valid_key_data(limit_remaining=0.05), "exceeds its limit"),
+        (valid_key_data(limit_remaining=30.01), "exceeds its limit"),
         (valid_key_data(limit=True), "finite number"),
     ],
 )
@@ -334,22 +335,20 @@ def test_combined_authorization_checks_permit_and_provider_budget(tmp_path: Path
         opener=key_opener({"data": valid_key_data()}),
         now=NOW,
     )
-    assert budget.remaining_usd == 0.04
+    assert budget.limit_usd == 30.0
+    assert budget.remaining_usd == 30.0
 
 
-def test_execution_acknowledgement_tightens_a_looser_manifest_key_cap() -> None:
+def test_manifest_lifetime_cap_is_independent_of_the_per_run_permit() -> None:
     manifest, _ = manifest_and_hash()
-    looser_manifest = manifest.model_copy(
-        update={"run": manifest.run.model_copy(update={"provider_key_limit_usd": 0.1})}
+    budget = verify_openrouter_key_budget(
+        manifest,
+        environment={"OPENROUTER_API_KEY": "inference-secret"},
+        opener=key_opener({"data": valid_key_data()}),
+        now=NOW,
     )
-    with pytest.raises(ValueError, match="authorized hard cap"):
-        verify_openrouter_key_budget(
-            looser_manifest,
-            environment={"OPENROUTER_API_KEY": "inference-secret"},
-            opener=key_opener({"data": valid_key_data(limit=0.05, limit_remaining=0.05)}),
-            now=NOW,
-            maximum_key_limit_usd=0.04,
-        )
+    assert manifest.run.planned_run_cost_envelope_usd == 0.04
+    assert budget.limit_usd == manifest.run.provider_key_limit_usd == 30.0
 
 
 def write_fresh_capture(

@@ -95,7 +95,7 @@ these evaluation results form a model-training split.
 |---|---|
 | `frontier-models.json` / `frontier-models.csv` | Canonical release, access, parameter, source, and route metadata |
 | `frontier-observations.json` | Published and project-generated observations in native metrics |
-| `hmc-estimates.json` / `hmc-proxy-v0.1.csv` | Experimental proxy medians, intervals, evidence grades, components, sensitivity, and source IDs |
+| `hmc-estimates.json` / `hmc-proxy-v0.1.csv` | Experimental proxy medians, assumption bands, coverage tiers, components, sensitivity, and source IDs |
 | `hmc-frontier.json` | Draw-wise stepwise frontier envelopes for all, open-weight, and hosted views |
 | `hmc-proxy-v0.1-manifest.json` | Fixed seed, weights, input hashes, counts, and limitations |
 | `ESTIMATED_SCORE.md` | Full proxy method and interpretation boundary |

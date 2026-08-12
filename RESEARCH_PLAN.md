@@ -21,11 +21,11 @@ panel has no parameter threshold because the relevant providers do not disclose
 comparable counts; it is selected by documented frontier/flagship status and
 shown as a different access class.
 
-The default view uses the separately versioned experimental HMC proxy with wide
-modelled uncertainty and an explicit evidence grade. InfoOpsBench, DisElect,
-APE, MASK, and Anthropic agentic outcomes remain selectable in their native
-metrics. New ATB runs remain excluded until route-integrity and human-validation
-gates pass.
+The default view uses a benchmark-native outcome. The separately versioned HMC
+proxy remains selectable with wide modelled uncertainty and an explicit
+coverage tier. InfoOpsBench, DisElect, APE, MASK, and Anthropic agentic outcomes
+retain their native metrics. New ATB runs remain excluded until route-integrity
+and human-validation gates pass.
 
 ## Research questions
 
@@ -45,6 +45,24 @@ gates pass.
 These questions are descriptive. ATB will not infer a causal effect of release
 date, parameter count, architecture, organisation, or licence from the planned
 observational comparisons.
+
+## Longitudinal measurement and benchmark links
+
+Ho et al., *A Rosetta Stone for AI Benchmarks*, motivates a network design in
+which overlapping model evaluations link instruments across time. ATB adopts
+that overlap discipline while rejecting an immediate one-dimensional fit across
+different constructs. Before any latent analysis, the project generates
+[`stitching-readiness-v0.1.json`](data/diagnostics/stitching-readiness-v0.1.json)
+from a frozen
+[`construct map`](research/methods/benchmark-constructs-v0.1.json).
+
+The initial screen requires models observed on at least four instruments, shared
+anchors inside every fitted construct family, explicit protocol/source effects,
+and item-level or split-invariant weighting. These conditions are necessary for
+the proposed analysis and not sufficient for identification or construct
+validity. The current diagnostic fails all substantive gates. Native instrument
+outcomes remain primary, and no time trend or acceleration claim is fitted in
+Wave 1.
 
 ## Preregistration package
 
@@ -85,11 +103,12 @@ ATB uses three distinct lanes:
    estimands, denominators, and analysis are frozen before target outputs are
    inspected. Scorer development stops before this split is opened.
 
-Inspect Scout may scan discovery and confirmation logs for missing target calls,
-refusals, parser failures, loops, eval awareness, and other anomalies. Scout is
-QA only: its flags do not enter native benchmark scores, model rankings, or the
-HMC proxy. A scanner used to exclude or quarantine observations must itself be
-prespecified and validated against human labels.
+Inspect Scout may scan completed discovery and confirmation logs offline for
+missing target calls, refusals, parser failures, loops, eval awareness, and
+other anomalies. Scout is QA only: its flags do not enter native benchmark
+scores, model rankings, or the HMC proxy. A scanner used to exclude or
+quarantine observations must itself be prespecified and validated against human
+labels.
 
 ## Model panel strategy
 
@@ -143,6 +162,16 @@ pinned, requests were model-grouped, no seed parameter was sent, harmful and
 benign rates used different denominators, and no blind human validation was
 performed. These defects cannot be corrected retrospectively. Any repeat is a
 new, preregistered protocol rather than a continuation of the historical run.
+
+## APE-200/MASK-40 proposal status
+
+The current prospective plan defines Wave 1 as DisElect, Wave 2 as APE, and
+Wave 3 as MASK. It does not contain a frozen legacy APE-200/MASK-40 protocol or
+the exact 240 stable IDs. ATB will not imply otherwise. If that proposal is
+recovered, its item IDs, strata, prompts, roles, judges, denominators, source
+hashes, and selection probabilities must be materialised as a separately
+versioned manifest before execution; numeric `--limit` values are not an
+equivalent sample design.
 
 ## Wave 1 — DisElect feasibility and first ATB rerun
 
@@ -259,6 +288,8 @@ the failure mode instead of a comparative ranking.
 - A stratified subset covering all six APE topic categories.
 - A frozen persuadee and evaluator condition.
 - Human review of at least 15% of target-model outcomes.
+- A versioned scorer adapter that preserves evaluator/parser uncertainty as
+  unscored rather than converting it to no-attempt or zero persuasion.
 
 ### Stage 2B: comparable Turn-1 run
 
@@ -292,6 +323,8 @@ models are flagged as benchmark-exposed.
 - Belief-elicitation, response, judge, and parser failures retained as explicit
   outcomes.
 - Dataset redistribution remains off until its licence is confirmed.
+- A role-aware Inspect adapter that pins the binary and numeric judges and
+  verifies their route events independently of the target condition.
 
 ### Stage 3C: public-set run
 
