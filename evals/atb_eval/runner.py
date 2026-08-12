@@ -21,7 +21,7 @@ from typing import Any
 
 from inspect_ai import Task, eval_set
 from inspect_ai.log import read_eval_log
-from inspect_ai.model import GenerateConfig, Model, get_model
+from inspect_ai.model import GenerateConfig, Model, ModelCost, get_model
 from inspect_evals.ape import ape_eval
 from inspect_evals.ape.prompts import USER_OR_ASSISTANT1, USER_OR_ASSISTANT2
 from inspect_evals.utils import create_stable_id
@@ -50,6 +50,8 @@ INSPECT_PACKAGE = "inspect-ai"
 INSPECT_VERSION = "0.3.257"
 NATIVE_RESPONSE_CLASSES = {"comply", "soft_refuse", "refuse", "incoherent"}
 PAIRED_SCHEDULE = "paired-concurrent-sample-order-v0.1"
+OPENROUTER_METADATA_HEADER = "X-OpenRouter-Metadata"
+OPENROUTER_METADATA_VALUE = "enabled"
 DIRECT_RUNTIME_PACKAGES = {
     HARNESS_PACKAGE,
     "anthropic",
@@ -148,6 +150,8 @@ def build_model(condition: ModelCondition, run_max_connections: int, max_retries
     config_values: dict[str, Any] = dict(condition.generate_config)
     config_values.setdefault("max_connections", run_max_connections)
     config_values.setdefault("max_retries", max_retries)
+    if condition.model.startswith("openrouter/"):
+        config_values["extra_headers"] = {OPENROUTER_METADATA_HEADER: OPENROUTER_METADATA_VALUE}
     return get_model(
         condition.model,
         config=GenerateConfig(**config_values),
@@ -156,9 +160,27 @@ def build_model(condition: ModelCondition, run_max_connections: int, max_retries
     )
 
 
+def model_cost_config(manifest: ProtocolManifest) -> dict[str, ModelCost] | None:
+    """Return Inspect's explicit USD-per-million-token cost registry."""
+
+    costs: dict[str, ModelCost] = {}
+    for condition in [*manifest.models, *manifest.model_roles.values()]:
+        if condition.model.startswith("mockllm/"):
+            continue
+        if condition.pricing is None:
+            raise ValueError(f"{condition.condition_id} lacks explicit model pricing")
+        cost = ModelCost(**condition.pricing.model_dump())
+        previous = costs.setdefault(condition.model, cost)
+        if previous != cost:
+            raise ValueError(f"conflicting Inspect pricing for {condition.model}")
+    return costs or None
+
+
 def expected_served_model(condition: ModelCondition) -> str:
     if condition.model.startswith("mockllm/"):
         return "mockllm"
+    if condition.revision is not None:
+        return condition.revision.resolved_model
     return condition.model.partition("/")[2]
 
 
@@ -168,6 +190,8 @@ def effective_generate_config(
     config = dict(condition.generate_config)
     config.setdefault("max_connections", manifest.run.max_connections)
     config.setdefault("max_retries", manifest.run.max_retries)
+    if condition.model.startswith("openrouter/"):
+        config["extra_headers"] = {OPENROUTER_METADATA_HEADER: OPENROUTER_METADATA_VALUE}
     return config
 
 
@@ -205,17 +229,21 @@ def request_parameters_match(
     service = condition.model.partition("/")[0]
     if service not in {"openai", "openrouter", "mistral"}:
         return False
-    if request.get("model") != expected_served_model(condition):
+    if request.get("model") != condition.model.partition("/")[2]:
         return False
     if not isinstance(request.get("messages"), list):
         return False
     header_field = "http_headers" if service == "mistral" else "extra_headers"
     headers = request.get(header_field)
-    if (
-        not isinstance(headers, dict)
-        or set(headers) != {"x-irid"}
-        or not isinstance(headers["x-irid"], str)
-        or not headers["x-irid"]
+    expected_header_names = {"x-irid"}
+    if service == "openrouter":
+        expected_header_names.add(OPENROUTER_METADATA_HEADER)
+    if not isinstance(headers, dict) or set(headers) != expected_header_names:
+        return False
+    if not isinstance(headers["x-irid"], str) or not headers["x-irid"]:
+        return False
+    if service == "openrouter" and headers.get(OPENROUTER_METADATA_HEADER) != (
+        OPENROUTER_METADATA_VALUE
     ):
         return False
 
@@ -476,6 +504,35 @@ def target_output_scorable(sample: Any) -> bool:
     )
 
 
+def diselect_score_contract_matches(log: Any, manifest: ProtocolManifest) -> bool:
+    """Require the exact frozen DisElect scorer set and one usable primary score."""
+
+    if manifest.task.kind != "diselect":
+        return True
+    expected_scorers = {"diselect_response_class"}
+    if manifest.task.args.get("include_actionability"):
+        expected_scorers.add("operational_actionability")
+    if str(log.eval.task_version) != manifest.task.version:
+        return False
+    if {item.name for item in (log.eval.scorers or [])} != expected_scorers:
+        return False
+    for sample in log.samples or []:
+        scores = sample.scores or {}
+        if set(scores) != expected_scorers:
+            return False
+        primary = scores["diselect_response_class"]
+        value = getattr(primary.value, "value", primary.value)
+        metadata = primary.metadata or {}
+        if (
+            value not in NATIVE_RESPONSE_CLASSES
+            or primary.answer != value
+            or metadata.get("codebook") != "atb-diselect-response-v0.1"
+            or metadata.get("instrument_failure") is not None
+        ):
+            return False
+    return bool(log.samples)
+
+
 def sample_target_output_matches(sample: Any, target_roles: set[str | None] | None = None) -> bool:
     """Bind the sample's final target output to exactly one logged target call."""
 
@@ -645,6 +702,63 @@ def official_base_url(condition: ModelCondition, value: str | None) -> bool:
     return official is not None and value.rstrip("/") == official.rstrip("/")
 
 
+def openrouter_route_metadata_matches(response: Any, condition: ModelCondition) -> bool:
+    """Bind a successful OpenRouter response to its requested alias and endpoint."""
+
+    revision = condition.revision
+    if not isinstance(response, dict) or revision is None:
+        return False
+    if response.get("model") != revision.resolved_model:
+        return False
+    if response.get("provider") not in {None, revision.provider_name}:
+        return False
+    metadata = response.get("openrouter_metadata")
+    if not isinstance(metadata, dict):
+        return False
+    requested_model = condition.model.removeprefix("openrouter/")
+    expected_strategy = "direct" if requested_model == revision.resolved_model else "alias"
+    if (
+        metadata.get("requested") != requested_model
+        or metadata.get("strategy") != expected_strategy
+        or type(metadata.get("attempt")) is not int
+        or metadata.get("attempt") != 1
+        or metadata.get("is_byok") is not False
+        or metadata.get("pipeline") not in (None, [])
+    ):
+        return False
+
+    endpoints = metadata.get("endpoints")
+    available = endpoints.get("available") if isinstance(endpoints, dict) else None
+    if not isinstance(available, list):
+        return False
+    selected = [
+        item for item in available if isinstance(item, dict) and item.get("selected") is True
+    ]
+    if len(selected) != 1:
+        return False
+    if (
+        selected[0].get("provider") != revision.provider_name
+        or selected[0].get("model") != revision.resolved_model
+    ):
+        return False
+
+    attempts = metadata.get("attempts")
+    if attempts is None:
+        return True
+    if not isinstance(attempts, list) or len(attempts) > 1:
+        return False
+    if not attempts:
+        return True
+    attempt = attempts[0]
+    return (
+        isinstance(attempt, dict)
+        and attempt.get("provider") == revision.provider_name
+        and attempt.get("model") == revision.resolved_model
+        and type(attempt.get("status")) is int
+        and attempt.get("status") == 200
+    )
+
+
 def _events_routes_match(
     events: list[Any] | None,
     target: ModelCondition,
@@ -721,15 +835,7 @@ def _events_routes_match(
                 return False
         if configured.route is not None:
             response = getattr(call, "response", None) if call is not None else None
-            response_matches = (
-                isinstance(response, dict)
-                and response.get("provider") == (configured.route.provider_only[0])
-            )
-            if isinstance(response, dict) and response.get("provider") not in {
-                None,
-                configured.route.provider_only[0],
-            }:
-                return False
+            response_matches = openrouter_route_metadata_matches(response, configured)
             if not response_matches and not (allow_failed_response and event_failed):
                 return False
     roles_match = (
@@ -971,6 +1077,54 @@ def recorded_event_usage(log: Any, *, require_cost: bool) -> dict[str, tuple[int
     return recorded
 
 
+def recorded_openrouter_billed_costs(log: Any) -> dict[str, tuple[float, str]]:
+    """Read OpenRouter's billed ``usage.cost`` without conflating it with local estimates."""
+
+    recorded: dict[str, tuple[float, str]] = {}
+    for sample in log.samples or []:
+        for event in sample.events or []:
+            if type(event).__name__ != "ModelEvent" or not str(event.model).startswith(
+                "openrouter/"
+            ):
+                continue
+            event_id = str(getattr(event, "uuid", "") or "")
+            if not event_id:
+                raise ValueError("OpenRouter ModelEvent lacks a stable UUID")
+            call = getattr(event, "call", None)
+            response = getattr(call, "response", None) if call is not None else None
+            output = getattr(event, "output", None)
+            event_failed = bool(getattr(event, "error", None)) or bool(getattr(call, "error", None))
+            completed = (
+                output is not None and getattr(output, "error", None) is None and not event_failed
+            )
+            usage = response.get("usage") if isinstance(response, dict) else None
+            billed = usage.get("cost") if isinstance(usage, dict) else None
+            if completed and (
+                isinstance(billed, bool)
+                or not isinstance(billed, (int, float))
+                or not math.isfinite(float(billed))
+                or billed < 0
+            ):
+                raise ValueError("completed OpenRouter ModelEvent lacks valid billed usage.cost")
+            if billed is None:
+                continue
+            if (
+                isinstance(billed, bool)
+                or not isinstance(billed, (int, float))
+                or not math.isfinite(float(billed))
+                or billed < 0
+            ):
+                raise ValueError("OpenRouter ModelEvent has invalid billed usage.cost")
+            digest = sha256(
+                json.dumps(usage, sort_keys=True, separators=(",", ":")).encode()
+            ).hexdigest()
+            value = (float(billed), digest)
+            if event_id in recorded and recorded[event_id] != value:
+                raise ValueError("duplicate OpenRouter ModelEvent has inconsistent billed cost")
+            recorded[event_id] = value
+    return recorded
+
+
 def verify_task_identity(manifest: ProtocolManifest, task: Task) -> None:
     spec = manifest.task
     installed_version = importlib.metadata.version(spec.package)
@@ -1154,6 +1308,7 @@ def execute(
             fail_on_error=manifest.run.fail_on_error,
             token_limit=manifest.run.sample_token_limit,
             cost_limit=manifest.run.sample_cost_limit_usd or None,
+            model_cost_config=model_cost_config(manifest),
             max_samples=1,
             max_tasks=len(models),
             seed=manifest.run.seed,
@@ -1203,6 +1358,7 @@ def execute(
             return False
         if (
             log.eval.task != manifest.task.name
+            or str(log.eval.task_version) != manifest.task.version
             or log.eval.task_registry_name != manifest.task.registry_name
             or not official_base_url(condition, log.eval.model_base_url)
             or not logged_packages_match(log, manifest)
@@ -1253,6 +1409,7 @@ def execute(
             or log.results.completed_samples != expected_count
             or log.samples is None
             or len(log.samples) != expected_count
+            or not diselect_score_contract_matches(log, manifest)
             or any(sample.model_fallbacks for sample in log.samples)
             or (
                 manifest.task.kind in {"canary", "diselect"}
@@ -1288,6 +1445,7 @@ def execute(
     recorded_cost = 0.0
     recorded_tokens = 0
     event_usage: dict[str, tuple[int, float, str]] = {}
+    billed_event_usage: dict[str, tuple[float, str]] = {}
     evidence_paths = sorted(log_dir.rglob("*.eval"))
     if not evidence_paths:
         return False
@@ -1320,6 +1478,7 @@ def execute(
         try:
             tokens, cost = recorded_log_usage(evidence_log, require_cost=manifest.is_paid)
             events = recorded_event_usage(evidence_log, require_cost=manifest.is_paid)
+            billed_events = recorded_openrouter_billed_costs(evidence_log)
         except ValueError:
             return False
         recorded_tokens += tokens
@@ -1328,13 +1487,19 @@ def execute(
             if event_id in event_usage and event_usage[event_id] != value:
                 return False
             event_usage[event_id] = value
+        for event_id, value in billed_events.items():
+            if event_id in billed_event_usage and billed_event_usage[event_id] != value:
+                return False
+            billed_event_usage[event_id] = value
     event_tokens = sum(value[0] for value in event_usage.values())
     event_cost = sum(value[1] for value in event_usage.values())
+    billed_cost = sum(value[0] for value in billed_event_usage.values())
     if recorded_tokens != event_tokens or not math.isclose(recorded_cost, event_cost, abs_tol=1e-9):
         return False
     if (
         recorded_tokens > manifest.run.planned_run_token_envelope
         or recorded_cost > manifest.run.planned_run_cost_envelope_usd + 1e-9
+        or billed_cost > manifest.run.planned_run_cost_envelope_usd + 1e-9
     ):
         return False
     return seen_conditions == {condition.condition_id for condition in ordered_conditions}

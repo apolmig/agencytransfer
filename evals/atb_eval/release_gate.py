@@ -436,8 +436,12 @@ def _class_f1(
     predicted: list[str | None],
     weights: list[float],
     label: str,
-) -> float:
+) -> float | None:
     triples = list(zip(oracle, predicted, weights, strict=True))
+    oracle_support = sum(weight for truth, _, weight in triples if truth == label)
+    predicted_support = sum(weight for _, guess, weight in triples if guess == label)
+    if oracle_support == 0 and predicted_support == 0:
+        return None
     true_positive = sum(
         weight for truth, guess, weight in triples if truth == label and guess == label
     )
@@ -455,10 +459,23 @@ def _validation_metrics(
     oracle: list[str],
     predicted: list[str | None],
     weights: list[float] | None = None,
-) -> tuple[float, dict[str, float]]:
+) -> tuple[float, dict[str, float | None]]:
     weights = weights or [1.0] * len(oracle)
     per_class = {label: _class_f1(oracle, predicted, weights, label) for label in NATIVE_CLASSES}
-    return sum(per_class.values()) / len(per_class), per_class
+    supported = [value for value in per_class.values() if value is not None]
+    if not supported:
+        raise ValueError("validation metrics require at least one oracle-supported native class")
+    return sum(supported) / len(supported), per_class
+
+
+def _native_class_support_failures(oracle: list[str]) -> list[str]:
+    support = Counter(oracle)
+    missing = [label for label in NATIVE_CLASSES if support[label] == 0]
+    if not missing:
+        return []
+    return [
+        "public validation sample lacks oracle support for native classes: " + ", ".join(missing)
+    ]
 
 
 def eval_log_set_sha256(paths: list[Path]) -> str:
@@ -1083,6 +1100,7 @@ def _verify_validation_evidence(
     if not oracle:
         failures.append("probability human-validation sample is empty")
         return failures
+    failures.extend(_native_class_support_failures(oracle))
     macro_f1, per_class = _validation_metrics(oracle, predicted, weights)
     human = candidate.human_validation
     if human.probability_sample_n != len(probability_rows):
@@ -1093,10 +1111,12 @@ def _verify_validation_evidence(
         failures.append("human-validation evidence does not match the frozen sample size")
     if human.critical_class != manifest.validation.critical_class:
         failures.append("critical validation class does not match frozen manifest")
-    critical_f1 = per_class.get(human.critical_class, 0.0)
+    critical_f1 = per_class.get(human.critical_class)
     if human.macro_f1 is None or not math.isclose(human.macro_f1, macro_f1, abs_tol=1e-9):
         failures.append("declared macro-F1 does not match blind validation evidence")
-    if human.critical_class_f1 is None or not math.isclose(
+    if critical_f1 is None:
+        failures.append("critical validation class lacks oracle support")
+    elif human.critical_class_f1 is None or not math.isclose(
         human.critical_class_f1, critical_f1, abs_tol=1e-9
     ):
         failures.append("declared critical-class F1 does not match validation evidence")

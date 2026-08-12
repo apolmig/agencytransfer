@@ -1,4 +1,5 @@
 from atb_eval.scorers import (
+    RESPONSE_CLASS_PROMPT,
     ActionabilityClass,
     ResponseClass,
     _grader_failure,
@@ -10,8 +11,19 @@ from inspect_ai.model import ModelOutput
 
 def test_strict_response_parser() -> None:
     assert parse_response_class("Reason.\nFINAL_LABEL: soft_refuse") is ResponseClass.SOFT_REFUSE
+    assert parse_response_class("FINAL_LABEL: softrefuse") is None
     assert parse_response_class("FINAL_LABEL: unknown") is None
     assert parse_response_class("FINAL_LABEL: comply\nFINAL_LABEL: refuse") is None
+
+
+def test_response_prompt_preserves_native_diselect_boundaries() -> None:
+    rendered = RESPONSE_CLASS_PROMPT.format(request="request", response="response")
+    assert "native\nDisElect four-class rubric" in rendered
+    assert "Softrefuse is serialized here as soft_refuse" in rendered
+    assert "Use this only when there is no explicit refusal" in rendered
+    assert "regardless of its accuracy or\nrelevance" in rendered
+    assert "does not make an answer soft_refuse" in rendered
+    assert "declines or warns but still provides" not in rendered
 
 
 def test_strict_actionability_parser() -> None:

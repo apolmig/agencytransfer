@@ -1,0 +1,201 @@
+{
+  "schema_version": "atb-protocol-manifest-v0.1",
+  "protocol_id": "atb-diselect-route-preflight-v0.1",
+  "status": "draft",
+  "frozen_at": null,
+  "construct_definition": "OpenRouter route, usage, logging, and response-class scorer transport integrity",
+  "explicit_non_claims": [
+    "model safety",
+    "comparative model performance",
+    "response-class prevalence",
+    "persuasion efficacy",
+    "agency transfer",
+    "electoral harm"
+  ],
+  "task": {
+    "kind": "diselect",
+    "name": "diselect_pilot",
+    "registry_name": "diselect_pilot",
+    "version": "0.1.0",
+    "package": "agency-transfer-evals",
+    "package_version": "0.1.0",
+    "expected_metadata": {},
+    "args": {
+      "selection_seed": "atb-diselect-route-preflight-v0.1",
+      "harmful_per_stratum": 0,
+      "benign_count": 1,
+      "include_actionability": false,
+      "temperature": 1.0,
+      "max_tokens": 250
+    }
+  },
+  "dataset": {
+    "name": "DisElect",
+    "source_url": "https://github.com/alan-turing-institute/election-ai-safety",
+    "source_revision": "915a8f8c22fb9cd8a2e4ae6824513760f0468f69",
+    "licence": "MIT",
+    "release_tier": "controlled",
+    "split": "calibration",
+    "selection_method": "One SHA-256-selected benign control; no harmful items",
+    "selected_inventory_sha256": "546404fc7891d25f6ec02eac93fac5bc0c22c58ac26bd3606d10d8b86f0e3fcf",
+    "required_files": [
+      {
+        "path": "data/evals/voting/prompts.csv",
+        "sha256": "7786ddcfa8ccee79ad8c569673b882cae115330f717d91de6804fb1c011a3e89"
+      },
+      {
+        "path": "data/evals/mps/prompts.csv",
+        "sha256": "88b681fd9e70822637549fcd8a3933b44d8177d6055c365facc815872450e81d"
+      },
+      {
+        "path": "data/evals/baseline/prompts.csv",
+        "sha256": "2d3df16200cc1dac7f46ef3588cf1aa97acd95647066e05cb004b9ba2643c3f6"
+      },
+      {
+        "path": "data/evals/judge/template.txt",
+        "sha256": "a77fce8e832525b6ae09fd635bbac844db0865e9d95d42a8e3b0531d02448a1b"
+      },
+      {
+        "path": "LICENSE",
+        "sha256": "d526bbbfee6e366680d644470dca141c0392c61cc7acd8ca364353b941d29e0b"
+      }
+    ]
+  },
+  "models": [
+    {
+      "condition_id": "deepseek-v4-flash-0423-deepinfra-fp4",
+      "model": "openrouter/deepseek/deepseek-v4-flash-20260423",
+      "immutable": true,
+      "api_key_env": "OPENROUTER_API_KEY",
+      "route": {
+        "provider_only": ["deepinfra/fp4"],
+        "allow_fallbacks": false,
+        "require_parameters": true,
+        "data_collection": "deny",
+        "zdr": true,
+        "quantizations": ["fp4"],
+        "max_price": {
+          "prompt": 0.09,
+          "completion": 0.18
+        }
+      },
+      "openai_api_mode": null,
+      "revision": null,
+      "pricing": {
+        "input": 0.09,
+        "output": 0.18,
+        "input_cache_write": 0,
+        "input_cache_read": 0.018
+      },
+      "model_args": {},
+      "generate_config": {
+        "seed": 42,
+        "top_p": 0.95
+      }
+    },
+    {
+      "condition_id": "deepseek-v4-flash-0731-deepinfra-fp4",
+      "model": "openrouter/deepseek/deepseek-v4-flash-20260731",
+      "immutable": true,
+      "api_key_env": "OPENROUTER_API_KEY",
+      "route": {
+        "provider_only": ["deepinfra/fp4"],
+        "allow_fallbacks": false,
+        "require_parameters": true,
+        "data_collection": "deny",
+        "zdr": true,
+        "quantizations": ["fp4"],
+        "max_price": {
+          "prompt": 0.08,
+          "completion": 0.18
+        }
+      },
+      "openai_api_mode": null,
+      "revision": null,
+      "pricing": {
+        "input": 0.08,
+        "output": 0.18,
+        "input_cache_write": 0,
+        "input_cache_read": 0.016
+      },
+      "model_args": {},
+      "generate_config": {
+        "seed": 42,
+        "top_p": 0.95
+      }
+    }
+  ],
+  "model_roles": {
+    "grader": {
+      "condition_id": "gemini-3.6-flash-0721-google-ai-studio",
+      "model": "openrouter/google/gemini-3.6-flash-20260721",
+      "immutable": true,
+      "api_key_env": "OPENROUTER_API_KEY",
+      "route": {
+        "provider_only": ["google-ai-studio"],
+        "allow_fallbacks": false,
+        "require_parameters": true,
+        "data_collection": "deny",
+        "zdr": true,
+        "quantizations": ["unknown"],
+        "max_price": {
+          "prompt": 1.5,
+          "completion": 7.5
+        }
+      },
+      "openai_api_mode": null,
+      "revision": null,
+      "pricing": {
+        "input": 1.5,
+        "output": 7.5,
+        "input_cache_write": 0.0833333333333333,
+        "input_cache_read": 0.15
+      },
+      "model_args": {},
+      "generate_config": {
+        "seed": 42,
+        "temperature": 0.0,
+        "top_p": 1.0,
+        "reasoning_effort": "minimal",
+        "max_tokens": 256
+      }
+    }
+  },
+  "run": {
+    "seed": 42,
+    "sample_shuffle": 42,
+    "expected_samples_per_model": 1,
+    "epochs": 1,
+    "max_connections": 1,
+    "max_retries": 0,
+    "retry_on_error": 0,
+    "retry_attempts": 0,
+    "fail_on_error": true,
+    "sample_cost_limit_usd": 0.02,
+    "sample_token_limit": 2000,
+    "planned_run_cost_envelope_usd": 0.04,
+    "planned_run_token_envelope": 4000,
+    "log_model_api": true
+  },
+  "validation": {
+    "human_validation_required": false,
+    "double_coded_n": 0,
+    "probability_sample_seed": null,
+    "probability_strata": [],
+    "codebook_version": null,
+    "macro_f1_min": null,
+    "critical_class": null,
+    "critical_f1_min": null,
+    "maximum_unexplained_failure_rate": 0,
+    "minimum_usable_rate_per_row": 1,
+    "cluster_key": null
+  },
+  "release": {
+    "raw_logs": "controlled",
+    "target_outputs": "controlled",
+    "judge_traces": "controlled",
+    "public_aggregate_candidate": false,
+    "public_allowlist_only": true,
+    "requires_two_person_review": false
+  }
+}

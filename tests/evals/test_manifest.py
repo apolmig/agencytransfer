@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+import asyncio
 import json
 from pathlib import Path
 from types import SimpleNamespace
 
+import httpx
 import pytest
 from atb_eval.manifest import (
     ModelCondition,
@@ -20,10 +22,14 @@ from atb_eval.runner import (
     build_model,
     build_task,
     condition_map,
+    diselect_score_contract_matches,
     effective_event_generate_config,
     ensure_private_permissions,
     execution_envelope,
     expected_runtime_packages,
+    model_cost_config,
+    openrouter_route_metadata_matches,
+    recorded_openrouter_billed_costs,
     repository_root,
     request_parameters_match,
     run_fingerprint,
@@ -33,7 +39,8 @@ from atb_eval.runner import (
     sample_target_output_matches,
     verify_task_identity,
 )
-from inspect_ai.model import GenerateConfig
+from inspect_ai.model import ChatMessageUser, GenerateConfig, get_model
+from inspect_ai.scorer import Score
 from pydantic import ValidationError
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -62,6 +69,26 @@ def test_draft_protocols_are_schema_valid() -> None:
         manifest = load_manifest(REPO_ROOT / "evals/manifests" / name)
         assert manifest.status is ProtocolStatus.DRAFT
         assert manifest.models == []
+
+
+def test_diselect_route_preflight_is_bounded_and_nonpublic() -> None:
+    manifest = load_manifest(REPO_ROOT / "evals/manifests/diselect-route-preflight-v0.1.json")
+    assert manifest.status is ProtocolStatus.DRAFT
+    assert manifest.task.kind == "diselect"
+    assert manifest.task.args["harmful_per_stratum"] == 0
+    assert manifest.task.args["benign_count"] == 1
+    assert manifest.run.expected_samples_per_model == 1
+    assert manifest.run.epochs == 1
+    assert manifest.run.max_connections == 1
+    assert manifest.run.max_retries == 0
+    assert manifest.run.planned_run_cost_envelope_usd == 0.04
+    assert manifest.release.public_aggregate_candidate is False
+    assert {condition.model for condition in manifest.models} == {
+        "openrouter/deepseek/deepseek-v4-flash-20260423",
+        "openrouter/deepseek/deepseek-v4-flash-20260731",
+    }
+    assert all(condition.revision is None for condition in manifest.models)
+    assert manifest.model_roles["grader"].revision is None
 
 
 def test_openrouter_requires_one_provider_and_no_fallback() -> None:
@@ -173,7 +200,7 @@ def test_paid_clients_disable_openai_sdk_retries(monkeypatch: pytest.MonkeyPatch
                 "model": "openrouter/vendor/model-20250101",
                 "immutable": True,
                 "api_key_env": "OPENROUTER_API_KEY",
-                "route": RouteSpec(provider_only=["Pinned Provider"]).model_dump(),
+                "route": RouteSpec(provider_only=["pinned-provider"]).model_dump(),
                 "model_args": {},
                 "generate_config": {"seed": 42},
             }
@@ -197,6 +224,8 @@ def test_paid_clients_disable_openai_sdk_retries(monkeypatch: pytest.MonkeyPatch
         model = build_model(condition, run_max_connections=1, max_retries=0)
         assert condition.inspect_model_args()["max_retries"] == 0
         assert model.api.client.max_retries == 0
+        if condition.model.startswith("openrouter/"):
+            assert model.config.extra_headers == {"X-OpenRouter-Metadata": "enabled"}
 
 
 def test_logs_inside_repo_are_rejected(tmp_path: Path) -> None:
@@ -242,7 +271,21 @@ def test_route_check_uses_served_model_and_openrouter_provider() -> None:
             "model": "openrouter/vendor/model-2025-01-01",
             "immutable": True,
             "api_key_env": "OPENROUTER_API_KEY",
-            "route": RouteSpec(provider_only=["Pinned Provider"]).model_dump(),
+            "route": RouteSpec(provider_only=["pinned-provider"]).model_dump(),
+            "revision": {
+                "resolved_model": "vendor/model-2025-01-01",
+                "inventory_model_id": "vendor/model-2025-01-01",
+                "endpoint_model_id": "vendor/model-2025-01-01",
+                "endpoint_name": "Pinned Provider | vendor/model-2025-01-01",
+                "provider_name": "Pinned Provider",
+                "provider_tag": "pinned-provider",
+                "quantization": "unknown",
+                "supported_parameters": [],
+                "observed_at": "2026-08-12T00:00:00Z",
+                "source_url": "https://openrouter.ai/api/v1/models/vendor/model/endpoints",
+                "evidence_path": "evals/model-revisions/test-fixture.json",
+                "evidence_sha256": "a" * 64,
+            },
             "model_args": {},
             "generate_config": {},
         }
@@ -251,13 +294,181 @@ def test_route_check_uses_served_model_and_openrouter_provider() -> None:
     event.model = condition.model
     event.role = None
     event.output = SimpleNamespace(model="vendor/model-2025-01-01", fallback=None)
-    event.call = SimpleNamespace(response={"provider": "Pinned Provider"})
+    event.call = SimpleNamespace(
+        response={
+            "model": "vendor/model-2025-01-01",
+            "provider": "Pinned Provider",
+            "openrouter_metadata": {
+                "requested": "vendor/model-2025-01-01",
+                "strategy": "direct",
+                "attempt": 1,
+                "is_byok": False,
+                "endpoints": {
+                    "total": 1,
+                    "available": [
+                        {
+                            "provider": "Pinned Provider",
+                            "model": "vendor/model-2025-01-01",
+                            "selected": True,
+                        }
+                    ],
+                },
+                "attempts": [
+                    {
+                        "provider": "Pinned Provider",
+                        "model": "vendor/model-2025-01-01",
+                        "status": 200,
+                    }
+                ],
+            },
+        }
+    )
     sample = SimpleNamespace(events=[event])
-    assert condition.inspect_model_args()["provider"]["only"] == ["Pinned Provider"]
+    assert condition.inspect_model_args()["provider"]["only"] == ["pinned-provider"]
     assert "order" not in condition.inspect_model_args()["provider"]
     assert sample_routes_match(sample, condition)
-    event.call.response["provider"] = "Unexpected Provider"
+    event.call.response["openrouter_metadata"]["attempt"] = 2
     assert not sample_routes_match(sample, condition)
+
+
+def test_openrouter_adapter_preserves_additive_router_metadata(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from atb_eval.manifest import FORBIDDEN_RUNTIME_ENV
+
+    for name in FORBIDDEN_RUNTIME_ENV:
+        monkeypatch.delenv(name, raising=False)
+    condition = ModelCondition.model_validate(
+        {
+            "condition_id": "deepseek-0423-adapter",
+            "model": "openrouter/deepseek/deepseek-v4-flash-20260423",
+            "immutable": True,
+            "api_key_env": "OPENROUTER_API_KEY",
+            "route": {
+                "provider_only": ["deepinfra/fp4"],
+                "allow_fallbacks": False,
+                "require_parameters": True,
+                "data_collection": "deny",
+                "zdr": True,
+                "quantizations": ["fp4"],
+                "max_price": {"prompt": 0.09, "completion": 0.18},
+            },
+            "revision": {
+                "resolved_model": "deepseek/deepseek-v4-flash",
+                "inventory_model_id": "deepseek/deepseek-v4-flash",
+                "endpoint_model_id": "deepseek/deepseek-v4-flash",
+                "endpoint_name": "DeepInfra | deepseek/deepseek-v4-flash-20260423",
+                "provider_name": "DeepInfra",
+                "provider_tag": "deepinfra/fp4",
+                "quantization": "fp4",
+                "supported_parameters": ["max_tokens", "seed", "temperature", "top_p"],
+                "observed_at": "2026-08-12T00:00:00Z",
+                "source_url": (
+                    "https://openrouter.ai/api/v1/models/deepseek/"
+                    "deepseek-v4-flash-20260423/endpoints"
+                ),
+                "evidence_path": "evals/model-revisions/test-fixture.json",
+                "evidence_sha256": "a" * 64,
+            },
+            "model_args": {},
+            "generate_config": {"seed": 42, "top_p": 0.95},
+        }
+    )
+    captured: dict[str, object] = {}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        captured["headers"] = dict(request.headers)
+        captured["body"] = json.loads(request.content)
+        return httpx.Response(
+            200,
+            json={
+                "id": "gen-test",
+                "choices": [
+                    {
+                        "finish_reason": "stop",
+                        "index": 0,
+                        "message": {"content": "ok", "role": "assistant"},
+                    }
+                ],
+                "created": 1,
+                "model": "deepseek/deepseek-v4-flash",
+                "object": "chat.completion",
+                "provider": "DeepInfra",
+                "usage": {
+                    "completion_tokens": 1,
+                    "prompt_tokens": 1,
+                    "total_tokens": 2,
+                    "cost": 0.0001,
+                },
+                "openrouter_metadata": {
+                    "requested": "deepseek/deepseek-v4-flash-20260423",
+                    "strategy": "alias",
+                    "region": "iad",
+                    "attempt": 1,
+                    "is_byok": False,
+                    "endpoints": {
+                        "total": 1,
+                        "available": [
+                            {
+                                "provider": "DeepInfra",
+                                "model": "deepseek/deepseek-v4-flash",
+                                "selected": True,
+                                "future_additive_field": "accepted",
+                            }
+                        ],
+                    },
+                    "attempts": [
+                        {
+                            "provider": "DeepInfra",
+                            "model": "deepseek/deepseek-v4-flash",
+                            "status": 200,
+                            "future_additive_field": "accepted",
+                        }
+                    ],
+                },
+            },
+        )
+
+    async def generate() -> object:
+        client = httpx.AsyncClient(transport=httpx.MockTransport(handler))
+        try:
+            model = get_model(
+                condition.model,
+                api_key="test-only",
+                http_client=client,
+                max_retries=0,
+                provider=condition.inspect_model_args()["provider"],
+                config=GenerateConfig(
+                    seed=42,
+                    top_p=0.95,
+                    extra_headers={"X-OpenRouter-Metadata": "enabled"},
+                ),
+            )
+            return await model.api.generate(
+                [ChatMessageUser(content="hello")], [], "none", model.config
+            )
+        finally:
+            await client.aclose()
+
+    output, call = asyncio.run(generate())
+    body = captured["body"]
+    headers = captured["headers"]
+    assert isinstance(body, dict)
+    assert isinstance(headers, dict)
+    assert body["model"] == "deepseek/deepseek-v4-flash-20260423"
+    assert body["provider"] == condition.inspect_model_args()["provider"]
+    assert headers["x-openrouter-metadata"] == "enabled"
+    assert call.request["extra_headers"]["X-OpenRouter-Metadata"] == "enabled"
+    assert output.model == "deepseek/deepseek-v4-flash"
+    response = call.response
+    assert openrouter_route_metadata_matches(response, condition)
+    response["openrouter_metadata"]["attempts"][0]["status"] = 429
+    assert not openrouter_route_metadata_matches(response, condition)
+    response["openrouter_metadata"]["attempts"][0]["status"] = 200
+    response["openrouter_metadata"].pop("attempts")
+    assert openrouter_route_metadata_matches(response, condition)
+    response["openrouter_metadata"]["attempt"] = True
+    assert not openrouter_route_metadata_matches(response, condition)
 
 
 def test_route_check_binds_each_model_event_to_its_role() -> None:
@@ -471,7 +682,7 @@ def test_openrouter_reasoning_parameters_are_verified_in_extra_body() -> None:
             "model": "openrouter/openai/gpt-5-2025-08-07",
             "immutable": True,
             "api_key_env": "OPENROUTER_API_KEY",
-            "route": RouteSpec(provider_only=["OpenAI"]).model_dump(),
+            "route": RouteSpec(provider_only=["openai"]).model_dump(),
             "model_args": {},
             "generate_config": {"reasoning_effort": "max", "seed": 42},
         }
@@ -480,7 +691,10 @@ def test_openrouter_reasoning_parameters_are_verified_in_extra_body() -> None:
     request = {
         "model": "openai/gpt-5-2025-08-07",
         "messages": [],
-        "extra_headers": {"x-irid": "request-id"},
+        "extra_headers": {
+            "x-irid": "request-id",
+            "X-OpenRouter-Metadata": "enabled",
+        },
         "seed": 42,
         "extra_body": {
             "provider": condition.inspect_model_args()["provider"],
@@ -499,7 +713,7 @@ def test_openrouter_reasoning_token_budget_is_verified() -> None:
             "model": "openrouter/vendor/model-2025-01-01",
             "immutable": True,
             "api_key_env": "OPENROUTER_API_KEY",
-            "route": RouteSpec(provider_only=["Pinned Provider"]).model_dump(),
+            "route": RouteSpec(provider_only=["pinned-provider"]).model_dump(),
             "model_args": {},
             "generate_config": {"reasoning_tokens": 1234, "seed": 42},
         }
@@ -509,7 +723,10 @@ def test_openrouter_reasoning_token_budget_is_verified() -> None:
         {
             "model": "vendor/model-2025-01-01",
             "messages": [],
-            "extra_headers": {"x-irid": "request-id"},
+            "extra_headers": {
+                "x-irid": "request-id",
+                "X-OpenRouter-Metadata": "enabled",
+            },
             "seed": 42,
             "extra_body": {
                 "provider": condition.inspect_model_args()["provider"],
@@ -523,7 +740,10 @@ def test_openrouter_reasoning_token_budget_is_verified() -> None:
         {
             "model": "vendor/model-2025-01-01",
             "messages": [],
-            "extra_headers": {"x-irid": "request-id"},
+            "extra_headers": {
+                "x-irid": "request-id",
+                "X-OpenRouter-Metadata": "enabled",
+            },
             "seed": 42,
             "extra_body": {"provider": condition.inspect_model_args()["provider"]},
         },
@@ -566,10 +786,19 @@ def test_runner_resolves_the_repository_root() -> None:
 
 
 def test_manifests_do_not_contain_secret_fields() -> None:
+    def assert_no_secret_key(value: object) -> None:
+        if isinstance(value, dict):
+            assert "api_key" not in value
+            for child in value.values():
+                assert_no_secret_key(child)
+        elif isinstance(value, list):
+            for child in value:
+                assert_no_secret_key(child)
+
     for path in (REPO_ROOT / "evals/manifests").glob("*.json"):
         payload = json.loads(path.read_text(encoding="utf-8"))
+        assert_no_secret_key(payload)
         text = json.dumps(payload).lower()
-        assert 'api_key"' not in text
         assert "sk-or-v1-" not in text
 
 
@@ -582,17 +811,63 @@ def _paid_condition(condition_id: str, *, max_tokens: int | None = None) -> dict
         "route": None,
         "openai_api_mode": "chat_completions",
         "revision": {
-            "resolved_model": "openai/gpt-test-2025-01-01",
+            "resolved_model": "gpt-test-2025-01-01",
             "observed_at": "2026-08-12T00:00:00Z",
             "source_url": "https://api.openai.com/v1/models",
             "evidence_path": "evals/model-revisions/test-fixture.json",
             "evidence_sha256": "a" * 64,
+        },
+        "pricing": {
+            "input": 2.0,
+            "output": 8.0,
+            "input_cache_write": 2.0,
+            "input_cache_read": 0.5,
         },
         "model_args": {},
         "generate_config": {"seed": 42},
     }
     if max_tokens is not None:
         condition["generate_config"]["max_tokens"] = max_tokens
+    return condition
+
+
+def _openrouter_condition(condition_id: str, *, max_tokens: int | None = None) -> dict:
+    condition = _paid_condition(condition_id, max_tokens=max_tokens)
+    condition.update(
+        {
+            "model": "openrouter/openai/gpt-test-2025-01-01",
+            "api_key_env": "OPENROUTER_API_KEY",
+            "openai_api_mode": None,
+            "route": {
+                "provider_only": ["openai/fp4"],
+                "allow_fallbacks": False,
+                "require_parameters": True,
+                "data_collection": "deny",
+                "zdr": True,
+                "quantizations": ["fp4"],
+                "max_price": {"prompt": 2.0, "completion": 8.0},
+            },
+        }
+    )
+    condition["revision"].update(
+        {
+            "resolved_model": "openai/gpt-test-2025-01-01",
+            "inventory_model_id": "openai/gpt-test-2025-01-01",
+            "endpoint_model_id": "openai/gpt-test-2025-01-01",
+            "endpoint_name": "OpenAI | openai/gpt-test-2025-01-01",
+            "provider_name": "OpenAI",
+            "provider_tag": "openai/fp4",
+            "quantization": "fp4",
+            "source_url": (
+                "https://openrouter.ai/api/v1/models/openai/gpt-test-2025-01-01/endpoints"
+            ),
+            "supported_parameters": [
+                "max_tokens",
+                "seed",
+                "temperature",
+            ],
+        }
+    )
     return condition
 
 
@@ -712,7 +987,153 @@ def test_frozen_direct_openai_fixed_temperature_family_fails_before_spend() -> N
     payload = _frozen_diselect_payload()
     target = _paid_condition("target")
     target["model"] = "openai/gpt-5-2025-08-07"
-    target["revision"]["resolved_model"] = target["model"]
+    target["revision"]["resolved_model"] = "gpt-5-2025-08-07"
     payload["models"] = [target]
     with pytest.raises(ValidationError, match="removes their temperature request"):
         ProtocolManifest.model_validate(payload)
+
+
+def test_frozen_openrouter_requires_privacy_quantization_and_price_caps() -> None:
+    payload = _frozen_diselect_payload()
+    target = _openrouter_condition("target")
+    grader = _openrouter_condition("role-grader", max_tokens=700)
+    grader["generate_config"]["temperature"] = 0.0
+    payload["models"] = [target]
+    payload["model_roles"] = {"grader": grader}
+
+    manifest = ProtocolManifest.model_validate(payload)
+    provider = manifest.models[0].inspect_model_args()["provider"]
+    assert provider["zdr"] is True
+    assert provider["quantizations"] == ["fp4"]
+    assert provider["max_price"] == {"prompt": 2.0, "completion": 8.0}
+
+    expected = {"seed": 42, "temperature": 0.0, "max_tokens": 700}
+    request = {
+        "model": "openai/gpt-test-2025-01-01",
+        "messages": [],
+        "extra_headers": {
+            "x-irid": "request-id",
+            "X-OpenRouter-Metadata": "enabled",
+        },
+        "seed": 42,
+        "temperature": 0.0,
+        "max_tokens": 700,
+        "extra_body": {"provider": provider},
+    }
+    assert request_parameters_match(request, manifest.models[0], expected)
+    wrong_route = json.loads(json.dumps(request))
+    wrong_route["extra_body"]["provider"]["quantizations"] = ["fp8"]
+    assert not request_parameters_match(wrong_route, manifest.models[0], expected)
+
+    for key, value in (
+        ("zdr", False),
+        ("data_collection", "allow"),
+        ("quantizations", []),
+        ("quantizations", ["fp4", "fp8"]),
+        ("max_price", None),
+    ):
+        invalid = json.loads(json.dumps(payload))
+        invalid["models"][0]["route"][key] = value
+        with pytest.raises(ValidationError, match="deny, ZDR, one quantization, and max_price"):
+            ProtocolManifest.model_validate(invalid)
+
+
+def test_frozen_openrouter_price_cap_cannot_undercut_inspect_pricing() -> None:
+    payload = _frozen_diselect_payload()
+    target = _openrouter_condition("target")
+    target["route"]["max_price"]["completion"] = 7.99
+    grader = _openrouter_condition("role-grader", max_tokens=700)
+    grader["generate_config"]["temperature"] = 0.0
+    payload["models"] = [target]
+    payload["model_roles"] = {"grader": grader}
+    with pytest.raises(ValidationError, match="cannot be lower"):
+        ProtocolManifest.model_validate(payload)
+
+
+def test_frozen_openrouter_revision_joins_exact_inventory_and_endpoint_ids() -> None:
+    payload = _frozen_diselect_payload()
+    target = _openrouter_condition("target")
+    grader = _openrouter_condition("role-grader", max_tokens=700)
+    grader["generate_config"]["temperature"] = 0.0
+    payload["models"] = [target]
+    payload["model_roles"] = {"grader": grader}
+
+    wrong_inventory = json.loads(json.dumps(payload))
+    wrong_inventory["models"][0]["revision"]["inventory_model_id"] = "other/model"
+    with pytest.raises(ValidationError, match="inventory and endpoint model ids"):
+        ProtocolManifest.model_validate(wrong_inventory)
+
+    wrong_source = json.loads(json.dumps(payload))
+    wrong_source["models"][0]["revision"]["source_url"] = (
+        "https://openrouter.ai/api/v1/models/other/model/endpoints"
+    )
+    with pytest.raises(ValidationError, match="requested snapshot inventory"):
+        ProtocolManifest.model_validate(wrong_source)
+
+
+def test_model_cost_config_is_explicit_and_consistent() -> None:
+    payload = _frozen_diselect_payload()
+    manifest = ProtocolManifest.model_validate(payload)
+    costs = model_cost_config(manifest)
+    assert costs is not None
+    assert set(costs) == {"openai/gpt-test-2025-01-01"}
+    assert costs["openai/gpt-test-2025-01-01"].input == 2.0
+    assert costs["openai/gpt-test-2025-01-01"].output == 8.0
+
+    payload["model_roles"]["grader"]["pricing"]["output"] = 9.0
+    with pytest.raises(ValidationError, match="identical Inspect pricing"):
+        ProtocolManifest.model_validate(payload)
+
+
+def test_diselect_postflight_requires_exact_task_scorers_and_native_score() -> None:
+    manifest = ProtocolManifest.model_validate(_frozen_diselect_payload())
+    sample = SimpleNamespace(
+        scores={
+            "diselect_response_class": Score(
+                value="comply",
+                answer="comply",
+                metadata={"codebook": "atb-diselect-response-v0.1"},
+            )
+        }
+    )
+    log = SimpleNamespace(
+        eval=SimpleNamespace(
+            task_version="0.1.0",
+            scorers=[SimpleNamespace(name="diselect_response_class")],
+        ),
+        samples=[sample],
+    )
+    assert diselect_score_contract_matches(log, manifest)
+
+    sample.scores["diselect_response_class"] = Score.unscored(
+        metadata={"instrument_failure": "grader_parse_failure"}
+    )
+    assert not diselect_score_contract_matches(log, manifest)
+    sample.scores["diselect_response_class"] = Score(
+        value="comply",
+        answer="comply",
+        metadata={"codebook": "atb-diselect-response-v0.1"},
+    )
+    log.eval.task_version = "different"
+    assert not diselect_score_contract_matches(log, manifest)
+    log.eval.task_version = "0.1.0"
+    log.eval.scorers.append(SimpleNamespace(name="unfrozen_scorer"))
+    assert not diselect_score_contract_matches(log, manifest)
+
+
+def test_openrouter_billed_cost_is_read_separately_from_local_estimate() -> None:
+    event = type("ModelEvent", (), {})()
+    event.uuid = "openrouter-call-1"
+    event.model = "openrouter/openai/gpt-test-2025-01-01"
+    event.error = None
+    event.output = SimpleNamespace(error=None)
+    event.call = SimpleNamespace(
+        error=None,
+        response={"usage": {"cost": 0.00125, "total_tokens": 12}},
+    )
+    log = SimpleNamespace(samples=[SimpleNamespace(events=[event])])
+    assert recorded_openrouter_billed_costs(log)["openrouter-call-1"][0] == 0.00125
+
+    event.call.response = {"usage": {"total_tokens": 12}}
+    with pytest.raises(ValueError, match=r"billed usage\.cost"):
+        recorded_openrouter_billed_costs(log)

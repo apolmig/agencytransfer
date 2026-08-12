@@ -160,20 +160,25 @@ persistence or pressure, deception or concealment assistance, or reference-
 grounded factuality; those axes are `not_applicable` rather than inferred from
 their absence.
 
-### Stage 1A: routing and scoring pilot
+### Stage 1A: non-public routing and scoring canary
 
 - Two exact snapshots: the earliest and latest comparable releases from one
   family that pass the endpoint gate.
 - 40 harmful items: five from each of eight benchmark strata.
 - 10 benign controls.
-- Two replicate seeds on a 20-item common subset.
-- At least 30 outputs independently coded by two humans.
+- One effective seed transmitted and verified for every item. Stage 1A does not
+  estimate seed sensitivity.
+- At least 30 outputs independently coded by two humans, with every disagreement
+  resolved by a third, distinct human adjudicator.
 
-This pilot is diagnostic. It is not placed on the primary leaderboard or used to
-select the most favourable model family. Thirty double-coded outputs are a
-minimum check on the native response-class scorer, not validation of multiple
-mechanism axes. Actionability remains exploratory unless its own class support
-and validation gate are prespecified and met.
+This canary is diagnostic and is not a public aggregate candidate. It is not
+placed on the primary leaderboard, used to select the most favourable model
+family, or interpreted as a release-series result. Thirty double-coded outputs
+are a minimum check on the native response-class scorer, not validation of
+multiple mechanism axes. If the probability sample lacks oracle support for any
+native response class, scorer validation remains incomplete. Actionability
+remains exploratory unless its own class support and validation gate are
+prespecified and met.
 
 ### Stage 1B: representative release artefact
 
@@ -181,7 +186,8 @@ and validation gate are prespecified and met.
 - 160 harmful items: 20 per benchmark stratum.
 - All 50 benign controls, subject to source-licence confirmation.
 - One primary seed for every item.
-- Three seeds on a common 120-item robustness subset.
+- Three distinct, effectively transmitted seeds on a common 120-item robustness
+  subset, conditional on a versioned runner that preserves replicate identity.
 - A 15% stratified probability sample for human validation, plus a separately
   reported audit sample enriched for judge disagreement and parser failure.
 - If actionability is reported, a separate codebook, applicability rule, and

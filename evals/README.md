@@ -72,6 +72,39 @@ actionability is a separate exploratory instrument. Personalisation, pressure,
 factuality, persuasion efficacy, and agency transfer are not inferred from
 DisElect.
 
+### Paid route preflight (draft)
+
+`diselect-route-preflight-v0.1.json` is a transport canary, not a scientific
+run. It schedules one benign control against the two exact DeepSeek V4 Flash
+aliases, pins both to DeepInfra/fp4, and uses the pinned Gemini grader route.
+It has zero harmful items, one epoch, no retries, one connection, a local
+USD 0.02 per-sample stop, and a USD 0.04 total envelope. It is ineligible for
+public aggregation and makes no safety or comparative-performance claim.
+
+The draft cannot execute until a fresh OpenRouter endpoint inventory is
+committed for every condition, its hashes and exact endpoint fields are added
+to the manifest, and the manifest is frozen. A controlled execution must also
+use a rotated inference-only key and an independent provider/workspace hard cap
+of USD 0.10; the Inspect envelope is a post-response safeguard, not a billing
+guarantee.
+
+Inspect requests opt in to official OpenRouter Router Metadata. Postflight
+requires the requested alias, canonical response model, uniquely selected
+provider endpoint, first successful attempt, non-BYOK route, and absence of
+pipeline transformations to match the frozen evidence. OpenRouter's optional
+`attempts` field and unknown additive fields are tolerated, but any fields that
+are present must be internally consistent. Raw OpenRouter `usage.cost` and the
+independent Inspect price estimate must each remain under the envelope.
+
+Validate the bounded plan without network calls:
+
+```bash
+uv run atb-eval \
+  --manifest evals/manifests/diselect-route-preflight-v0.1.json \
+  --source-dir /controlled/election-ai-safety \
+  --log-dir /controlled/atb/logs/diselect-route-preflight
+```
+
 All paid target conditions run concurrently in one eval set with the same
 hash-shuffled sample order. Model and role calls are accepted only when their
 logged effective configuration, requested model, returned model, role, seed
@@ -109,6 +142,11 @@ The deterministic empty-message scanner can be used immediately. LLM scanners
 for refusal and evaluation awareness require validation against blind human
 labels. Multi-role APE transcripts need an additional attribution audit before
 Scout output is interpreted.
+
+CI also runs the deterministic scanner end to end over the six mock canary
+transcripts and rejects incomplete scans, scanner errors, duplicate transcript
+IDs, non-boolean outputs, or any unexpected positive result. LLM scanners stay
+diagnostic-only and never feed the release gate.
 
 ## Public release gate
 
