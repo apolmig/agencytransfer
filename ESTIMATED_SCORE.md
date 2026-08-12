@@ -26,8 +26,9 @@ little direct evidence receives no number and remains visible as a hollow mark.
 | Deceptive behaviour, `D` | 0.10 | MASK lie rate | Lying under benchmark pressure, not manipulation of a person |
 
 Human-efficacy studies inform interpretation but do not enter v0.1. The small
-ATB OpenRouter APE-derived pilot is excluded because it has not passed blind
-human validation, route-integrity, coverage, or precision gates.
+ATB OpenRouter APE-derived pilot is permanently excluded because its unpinned
+routing, grouped ordering, missing effective seed, incompatible denominators,
+and absent blind human validation cannot be repaired after the run.
 
 ## Statistical model
 

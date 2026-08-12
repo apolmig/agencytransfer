@@ -24,52 +24,297 @@ permissions:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     env:
-      HF_TOKEN: ${{ secrets.HF_TOKEN }}
       HF_DATASET_ID: apol/agency-transfer-benchmark
     steps:
       - name: Check out repository
         uses: actions/checkout@v6
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Set up locked uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.11.33"
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+
+      - name: Verify and install the frozen Python environment
+        run: |
+          uv lock --check
+          uv sync --frozen --group dev
+
+      - name: Lint evaluation code
+        run: |
+          uv run --frozen ruff format --check evals/atb_eval scripts/prepare_diselect.py tests/evals
+          uv run --frozen ruff check evals/atb_eval scripts/prepare_diselect.py tests/evals
+
+      - name: Run evaluation tests
+        run: uv run --frozen pytest
+
+      - name: Run network-free Inspect canary outside the repository
+        env:
+          CANARY_LOG_DIR: ${{ runner.temp }}/atb-inspect-canary
+          XDG_CACHE_HOME: ${{ runner.temp }}/xdg-cache
+          XDG_CONFIG_HOME: ${{ runner.temp }}/xdg-config
+          XDG_DATA_HOME: ${{ runner.temp }}/xdg-data
+        run: |
+          test ! -e "$CANARY_LOG_DIR"
+          uv run --frozen atb-eval \
+            --manifest evals/manifests/inspect-canary-v0.1.json \
+            --log-dir "$CANARY_LOG_DIR" \
+            --execute
+          test "$(find "$CANARY_LOG_DIR" -type f -name '*.eval' | wc -l)" -eq 2
+
+      - name: Reject tracked private evaluation artifacts
+        run: |
+          if git ls-files | grep -E '(^|/)(logs?|scans?|private|raw)(/|$)|\.eval$'; then
+            echo "Tracked private evaluation artifacts are forbidden."
+            exit 1
+          fi
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install website dependencies
+        run: npm ci
+
+      - name: Validate public data
+        run: npm run validate:data
+
+      - name: Verify generated HMC artifacts are current
+        run: |
+          npm run generate:estimate
+          git diff --exit-code -- \
+            public/data/frontier-models.json \
+            public/data/frontier-observations.json \
+            public/data/hmc-estimates.json \
+            public/data/hmc-frontier.json \
+            data/models/frontier-models.csv \
+            data/estimated/hmc-proxy-v0.1.csv \
+            data/estimated/hmc-proxy-v0.1-manifest.json
+
+      - name: Type-check website
+        run: npm run typecheck
+
+      - name: Build website
+        run: npm run build
+
+      - name: Stage the public release
+        run: |
+          set -euo pipefail
+          rm -rf hf-release
+          install -D -m 0644 huggingface/README.md hf-release/README.md
+          install -D -m 0644 data/published/anthropic-agentic-influence.csv hf-release/anthropic-agentic-influence.csv
+          install -D -m 0644 data/published/diselect-summary.csv hf-release/diselect-summary.csv
+          install -D -m 0644 data/published/mask-original-results.csv hf-release/mask-original-results.csv
+          install -D -m 0644 data/published/infoopsbench-2026-07-26.csv hf-release/infoopsbench-2026-07-26.csv
+          install -D -m 0644 data/published/saferai-glm52-ape-mask.csv hf-release/saferai-glm52-ape-mask.csv
+          install -D -m 0644 public/data/model-manifest.json hf-release/model-manifest.json
+          install -D -m 0644 public/data/frontier-models.json hf-release/frontier-models.json
+          install -D -m 0644 data/models/frontier-models.csv hf-release/frontier-models.csv
+          install -D -m 0644 public/data/frontier-observations.json hf-release/frontier-observations.json
+          install -D -m 0644 public/data/hmc-estimates.json hf-release/hmc-estimates.json
+          install -D -m 0644 public/data/hmc-frontier.json hf-release/hmc-frontier.json
+          install -D -m 0644 data/estimated/hmc-proxy-v0.1.csv hf-release/hmc-proxy-v0.1.csv
+          install -D -m 0644 data/estimated/hmc-proxy-v0.1-manifest.json hf-release/hmc-proxy-v0.1-manifest.json
+          install -D -m 0644 ESTIMATED_SCORE.md hf-release/ESTIMATED_SCORE.md
+          install -D -m 0644 public/data/testing-notes.json hf-release/testing-notes.json
+          install -D -m 0644 data/runs/2026-08-10-ape-frontier-pilot-v01/aggregate.csv hf-release/runs/2026-08-10-ape-frontier-pilot-v01/aggregate.csv
+          install -D -m 0644 data/runs/2026-08-10-ape-frontier-pilot-v01/README.md hf-release/runs/2026-08-10-ape-frontier-pilot-v01/README.md
+          install -D -m 0644 data/runs/2026-08-10-ape-frontier-pilot-v01/research-notes.json hf-release/runs/2026-08-10-ape-frontier-pilot-v01/research-notes.json
+          install -D -m 0644 data/PROVENANCE.md hf-release/PROVENANCE.md
+          install -D -m 0644 LICENSES/DATA.md hf-release/DATA_LICENSE.md
+
+      - name: Enforce the release allowlist and controlled-data boundary
+        run: |
+          set -euo pipefail
+          expected="$RUNNER_TEMP/hf-release-allowlist.txt"
+          actual="$RUNNER_TEMP/hf-release-files.txt"
+          printf '%s\n' \
+            DATA_LICENSE.md \
+            ESTIMATED_SCORE.md \
+            PROVENANCE.md \
+            README.md \
+            anthropic-agentic-influence.csv \
+            diselect-summary.csv \
+            frontier-models.csv \
+            frontier-models.json \
+            frontier-observations.json \
+            hmc-estimates.json \
+            hmc-frontier.json \
+            hmc-proxy-v0.1-manifest.json \
+            hmc-proxy-v0.1.csv \
+            infoopsbench-2026-07-26.csv \
+            mask-original-results.csv \
+            model-manifest.json \
+            runs/2026-08-10-ape-frontier-pilot-v01/README.md \
+            runs/2026-08-10-ape-frontier-pilot-v01/aggregate.csv \
+            runs/2026-08-10-ape-frontier-pilot-v01/research-notes.json \
+            saferai-glm52-ape-mask.csv \
+            testing-notes.json \
+            | LC_ALL=C sort > "$expected"
+          find hf-release -type f -printf '%P\n' | LC_ALL=C sort > "$actual"
+          diff -u "$expected" "$actual"
+
+          if find hf-release -type l -print -quit | grep -q .; then
+            echo "Symlinks are forbidden in the Hugging Face release."
+            exit 1
+          fi
+
+          forbidden_paths="$(find hf-release -type f \( \
+            -name '*.eval' -o \
+            -name '*.log' -o \
+            -iname 'raw*' -o \
+            -path '*/logs/*' -o \
+            -path '*/scans/*' -o \
+            -path '*/private/*' \
+          \) -print)"
+          if [ -n "$forbidden_paths" ]; then
+            echo "Controlled or raw artifacts entered the release:"
+            printf '%s\n' "$forbidden_paths"
+            exit 1
+          fi
+
+          raw_content_files="$(grep -RIlEi --include='*.json' \
+            '"(prompt|response|messages|content|raw|transcript|trace|model_api|generation|output|completion|text|api_key|authorization|token|secret)"[[:space:]]*:' \
+            hf-release || true)"
+          if [ -n "$raw_content_files" ]; then
+            echo "A forbidden raw-content field entered a public JSON artifact."
+            printf '%s\n' "$raw_content_files"
+            exit 1
+          fi
+
+          python - <<'PY'
+          import csv
+          from pathlib import Path
+
+          expected_headers = {
+              "anthropic-agentic-influence.csv": [
+                  "benchmark_id", "model", "release_date", "scenario", "score_pct",
+                  "runs", "friction_levels", "success_criteria", "deployment_condition",
+                  "source_type", "source_url", "source_section",
+              ],
+              "diselect-summary.csv": [
+                  "benchmarkId", "model", "canonicalModelId", "family", "organisation",
+                  "accessType", "releaseDate", "releaseDateBasis", "evaluationDate",
+                  "totalParamsB", "quantisationBits", "subset", "n", "complyCount",
+                  "softRefuseCount", "refuseCount", "incoherentCount", "complyPct",
+                  "softRefusePct", "refusePct", "incoherentPct", "sourceType", "sourceUrl",
+                  "sourceCommit", "judgeModel",
+              ],
+              "mask-original-results.csv": [
+                  "benchmark", "protocol_id", "source_locator", "model",
+                  "canonical_model_id", "release_date", "total_params_b", "active_params_b",
+                  "p_honest_pct", "p_lie_pct", "accuracy_pct", "n", "source_type",
+                  "source_url",
+              ],
+              "infoopsbench-2026-07-26.csv": [
+                  "id", "benchmarkId", "protocolId", "modelId", "model", "metricKey",
+                  "metricLabel", "scorePct", "n", "evaluationDate", "sourceType",
+                  "sourceUrl", "sourceLocator", "comparabilityGroup", "lowerPct",
+                  "upperPct", "artifactUrl", "note",
+              ],
+              "saferai-glm52-ape-mask.csv": [
+                  "benchmark", "protocol", "model_id", "metric", "outcome", "value", "n",
+                  "evaluation_date", "source_url", "source_locator", "comparability_group",
+                  "value_status", "note",
+              ],
+              "frontier-models.csv": [
+                  "id", "model", "organisation", "family", "accessType", "releaseDate",
+                  "totalParamsB", "openRouterId", "eligibilityBasis", "sourceUrl",
+              ],
+              "hmc-proxy-v0.1.csv": [
+                  "modelId", "estimateVersion", "evidenceStatus", "scorePct", "lower80Pct",
+                  "upper80Pct", "lower95Pct", "upper95Pct", "observedWeight",
+                  "imputedWeight", "evidenceGrade", "partialIdentificationLowerPct",
+                  "partialIdentificationUpperPct", "equalWeightsMedianPct",
+                  "capabilityOnlyMedianPct", "weightSensitive", "componentObserved",
+                  "componentPct", "basisBenchmarks", "sourceObservationIds", "methodUrl", "note",
+              ],
+              "runs/2026-08-10-ape-frontier-pilot-v01/aggregate.csv": [
+                  "model", "n_harmful", "n_harmful_usable", "attempt_count",
+                  "no_attempt_count", "refusal_count", "invalid_count", "attempt_pct",
+                  "attempt_ci95_lower", "attempt_ci95_upper", "refusal_pct", "n_benign",
+                  "benign_attempt_pct", "transport_errors", "estimated_cost_usd",
+              ],
+          }
+          actual_csv = sorted(
+              path.relative_to("hf-release").as_posix()
+              for path in Path("hf-release").rglob("*.csv")
+          )
+          if actual_csv != sorted(expected_headers):
+              raise SystemExit(f"Unexpected CSV inventory: {actual_csv}")
+          for relative, expected in expected_headers.items():
+              path = Path("hf-release") / relative
+              with path.open(newline="", encoding="utf-8") as handle:
+                  rows = csv.reader(handle)
+                  actual = next(rows, None)
+                  if actual != expected:
+                      raise SystemExit(
+                          f"Non-allowlisted CSV schema in {relative}: {actual!r}"
+                      )
+                  for line_number, row in enumerate(rows, start=2):
+                      if len(row) != len(expected):
+                          raise SystemExit(
+                              f"Malformed CSV row in {relative}:{line_number}"
+                          )
+          PY
+
+          credential_files="$(grep -RIlEi \
+            '((^|[^A-Za-z0-9])sk-[A-Za-z0-9_-]{20,}|hf_[A-Za-z0-9]{20,}|bearer[[:space:]]+[A-Za-z0-9._-]{20,}|-----BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY-----|authorization[[:space:]]*:)' \
+            hf-release || true)"
+          if [ -n "$credential_files" ]; then
+            echo "A credential marker entered the public release."
+            printf '%s\n' "$credential_files"
+            exit 1
+          fi
+
       - name: Require a write-scoped Hub token
+        if: github.ref == 'refs/heads/main'
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
           if [ -z "$HF_TOKEN" ]; then
             echo "Add a write-scoped HF_TOKEN repository secret before running this workflow."
             exit 1
           fi
-      - name: Install the Hugging Face CLI
-        run: python -m pip install --upgrade "huggingface_hub>=1.0,<2"
-      - name: Stage the public release
-        run: |
-          mkdir -p hf-release
-          cp huggingface/README.md hf-release/README.md
-          cp data/published/anthropic-agentic-influence.csv hf-release/
-          cp data/published/diselect-summary.csv hf-release/
-          cp data/published/mask-original-results.csv hf-release/
-          cp data/published/infoopsbench-2026-07-26.csv hf-release/
-          cp data/published/saferai-glm52-ape-mask.csv hf-release/
-          cp public/data/model-manifest.json hf-release/model-manifest.json
-          cp public/data/frontier-models.json hf-release/frontier-models.json
-          cp data/models/frontier-models.csv hf-release/frontier-models.csv
-          cp public/data/frontier-observations.json hf-release/frontier-observations.json
-          cp public/data/hmc-estimates.json hf-release/hmc-estimates.json
-          cp public/data/hmc-frontier.json hf-release/hmc-frontier.json
-          cp data/estimated/hmc-proxy-v0.1.csv hf-release/hmc-proxy-v0.1.csv
-          cp data/estimated/hmc-proxy-v0.1-manifest.json hf-release/hmc-proxy-v0.1-manifest.json
-          cp ESTIMATED_SCORE.md hf-release/ESTIMATED_SCORE.md
-          cp public/data/testing-notes.json hf-release/testing-notes.json
-          mkdir -p hf-release/runs/2026-08-10-ape-frontier-pilot-v01
-          cp data/runs/2026-08-10-ape-frontier-pilot-v01/aggregate.csv hf-release/runs/2026-08-10-ape-frontier-pilot-v01/
-          cp data/runs/2026-08-10-ape-frontier-pilot-v01/labels.json hf-release/runs/2026-08-10-ape-frontier-pilot-v01/
-          cp data/runs/2026-08-10-ape-frontier-pilot-v01/manifest.json hf-release/runs/2026-08-10-ape-frontier-pilot-v01/
-          cp data/runs/2026-08-10-ape-frontier-pilot-v01/README.md hf-release/runs/2026-08-10-ape-frontier-pilot-v01/
-          cp data/runs/2026-08-10-ape-frontier-pilot-v01/research-notes.json hf-release/runs/2026-08-10-ape-frontier-pilot-v01/
-          cp data/runs/2026-08-10-ape-frontier-pilot-v01/route-integrity.json hf-release/runs/2026-08-10-ape-frontier-pilot-v01/
-          cp data/runs/2026-08-10-ape-frontier-pilot-v01/validation.json hf-release/runs/2026-08-10-ape-frontier-pilot-v01/
-          cp data/PROVENANCE.md hf-release/PROVENANCE.md
-          cp LICENSES/DATA.md hf-release/DATA_LICENSE.md
+
       - name: Create or update the dataset repository
+        if: github.ref == 'refs/heads/main'
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          hf repos create "$HF_DATASET_ID" --type dataset --exist-ok
-          hf upload "$HF_DATASET_ID" hf-release . \
+          uv run --frozen hf repos create "$HF_DATASET_ID" --type dataset --exist-ok
+          uv run --frozen hf upload "$HF_DATASET_ID" hf-release . \
             --type dataset \
+            --delete '*' \
             --commit-message "Publish Agency Transfer Benchmark frontier draft 0.2"
+
+          uv run --frozen python - "$HF_DATASET_ID" "$RUNNER_TEMP/hf-release-allowlist.txt" <<'PY'
+          import os
+          import sys
+          from pathlib import Path
+
+          from huggingface_hub import HfApi
+
+          expected = set(Path(sys.argv[2]).read_text(encoding="utf-8").splitlines())
+          expected.add(".gitattributes")
+          actual = set(
+              HfApi(token=os.environ["HF_TOKEN"]).list_repo_files(
+                  sys.argv[1], repo_type="dataset"
+              )
+          )
+          if actual != expected:
+              raise SystemExit(
+                  f"Remote inventory mismatch: missing={sorted(expected - actual)}, "
+                  f"unexpected={sorted(actual - expected)}"
+              )
+          PY

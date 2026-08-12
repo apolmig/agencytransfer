@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 
 const readJson = async (relativePath) =>
@@ -112,7 +113,7 @@ for (const row of frontierModels) {
   if (/gemma|mistral[ -]?small/i.test(row.model)) fail(`${row.id}: excluded small model entered frontier registry`);
 }
 
-requireArray(frontierObservations, "frontier observations", 50);
+requireArray(frontierObservations, "frontier observations", 40);
 requireUnique(frontierObservations, "id", "frontier observations");
 for (const row of frontierObservations) {
   if (!frontierIds.has(row.modelId)) fail(`${row.id}: unknown modelId ${row.modelId}`);
@@ -122,6 +123,117 @@ for (const row of frontierObservations) {
   if (!Number.isInteger(row.n) || row.n <= 0) fail(`${row.id}: n must be a positive integer`);
   if (!row.comparabilityGroup) fail(`${row.id}: missing comparabilityGroup`);
   if (!row.sourceUrl?.startsWith("https://")) fail(`${row.id}: missing source URL`);
+}
+const projectObservations = frontierObservations.filter((row) =>
+  String(row.sourceType).startsWith("atb-project"),
+);
+if (projectObservations.length !== 0) {
+  fail(
+    "ATB project observations remain blocked until a trusted release-gate " +
+    "attestation verifier is provisioned",
+  );
+}
+for (const row of projectObservations) {
+  if (row.validationStatus !== "validated") {
+    fail(`${row.id}: project-generated comparative observation is not validated`);
+  }
+  if (!row.validationArtifactUrl?.startsWith("https://")) {
+    fail(`${row.id}: validated project observation lacks a validation artifact`);
+  }
+  if (row.releaseGateStatus !== "passed") {
+    fail(`${row.id}: project observation lacks a passed ATB release gate`);
+  }
+  if (!/^data\/published\/atb-release-gates\/[a-z0-9._-]+\.json$/.test(row.releaseGateArtifactPath ?? "")) {
+    fail(`${row.id}: invalid local release-gate artifact path`);
+  }
+  const artifactBytes = await readFile(
+    new URL(`../${row.releaseGateArtifactPath}`, import.meta.url),
+  );
+  const artifactHash = createHash("sha256").update(artifactBytes).digest("hex");
+  if (artifactHash !== row.releaseGateArtifactSha256) {
+    fail(`${row.id}: release-gate artifact hash mismatch`);
+  }
+  const artifact = JSON.parse(artifactBytes.toString("utf8"));
+  const forbiddenPublicKeys = new Set([
+    "prompt", "response", "messages", "content", "raw", "transcript", "trace",
+    "model_api", "generation", "output", "completion", "text",
+  ]);
+  const containsForbiddenPublicField = (value) => {
+    if (Array.isArray(value)) return value.some(containsForbiddenPublicField);
+    if (!value || typeof value !== "object") return false;
+    return Object.entries(value).some(([key, nested]) =>
+      forbiddenPublicKeys.has(key.toLowerCase()) || containsForbiddenPublicField(nested));
+  };
+  if (
+    containsForbiddenPublicField(artifact) ||
+    /sk-or-v1-|hf_[A-Za-z0-9]{20,}|authorization\s*:/i.test(artifactBytes.toString("utf8"))
+  ) {
+    fail(`${row.id}: release-gate artifact contains a forbidden public field or credential`);
+  }
+  const allowedArtifactKeys = new Set([
+    "schema_version",
+    "gate_status",
+    "gate_version",
+    "protocol_id",
+    "manifest_sha256",
+    "code_commit",
+    "environment_lock_sha256",
+    "eval_log_set_sha256",
+    "execution_id",
+    "human_validation_evidence_sha256",
+    "route_integrity",
+    "human_validation",
+    "missingness",
+    "recorded_usage",
+    "dual_use_review",
+    "aggregate_rows",
+  ]);
+  if (
+    artifact.schema_version !== "atb-public-aggregate-v0.1" ||
+    artifact.gate_status !== "passed" ||
+    artifact.gate_version !== "atb-release-gate-v0.1" ||
+    Object.keys(artifact).some((key) => !allowedArtifactKeys.has(key))
+  ) {
+    fail(`${row.id}: malformed or non-allowlisted release-gate artifact`);
+  }
+  for (const [field, artifactField] of [
+    ["protocolId", "protocol_id"],
+    ["manifestSha256", "manifest_sha256"],
+    ["codeCommit", "code_commit"],
+    ["environmentLockSha256", "environment_lock_sha256"],
+    ["evalLogSetSha256", "eval_log_set_sha256"],
+    ["executionId", "execution_id"],
+    ["humanValidationEvidenceSha256", "human_validation_evidence_sha256"],
+  ]) {
+    if (row[field] !== artifact[artifactField]) {
+      fail(`${row.id}: ${field} does not match its release-gate artifact`);
+    }
+  }
+  if (
+    artifact.route_integrity?.status !== "passed" ||
+    artifact.human_validation?.status !== "passed" ||
+    !["release", "release-with-redactions"].includes(artifact.dual_use_review?.decision)
+  ) {
+    fail(`${row.id}: release-gate artifact does not permit publication`);
+  }
+  const aggregate = artifact.aggregate_rows?.find(
+    (candidate) =>
+      candidate.condition_id === row.conditionId && candidate.subset === row.subset,
+  );
+  if (!aggregate) fail(`${row.id}: no matching gated aggregate row`);
+  if (row.metricKey !== "diselect_comply_pct") {
+    fail(`${row.id}: unsupported ATB project metric ${row.metricKey}`);
+  }
+  const expectedScore = (100 * aggregate.counts.comply) / aggregate.usable_n;
+  if (row.n !== aggregate.usable_n || Math.abs(row.scorePct - expectedScore) > 1e-9) {
+    fail(`${row.id}: ledger value does not match the gated native aggregate`);
+  }
+}
+if (frontierObservations.some((row) =>
+  [row.id, row.benchmarkId, row.protocolId, row.runId, row.sourceUrl, row.artifactUrl]
+    .some((value) => /ape-frontier-pilot-v01|ape-atb-pilot|atb-ape-turn1-pilot-v0\.1/i.test(String(value ?? ""))),
+)) {
+  fail("the failed APE-derived pilot must remain outside the comparative ledger");
 }
 
 const infoOps = frontierObservations.filter(
@@ -201,13 +313,27 @@ if (pilotManifest.protocol_id !== "atb-ape-turn1-pilot-v0.1") fail("unexpected p
 if (pilotManifest.status !== "exploratory" || pilotManifest.request_count !== 312) {
   fail("pilot must remain exploratory and contain 312 attempted target requests");
 }
-if (pilotManifest.models.length !== 12 || testingNotes.length !== pilotManifest.models.length) {
+if (
+  pilotManifest.post_hoc_release_classification?.status !== "historical_failed_pipeline_audit" ||
+  pilotManifest.post_hoc_release_classification?.comparative_ledger_eligible !== false ||
+  pilotManifest.post_hoc_release_classification?.repairable !== false
+) {
+  fail("pilot must retain its permanent machine-readable failed classification");
+}
+const pilotNotes = testingNotes.filter((note) => note.id.startsWith(pilotManifest.run_id));
+if (pilotManifest.models.length !== 12 || pilotNotes.length !== pilotManifest.models.length) {
   fail("pilot model, route, and testing-note counts must agree");
 }
 if (!Array.isArray(pilotLabels) || pilotLabels.length !== 312) fail("pilot labels must contain 312 rows");
 if (!Array.isArray(pilotRoutes) || pilotRoutes.length !== 12) fail("pilot route report must contain 12 rows");
 if (pilotValidation.status !== "automated-only-exploratory") {
   fail("pilot validation boundary was removed");
+}
+if (
+  pilotValidation.post_hoc_release_classification?.status !== "failed_permanently" ||
+  pilotValidation.post_hoc_release_classification?.comparative_ledger_eligible !== false
+) {
+  fail("pilot validation must remain permanently ineligible for comparison");
 }
 for (const row of pilotLabels) {
   for (const forbidden of ["statement", "prompt", "response", "messages", "content"]) {

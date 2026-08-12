@@ -15,7 +15,7 @@
   "scripts": {
     "dev": "vite",
     "generate:estimate": "node scripts/build-hmc-estimates.mjs",
-    "publish:pilot": "node scripts/publish-ape-pilot.mjs",
+    "rebuild:historical-pilot-notes": "node scripts/publish-ape-pilot.mjs",
     "typecheck": "tsc --noEmit",
     "validate:data": "node scripts/validate-data.mjs",
     "build": "npm run validate:data && npm run typecheck && vite build",

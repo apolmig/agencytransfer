@@ -19,7 +19,11 @@ execution, operational compliance, refusal, and honesty under pressure. APE
 measures persuasion attempts, not successful human persuasion. MASK measures
 benchmark-defined lying under pressure, not general intent or manipulation.
 DisElect does not measure campaign reach, belief change, voting behaviour, or
-electoral effect.
+electoral effect. Its native outcome is response class; an optional actionability
+label is a separate ATB adaptation. DisElect is not evidence of exploitative
+personalisation, persistence or pressure, deception or concealment assistance,
+model intent, or general factuality when those constructs were not explicitly
+tested.
 
 The following terms are prohibited unless supported by direct evidence in the
 specific study:
@@ -41,6 +45,14 @@ question, but it is not used to rank models and is not described as a replicated
 benchmark result. A status label cannot be removed until the prespecified blind
 human-validation gate passes.
 
+The 10 August 2026 APE-derived run is a stricter case: it is permanently retained
+as a `historical-failed` pipeline audit. Provider routing was not pinned,
+requests were model-grouped, no seed parameter was sent, harmful and benign
+rates used inconsistent denominators, and no blind human validation occurred.
+These limitations and the exclusion decision were documented post hoc. Human
+review could improve knowledge of its labels but cannot repair its design or
+make its endpoint rates comparable.
+
 ## Release tiers
 
 ### Public
@@ -53,19 +65,25 @@ Suitable for the website, GitHub, or a public Hugging Face dataset:
 - human-validation summaries and confusion matrices;
 - route-integrity, cost, latency, and failure statistics;
 - code, schemas, manifests, and aggregate derivation scripts;
-- benchmark cards, limitations, and citations; and
-- benign examples or carefully paraphrased qualitative examples.
+- benchmark cards, limitations, and citations;
+- benign examples or carefully paraphrased qualitative examples; and
+- aggregate Scout QA counts that cannot reveal restricted content and are
+  clearly separated from behavioural outcomes.
 
 ### Controlled
 
 Stored with access controls and shared only for a documented research purpose:
 
 - raw harmful target-model generations;
+- Inspect `.eval` files and model-API logs containing restricted inputs or
+  outputs;
 - judge traces containing harmful content;
 - source prompts whose redistribution rights are unclear;
 - outputs that combine operational steps into a usable workflow;
-- low-frequency examples that could identify a person or live context; and
-- adjudication notes containing reproduced harmful text.
+- low-frequency examples that could identify a person or live context;
+- adjudication notes containing reproduced harmful text; and
+- PETRI auditor traces, candidate scenarios, rollback branches, and Scout flags
+  or explanations that reproduce restricted content.
 
 ### Withheld
 
@@ -80,6 +98,10 @@ Not distributed outside the minimum authorised team:
 
 Hashing content does not make unsafe or personal data safe to publish if the
 underlying text is also released or readily recoverable.
+
+Private shadow sets and adaptive-discovery material use opaque identifiers or a
+keyed digest rather than a plain content hash when a public hash could support
+dictionary recovery. The key and item mapping remain controlled.
 
 ## No raw harmful-output publication by default
 
@@ -145,6 +167,22 @@ Examples and summaries avoid current operational details, personal targeting,
 and actionable evasion techniques. Research about a live election receives
 heightened review and may remain embargoed until the relevant risk has passed.
 
+## Adaptive discovery and QA tools
+
+PETRI is permitted only as controlled adaptive discovery. Its auditor, target,
+judge, budget, seeds, and stopping condition are recorded. A discovered scenario
+does not enter the confirmation split for the same wave and is not described as
+a prevalence estimate. Before any later use it receives human review,
+deduplication, construct review, and dual-use review. Novel prompts or scenarios
+that lower the effort required for misuse remain controlled or withheld.
+
+Inspect Scout is permitted for QA scanning of evaluation logs. Scout flags may
+identify missing calls, refusals, parser failures, loops, eval awareness, or
+other anomalies, but they are not benchmark labels or evidence of model risk.
+Public releases may contain safe aggregate QA counts; raw scanner evidence and
+any reproduced harmful text remain controlled. Scout cannot substitute for
+blind human validation.
+
 ## Dual-use review
 
 Before publication, two reviewers independently assess:
@@ -208,6 +246,9 @@ is not covered by model-output annotation approval.
   when it is no longer scientifically or legally necessary.
 - Public issue trackers are not used to paste harmful outputs or private
   disclosure details.
+- Controlled Inspect logs are never bundled into a public log viewer. Public
+  exports are generated from an explicit field allowlist rather than by trying
+  to redact a raw log.
 - Secrets are supplied at runtime and excluded from source control, build
   artefacts, screenshots, notebooks, and logs.
 - Git history and release archives receive a secret scan before publication.
@@ -226,6 +267,11 @@ No release is approved until all applicable items are complete:
       experimental-unvalidated.
 - [ ] Counts, denominators, missingness, and confidence intervals are present.
 - [ ] Native benchmark metrics remain separate; no false composite is shown.
+- [ ] Adaptive discovery and confirmation are separated by versioned splits;
+      no PETRI-discovered or near-duplicate item entered the same confirmation
+      wave.
+- [ ] Scout outputs are labelled QA-only and do not enter benchmark scores or
+      model rankings.
 - [ ] Post-publication benchmark exposure is flagged.
 - [ ] Licence and attribution fields are complete.
 - [ ] Raw harmful outputs and restricted prompts are absent.

@@ -42,7 +42,7 @@ configs:
     data_files:
       - split: train
         path: "mask-original-results.csv"
-  - config_name: openrouter_pilot
+  - config_name: historical_failed_pilot
     data_files:
       - split: train
         path: "runs/2026-08-10-ape-frontier-pilot-v01/aggregate.csv"
@@ -54,7 +54,7 @@ configs:
 > **Frontier AI, Harmful Manipulation, and Election Security**. Independent
 > research; not an official ERA benchmark.
 
-This aggregate-only dataset accompanies the interactive
+This aggregate-and-provenance-only dataset accompanies the interactive
 [Agency Transfer Benchmark](https://miguelguerrero.eu/agencytransfer/) and its
 [source repository](https://github.com/apolmig/agencytransfer).
 
@@ -67,21 +67,23 @@ This aggregate-only dataset accompanies the interactive
   Anthropic's helpful-only agentic evaluation, MASK, and DisElect;
 - an experimental HMC proxy ledger with weights, modelled intervals, evidence
   grades, sensitivity checks, source IDs, input hashes, and explicit gaps;
-- an exploratory 12-endpoint APE-derived OpenRouter pilot with aggregate labels,
-  hashes, sanitised route metadata, cost, and validation status; and
+- a historical, failed 12-endpoint APE-derived OpenRouter pipeline audit with
+  aggregate outcomes, hashes, sanitised route metadata, cost, and failure
+  status; and
 - one short research note per project-tested endpoint.
 
 The records contain no raw harmful prompts or generations, personal data,
 credentials, targeting material, or current-election operational content.
 
-## Exploratory OpenRouter pilot — excluded from comparative results
+## Historical failed OpenRouter pilot — excluded from comparative results
 
 The 312-call pilot tested the pipeline, not the models. It used one APE
-category, 20 harmful items per endpoint, provider-default routing, and automated
-labels without blind human validation. Usable denominators were uneven and two
-audit batches failed to parse. The run is therefore excluded from the public
-Testing result view and from the HMC proxy. Aggregate artifacts remain available
-for reproducibility and failure analysis.
+category, 20 harmful items per requested model slug, unpinned provider routing,
+model-grouped ordering, no effective seed, incompatible harmful and benign
+denominators, and automated labels without blind human validation. The run is
+permanently excluded from the comparative ledger and HMC proxy; retrospective
+labelling cannot repair its collection design. Aggregate artifacts remain
+available only for reproducibility and failure analysis.
 
 ## Files
 
@@ -100,7 +102,7 @@ these evaluation results form a model-training split.
 | `infoopsbench-2026-07-26.csv` | Frozen, transformed InfoOpsBench v2 paper snapshot |
 | `saferai-glm52-ape-mask.csv` | Transcribed APE/MASK cohort results |
 | `testing-notes.json` | Website research-note records |
-| `runs/2026-08-10-ape-frontier-pilot-v01/` | Aggregate-only pilot artifacts |
+| `runs/2026-08-10-ape-frontier-pilot-v01/` | Aggregate failed-audit artifacts; item-level automated labels remain GitHub-only |
 | `anthropic-agentic-influence.csv` | Helpful-only simulated agentic-influence series |
 | `diselect-summary.csv` | Aggregate DisElect classification results |
 | `mask-original-results.csv` | Original MASK table values for selected ≥100B open-weight models |
@@ -116,8 +118,8 @@ benchmark result or “Agency Transfer Score.” Missing results are not zeroes.
 InfoOps compliance is not human persuasion. APE detects attempted persuasion,
 not persuasive success. MASK lying is not the complement of honesty. Simulated
 agentic task completion is not deployed behaviour or electoral effect. The
-OpenRouter pilot is automated-only and exploratory until blind human validation
-is complete.
+OpenRouter pilot is a historical failed pipeline audit, not a model comparison.
+Its design defects cannot be repaired by later human validation.
 
 ## Frontier inclusion rule
 

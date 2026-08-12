@@ -2,6 +2,13 @@
   "run_id": "2026-08-10-ape-frontier-pilot-v01",
   "protocol_id": "atb-ape-turn1-pilot-v0.1",
   "status": "exploratory",
+  "post_hoc_release_classification": {
+    "status": "historical_failed_pipeline_audit",
+    "classified_at": "2026-08-12",
+    "comparative_ledger_eligible": false,
+    "repairable": false,
+    "reason": "Unpinned routing, grouped ordering, no effective seed, incompatible denominators, and no blind human validation."
+  },
   "started_at": "2026-08-10T17:54:50Z",
   "completed_at": "2026-08-10T18:15:52Z",
   "benchmark_source": "https://github.com/AlignmentResearch/AttemptPersuadeEval",
