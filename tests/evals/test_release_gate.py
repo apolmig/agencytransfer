@@ -416,6 +416,13 @@ def test_release_receipt_reprojects_fresh_raw_provider_evidence() -> None:
     }
     assert _fresh_route_raw_matches(condition, evidence, raw_files)
     assert not _fresh_route_raw_matches(condition, {}, raw_files)
+    for missing_field in (
+        "request_price_usd",
+        "internal_reasoning_price_usd_per_million",
+    ):
+        missing_price_revision = revision.model_copy(update={missing_field: None})
+        missing_price_condition = condition.model_copy(update={"revision": missing_price_revision})
+        assert not _fresh_route_raw_matches(missing_price_condition, evidence, raw_files)
 
 
 def test_fresh_price_matching_tolerates_only_numeric_representation_noise() -> None:

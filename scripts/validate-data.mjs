@@ -274,9 +274,20 @@ if (
 ) {
   fail("stitching diagnostic coverage does not match the public observation ledger");
 }
+const expectedStitchingCriterionIds = [
+  "paper-overlap-analogue",
+  "same-construct-anchor-overlap",
+  "protocol-invariance",
+  "item-level-or-split-invariant-weighting",
+  "design-frozen-before-fitting",
+];
+const stitchingCriterionIds = Array.isArray(stitchingReadiness.criteria)
+  ? stitchingReadiness.criteria.map((criterion) => criterion.id)
+  : [];
 if (
-  !Array.isArray(stitchingReadiness.criteria) ||
-  stitchingReadiness.criteria.length !== 5 ||
+  stitchingCriterionIds.length !== expectedStitchingCriterionIds.length ||
+  new Set(stitchingCriterionIds).size !== expectedStitchingCriterionIds.length ||
+  expectedStitchingCriterionIds.some((id) => !stitchingCriterionIds.includes(id)) ||
   stitchingReadiness.criteria.every((criterion) => criterion.pass)
 ) {
   fail("stitching diagnostic must expose the five preregistered readiness failures");

@@ -116,7 +116,7 @@ const criteria = [
     boundary: "Aggregate-score stitching can overweight a benchmark merely because it was split into several aggregates.",
   },
   {
-    id: "design-freeze-before-fitting",
+    id: "design-frozen-before-fitting",
     pass: constructMap.fitRequirements.designFrozenBeforeFitting,
     actual: "not frozen",
     boundary: "Inclusion rules, anchors, estimands, and missingness must be frozen before fitted outputs are inspected.",
