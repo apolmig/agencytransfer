@@ -432,9 +432,7 @@ def test_route_check_uses_served_model_and_openrouter_provider() -> None:
     event.call.response["openrouter_metadata"]["endpoints"]["available"][0]["model"] = (
         "vendor/model-2025-01-01-canonical"
     )
-    event.call.response["openrouter_metadata"]["attempts"][0]["model"] = (
-        "vendor/model-2025-01-01"
-    )
+    event.call.response["openrouter_metadata"]["attempts"][0]["model"] = "vendor/model-2025-01-01"
     assert not sample_routes_match(sample, condition)
     event.call.response["openrouter_metadata"]["attempts"][0]["model"] = (
         "vendor/model-2025-01-01-canonical"
@@ -584,13 +582,9 @@ def test_openrouter_adapter_preserves_additive_router_metadata(
     response["openrouter_metadata"]["endpoints"]["available"][0]["model"] = (
         "deepseek/deepseek-v4-flash-20260423"
     )
-    response["openrouter_metadata"]["attempts"][0]["model"] = (
-        "deepseek/deepseek-v4-flash"
-    )
+    response["openrouter_metadata"]["attempts"][0]["model"] = "deepseek/deepseek-v4-flash"
     assert not openrouter_route_metadata_matches(response, condition)
-    response["openrouter_metadata"]["attempts"][0]["model"] = (
-        "deepseek/deepseek-v4-flash-20260423"
-    )
+    response["openrouter_metadata"]["attempts"][0]["model"] = "deepseek/deepseek-v4-flash-20260423"
     response["openrouter_metadata"]["attempts"][0]["status"] = 429
     assert not openrouter_route_metadata_matches(response, condition)
     response["openrouter_metadata"]["attempts"][0]["status"] = 200

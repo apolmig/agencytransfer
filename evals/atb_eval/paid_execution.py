@@ -38,9 +38,7 @@ _RAW_RESPONSE_HASH_FIELDS = (
     "zdr_response_sha256",
 )
 _SHA256_PATTERN = re.compile(r"^[a-f0-9]{64}$")
-_UTC_TIMESTAMP_PATTERN = re.compile(
-    r"^20\d{2}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$"
-)
+_UTC_TIMESTAMP_PATTERN = re.compile(r"^20\d{2}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$")
 
 
 class PaidExecutionPermit(BaseModel):
@@ -550,9 +548,7 @@ def _route_capture_regular_files(capture_dir: Path) -> dict[str, Path]:
             try:
                 details = child.lstat()
             except OSError as exc:
-                raise ValueError(
-                    "OpenRouter route capture cannot be traversed safely"
-                ) from exc
+                raise ValueError("OpenRouter route capture cannot be traversed safely") from exc
             if stat.S_ISLNK(details.st_mode):
                 raise ValueError("OpenRouter route capture contains a symlink")
             if not stat.S_ISDIR(details.st_mode):
@@ -846,9 +842,7 @@ def verify_persisted_openrouter_route_capture(
             raise ValueError("OpenRouter route evidence no longer matches its frozen condition")
 
         raw_hashes = row.get("raw_response_sha256")
-        if not isinstance(raw_hashes, dict) or set(raw_hashes) != set(
-            _RAW_RESPONSE_HASH_FIELDS
-        ):
+        if not isinstance(raw_hashes, dict) or set(raw_hashes) != set(_RAW_RESPONSE_HASH_FIELDS):
             raise ValueError("OpenRouter route condition lacks exact raw evidence hashes")
         for field in _RAW_RESPONSE_HASH_FIELDS:
             raw_digest = raw_hashes[field]
@@ -875,9 +869,7 @@ def verify_persisted_openrouter_route_capture(
     if set(artifact_inventory) - provider_paths != evidence_paths:
         raise ValueError("OpenRouter route evidence inventory has unexpected files")
 
-    canonical_inventory = json.dumps(
-        artifact_rows, sort_keys=True, separators=(",", ":")
-    ).encode()
+    canonical_inventory = json.dumps(artifact_rows, sort_keys=True, separators=(",", ":")).encode()
     return {
         "schema_version": _ROUTE_RECEIPT_SCHEMA,
         "receipt_sha256": receipt_sha256,

@@ -197,9 +197,9 @@ def test_receipt_records_original_failure_and_separate_corrected_acceptance(
     assert receipt["artifact"]["scanner_status"] == "passed"
     assert receipt["artifact"]["scanner_status_source"] == "local_revalidation"
     assert receipt["source"] == "local_revalidation"
-    assert receipt["execution"]["eval_logs"][0]["sha256"] == sha256(
-        eval_path.read_bytes()
-    ).hexdigest()
+    assert (
+        receipt["execution"]["eval_logs"][0]["sha256"] == sha256(eval_path.read_bytes()).hexdigest()
+    )
     assert len(validator_calls) == 1
     validator_kwargs = validator_calls[0][-1]
     assert validator_kwargs == {

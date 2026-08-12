@@ -1485,8 +1485,7 @@ def validate_persisted_execution(
         if (
             log.eval.dataset.samples != manifest.run.expected_samples_per_model
             or not log.eval.dataset.shuffled
-            or len(log.eval.dataset.sample_ids or [])
-            != manifest.run.expected_samples_per_model
+            or len(log.eval.dataset.sample_ids or []) != manifest.run.expected_samples_per_model
             or log.results is None
             or log.results.completed_samples != expected_count
             or log.samples is None
@@ -1498,17 +1497,14 @@ def validate_persisted_execution(
                 and any(not sample_target_output_matches(sample) for sample in log.samples)
             )
             or any(
-                not sample_model_inputs_match(sample, condition, manifest)
-                for sample in log.samples
+                not sample_model_inputs_match(sample, condition, manifest) for sample in log.samples
             )
             or any(
                 not sample_routes_match(
                     sample,
                     condition,
                     manifest.model_roles,
-                    target_roles=(
-                        {None, "persuader"} if manifest.task.kind == "ape" else {None}
-                    ),
+                    target_roles=({None, "persuader"} if manifest.task.kind == "ape" else {None}),
                     required_roles=required_sample_roles(sample, manifest),
                     manifest=manifest,
                 )
@@ -1519,9 +1515,7 @@ def validate_persisted_execution(
                     retry,
                     condition,
                     manifest.model_roles,
-                    target_roles=(
-                        {None, "persuader"} if manifest.task.kind == "ape" else {None}
-                    ),
+                    target_roles=({None, "persuader"} if manifest.task.kind == "ape" else {None}),
                     manifest=manifest,
                 )
                 for sample in log.samples

@@ -438,8 +438,7 @@ def test_fresh_route_capture_must_match_frozen_projection(
     assert summary["receipt_sha256"] == digest
     assert summary["observed_at"] == "2026-08-12T12:00:00Z"
     assert summary["condition_ids"] == sorted(
-        condition.condition_id
-        for condition in [*manifest.models, *manifest.model_roles.values()]
+        condition.condition_id for condition in [*manifest.models, *manifest.model_roles.values()]
     )
     assert summary["artifact_count"] > 0
     assert summary["artifact_bytes"] > 0

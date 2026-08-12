@@ -200,9 +200,7 @@ def _extract_verified_archive(
                 flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0)
                 descriptor = os.open(target, flags, 0o600)
                 try:
-                    with archive.open(info, "r") as source, os.fdopen(
-                        descriptor, "wb"
-                    ) as output:
+                    with archive.open(info, "r") as source, os.fdopen(descriptor, "wb") as output:
                         descriptor = -1
                         while chunk := source.read(1024 * 1024):
                             output.write(chunk)
@@ -213,9 +211,7 @@ def _extract_verified_archive(
     except (OSError, zipfile.BadZipFile, RuntimeError) as exc:
         raise ValueError("artifact archive cannot be extracted safely") from exc
     _verify_archive_checksums(root)
-    inventory_content = json.dumps(
-        inventory_rows, sort_keys=True, separators=(",", ":")
-    ).encode()
+    inventory_content = json.dumps(inventory_rows, sort_keys=True, separators=(",", ":")).encode()
     return {
         "sha256": verified_sha256,
         "size_bytes": len(archive_bytes),
@@ -423,9 +419,7 @@ def execution_context_from_logs(
     ]
     route_receipt_sha256: str | None = None
     if route_conditions:
-        route_receipt_sha256 = _consistent_metadata(
-            logs, "atb_openrouter_route_receipt_sha256"
-        )
+        route_receipt_sha256 = _consistent_metadata(logs, "atb_openrouter_route_receipt_sha256")
         if not isinstance(route_receipt_sha256, str):
             raise ValueError("persisted route receipt hash is invalid")
         _require_match(route_receipt_sha256, _SHA256_PATTERN, "route receipt SHA-256")
@@ -515,8 +509,7 @@ def build_revalidation_receipt(
         historical["protocol_id"] != manifest.protocol_id
         or historical["manifest_sha256"] != manifest_sha256
         or historical["source_commit"] != manifest.dataset.source_revision
-        or historical["planned_run_cost_envelope_usd"]
-        != manifest.run.planned_run_cost_envelope_usd
+        or historical["planned_run_cost_envelope_usd"] != manifest.run.planned_run_cost_envelope_usd
         or historical["provider_key_lifetime_cap_usd"] != manifest.run.provider_key_limit_usd
     ):
         raise ValueError("historical workflow receipt does not match the manifest")
@@ -689,9 +682,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     print(
         json.dumps(
             {
-                "corrected_postflight_acceptance": receipt[
-                    "corrected_postflight_acceptance"
-                ],
+                "corrected_postflight_acceptance": receipt["corrected_postflight_acceptance"],
                 "controlled_evidence_accepted": receipt["controlled_evidence_accepted"],
                 "scientific_claim_eligible": receipt["scientific_claim_eligible"],
                 "receipt_sha256": receipt_sha256,
