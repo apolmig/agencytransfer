@@ -1,8 +1,13 @@
+import asyncio
+import math
+from types import SimpleNamespace
+
 from atb_eval.scorers import (
     RESPONSE_CLASS_PROMPT,
     ActionabilityClass,
     ResponseClass,
     _grader_failure,
+    diselect_response_class,
     parse_actionability,
     parse_response_class,
 )
@@ -38,3 +43,16 @@ def test_grader_transport_and_truncation_fail_closed() -> None:
     assert _grader_failure(error) == "grader_model_error"
     assert _grader_failure(truncated) == "grader_truncated"
     assert _grader_failure(complete) is None
+
+
+def test_truncated_target_completion_is_unscored_instead_of_zero() -> None:
+    state = SimpleNamespace(
+        output=ModelOutput.from_content(
+            "target",
+            "partial response without a complete answer",
+            stop_reason="max_tokens",
+        )
+    )
+    score = asyncio.run(diselect_response_class()(state, None))
+    assert math.isnan(score.value)
+    assert score.metadata == {"instrument_failure": "truncated"}

@@ -1138,6 +1138,78 @@ def recorded_openrouter_billed_costs(log: Any) -> dict[str, tuple[float, str]]:
     return recorded
 
 
+def recorded_execution_usage_within_envelope(
+    manifest: ProtocolManifest,
+    log_dir: Path,
+    execution_id: str,
+    ordered_conditions: list[ModelCondition],
+) -> bool:
+    """Audit all persisted usage before accepting or rejecting scientific output.
+
+    Inspect can persist complete, billable model events even when an eval set is
+    later rejected as incomplete or unscored. Cost accounting therefore runs
+    against the evidence directory independently of the scientific postflight.
+    """
+
+    recorded_cost = 0.0
+    recorded_tokens = 0
+    event_usage: dict[str, tuple[int, float, str]] = {}
+    billed_event_usage: dict[str, tuple[float, str]] = {}
+    evidence_paths = sorted(log_dir.rglob("*.eval"))
+    if not evidence_paths:
+        return False
+    evidence_logs = [read_eval_log(path) for path in evidence_paths]
+    for evidence_log in evidence_logs:
+        if (evidence_log.eval.metadata or {}).get("atb_execution_id") != execution_id:
+            return False
+        matching_conditions = [
+            condition
+            for condition in ordered_conditions
+            if log_matches_condition(evidence_log, condition, manifest)
+        ]
+        if len(matching_conditions) != 1:
+            return False
+        condition = matching_conditions[0]
+        if str(evidence_log.status) == "error" and any(
+            not failed_sample_routes_match(
+                sample,
+                condition,
+                manifest.model_roles,
+                target_roles=({None, "persuader"} if manifest.task.kind == "ape" else {None}),
+                manifest=manifest,
+            )
+            or not failed_sample_model_inputs_match(sample, condition, manifest)
+            for sample in (evidence_log.samples or [])
+        ):
+            return False
+        try:
+            tokens, cost = recorded_log_usage(evidence_log, require_cost=manifest.is_paid)
+            events = recorded_event_usage(evidence_log, require_cost=manifest.is_paid)
+            billed_events = recorded_openrouter_billed_costs(evidence_log)
+        except ValueError:
+            return False
+        recorded_tokens += tokens
+        recorded_cost += cost
+        for event_id, value in events.items():
+            if event_id in event_usage and event_usage[event_id] != value:
+                return False
+            event_usage[event_id] = value
+        for event_id, value in billed_events.items():
+            if event_id in billed_event_usage and billed_event_usage[event_id] != value:
+                return False
+            billed_event_usage[event_id] = value
+    event_tokens = sum(value[0] for value in event_usage.values())
+    event_cost = sum(value[1] for value in event_usage.values())
+    billed_cost = sum(value[0] for value in billed_event_usage.values())
+    if recorded_tokens != event_tokens or not math.isclose(recorded_cost, event_cost, abs_tol=1e-9):
+        return False
+    return not (
+        recorded_tokens > manifest.run.planned_run_token_envelope
+        or recorded_cost > manifest.run.planned_run_cost_envelope_usd + 1e-9
+        or billed_cost > manifest.run.planned_run_cost_envelope_usd + 1e-9
+    )
+
+
 def verify_task_identity(manifest: ProtocolManifest, task: Task) -> None:
     spec = manifest.task
     installed_version = importlib.metadata.version(spec.package)
@@ -1310,38 +1382,57 @@ def execute(
         for condition in ordered_conditions
     ]
     previous_umask = os.umask(0o077)
+    eval_error: Exception | None = None
     try:
-        success, logs = eval_set(
-            tasks=[task],
-            model=models,
-            model_roles=roles or None,
-            log_dir=str(log_dir),
-            log_format="eval",
-            log_samples=True,
-            log_model_api=manifest.run.log_model_api,
-            log_refusals=True,
-            retry_attempts=manifest.run.retry_attempts,
-            retry_cleanup=False,
-            retry_immediate=manifest.run.retry_attempts > 0,
-            retry_on_error=manifest.run.retry_on_error,
-            epochs=manifest.run.epochs,
-            sample_shuffle=manifest.run.sample_shuffle,
-            fail_on_error=manifest.run.fail_on_error,
-            token_limit=manifest.run.sample_token_limit,
-            cost_limit=manifest.run.sample_cost_limit_usd or None,
-            model_cost_config=model_cost_config(manifest),
-            max_samples=1,
-            max_tasks=len(models),
-            seed=manifest.run.seed,
-            max_connections=manifest.run.max_connections,
-            max_retries=manifest.run.max_retries,
-            eval_set_id=eval_set_id,
-            metadata=metadata,
-        )
+        try:
+            success, logs = eval_set(
+                tasks=[task],
+                model=models,
+                model_roles=roles or None,
+                log_dir=str(log_dir),
+                log_format="eval",
+                log_samples=True,
+                log_model_api=manifest.run.log_model_api,
+                log_refusals=True,
+                retry_attempts=manifest.run.retry_attempts,
+                retry_cleanup=False,
+                retry_immediate=manifest.run.retry_attempts > 0,
+                retry_on_error=manifest.run.retry_on_error,
+                epochs=manifest.run.epochs,
+                sample_shuffle=manifest.run.sample_shuffle,
+                fail_on_error=manifest.run.fail_on_error,
+                token_limit=manifest.run.sample_token_limit,
+                cost_limit=manifest.run.sample_cost_limit_usd or None,
+                model_cost_config=model_cost_config(manifest),
+                max_samples=1,
+                max_tasks=len(models),
+                seed=manifest.run.seed,
+                max_connections=manifest.run.max_connections,
+                max_retries=manifest.run.max_retries,
+                eval_set_id=eval_set_id,
+                metadata=metadata,
+            )
+        except Exception as exc:  # Persisted paid evidence must still be audited.
+            eval_error = exc
+            success, logs = False, []
     finally:
         os.umask(previous_umask)
     ensure_private_permissions(log_dir, create=False)
+    usage_audit_passed = recorded_execution_usage_within_envelope(
+        manifest, log_dir, execution_id, ordered_conditions
+    )
+    if eval_error is not None:
+        if not usage_audit_passed:
+            raise RuntimeError(
+                "Inspect eval raised and persisted usage could not be verified"
+            ) from eval_error
+        raise RuntimeError("Inspect eval raised after persisted usage was audited") from eval_error
+    if not usage_audit_passed:
+        return False
     if not success or len(logs) != len(ordered_conditions):
+        return False
+    evidence_logs = [read_eval_log(path) for path in sorted(log_dir.rglob("*.eval"))]
+    if task_retry_chain_failures(evidence_logs, manifest):
         return False
     seen_conditions: set[str] = set()
     paired_identity: tuple[tuple[str, ...], tuple[tuple[str, int, str], ...]] | None = None
@@ -1463,66 +1554,6 @@ def execute(
             )
         ):
             return False
-    recorded_cost = 0.0
-    recorded_tokens = 0
-    event_usage: dict[str, tuple[int, float, str]] = {}
-    billed_event_usage: dict[str, tuple[float, str]] = {}
-    evidence_paths = sorted(log_dir.rglob("*.eval"))
-    if not evidence_paths:
-        return False
-    evidence_logs = [read_eval_log(path) for path in evidence_paths]
-    if task_retry_chain_failures(evidence_logs, manifest):
-        return False
-    for evidence_log in evidence_logs:
-        if (evidence_log.eval.metadata or {}).get("atb_execution_id") != execution_id:
-            return False
-        matching_conditions = [
-            condition
-            for condition in ordered_conditions
-            if log_matches_condition(evidence_log, condition, manifest)
-        ]
-        if len(matching_conditions) != 1:
-            return False
-        condition = matching_conditions[0]
-        if str(evidence_log.status) == "error" and any(
-            not failed_sample_routes_match(
-                sample,
-                condition,
-                manifest.model_roles,
-                target_roles=({None, "persuader"} if manifest.task.kind == "ape" else {None}),
-                manifest=manifest,
-            )
-            or not failed_sample_model_inputs_match(sample, condition, manifest)
-            for sample in (evidence_log.samples or [])
-        ):
-            return False
-        try:
-            tokens, cost = recorded_log_usage(evidence_log, require_cost=manifest.is_paid)
-            events = recorded_event_usage(evidence_log, require_cost=manifest.is_paid)
-            billed_events = recorded_openrouter_billed_costs(evidence_log)
-        except ValueError:
-            return False
-        recorded_tokens += tokens
-        recorded_cost += cost
-        for event_id, value in events.items():
-            if event_id in event_usage and event_usage[event_id] != value:
-                return False
-            event_usage[event_id] = value
-        for event_id, value in billed_events.items():
-            if event_id in billed_event_usage and billed_event_usage[event_id] != value:
-                return False
-            billed_event_usage[event_id] = value
-    event_tokens = sum(value[0] for value in event_usage.values())
-    event_cost = sum(value[1] for value in event_usage.values())
-    billed_cost = sum(value[0] for value in billed_event_usage.values())
-    if recorded_tokens != event_tokens or not math.isclose(recorded_cost, event_cost, abs_tol=1e-9):
-        return False
-    if (
-        recorded_tokens > manifest.run.planned_run_token_envelope
-        or recorded_cost > manifest.run.planned_run_cost_envelope_usd + 1e-9
-        or billed_cost > manifest.run.planned_run_cost_envelope_usd + 1e-9
-    ):
-        return False
     return seen_conditions == {condition.condition_id for condition in ordered_conditions}
 
 

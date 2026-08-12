@@ -69,24 +69,40 @@ per-sample token and recorded-cost stops plus a conservative planned run
 envelope over models and epochs. Provider-SDK, sample, and task retries are all
 disabled for confirmatory runs. Inspect checks the per-sample stops after model
 responses; the planned run envelope is not a provider billing hard cap. The
-runner rejects a completed eval set whose cumulative recorded usage exceeds
-that envelope. Provider invoices can still differ after ambiguous transport
-failures.
+runner audits cumulative persisted usage before it accepts or rejects the
+scientific postflight, so partial/unscored runs still receive the same envelope
+check. Provider invoices can still differ after ambiguous transport failures.
 
 The primary outcome is the native four-class DisElect response label. Optional
 actionability is a separate exploratory instrument. Personalisation, pressure,
 factuality, persuasion efficacy, and agency transfer are not inferred from
 DisElect.
 
-### Paid route preflight (frozen, not yet executed)
+### Paid route preflight (frozen)
 
-`diselect-route-preflight-v0.2.json` is a transport canary, not a scientific
+`diselect-route-preflight-v0.3.json` is a transport canary, not a scientific
 run. It schedules one benign control against the two invocable DeepSeek V4 Flash
 IDs, binds each ID to its permanent canonical slug, pins both to DeepInfra/fp4,
 and pins the Gemini grader to the ZDR-eligible Google Vertex endpoint.
 It has zero harmful items, one epoch, no retries, one connection, a local
 USD 0.02 per-sample stop, and a USD 0.04 total envelope. It is ineligible for
 public aggregation and makes no safety or comparative-performance claim.
+
+The frozen v0.2 canary was executed once on 12 August 2026. Both target routes
+responded, but the 0731 route used 231 of its 250 completion tokens for internal
+reasoning. It returned a 140-character partial completion, but `stop=max_tokens`
+made that output non-scorable. Inspect preserved the sample as unscored; the ATB
+postflight then rejected the paired eval set. The other route completed. The
+logged OpenRouter `usage.cost` and Inspect's locally calculated estimate both totalled
+USD 0.000534322. Version 0.3 raises the target completion allowance from 250 to
+700 tokens (the native `diselect_pilot` default) and gives Inspect a
+3,000-token per-sample/6,000-token run envelope;
+the USD 0.02 per-sample and USD 0.04 run limits are unchanged. The v0.2 manifest
+is immutable. Its controlled evidence is retained as GitHub Actions run
+`31619679583` (artifact SHA-256
+`ea5eff2438461b310b343229b8e3cc52704b4c6c05ab25bdd394e079888971de`);
+artifact retention is operationally limited and must not be described as
+permanent archival.
 
 The manifest is frozen against a credential-free capture of OpenRouter's model,
 endpoint, and ZDR inventories, including content-addressed raw provider
@@ -97,7 +113,7 @@ uv run python scripts/capture_openrouter_routes.py \
   --output-dir /controlled/atb/route-capture
 ```
 
-A controlled v0.2 execution may use an inference-only key with a lifetime
+A controlled v0.3 execution may use an inference-only key with a lifetime
 per-key cap no greater than USD 30 configured with
 `include_byok_in_limit=true`. That limit bounds the credential's total exposure;
 it is not the authorization for this run. A separate permit must exactly match
@@ -110,8 +126,9 @@ completion-limit, token-price, or fixed-request-price drift blocks the run. The
 complete fresh public capture is retained with owner-only permissions beside
 the Inspect logs; a content hash of its receipt is embedded in every log. The
 Inspect envelope and permit remain post-response/local safeguards, not a
-transactional provider billing guarantee. The original frozen v0.1 manifest is
-retained unchanged and still requires a dedicated USD 0.04 lifetime key.
+transactional provider billing guarantee. The frozen v0.1 and executed v0.2
+manifests are retained unchanged; v0.1 still requires a dedicated USD 0.04
+lifetime key.
 
 The external permit is a mode-`0600` JSON file outside the repository. It records
 the operator's deliberate acknowledgement and binds it to the exact protocol,
@@ -120,7 +137,7 @@ canonical manifest hash, clean Git commit, and maximum USD 0.04 run envelope:
 ```json
 {
   "schema_version": "atb-paid-execution-permit-v0.1",
-  "protocol_id": "atb-diselect-route-preflight-v0.2",
+  "protocol_id": "atb-diselect-route-preflight-v0.3",
   "manifest_sha256": "<canonical manifest SHA-256>",
   "code_commit": "<40-character merged commit>",
   "acknowledged_by": "<operator identity>",
@@ -138,7 +155,7 @@ On the controlled host, with no proxy variables and no management key present:
 
 ```bash
 uv run atb-eval \
-  --manifest evals/manifests/diselect-route-preflight-v0.2.json \
+  --manifest evals/manifests/diselect-route-preflight-v0.3.json \
   --source-dir /controlled/election-ai-safety \
   --log-dir /controlled/atb/logs/diselect-route-preflight \
   --execute --allow-paid \
@@ -152,14 +169,14 @@ absence of pipeline transformations to match the frozen evidence. The permanent
 canonical slug is bound separately by the committed public inventory capture.
 OpenRouter's optional `attempts` field and unknown additive fields are tolerated,
 but any fields that are present must be internally consistent. Raw OpenRouter
-`usage.cost` and the independent Inspect price estimate must each remain under
+`usage.cost` and Inspect's locally calculated price estimate must each remain under
 the envelope.
 
 Validate the bounded plan without network calls:
 
 ```bash
 uv run atb-eval \
-  --manifest evals/manifests/diselect-route-preflight-v0.2.json \
+  --manifest evals/manifests/diselect-route-preflight-v0.3.json \
   --source-dir /controlled/election-ai-safety \
   --log-dir /controlled/atb/logs/diselect-route-preflight
 ```
@@ -211,6 +228,18 @@ uv run scout scan evals/atb_eval/scanners.py \
   --model <pinned-scanner-model> \
   --scans /controlled/atb/scans/diselect-wave1a
 ```
+
+Controlled Inspect and Scout artifacts are scanned fail-closed before upload.
+The scanner reads raw bytes and also parses compressed `.eval` and Parquet
+content, so a credential marker hidden by container compression cannot pass the
+artifact gate:
+
+```bash
+uv run --frozen python -m atb_eval.artifact_scan /controlled/atb/artifacts
+```
+
+Scanner findings do not alter benchmark outcomes or denominators. They control
+artifact handling only.
 
 The deterministic empty-message scanner can be used immediately. LLM scanners
 for refusal and evaluation awareness require validation against blind human

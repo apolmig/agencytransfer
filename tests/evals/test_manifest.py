@@ -75,15 +75,25 @@ def test_draft_protocols_are_schema_valid() -> None:
 
 
 @pytest.mark.parametrize(
-    ("manifest_name", "provider_key_limit_usd"),
+    (
+        "manifest_name",
+        "provider_key_limit_usd",
+        "target_max_tokens",
+        "sample_token_limit",
+        "run_token_envelope",
+    ),
     [
-        ("diselect-route-preflight-v0.1.json", 0.04),
-        ("diselect-route-preflight-v0.2.json", 30.0),
+        ("diselect-route-preflight-v0.1.json", 0.04, 250, 2000, 4000),
+        ("diselect-route-preflight-v0.2.json", 30.0, 250, 2000, 4000),
+        ("diselect-route-preflight-v0.3.json", 30.0, 700, 3000, 6000),
     ],
 )
 def test_diselect_route_preflight_is_bounded_and_nonpublic(
     manifest_name: str,
     provider_key_limit_usd: float,
+    target_max_tokens: int,
+    sample_token_limit: int,
+    run_token_envelope: int,
 ) -> None:
     manifest = load_manifest(REPO_ROOT / "evals/manifests" / manifest_name)
     assert manifest.status is ProtocolStatus.FROZEN
@@ -96,12 +106,20 @@ def test_diselect_route_preflight_is_bounded_and_nonpublic(
     assert manifest.run.max_retries == 0
     assert manifest.run.planned_run_cost_envelope_usd == 0.04
     assert manifest.run.provider_key_limit_usd == provider_key_limit_usd
+    assert manifest.task.args["max_tokens"] == target_max_tokens
+    assert manifest.run.sample_cost_limit_usd == 0.02
+    assert manifest.run.sample_token_limit == sample_token_limit
+    assert manifest.run.planned_run_token_envelope == run_token_envelope
+    assert target_max_tokens < sample_token_limit
     assert manifest.release.public_aggregate_candidate is False
     assert {condition.model for condition in manifest.models} == {
         "openrouter/deepseek/deepseek-v4-flash",
         "openrouter/deepseek/deepseek-v4-flash-0731",
     }
     assert all(condition.revision is not None for condition in manifest.models)
+    assert all(
+        condition.generate_config["reasoning_effort"] == "high" for condition in manifest.models
+    )
     assert manifest.model_roles["grader"].revision is not None
     assert manifest.model_roles["grader"].route.provider_only == ["google-vertex/global"]
     for condition in [*manifest.models, *manifest.model_roles.values()]:
