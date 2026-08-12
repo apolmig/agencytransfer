@@ -697,11 +697,12 @@ def _fresh_provider_price(pricing: Any, field: str, *, per_million: bool) -> flo
     return result * 1_000_000 if per_million else result
 
 
-def _fresh_price_matches(observed: float | None, expected: float) -> bool:
+def _fresh_price_matches(observed: float | None, expected: float | None) -> bool:
     """Compare provider prices without making binary float identity an invariant."""
 
     return (
         observed is not None
+        and expected is not None
         and math.isfinite(observed)
         and math.isfinite(expected)
         and math.isclose(observed, expected, rel_tol=1e-12, abs_tol=1e-12)

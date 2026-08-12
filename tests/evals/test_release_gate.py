@@ -421,5 +421,7 @@ def test_release_receipt_reprojects_fresh_raw_provider_evidence() -> None:
 def test_fresh_price_matching_tolerates_only_numeric_representation_noise() -> None:
     assert _fresh_price_matches(0.08333333333333333, 0.08333333333333334)
     assert not _fresh_price_matches(None, 0.08)
+    assert not _fresh_price_matches(0.08, None)
+    assert not _fresh_price_matches(None, None)
     assert not _fresh_price_matches(float("nan"), 0.08)
     assert not _fresh_price_matches(0.080001, 0.08)

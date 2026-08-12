@@ -13,6 +13,7 @@
     "basis": "Ho et al. exclude models evaluated on three or fewer benchmarks. ATB records this as a readiness diagnostic, not as proof that four instruments are sufficient."
   },
   "fitRequirements": {
+    "designFrozenBeforeFitting": false,
     "itemLevelOrSplitInvariantWeightingEstablished": false,
     "protocolInvarianceEstablished": false,
     "sameConstructAnchorOverlapRequired": true

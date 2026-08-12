@@ -276,10 +276,10 @@ if (
 }
 if (
   !Array.isArray(stitchingReadiness.criteria) ||
-  stitchingReadiness.criteria.length !== 4 ||
+  stitchingReadiness.criteria.length !== 5 ||
   stitchingReadiness.criteria.every((criterion) => criterion.pass)
 ) {
-  fail("stitching diagnostic must expose the four preregistered readiness failures");
+  fail("stitching diagnostic must expose the five preregistered readiness failures");
 }
 const forbiddenStitchingKeys = new Set([
   "benchmarkDifficulty",

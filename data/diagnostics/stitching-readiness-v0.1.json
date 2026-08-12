@@ -18,7 +18,7 @@
     },
     "constructMap": {
       "path": "research/methods/benchmark-constructs-v0.1.json",
-      "sha256": "b7c5f53b639b3f6a894e3a02b29122755bfd2cbe1daa084e6a7b96aefd4e8f8a"
+      "sha256": "2a666a0fed35165de02b745e994878bef01633a9f1811bd0e3ab4b2f7f8ebcb8"
     }
   },
   "coverage": {
@@ -275,6 +275,12 @@
       "pass": false,
       "actual": "not established",
       "boundary": "Aggregate-score stitching can overweight a benchmark merely because it was split into several aggregates."
+    },
+    {
+      "id": "design-freeze-before-fitting",
+      "pass": false,
+      "actual": "not frozen",
+      "boundary": "Inclusion rules, anchors, estimands, and missingness must be frozen before fitted outputs are inspected."
     }
   ],
   "limitations": [
