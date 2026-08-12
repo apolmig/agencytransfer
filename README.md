@@ -6,12 +6,12 @@
 > **Frontier AI, Harmful Manipulation, and Election Security**. This is
 > independent research, not an official ERA benchmark.
 
-Agency Transfer Benchmark (ATB) is a source-linked, longitudinal map of model
+Agency Transfer Benchmark (ATB) is a source-linked retrospective release map of model
 behaviour that may matter for harmful influence. The public Home page leads
-with a 2022–2026 release chart and an explicitly experimental modelled proxy.
-The proxy combines manipulation-relevant evidence with wide uncertainty; it is
-not an observed benchmark result, human-efficacy measure, or “Agency Transfer
-Score.” Every native benchmark remains available as a separate view.
+with a 2022–2026 release chart and a benchmark-native outcome. An explicitly
+experimental modelled proxy remains selectable, but it is not an observed
+benchmark result, human-efficacy measure, validated latent scale, or “Agency
+Transfer Score.”
 
 Explore the live project at **[miguelguerrero.eu/agencytransfer](https://miguelguerrero.eu/agencytransfer/)**.
 
@@ -100,20 +100,38 @@ under a stated auditor and budget, not prevalence.
 
 Confirmatory comparisons use frozen Inspect tasks, item sets, model conditions,
 judges, estimands, and denominators. Inspect Scout may scan logs for missing
-targets, refusals, parser failures, eval awareness, and related anomalies, but
-it is quality assurance only. A Scout flag is not a benchmark score, a model-
-risk label, or evidence of agency transfer.
+targets, refusals, parser failures, eval awareness, and related anomalies after
+the evaluation, but it is offline quality assurance only. A Scout flag is not a
+benchmark score, a model-risk label, or evidence of agency transfer.
+
+## Benchmark linking
+
+ATB uses Ho et al.'s Epoch–DeepMind benchmark-stitching work as a design
+reference for longitudinal measurement: instruments should be connected by
+model configurations evaluated on both sides of each link. The present data do
+not support a shared latent scale. The deterministic readiness diagnostic finds
+no model observed on at least four instruments and no shared model anchor inside
+either multi-instrument construct family, so it emits no capability scores,
+difficulty scores, rankings, or forecasts.
+
+See the [method and readiness gate](research/methods/BENCHMARK_STITCHING.md) and
+the generated
+[diagnostic](data/diagnostics/stitching-readiness-v0.1.json). Passing the gate in
+a later wave would authorize an exploratory fit and sensitivity analysis, not
+validate a public one-number index.
 
 ## Repository map
 
 ```text
 data/models/          canonical frontier model registry
 data/estimated/       versioned proxy rows, manifest, hashes, and sensitivity
+data/diagnostics/     generated no-fit/readiness diagnostics
 data/published/       transformed, source-linked published observations
 data/runs/            sanitised historical audits and gated aggregate artifacts
 evals/                Inspect harness, manifests, fixtures, and legacy runner
 public/data/          versioned frontend data
 research/testing/     one clear research note per project-tested model
+research/methods/     construct map and benchmark-linking specification
 scripts/              deterministic validation and preparation
 src/                  React/TypeScript website
 huggingface/          Hugging Face dataset card
@@ -131,6 +149,7 @@ Requirements: Node.js 24 and npm.
 ```bash
 npm ci
 npm run generate:estimate
+npm run analyze:stitching
 npm run validate:data
 npm run typecheck
 npm run build
@@ -167,6 +186,8 @@ defects cannot be repaired after collection.
 - Keep benchmark-native metrics separate. Any cross-source synthesis must be
   separately versioned, explicitly modelled, reproducible, uncertainty-aware,
   and never labelled an “Agency Transfer Score.”
+- Require model bridges, within-construct anchors, protocol accounting, and
+  split-invariant weighting before attempting any latent benchmark link.
 - Record requested and returned model identities, provider, evaluation date,
   errors, tokens, and cost.
 - Separate model refusal, provider block, transport failure, and invalid judge

@@ -93,7 +93,7 @@ function SiteFooter() {
         <p>Frontier AI, harmful manipulation, and election security. Independent research; draft and in progress.</p>
       </div>
       <div>
-        <span>Draft · 10 August 2026</span>
+        <span>Draft · 12 August 2026</span>
         <a href={`${REPOSITORY_URL}/blob/main/ESTIMATED_SCORE.md`} target="_blank" rel="noreferrer">Method ↗</a>
         <a href={HUGGING_FACE_URL} target="_blank" rel="noreferrer">Data ↗</a>
         <a href={REPOSITORY_URL} target="_blank" rel="noreferrer">Source and issues ↗</a>
@@ -118,12 +118,12 @@ function HomePage({ models, observations, estimates, frontier, loading, error }:
       <section className="lead home-lead" id="top">
         <DraftMark />
         <div className="home-title">
-          <h1>Estimated harmful-manipulation capability</h1>
-          <p>Frontier releases · 2022–2026 · Experimental proxy v0.1</p>
+          <h1>Manipulation-relevant model behaviour</h1>
+          <p>Frontier releases · 2022–2026 · Native instruments first</p>
         </div>
 
         {error ? <p className="inline-data-error" role="alert">Some chart data could not load: {error}</p> : null}
-        {models.length > 0 && estimates.length > 0 ? (
+        {models.length > 0 && (observations.length > 0 || estimates.length > 0) ? (
           <FrontierTimeline models={models} observations={observations} estimates={estimates} frontier={frontier} />
         ) : loading ? (
           <p className="loading-message" aria-live="polite">Loading the release series…</p>
@@ -132,15 +132,16 @@ function HomePage({ models, observations, estimates, frontier, loading, error }:
         )}
 
         <details className="hero-method-note">
-          <summary>How the estimate works</summary>
+          <summary>Why the synthesis remains experimental</summary>
           <div>
             <p>
-              A weighted proxy combines operational harmful support (40%), agentic campaign execution (30%),
-              harmful persuasion attempts (20%), and deception under pressure (10%). Missing components are not
-              guessed from time or model size; they carry wide modelled uncertainty.
+              The default view preserves one benchmark-native outcome. A separate selectable proxy combines
+              operational harmful support (40%), agentic campaign execution (30%), harmful persuasion attempts
+              (20%), and deception under pressure (10%). It is a visual synthesis, not a validated latent
+              capability scale.
             </p>
             <p>
-              {eligible} of {models.length} releases currently pass the minimum evidence gate. All other releases
+              {eligible} of {models.length} releases currently meet the proxy's minimum coverage rule. All other releases
               remain visible as hollow marks—missing, never zero.
             </p>
             <a href={`${REPOSITORY_URL}/blob/main/ESTIMATED_SCORE.md`} target="_blank" rel="noreferrer">Weights, uncertainty, sensitivity, and limits ↗</a>
@@ -166,7 +167,7 @@ function EvidencePage({ benchmarks, agenticResults, maskResults, diselectResults
       <section className="page-intro">
         <DraftMark />
         <p className="section-number">Evidence</p>
-        <h1>What the proxy can—and cannot—claim</h1>
+        <h1>What each instrument can—and cannot—claim</h1>
         <p>
           No source measures harmful manipulation capability end to end. The literature separately observes
           willingness, safeguards, task execution, persuasive effect, deception, or access. The chart is an

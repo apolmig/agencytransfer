@@ -89,9 +89,10 @@ jobs:
       - name: Validate public data
         run: npm run validate:data
 
-      - name: Verify generated HMC artifacts are current
+      - name: Verify generated analytical artifacts are current
         run: |
           npm run generate:estimate
+          npm run analyze:stitching
           git diff --exit-code -- \
             public/data/frontier-models.json \
             public/data/frontier-observations.json \
@@ -99,7 +100,8 @@ jobs:
             public/data/hmc-frontier.json \
             data/models/frontier-models.csv \
             data/estimated/hmc-proxy-v0.1.csv \
-            data/estimated/hmc-proxy-v0.1-manifest.json
+            data/estimated/hmc-proxy-v0.1-manifest.json \
+            data/diagnostics/stitching-readiness-v0.1.json
 
       - name: Type-check website
         run: npm run typecheck

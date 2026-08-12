@@ -5,7 +5,9 @@ This repository separates **published observations** from **contextual evidence*
 Row-level lineage, denominators, transformations, and known limitations for the
 published and project-generated evidence are recorded in
 [`data/PROVENANCE.md`](data/PROVENANCE.md). The experimental synthesis has its
-own versioned method in [`ESTIMATED_SCORE.md`](ESTIMATED_SCORE.md).
+own versioned method in [`ESTIMATED_SCORE.md`](ESTIMATED_SCORE.md). The separate
+benchmark-linking gate is documented in
+[`research/methods/BENCHMARK_STITCHING.md`](research/methods/BENCHMARK_STITCHING.md).
 
 ## Published observations used by the site
 
@@ -193,6 +195,7 @@ These works help define the evidence chain from model propensity to human effect
 
 | Evidence ID | Primary source | Construct and protocol relevance | Current status and exclusion reason |
 |---|---|---|---|
+| `benchmark-rosetta` | Ho et al., *A Rosetta Stone for AI Benchmarks*, arXiv:2512.00193v1: <https://arxiv.org/html/2512.00193v1>; official code: <https://github.com/epoch-research/benchmark-stitching> | Epoch AI and Google DeepMind authors link densely overlapping model-by-benchmark results using a latent capability/difficulty model and publish robustness analyses. | `method_only`; ATB currently has zero models on at least four instruments and no shared anchor inside its multi-instrument construct families. The paper does not validate a one-dimensional ATB score. |
 | `ape` | Kowal et al., *It's the Thought that Counts: Evaluating the Attempts of Frontier LLMs to Persuade on Harmful Topics*, arXiv:2506.02873v4: <https://arxiv.org/html/2506.02873v4>; author code: <https://github.com/AlignmentResearch/AttemptPersuadeEval> | Multi-turn Attempt to Persuade Eval (APE); separates attempt, no-attempt, and refusal across benign, controversial, conspiracy, and harmful topics. | The original Figure 3 series remains `evidence_only`: it is not transcribed and no upstream code commit is pinned. The separately identified SaferAI turn-1 replication is ingested under its own protocol and category-specific comparison groups. Propensity is not persuasion efficacy. |
 | `gdm-harmful-manipulation` | Akbulut et al., *Evaluating Language Models for Harmful Manipulation*, arXiv:2603.25326v4: <https://arxiv.org/html/2603.25326v4>; DeepMind overview: <https://deepmind.google/blog/protecting-people-from-harmful-manipulation/> | Controlled human-participant studies distinguish manipulative propensity from effects on beliefs and behavior across multiple domains and countries. | `evidence_only`; the study evaluates a single named model under several experimental conditions, so it is not a longitudinal model series. No effect-size row is ingested. |
 | `anthropic-persuasiveness` | Durmus et al., *Measuring the Persuasiveness of Language Models*: <https://www.anthropic.com/research/measuring-model-persuasiveness> | Single written arguments on emerging policy claims; outcome is the pre/post change on a seven-point support scale. The study covers Claude generations and human-written controls. | `evidence_only`; Figure 1 is not transcribed. It measures short-run persuasion in a benign laboratory setting, not harmful manipulation or agentic campaigning. |

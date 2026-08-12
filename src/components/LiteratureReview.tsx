@@ -19,6 +19,15 @@ const papers: Paper[] = [
     role: "Evidence layers",
   },
   {
+    title: "A Rosetta Stone for AI Benchmarks",
+    authors: "Ho et al. · Epoch AI & Google DeepMind",
+    year: "2025",
+    url: "https://arxiv.org/html/2512.00193v1",
+    measures: "Links model-by-benchmark results through overlapping evaluations on a shared latent scale.",
+    boundary: "Validated on a dense accuracy-benchmark network; it does not show that ATB's heterogeneous instruments form one trait.",
+    role: "Measurement linking",
+  },
+  {
     title: "A Mechanism-Based Approach to Mitigating Harms from Persuasive Generative AI",
     authors: "El-Sayed et al.",
     year: "2024",

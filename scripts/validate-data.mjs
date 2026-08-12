@@ -20,6 +20,8 @@ const [
   pilotLabels,
   pilotRoutes,
   pilotValidation,
+  stitchingConstructs,
+  stitchingReadiness,
 ] = await Promise.all([
   readJson("public/data/diselect-results.json"),
   readJson("public/data/anthropic-agentic-influence.json"),
@@ -36,6 +38,8 @@ const [
   readJson("data/runs/2026-08-10-ape-frontier-pilot-v01/labels.json"),
   readJson("data/runs/2026-08-10-ape-frontier-pilot-v01/route-integrity.json"),
   readJson("data/runs/2026-08-10-ape-frontier-pilot-v01/validation.json"),
+  readJson("research/methods/benchmark-constructs-v0.1.json"),
+  readJson("data/diagnostics/stitching-readiness-v0.1.json"),
 ]);
 
 const fail = (message) => {
@@ -236,6 +240,66 @@ if (frontierObservations.some((row) =>
   fail("the failed APE-derived pilot must remain outside the comparative ledger");
 }
 
+const [stitchingObservationBytes, stitchingConstructBytes] = await Promise.all([
+  readFile(new URL("../public/data/frontier-observations.json", import.meta.url)),
+  readFile(new URL("../research/methods/benchmark-constructs-v0.1.json", import.meta.url)),
+]);
+const sha256 = (bytes) => createHash("sha256").update(bytes).digest("hex");
+if (
+  stitchingConstructs.schemaVersion !== "atb-benchmark-construct-map-v0.1" ||
+  stitchingConstructs.conceptualSource?.arxiv !== "2512.00193v1" ||
+  stitchingConstructs.conceptualSource?.codeUrl !== "https://github.com/epoch-research/benchmark-stitching"
+) {
+  fail("unexpected benchmark-stitching construct map or conceptual source");
+}
+if (
+  stitchingReadiness.schemaVersion !== "atb-stitching-readiness-v0.1" ||
+  stitchingReadiness.status !== "not-ready" ||
+  stitchingReadiness.fittingPerformed !== false
+) {
+  fail("current stitching diagnostic must remain an explicit no-fit result");
+}
+if (
+  stitchingReadiness.inputs?.frontierObservations?.sha256 !== sha256(stitchingObservationBytes) ||
+  stitchingReadiness.inputs?.constructMap?.sha256 !== sha256(stitchingConstructBytes)
+) {
+  fail("stitching diagnostic input hashes are stale");
+}
+const stitchingInstrumentIds = new Set(frontierObservations.map((row) => row.benchmarkId));
+const stitchingModelIds = new Set(frontierObservations.map((row) => row.modelId));
+if (
+  stitchingReadiness.coverage?.observationCount !== frontierObservations.length ||
+  stitchingReadiness.coverage?.modelCount !== stitchingModelIds.size ||
+  stitchingReadiness.coverage?.instrumentCount !== stitchingInstrumentIds.size
+) {
+  fail("stitching diagnostic coverage does not match the public observation ledger");
+}
+if (
+  !Array.isArray(stitchingReadiness.criteria) ||
+  stitchingReadiness.criteria.length !== 4 ||
+  stitchingReadiness.criteria.every((criterion) => criterion.pass)
+) {
+  fail("stitching diagnostic must expose the four preregistered readiness failures");
+}
+const forbiddenStitchingKeys = new Set([
+  "benchmarkDifficulty",
+  "benchmarkDifficulties",
+  "capabilityScore",
+  "capabilityScores",
+  "latentScores",
+  "ranking",
+  "forecast",
+]);
+const containsForbiddenStitchingOutput = (value) => {
+  if (Array.isArray(value)) return value.some(containsForbiddenStitchingOutput);
+  if (!value || typeof value !== "object") return false;
+  return Object.entries(value).some(([key, nested]) =>
+    forbiddenStitchingKeys.has(key) || containsForbiddenStitchingOutput(nested));
+};
+if (containsForbiddenStitchingOutput(stitchingReadiness)) {
+  fail("stitching readiness diagnostic contains a prohibited fitted output");
+}
+
 const infoOps = frontierObservations.filter(
   (row) => row.benchmarkId === "infoopsbench" && row.metricKey === "compliance_pct",
 );
@@ -345,5 +409,5 @@ const publicText = JSON.stringify({ frontierModels, frontierObservations, testin
 if (/sk-or-v1-|authorization\s*:/i.test(publicText)) fail("public artifacts contain a credential marker");
 
 console.log(
-  `Validated ${frontierModels.length} frontier releases, ${frontierObservations.length} source-linked observations, ${eligibleEstimates.length} evidence-eligible HMC estimates, ${testingNotes.length} testing notes, ${pilotLabels.length} pilot labels, and all legacy evidence tables.`,
+  `Validated ${frontierModels.length} frontier releases, ${frontierObservations.length} source-linked observations, ${eligibleEstimates.length} proxy-display-eligible rows, ${testingNotes.length} testing notes, ${pilotLabels.length} pilot labels, and all legacy evidence tables.`,
 );

@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "atb-benchmark-construct-map-v0.1",
+  "asOf": "2026-08-12",
+  "conceptualSource": {
+    "title": "A Rosetta Stone for AI Benchmarks",
+    "authors": "Ho, Denain, Atanasov, Albanie, and Shah",
+    "arxiv": "2512.00193v1",
+    "url": "https://arxiv.org/html/2512.00193v1",
+    "codeUrl": "https://github.com/epoch-research/benchmark-stitching"
+  },
+  "paperOverlapAnalogue": {
+    "minimumDistinctInstrumentsPerModel": 4,
+    "basis": "Ho et al. exclude models evaluated on three or fewer benchmarks. ATB records this as a readiness diagnostic, not as proof that four instruments are sufficient."
+  },
+  "fitRequirements": {
+    "itemLevelOrSplitInvariantWeightingEstablished": false,
+    "protocolInvarianceEstablished": false,
+    "sameConstructAnchorOverlapRequired": true
+  },
+  "constructs": [
+    {
+      "id": "harmful-operational-support",
+      "label": "Harmful operational support",
+      "evidenceLayer": "safeguard-conditioned model behaviour",
+      "instruments": ["diselect", "infoopsbench"],
+      "higherMeans": "more harmful support under the stated protocol",
+      "fitTogetherNow": false,
+      "reason": "The instruments differ in task, endpoint, judge, date, and aggregation, and currently share no model anchor."
+    },
+    {
+      "id": "persuasion-attempt-propensity",
+      "label": "Persuasion-attempt propensity",
+      "evidenceLayer": "safeguard-conditioned model behaviour",
+      "instruments": ["ape-saferai"],
+      "higherMeans": "more attempts under the stated APE condition",
+      "fitTogetherNow": false,
+      "reason": "One ingested protocol cannot identify a cross-benchmark difficulty scale."
+    },
+    {
+      "id": "deceptive-behaviour",
+      "label": "Deceptive behaviour under pressure",
+      "evidenceLayer": "safeguard-conditioned model behaviour",
+      "instruments": ["mask-original", "mask-saferai"],
+      "higherMeans": "more benchmark-defined lying",
+      "fitTogetherNow": false,
+      "reason": "The two cohorts use related MASK outcomes but currently share no model anchor and do not expose equivalent public item-level records."
+    },
+    {
+      "id": "agentic-influence-execution",
+      "label": "Agentic influence-operation execution",
+      "evidenceLayer": "operational capability",
+      "instruments": ["anthropic-agentic-influence"],
+      "higherMeans": "more simulated task completion",
+      "fitTogetherNow": false,
+      "reason": "One helpful-only protocol cannot identify a cross-benchmark difficulty scale and is not a deployed-safeguard condition."
+    }
+  ]
+}

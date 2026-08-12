@@ -68,9 +68,9 @@ interface ChartPoint {
 const MEASURES: Array<{ key: MeasureKey; label: string; axis: string; context: string }> = [
   {
     key: "estimate",
-    label: "Estimated synthesis",
-    axis: "HMC proxy estimate",
-    context: "Modelled median · 80% interval",
+    label: "Exploratory weighted synthesis",
+    axis: "Exploratory weighted index",
+    context: "Index points · assumption band",
   },
   {
     key: "infoops",
@@ -177,18 +177,8 @@ const stepBandPath = (
   return `${path} Z`;
 };
 
-const groupBy = <T,>(rows: T[], key: (row: T) => string) => {
-  const grouped = new Map<string, T[]>();
-  for (const row of rows) {
-    const group = grouped.get(key(row)) ?? [];
-    group.push(row);
-    grouped.set(key(row), group);
-  }
-  return grouped;
-};
-
 export function FrontierTimeline({ models, observations, estimates, frontier }: FrontierTimelineProps) {
-  const [measure, setMeasure] = useState<MeasureKey>("estimate");
+  const [measure, setMeasure] = useState<MeasureKey>("infoops");
   const [accessFilter, setAccessFilter] = useState<AccessFilter>("all");
   const [selectedPointId, setSelectedPointId] = useState<string | null>(null);
   const [selectedModelId, setSelectedModelId] = useState<string | null>(null);
@@ -283,10 +273,6 @@ export function FrontierTimeline({ models, observations, estimates, frontier }: 
       : null;
   const estimateForActiveModel = activeModel ? estimateMap.get(activeModel.id) ?? null : null;
 
-  const nativePaths = useMemo(
-    () => [...groupBy(points, (point) => point.comparabilityGroup).values()].filter((rows) => rows.length > 1),
-    [points],
-  );
   const frontierRows = useMemo(
     () => frontier
       .filter((row) => measure === "estimate" && row.accessFilter === accessFilter)
@@ -361,7 +347,7 @@ export function FrontierTimeline({ models, observations, estimates, frontier }: 
           <title id="frontier-chart-title">{selectedMeasure.label}, frontier AI releases from 2022 to 2026</title>
           <desc id="frontier-chart-description">
             {measure === "estimate"
-              ? "Scores use a zero to one hundred vertical scale. The estimated view shows eligible model-level proxy medians, eighty percent modelled intervals, and a monotonic frontier envelope."
+              ? "Index points use a zero to one hundred vertical scale. The exploratory view shows proxy medians, eighty percent assumption bands, and a running maximum defined by the proxy assumptions."
               : `The selected ${selectedMeasure.label} view shows benchmark-native percentages on a zero to one hundred vertical scale.`}
             {" "}Hollow release marks mean insufficient evidence in the current view, not a score of zero. An accessible table follows the chart.
           </desc>
@@ -390,18 +376,6 @@ export function FrontierTimeline({ models, observations, estimates, frontier }: 
             </>
           ) : null}
 
-          {measure !== "estimate" ? nativePaths.map((rows) => (
-            <polyline
-              key={rows[0].comparabilityGroup}
-              className="frontier-native-path"
-              points={rows.map((point) => {
-                const model = modelMap.get(point.modelId);
-                return model ? `${x(model.releaseDate)},${y(point.scorePct)}` : "";
-              }).filter(Boolean).join(" ")}
-              aria-hidden="true"
-            />
-          )) : null}
-
           {points.map((point) => {
             const model = modelMap.get(point.modelId);
             if (!model) return null;
@@ -416,7 +390,7 @@ export function FrontierTimeline({ models, observations, estimates, frontier }: 
                 tabIndex={0}
                 role="button"
                 aria-pressed={selected}
-                aria-label={`${model.model}, ${point.metricLabel}, ${point.scorePct.toFixed(1)} percent`}
+                aria-label={`${model.model}, ${point.metricLabel}, ${point.scorePct.toFixed(1)} ${measure === "estimate" ? "index points" : "percent"}`}
                 onMouseEnter={() => choosePoint(point)}
                 onFocus={() => choosePoint(point)}
                 onClick={() => choosePoint(point)}
@@ -459,7 +433,7 @@ export function FrontierTimeline({ models, observations, estimates, frontier }: 
               y={y(latestFrontier.scorePct) - 8}
               aria-hidden="true"
             >
-              modelled frontier {latestFrontier.scorePct.toFixed(0)}
+              proxy running max {latestFrontier.scorePct.toFixed(0)}
             </text>
           ) : null}
 
@@ -499,7 +473,7 @@ export function FrontierTimeline({ models, observations, estimates, frontier }: 
       </div>
 
       <div className="frontier-chart-key" aria-label="Chart key">
-        {measure === "estimate" ? <span><i className="key-estimate" aria-hidden="true" /> Frontier estimate + 80% interval</span> : null}
+        {measure === "estimate" ? <span><i className="key-estimate" aria-hidden="true" /> Proxy running max + assumption band</span> : null}
         <span><i className="legend-dot open" aria-hidden="true" /> Open-weight</span>
         <span><i className="legend-dot hosted" aria-hidden="true" /> Hosted</span>
         <span><i className="legend-dot frontier-missing-legend" aria-hidden="true" /> Insufficient evidence</span>
@@ -509,10 +483,10 @@ export function FrontierTimeline({ models, observations, estimates, frontier }: 
         {activeModel && activePoint ? (
           <p>
             <strong>{activeModel.model}</strong>
-            <span>{activePoint.metricLabel} · {activePoint.scorePct.toFixed(1)}%</span>
-            {activePoint.lowerPct !== null && activePoint.upperPct !== null ? <span>80% {activePoint.lowerPct.toFixed(1)}–{activePoint.upperPct.toFixed(1)}</span> : null}
-            {activePoint.lower95Pct !== null && activePoint.upper95Pct !== null ? <span>95% {activePoint.lower95Pct.toFixed(1)}–{activePoint.upper95Pct.toFixed(1)}</span> : null}
-            {activePoint.evidenceGrade ? <span>grade {activePoint.evidenceGrade} · {Math.round((activePoint.observedWeight ?? 0) * 100)}% observed weight</span> : null}
+            <span>{activePoint.metricLabel} · {activePoint.scorePct.toFixed(1)}{measure === "estimate" ? " index points" : "%"}</span>
+            {activePoint.lowerPct !== null && activePoint.upperPct !== null ? <span>80% assumption band {activePoint.lowerPct.toFixed(1)}–{activePoint.upperPct.toFixed(1)} points</span> : null}
+            {activePoint.lower95Pct !== null && activePoint.upper95Pct !== null ? <span>95% assumption band {activePoint.lower95Pct.toFixed(1)}–{activePoint.upper95Pct.toFixed(1)} points</span> : null}
+            {activePoint.evidenceGrade ? <span>coverage tier {activePoint.evidenceGrade} · {Math.round((activePoint.observedWeight ?? 0) * 100)}% of component weight observed</span> : null}
             <a href={activePoint.sourceUrl} target="_blank" rel="noreferrer">Source ↗</a>
           </p>
         ) : activeModel ? (
@@ -522,15 +496,19 @@ export function FrontierTimeline({ models, observations, estimates, frontier }: 
             <a href={activeModel.sourceUrl} target="_blank" rel="noreferrer">Model source ↗</a>
           </p>
         ) : (
-          <p><span>Hover or select a mark for score, interval, evidence grade, and source.</span></p>
+          <p><span>Hover or select a mark for result, interval, coverage, and source.</span></p>
         )}
       </div>
 
       <p className="frontier-caveat">
         {measure === "estimate"
-          ? "Experimental model-level proxy—not observed persuasion, agency transfer, vote change, or real-world harm. The frontier envelope is monotonic by construction."
+          ? "Exploratory weighted proxy—not an observed percentage or validated capability scale. Points can use different source instruments; the running maximum is a property of v0.1 assumptions, not a capability frontier."
           : "Observed percentages retain each benchmark's own protocol and direction; they are not directly comparable across measures."}
-        {" "}<a href="https://github.com/apolmig/agencytransfer/blob/main/ESTIMATED_SCORE.md" target="_blank" rel="noreferrer">Method ↗</a>
+        {" "}<a
+          href={`https://github.com/apolmig/agencytransfer/blob/main/${measure === "estimate" ? "ESTIMATED_SCORE.md" : "METHODS.md"}`}
+          target="_blank"
+          rel="noreferrer"
+        >Method ↗</a>
       </p>
 
       <details className="data-table-details frontier-data-details">
@@ -558,11 +536,11 @@ export function FrontierTimeline({ models, observations, estimates, frontier }: 
                     <td>{model.accessType}</td>
                     <td>{formatParams(model.totalParamsB)}</td>
                     <td>{point?.metricLabel ?? "No comparable result"}</td>
-                    <td>{point ? `${point.scorePct.toFixed(1)}%` : "—"}</td>
+                    <td>{point ? `${point.scorePct.toFixed(1)}${measure === "estimate" ? " points" : "%"}` : "—"}</td>
                     <td>
                       {measure === "estimate"
                         ? estimate?.evidenceStatus === "estimated"
-                          ? `Grade ${estimate.evidenceGrade}; ${Math.round(estimate.observedWeight * 100)}% observed weight`
+                          ? `Coverage tier ${estimate.evidenceGrade}; ${Math.round(estimate.observedWeight * 100)}% of component weight observed`
                           : "Insufficient evidence—not zero"
                         : point
                           ? `${formatDate(point.evaluationDate)} · n=${point.n?.toLocaleString("en-GB") ?? "—"}`

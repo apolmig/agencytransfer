@@ -221,8 +221,13 @@ def verify_paid_execution_permit(
         raise ValueError("paid execution planned run envelope must be finite")
     if not math.isfinite(manifest.run.sample_cost_limit_usd):
         raise ValueError("paid execution sample cost limit must be finite")
-    if permit.maximum_cost_usd + 1e-9 < manifest.run.planned_run_cost_envelope_usd:
-        raise ValueError("paid execution permit does not cover the planned run envelope")
+    if not math.isclose(
+        permit.maximum_cost_usd,
+        manifest.run.planned_run_cost_envelope_usd,
+        rel_tol=0,
+        abs_tol=1e-9,
+    ):
+        raise ValueError("paid execution permit must exactly match the planned run envelope")
     if permit.maximum_cost_usd > provider_cap + 1e-9:
         raise ValueError("paid execution permit exceeds the manifest provider key hard cap")
 
@@ -302,9 +307,8 @@ def verify_openrouter_key_budget(
     opener: UrlOpener | None = None,
     now: datetime | None = None,
     valid_until: datetime | None = None,
-    maximum_key_limit_usd: float | None = None,
 ) -> ProviderKeyBudget:
-    """Require a dedicated inference key with a finite, non-resetting provider cap."""
+    """Require an inference key within the manifest's lifetime exposure cap."""
 
     env = os.environ if environment is None else environment
     if "OPENROUTER_MANAGEMENT_KEY" in env:
@@ -315,14 +319,6 @@ def verify_openrouter_key_budget(
     provider_cap = manifest.run.provider_key_limit_usd
     if provider_cap is None or not math.isfinite(provider_cap):
         raise ValueError("paid execution manifest lacks a provider key hard cap")
-    if maximum_key_limit_usd is not None and (
-        not math.isfinite(maximum_key_limit_usd) or maximum_key_limit_usd <= 0
-    ):
-        raise ValueError("paid execution acknowledgement has an invalid key limit")
-    effective_cap = min(
-        provider_cap,
-        maximum_key_limit_usd if maximum_key_limit_usd is not None else provider_cap,
-    )
     paid_conditions = [*manifest.models, *manifest.model_roles.values()]
     if any(not condition.model.startswith("openrouter/") for condition in paid_conditions):
         raise ValueError("paid execution key gate currently supports OpenRouter conditions only")
@@ -358,8 +354,8 @@ def verify_openrouter_key_budget(
         raise ValueError("OpenRouter inference-key limit must include BYOK usage")
     limit = _finite_nonnegative_number(data.get("limit"), "limit", positive=True)
     remaining = _finite_nonnegative_number(data.get("limit_remaining"), "remaining balance")
-    if limit > effective_cap + 1e-9:
-        raise ValueError("OpenRouter inference-key limit exceeds the authorized hard cap")
+    if limit > provider_cap + 1e-9:
+        raise ValueError("OpenRouter inference-key limit exceeds the manifest lifetime cap")
     if remaining > limit + 1e-9:
         raise ValueError("OpenRouter inference-key remaining balance exceeds its limit")
     if remaining + 1e-9 < manifest.run.planned_run_cost_envelope_usd:
@@ -394,7 +390,6 @@ def verify_paid_execution_authorization(
         opener=opener,
         now=now,
         valid_until=_utc_timestamp(permit.expires_at, "expires_at"),
-        maximum_key_limit_usd=permit.maximum_cost_usd,
     )
 
 
