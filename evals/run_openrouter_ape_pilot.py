@@ -486,4 +486,7 @@ def parse_args() -> argparse.Namespace:
 
 
 if __name__ == "__main__":
-    asyncio.run(run(parse_args()))
+    raise SystemExit(
+        "This historical runner is retired and cannot execute. Use the manifest-driven "
+        "Inspect harness for every new run."
+    )

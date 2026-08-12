@@ -13,19 +13,18 @@ weights in isolation.
 ## Exploratory pilot deviation — 2026-08-10
 
 The bounded `atb-ape-turn1-pilot-v0.1` run predates full strict-route
-implementation. It uses exact OpenRouter model slugs but provider-default
-routing, fallback, sampling, and reasoning; it does not pin a single upstream
-provider. The run therefore estimates only endpoint behaviour observed during
-the evaluation window. Its cross-model values are labelled exploratory and are
-not connected as a strict longitudinal series.
+implementation. It used requested OpenRouter model slugs with provider-default
+routing, fallback, sampling, and reasoning; it did not pin a single upstream
+provider. The run is a permanently failed historical pipeline audit. It is not
+an endpoint estimate, model comparison, or longitudinal observation.
 
 The pilot's purpose is to test endpoint coverage, a hash-only public release,
 automated label parsing, cost accounting, and the refusal/attempt distinction.
 It uses 20 hash-selected noncontroversially harmful APE topics and six benign
 controls per endpoint, rather than the full 600-topic APE design. Public
-artifacts exclude statements and generations. A full comparative run must add
-provider pinning, exact request timestamps and generation IDs, frozen reasoning
-conditions, and blind human validation before it can supersede this pilot.
+artifacts exclude statements and generations. Its routing, ordering, seed, and
+denominator defects cannot be repaired retrospectively; a valid result requires
+a new protocol ID and a new run through the Inspect release gate.
 
 ## Credential handling
 
@@ -70,6 +69,13 @@ For each candidate:
 Identifiers containing `latest`, `free`, automatic routers, or undocumented
 aliases are ineligible for the strict release series. A dated alias may still be
 ineligible if the provider cannot attest or expose which checkpoint it serves.
+The Inspect manifest also rejects mutable-token aliases and a condition marked
+immutable unless its model ID contains an explicit provider snapshot/revision
+token. Every frozen paid condition must reference a provider-resolution JSON
+record whose exact model ID, committed blob, and SHA-256 are checked by both the
+runner and release gate. The returned model ID must still match exactly. This is
+an auditable alias-safety record, not cryptographic proof of the provider's
+weights.
 
 If only a mutable alias exists, ATB may retain the result as:
 
@@ -108,7 +114,7 @@ strict run.
 Each benchmark protocol declares:
 
 - temperature;
-- `top_p` and, if relevant and supported, `top_k`;
+- `top_p`;
 - maximum output tokens;
 - seed or replicate identifier;
 - stop sequences;
@@ -147,6 +153,8 @@ inputs and no tools.
 
 - The benchmark message array is generated from a versioned template.
 - The exact rendered request has a content hash.
+- The selected ID/input/stratum inventory has a frozen hash that the runner and
+  release gate recompute from the clean pinned source checkout.
 - Target prompts are not embedded in this public protocol.
 - System messages are absent unless required by the benchmark or explicitly
   declared as an experimental condition.
@@ -158,27 +166,34 @@ inputs and no tools.
 
 ## Run ordering
 
-The scheduler randomises model order within item blocks and item order within
-strata. It avoids running one model family exclusively during a narrow time
-window. Start and end canaries are used to detect route or parser changes during
-long jobs.
+All target conditions enter one Inspect `eval_set`. A frozen hash orders the
+condition list once; every condition receives the same hash-shuffled sample
+order, with `max_samples=1` per condition and `max_tasks` equal to the number of
+conditions. Conditions therefore advance concurrently instead of in complete
+model-grouped runs. This is a paired concurrent schedule, not a strict
+per-item barrier and not fresh model randomisation for every item. Request
+timestamps remain controlled evidence so residual provider-time imbalance can
+be audited.
 
 Concurrency is capped conservatively to avoid provider instability. Rate limits
-are treated as transport outcomes until a controlled retry succeeds.
+are transport outcomes; they are retained but never retried within a
+confirmatory invocation.
 
 ## Retry policy
 
 - No retry occurs for a completed generation, policy refusal, or provider block.
-- Network timeouts, rate limits, and 5xx errors may receive at most two controlled
-  retries.
-- A retry uses the same model, provider restriction, request body, and replicate
-  identifier.
-- Every attempt is retained with timestamp, status, and returned route metadata.
-- A successful retry does not erase the earlier failure.
-- Fallback remains disabled during retries.
+- Opaque provider-SDK retries, Inspect sample retries, and Inspect task retries
+  are all frozen at zero. Provider-controlled error text is not treated as a
+  trustworthy retry classifier, and a second attempt could otherwise introduce
+  cherry-picking or an unplanned request/cost surface.
+- The release gate requires exactly one successful `.eval` log per condition
+  and rejects any `error_retries` history or superseded attempt. Fallback remains
+  disabled.
 
-Persistent failure receives an explicit transport label. The item is not replaced
-with a more convenient prompt.
+A failed invocation is retained as controlled diagnostic evidence, receives an
+explicit transport/missingness label where possible, and is not replaced with a
+more convenient prompt or attempt. It cannot supply a public aggregate; a new
+execution requires a new execution ID and the full preregistered schedule.
 
 ## Response and route validation
 
@@ -201,6 +216,17 @@ For each attempt, record:
 
 The raw response body is stored only in the restricted tier. Public records
 contain labels, hashes, aggregate metadata, and safe excerpts where permitted.
+The public artifact also records a content digest of the exact controlled
+`.eval` log multiset, without publishing their paths
+or contents. A random execution ID is shared by every log from one invocation
+and bound into the release candidate, preventing logs from separate invocations
+from being cherry-picked into one paired result. The gate also requires exact
+agreement across conditions on the shuffled sample order and a hash of each
+sample's ID, epoch, input, and stratum metadata.
+
+Recorded token and cost totals cover the one successful log per condition. The
+gate compares aggregate `model_usage` against unique ModelEvents, requires paid
+successful calls to report cost, and rejects totals above the frozen envelope.
 
 The following conditions fail route integrity:
 

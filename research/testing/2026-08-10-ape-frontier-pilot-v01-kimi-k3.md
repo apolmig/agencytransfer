@@ -1,9 +1,12 @@
 # Kimi K3 · one-turn APE-derived pilot
 
-**Status:** Exploratory · automated-only · not a ranking  
-**Run:** `2026-08-10-ape-frontier-pilot-v01`  
-**Date:** 10 August 2026  
-**Requested route:** `moonshotai/kimi-k3`
+**Status:** Historical failed pipeline audit · permanently excluded · not a ranking
+
+**Run:** `2026-08-10-ape-frontier-pilot-v01`
+
+**Date:** 10 August 2026
+
+**Requested model slug:** `moonshotai/kimi-k3`
 
 ## Question
 
@@ -11,22 +14,23 @@ Under the same one-turn elicitation, does this served endpoint attempt to persua
 
 ## Protocol
 
-Exact requested route moonshotai/kimi-k3; 20 harmful and six benign controls; one response per item; provider-default routing, reasoning, and sampling; primary judge openai/gpt-5.6-terra; 20% audit judge google/gemini-3.6-flash. Returned models: moonshotai/kimi-k3 (26). Providers: Moonshot AI (22), Fireworks (1), DigitalOcean (1), Morph (1), Modal (1).
+Requested model slug moonshotai/kimi-k3; 20 harmful and six benign controls; one response per item; model-grouped request order; no effective seed; provider-default routing, reasoning, and sampling; primary judge openai/gpt-5.6-terra; 20% audit judge google/gemini-3.6-flash. Returned models: moonshotai/kimi-k3 (26). Providers: Moonshot AI (22), Fireworks (1), DigitalOcean (1), Morph (1), Modal (1).
 
-## Result
+## Historical automated result
 
 0 of 20 usable harmful-topic responses were labelled as attempts (0.0%; Wilson 95% CI 0.0%–16.1%). 20 were labelled refusals; 0 harmful rows were invalid. Benign-control attempt rate was 0.0%. There were 0 transport errors across 26 target calls. Estimated endpoint cost was $0.2468.
 
 ## Interpretation
 
-This is an endpoint and pipeline diagnostic, not a model ranking. A preselected 20% second-judge audit yielded 46 parseable pairs (14.7% of target responses) after 2 audit-batch parse failures; agreement among parsed pairs was 100.0% with Cohen’s κ 1. The result can motivate a full, provider-pinned, human-validated run but cannot establish persuasion success or real-world harm.
+This is a permanently excluded pipeline diagnostic, not a model ranking. A preselected 20% second-judge audit yielded 46 parseable pairs (14.7% of target responses) after 2 audit-batch parse failures; agreement among parsed pairs was 100.0% with Cohen’s κ 1. Unpinned routing, grouped ordering, no effective seed, incompatible denominators, and absent blind human validation cannot be repaired retrospectively.
 
 ## Limits
 
 - Only one APE harmful category is sampled; conspiracy and undermining-control topics are absent.
-- Twenty harmful items and one generation per item yield wide uncertainty.
-- Provider, reasoning, and sampling conditions were not pinned, so this is a dated served-endpoint observation.
-- Labels are automated; blind human validation has not been completed.
+- Twenty harmful items and one uncontrolled stochastic draw per item yield wide uncertainty.
+- Provider, reasoning, and sampling conditions were not pinned; fallback was not disabled.
+- Requests were model-grouped, and harmful and benign rates used incompatible denominators.
+- Labels are automated; no blind human validation was performed.
 - The test measures attempted persuasion, not whether any person was persuaded.
 
 ## Artifacts

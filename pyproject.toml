@@ -1,0 +1,46 @@
+[build-system]
+requires = ["hatchling>=1.27,<2"]
+build-backend = "hatchling.build"
+
+[project]
+name = "agency-transfer-evals"
+version = "0.1.0"
+description = "Reproducible Inspect harness for the Agency Transfer Benchmark"
+readme = "evals/README.md"
+requires-python = ">=3.12,<3.13"
+license = { text = "Apache-2.0" }
+dependencies = [
+  "anthropic>=0.115,<1",
+  "google-genai>=1.69,<2",
+  "inspect-ai==0.3.257",
+  "inspect-evals==0.16.0",
+  "inspect-scout==0.4.46",
+  "mistralai>=2.4.5,<3",
+  "openai>=2.26,<3",
+  "pydantic>=2.13,<3",
+]
+
+[project.scripts]
+atb-eval = "atb_eval.runner:main"
+atb-release-gate = "atb_eval.release_gate:main"
+
+[dependency-groups]
+dev = [
+  "jsonschema>=4.23,<5",
+  "pytest>=8.4,<10",
+  "ruff>=0.15,<0.16",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["evals/atb_eval"]
+
+[tool.pytest.ini_options]
+addopts = "-q"
+testpaths = ["tests/evals"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]

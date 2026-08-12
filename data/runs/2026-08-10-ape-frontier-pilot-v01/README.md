@@ -1,8 +1,8 @@
-# OpenRouter testing notes
+# Historical failed OpenRouter pipeline audit
 
-These notes document the bounded `atb-ape-turn1-pilot-v0.1` run. Every endpoint received the same 20 hash-selected noncontroversially harmful APE topics and six benign controls. Results are automated-only and exploratory; they are not a full APE replication or a model ranking.
+These notes document the bounded `atb-ape-turn1-pilot-v0.1` run. Every requested model slug received the same 20 hash-selected noncontroversially harmful APE topics and six benign controls. The run used unpinned provider routing, model-grouped ordering, no effective seed, incompatible denominators, and no blind human validation. It is permanently excluded from comparative results, is not a full APE replication, and is not a model ranking.
 
-| Model | Attempt rate | Usable harmful n | Refusals | Transport errors | Endpoint cost |
+| Model | Historical automated attempt rate | Usable harmful n | Refusals | Transport errors | Endpoint cost |
 |---|---:|---:|---:|---:|---:|
 | [GLM-5.2](https://github.com/apolmig/agencytransfer/blob/main/research/testing/2026-08-10-ape-frontier-pilot-v01-glm-5-2.md) | 0.0% | 20 | 20 | 0 | $0.0243 |
 | [Kimi K3](https://github.com/apolmig/agencytransfer/blob/main/research/testing/2026-08-10-ape-frontier-pilot-v01-kimi-k3.md) | 0.0% | 20 | 20 | 0 | $0.2468 |

@@ -26,9 +26,10 @@ Explore the live project at **[miguelguerrero.eu/agencytransfer](https://miguelg
 - **Published observations:** dated results from InfoOpsBench v2, SaferAI’s
   GLM-5.2 risk evaluation, Anthropic system cards, APE, MASK, and DisElect,
   subject to each source’s protocol and licensing boundary.
-- **Project testing:** bounded OpenRouter pilots with route metadata, item
-  hashes, aggregate labels, validation status, cost, and explicit failures.
-  Raw harmful generations are not published.
+- **Project testing:** a retained historical OpenRouter pipeline audit and
+  prospective, versioned Inspect evaluations with route metadata, item hashes,
+  aggregate labels, validation status, cost, and explicit failures. Raw
+  harmful generations are not published.
 
 Missing results remain visibly missing. Release date is used descriptively; it
 does not establish that time caused a change in capability or safeguards.
@@ -63,18 +64,45 @@ interface defaults, and repeated contact in applications such as customer
 service, elder care, and youth-facing services. Those scenarios are research
 hypotheses, not claims that a named deployment has caused harm.
 
-## 10 August 2026 OpenRouter pipeline pilot
+## 10 August 2026 OpenRouter pipeline pilot — historical failure
 
-The first ATB-generated run tested 12 exact OpenRouter routes across 312 target
-calls. It exposed provider heterogeneity, uneven usable denominators, judge
-parse failures, and the need for blind human validation. It therefore failed
-the public comparative-result gate. No per-model pilot rate appears on the
-Testing page or contributes to the HMC proxy.
+The first ATB-generated run sent 312 target calls to 12 requested OpenRouter
+model slugs. It predates the strict protocol and failed the public comparative-
+result gate. The failure is permanent for this run, not a validation task that
+can be completed retrospectively:
 
-The artifacts remain public as an **exploratory pipeline audit**, not a full APE
-replication or a ranking. Read the
+- the upstream provider was not pinned and fallback was not disabled;
+- requests were constructed in model-grouped order rather than randomised;
+- the manifest recorded one seed, but the runner sent no seed parameter, so
+  there was one uncontrolled stochastic draw rather than a seeded replicate;
+- harmful-topic rates excluded invalid responses while benign rates used all
+  six attempted controls, creating inconsistent denominators; and
+- labels came only from automated judges, with parse failures and no blind human
+  validation.
+
+These defects and the decision to exclude the run were documented post hoc,
+after the outputs were inspected. The artifacts therefore remain only as a
+**historical, failed, exploratory pipeline audit**. They are not a full APE
+replication, a model comparison, or evidence about persuasive efficacy. No
+per-model pilot rate appears on the Testing page or contributes to the HMC
+proxy. Read the
 [model-by-model notes](research/testing/README.md) and
 [aggregate artifacts](data/runs/2026-08-10-ape-frontier-pilot-v01/).
+
+## Evaluation architecture
+
+ATB separates adaptive discovery from confirmatory measurement. PETRI may be
+used to find candidate failure modes in a controlled discovery split. A
+candidate can enter only a later protocol version after human review,
+deduplication, safety review, and a new preregistration; it never enters the
+confirmation wave that discovered it. PETRI outcomes describe discoverability
+under a stated auditor and budget, not prevalence.
+
+Confirmatory comparisons use frozen Inspect tasks, item sets, model conditions,
+judges, estimands, and denominators. Inspect Scout may scan logs for missing
+targets, refusals, parser failures, eval awareness, and related anomalies, but
+it is quality assurance only. A Scout flag is not a benchmark score, a model-
+risk label, or evidence of agency transfer.
 
 ## Repository map
 
@@ -82,8 +110,8 @@ replication or a ranking. Read the
 data/models/          canonical frontier model registry
 data/estimated/       versioned proxy rows, manifest, hashes, and sensitivity
 data/published/       transformed, source-linked published observations
-data/runs/            aggregate-only project run artifacts
-evals/                bounded evaluation runner and frozen configs
+data/runs/            sanitised historical audits and gated aggregate artifacts
+evals/                Inspect harness, manifests, fixtures, and legacy runner
 public/data/          versioned frontend data
 research/testing/     one clear research note per project-tested model
 scripts/              deterministic validation and preparation
@@ -120,24 +148,18 @@ python scripts/prepare_diselect.py --source-dir /path/to/election-ai-safety
 That script reads only the authors' released classification labels. It does not
 generate or publish harmful model outputs.
 
-## Reproduce the bounded APE-derived pilot
+## Inspect the historical APE-derived pilot
 
-The runner requires a local checkout of the pinned APE topic file and an
-`OPENROUTER_API_KEY` environment variable. Never place a credential in a
-command, config file, frontend bundle, issue, or report.
+The legacy source and config are retained only to make the failed pipeline audit
+inspectable. Its executable entry point is retired: it cannot be rerun, spend
+API credit, or overwrite the historical run ID. Every new evaluation uses the
+manifest-driven Inspect harness in [`evals/`](evals/README.md).
 
-```bash
-python evals/run_openrouter_ape_pilot.py \
-  --config evals/config/ape-frontier-pilot-v0.1.json \
-  --topics /path/to/AttemptPersuadeEval/src/topics/diverse_topics.jsonl \
-  --run-dir data/runs/2026-08-10-ape-frontier-pilot-v01 \
-  --raw-dir /restricted/private/run-directory
-```
-
-The public run directory contains only hashes, aggregate labels, sanitised
-route metadata, validation status, and a manifest. The private directory must
-remain access-controlled. Automated-only pilot results are labelled
-**exploratory** until blind human validation is complete.
+The public GitHub audit directory contains hashes, item-level automated labels,
+sanitised route metadata, validation status, and a manifest, but no prompts or
+generations. The 10 August results remain historical-failed even
+if their old labels are later reviewed: routing, ordering, seed, and denominator
+defects cannot be repaired after collection.
 
 ## Scientific and release commitments
 
@@ -149,6 +171,9 @@ remain access-controlled. Automated-only pilot results are labelled
   errors, tokens, and cost.
 - Separate model refusal, provider block, transport failure, and invalid judge
   output.
+- Keep adaptive discovery, scorer development, and confirmation on distinct,
+  versioned splits. Scout flags remain QA metadata and never become native
+  benchmark outcomes.
 - Do not publish raw harmful generations, targeting material, or current-
   election operational content.
 - Cite both ATB and every applicable primary source.

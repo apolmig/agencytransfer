@@ -1,0 +1,105 @@
+name: Evaluation and site quality gates
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: evals-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  gates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Set up locked uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.11.33"
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+
+      - name: Verify and install the frozen Python environment
+        run: |
+          uv lock --check
+          uv sync --frozen --group dev
+
+      - name: Lint evaluation code
+        run: |
+          uv run --frozen ruff format --check evals/atb_eval scripts/prepare_diselect.py tests/evals
+          uv run --frozen ruff check evals/atb_eval scripts/prepare_diselect.py tests/evals
+
+      - name: Run evaluation tests
+        run: uv run --frozen pytest
+
+      - name: Run network-free Inspect canary outside the repository
+        env:
+          CANARY_LOG_DIR: ${{ runner.temp }}/atb-inspect-canary
+          XDG_CACHE_HOME: ${{ runner.temp }}/xdg-cache
+          XDG_CONFIG_HOME: ${{ runner.temp }}/xdg-config
+          XDG_DATA_HOME: ${{ runner.temp }}/xdg-data
+        run: |
+          test ! -e "$CANARY_LOG_DIR"
+          uv run --frozen atb-eval \
+            --manifest evals/manifests/inspect-canary-v0.1.json \
+            --log-dir "$CANARY_LOG_DIR" \
+            --execute
+          test "$(find "$CANARY_LOG_DIR" -type f -name '*.eval' | wc -l)" -eq 2
+
+      - name: Reject tracked private evaluation artifacts
+        run: |
+          if git ls-files | grep -E '(^|/)(logs?|scans?|private|raw)(/|$)|\.eval$'; then
+            echo "Tracked private evaluation artifacts are forbidden."
+            exit 1
+          fi
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install website dependencies
+        run: npm ci
+
+      - name: Validate public data
+        run: npm run validate:data
+
+      - name: Verify generated HMC artifacts are current
+        run: |
+          npm run generate:estimate
+          git diff --exit-code -- \
+            public/data/frontier-models.json \
+            public/data/frontier-observations.json \
+            public/data/hmc-estimates.json \
+            public/data/hmc-frontier.json \
+            data/models/frontier-models.csv \
+            data/estimated/hmc-proxy-v0.1.csv \
+            data/estimated/hmc-proxy-v0.1-manifest.json
+
+      - name: Type-check website
+        run: npm run typecheck
+
+      - name: Build website
+        run: npm run build
+
+      - name: Assert multipage output
+        run: |
+          test -f dist/index.html
+          test -f dist/evidence/index.html
+          test -f dist/testing/index.html

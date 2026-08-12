@@ -54,6 +54,7 @@ or reference a time-stamped preregistration with:
 - the model inclusion rule and frozen candidate manifest;
 - accepted exact model and provider identifiers;
 - benchmark version, item universe, strata, and sampling hash;
+- scenario-family or template clusters and their split assignment;
 - target sample size and stopping rule;
 - generation and reasoning settings;
 - judge, parser, and human codebook versions;
@@ -66,6 +67,29 @@ or reference a time-stamped preregistration with:
 
 Deviations are appended with a timestamp and rationale. They are not rewritten
 into the original plan after results are seen.
+
+## Discovery, confirmation, and QA
+
+ATB uses three distinct lanes:
+
+1. **Adaptive discovery.** PETRI may probe a small, controlled development split
+   to identify candidate behaviours, safeguard failures, and scenario gaps.
+   Auditor model, target model, judge, turn budget, rollback policy, and seed are
+   recorded. Discovery yields are evidence that a failure could be elicited
+   under that configuration, not an estimate of prevalence.
+2. **Candidate review.** New scenarios receive human review, semantic
+   deduplication, construct review, and dual-use review. Accepted candidates are
+   queued for a later protocol version. They do not enter the confirmation set
+   used in the wave that discovered them.
+3. **Confirmation.** Item families, target models, serving conditions, judges,
+   estimands, denominators, and analysis are frozen before target outputs are
+   inspected. Scorer development stops before this split is opened.
+
+Inspect Scout may scan discovery and confirmation logs for missing target calls,
+refusals, parser failures, loops, eval awareness, and other anomalies. Scout is
+QA only: its flags do not enter native benchmark scores, model rankings, or the
+HMC proxy. A scanner used to exclude or quarantine observations must itself be
+prespecified and validated against human labels.
 
 ## Model panel strategy
 
@@ -111,6 +135,15 @@ parameters or modality, create a break in the series.
 - No secret, harmful raw generation, or restricted dataset is present in the
   public build.
 
+## Historical failed pilot — 10 August 2026
+
+The APE-derived OpenRouter pilot is not an input to the prospective wave plan.
+It is retained as a post hoc pipeline audit because provider routing was not
+pinned, requests were model-grouped, no seed parameter was sent, harmful and
+benign rates used different denominators, and no blind human validation was
+performed. These defects cannot be corrected retrospectively. Any repeat is a
+new, preregistered protocol rather than a continuation of the historical run.
+
 ## Wave 1 — DisElect feasibility and first ATB rerun
 
 ### Claim boundary
@@ -119,6 +152,13 @@ Wave 1 will measure whether a model complies with, refuses, or fails to complete
 benchmark-defined election-related operational requests. It does **not** measure
 agency transfer, persuasion, exposure, belief change, voting behaviour, campaign
 success, or electoral impact.
+
+The native four-category response class is the confirmatory outcome. A separately
+validated actionability rubric may be reported as a secondary ATB adaptation.
+DisElect does not systematically elicit exploitative personalisation,
+persistence or pressure, deception or concealment assistance, or reference-
+grounded factuality; those axes are `not_applicable` rather than inferred from
+their absence.
 
 ### Stage 1A: routing and scoring pilot
 
@@ -130,7 +170,10 @@ success, or electoral impact.
 - At least 30 outputs independently coded by two humans.
 
 This pilot is diagnostic. It is not placed on the primary leaderboard or used to
-select the most favourable model family.
+select the most favourable model family. Thirty double-coded outputs are a
+minimum check on the native response-class scorer, not validation of multiple
+mechanism axes. Actionability remains exploratory unless its own class support
+and validation gate are prespecified and met.
 
 ### Stage 1B: representative release artefact
 
@@ -139,11 +182,15 @@ select the most favourable model family.
 - All 50 benign controls, subject to source-licence confirmation.
 - One primary seed for every item.
 - Three seeds on a common 120-item robustness subset.
-- A 15% human-validation sample, stratified and enriched for judge disagreement.
+- A 15% stratified probability sample for human validation, plus a separately
+  reported audit sample enriched for judge disagreement and parser failure.
+- If actionability is reported, a separate codebook, applicability rule, and
+  human-validation result.
 
 At a 50% proportion, a simple independent-binomial interval for 160 items has a
 worst-case half-width of roughly 7.8 percentage points. The paired stratified
-bootstrap is the actual analysis, and its interval should be expected to differ.
+bootstrap, clustered by source template or scenario family where identifiable,
+is the actual analysis, and its interval should be expected to differ.
 The site will not imply fine-grained ordering that the uncertainty cannot
 support.
 
@@ -160,7 +207,8 @@ Secondary:
 - within-DisElect selectivity: benign completion minus harmful compliance;
 - provider-block and generation-error proportions;
 - seed sensitivity; and
-- per-stratum estimates.
+- per-stratum estimates; and
+- actionability distribution, only if the separately validated rubric passes.
 
 ### Wave 1 exit criteria
 
@@ -168,6 +216,8 @@ Secondary:
 - No unexplained fallback or provider substitution occurred.
 - Automated scoring reaches macro-F1 >= 0.80 and critical-class F1 >= 0.75 on
   the human-coded set.
+- Any reported actionability scorer independently passes its preregistered
+  validation gate; other manipulation-mechanism axes remain `not_applicable`.
 - Missingness and denominator choices are visible in the downloadable data.
 - The responsible-release review approves aggregate publication.
 
@@ -300,6 +350,10 @@ Every wave includes:
 - a route-integrity report; and
 - a signed methodological deviation log.
 
+Adaptive PETRI material and confirmation items are checked for split and
+scenario-family leakage. Scout results appear only in the QA report and never
+substitute for benchmark scoring or blind human validation.
+
 ## Decision rules
 
 The project will pause a wave when:
@@ -308,6 +362,8 @@ The project will pause a wave when:
 - fallback or provider substitution cannot be excluded;
 - the benchmark or model licence is unclear;
 - a judge fails the validation gate;
+- a discovery item, near-duplicate scenario family, or post hoc scorer change
+  contaminates the confirmation split;
 - harmful outputs cannot be stored safely;
 - more than 5% of attempted items fail for unexplained reasons; or
 - a new result creates a credible, material misuse or disclosure concern.

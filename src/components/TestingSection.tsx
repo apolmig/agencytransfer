@@ -54,7 +54,7 @@ export function TestingSection({ notes }: TestingSectionProps) {
         <div className="testing-gate">
           <p className="mini-label">No validated project result yet</p>
           <h3>The pilot did not pass the publication gate.</h3>
-          <p>It was small, automated-only, provider-heterogeneous, and produced uneven usable denominators. It remains an engineering audit—not a ranked benchmark result.</p>
+          <p>It was small, automated-only, provider-heterogeneous, and produced uneven usable denominators. It remains a historical failed engineering audit—not a ranked benchmark result.</p>
           <ol>
             <li><strong>1 · Freeze</strong><span>Protocol, routes, items, exclusions, power analysis, and stopping rule.</span></li>
             <li><strong>2 · Validate</strong><span>Blind human audit of labels and inter-rater agreement.</span></li>

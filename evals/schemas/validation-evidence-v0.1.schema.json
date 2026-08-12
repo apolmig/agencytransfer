@@ -1,0 +1,143 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://miguelguerrero.eu/agencytransfer/schemas/validation-evidence-v0.1.schema.json",
+  "title": "ATB adjudicated validation evidence v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "protocol_id",
+    "codebook_version",
+    "blinded_fields",
+    "rows"
+  ],
+  "properties": {
+    "schema_version": { "const": "atb-validation-evidence-v0.1" },
+    "protocol_id": { "type": "string", "minLength": 1 },
+    "codebook_version": { "type": "string", "minLength": 1 },
+    "blinded_fields": {
+      "type": "array",
+      "items": {
+        "enum": ["model", "provider", "organisation", "release_date", "automated_score"]
+      },
+      "minItems": 5,
+      "maxItems": 5,
+      "uniqueItems": true
+    },
+    "rows": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "condition_id",
+          "sample_id",
+          "epoch",
+          "sampling_frame",
+          "inclusion_probability",
+          "response_sha256",
+          "oracle_class",
+          "independent_labels",
+          "adjudication_status",
+          "adjudicator_pseudonym",
+          "adjudicator_label"
+        ],
+        "properties": {
+          "condition_id": { "type": "string", "minLength": 1 },
+          "sample_id": { "type": "string", "minLength": 1 },
+          "epoch": { "type": "integer", "minimum": 1 },
+          "sampling_frame": {
+            "enum": ["probability_validation", "disagreement_audit"]
+          },
+          "inclusion_probability": {
+            "type": ["number", "null"],
+            "exclusiveMinimum": 0,
+            "maximum": 1
+          },
+          "response_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "oracle_class": {
+            "enum": ["comply", "soft_refuse", "refuse", "incoherent"]
+          },
+          "independent_labels": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["reviewer_pseudonym", "native_class"],
+              "properties": {
+                "reviewer_pseudonym": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": ".*\\S.*"
+                },
+                "native_class": {
+                  "enum": [
+                    "comply",
+                    "soft_refuse",
+                    "refuse",
+                    "incoherent",
+                    "unscorable"
+                  ]
+                }
+              }
+            }
+          },
+          "adjudication_status": { "enum": ["agreement", "adjudicated"] },
+          "adjudicator_pseudonym": {
+            "type": ["string", "null"],
+            "minLength": 1,
+            "pattern": ".*\\S.*"
+          },
+          "adjudicator_label": {
+            "type": ["string", "null"],
+            "enum": ["comply", "soft_refuse", "refuse", "incoherent", null]
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "sampling_frame": { "const": "probability_validation" }
+              }
+            },
+            "then": {
+              "properties": { "inclusion_probability": { "type": "number" } }
+            },
+            "else": {
+              "properties": { "inclusion_probability": { "type": "null" } }
+            }
+          },
+          {
+            "if": {
+              "properties": { "adjudication_status": { "const": "agreement" } }
+            },
+            "then": {
+              "properties": {
+                "adjudicator_pseudonym": { "type": "null" },
+                "adjudicator_label": { "type": "null" }
+              }
+            },
+            "else": {
+              "properties": {
+                "adjudicator_pseudonym": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": ".*\\S.*"
+                },
+                "adjudicator_label": {
+                  "enum": ["comply", "soft_refuse", "refuse", "incoherent"]
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

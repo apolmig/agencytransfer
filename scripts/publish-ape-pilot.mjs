@@ -49,6 +49,10 @@ const modelByRoute = new Map(models.map((model) => [model.openRouterId, model]))
 const routeByModel = new Map(routes.map((row) => [row.requested_model, row]));
 const auditErrorBatches = validation.audit_batches.filter((batch) => batch.error).length;
 const effectiveAuditPct = (validation.double_judged_n / manifest.request_count) * 100;
+// This hard-coded legacy run has irreparable collection defects. Rebuild its
+// audit notes, but never place its rows in the comparative observation ledger.
+// A scientifically valid rerun must use a new protocol and exporter.
+const comparativeLedgerEligible = false;
 const validationText = validation.raw_agreement === null
   ? "The preselected 20% second-judge audit produced no parseable comparison set."
   : `A preselected 20% second-judge audit yielded ${validation.double_judged_n} parseable pairs (${effectiveAuditPct.toFixed(1)}% of target responses) after ${auditErrorBatches} audit-batch parse failures; agreement among parsed pairs was ${(validation.raw_agreement * 100).toFixed(1)}% with Cohen’s κ ${validation.cohen_kappa ?? "not estimable"}.`;
@@ -93,23 +97,24 @@ for (const row of aggregates) {
     title: `${model.model} · one-turn APE-derived pilot`,
     status: "exploratory",
     validationStatus: "failed",
-    validationMethod: "Automated primary judge with a preselected 20% second-judge audit; no blinded human validation.",
+    validationMethod: "Historical failed pipeline audit: automated primary judge and preselected 20% second-judge audit, with no blinded human validation.",
     validationArtifactUrl: `${githubRoot}/blob/main/${runRelative}/validation.json`,
     date: "2026-08-10",
     benchmark: "ATB APE-derived pilot v0.1",
     models: [model.model],
     summary: usable > 0
-      ? `${fmt(attemptPct)} attempt rate among ${usable} usable responses from 20 hash-selected noncontroversially harmful topics; automated-only and not a full APE replication.`
-      : "No attempt-rate estimate; endpoint or judging failures are retained as the pilot result.",
+      ? `Historical failed audit: ${fmt(attemptPct)} automated attempt rate among ${usable} usable responses from 20 hash-selected noncontroversially harmful topics; not a model comparison.`
+      : "Historical failed audit: no attempt-rate estimate; endpoint or judging failures are retained only for pipeline analysis.",
     question: "Under the same one-turn elicitation, does this served endpoint attempt to persuade on 20 noncontroversially harmful APE topics while still engaging six benign controls?",
-    protocol: `Exact requested route ${row.model}; 20 harmful and six benign controls; one response per item; provider-default routing, reasoning, and sampling; primary judge ${validation.primary_judge}; 20% audit judge ${validation.audit_judge}. Returned models: ${returnedModels || "not reported"}. Providers: ${providers || "not reported"}.`,
+    protocol: `Requested model slug ${row.model}; 20 harmful and six benign controls; one response per item; model-grouped request order; no effective seed; provider-default routing, reasoning, and sampling; primary judge ${validation.primary_judge}; 20% audit judge ${validation.audit_judge}. Returned models: ${returnedModels || "not reported"}. Providers: ${providers || "not reported"}.`,
     result: resultSentence,
-    interpretation: `This is an endpoint and pipeline diagnostic, not a model ranking. ${validationText} The result can motivate a full, provider-pinned, human-validated run but cannot establish persuasion success or real-world harm.`,
+    interpretation: `This is a permanently excluded pipeline diagnostic, not a model ranking. ${validationText} Unpinned routing, grouped ordering, no effective seed, incompatible denominators, and absent blind human validation cannot be repaired retrospectively.`,
     limitations: [
       "Only one APE harmful category is sampled; conspiracy and undermining-control topics are absent.",
-      "Twenty harmful items and one generation per item yield wide uncertainty.",
-      "Provider, reasoning, and sampling conditions were not pinned, so this is a dated served-endpoint observation.",
-      "Labels are automated; blind human validation has not been completed.",
+      "Twenty harmful items and one uncontrolled stochastic draw per item yield wide uncertainty.",
+      "Provider, reasoning, and sampling conditions were not pinned; fallback was not disabled.",
+      "Requests were model-grouped, and harmful and benign rates used incompatible denominators.",
+      "Labels are automated; no blind human validation was performed.",
       "The test measures attempted persuasion, not whether any person was persuaded.",
     ],
     artifacts: [
@@ -121,7 +126,7 @@ for (const row of aggregates) {
   };
   notes.push(note);
 
-  if (usable > 0 && attemptPct !== null) {
+  if (comparativeLedgerEligible && usable > 0 && attemptPct !== null) {
     observations.push({
       id: `atb-ape-pilot-${slug}-attempt`,
       benchmarkId: "ape-atb-pilot",
@@ -143,7 +148,7 @@ for (const row of aggregates) {
     });
   }
 
-  const markdown = `# ${note.title}\n\n**Status:** Exploratory · automated-only · not a ranking  \n**Run:** \`${runId}\`  \n**Date:** 10 August 2026  \n**Requested route:** \`${row.model}\`\n\n## Question\n\n${note.question}\n\n## Protocol\n\n${note.protocol}\n\n## Result\n\n${resultSentence}\n\n## Interpretation\n\n${note.interpretation}\n\n## Limits\n\n${note.limitations.map((item) => `- ${item}`).join("\n")}\n\n## Artifacts\n\n- [Aggregate and route artifacts](${runUrl})\n- [Hugging Face mirror](${hfRunUrl})\n- [Protocol](${githubRoot}/blob/main/OPENROUTER_PROTOCOL.md)\n\nRaw statements and generations are intentionally excluded from the public release.\n`;
+  const markdown = `# ${note.title}\n\n**Status:** Historical failed pipeline audit · permanently excluded · not a ranking\n\n**Run:** \`${runId}\`\n\n**Date:** 10 August 2026\n\n**Requested model slug:** \`${row.model}\`\n\n## Question\n\n${note.question}\n\n## Protocol\n\n${note.protocol}\n\n## Historical automated result\n\n${resultSentence}\n\n## Interpretation\n\n${note.interpretation}\n\n## Limits\n\n${note.limitations.map((item) => `- ${item}`).join("\n")}\n\n## Artifacts\n\n- [Aggregate and route artifacts](${runUrl})\n- [Hugging Face mirror](${hfRunUrl})\n- [Protocol](${githubRoot}/blob/main/OPENROUTER_PROTOCOL.md)\n\nRaw statements and generations are intentionally excluded from the public release.\n`;
   const target = new URL(notePath, root);
   await mkdir(path.dirname(target.pathname), { recursive: true });
   await writeFile(target, markdown, "utf8");
@@ -155,9 +160,11 @@ await writeJson("public/data/testing-notes.json", notes);
 await writeJson("public/data/frontier-observations.json", [...retainedPublished, ...observations]);
 await writeJson(`${runRelative}/research-notes.json`, notes);
 
-const indexMarkdown = `# OpenRouter testing notes\n\nThese notes document the bounded \`${manifest.protocol_id}\` run. Every endpoint received the same 20 hash-selected noncontroversially harmful APE topics and six benign controls. Results are automated-only and exploratory; they are not a full APE replication or a model ranking.\n\n| Model | Attempt rate | Usable harmful n | Refusals | Transport errors | Endpoint cost |\n|---|---:|---:|---:|---:|---:|\n${markdownRows.join("\n")}\n\nThe run-wide estimated cost was ${usd(manifest.estimated_total_cost_usd)}. ${validationText} See [the serving protocol](${githubRoot}/blob/main/OPENROUTER_PROTOCOL.md) and [provenance](${githubRoot}/blob/main/data/PROVENANCE.md). Raw statements and generations are not public.\n`;
+const indexMarkdown = `# Historical failed OpenRouter pipeline audit\n\nThese notes document the bounded \`${manifest.protocol_id}\` run. Every requested model slug received the same 20 hash-selected noncontroversially harmful APE topics and six benign controls. The run used unpinned provider routing, model-grouped ordering, no effective seed, incompatible denominators, and no blind human validation. It is permanently excluded from comparative results, is not a full APE replication, and is not a model ranking.\n\n| Model | Historical automated attempt rate | Usable harmful n | Refusals | Transport errors | Endpoint cost |\n|---|---:|---:|---:|---:|---:|\n${markdownRows.join("\n")}\n\nThe run-wide estimated cost was ${usd(manifest.estimated_total_cost_usd)}. ${validationText} See [the serving protocol](${githubRoot}/blob/main/OPENROUTER_PROTOCOL.md) and [provenance](${githubRoot}/blob/main/data/PROVENANCE.md). Raw statements and generations are not public.\n`;
 await mkdir(new URL("research/testing/", root), { recursive: true });
 await writeFile(new URL("research/testing/README.md", root), indexMarkdown, "utf8");
 await writeFile(new URL(`${runRelative}/README.md`, root), indexMarkdown, "utf8");
 
-console.log(`Published ${notes.length} testing notes and ${observations.length} exploratory chart observations.`);
+console.log(
+  `Rebuilt ${notes.length} historical testing notes and added ${observations.length} validated comparative observations.`,
+);

@@ -1,0 +1,93 @@
+{
+  "schema_version": "atb-protocol-manifest-v0.1",
+  "protocol_id": "atb-inspect-canary-v0.1",
+  "status": "frozen",
+  "frozen_at": "2026-08-12T00:00:00Z",
+  "construct_definition": "Inspect pipeline integrity",
+  "explicit_non_claims": [
+    "model capability",
+    "model safety",
+    "harmful manipulation",
+    "agency transfer"
+  ],
+  "task": {
+    "kind": "canary",
+    "name": "inspect_canary",
+    "registry_name": "inspect_canary",
+    "version": "0.1.0",
+    "package": "agency-transfer-evals",
+    "package_version": "0.1.0",
+    "expected_metadata": {},
+    "args": {}
+  },
+  "dataset": {
+    "name": "embedded benign canary",
+    "source_url": "https://github.com/apolmig/agencytransfer",
+    "source_revision": "atb-inspect-canary-v0.1",
+    "licence": "Apache-2.0",
+    "release_tier": "public",
+    "split": "fixture",
+    "selection_method": "three fixed benign samples",
+    "required_files": []
+  },
+  "models": [
+    {
+      "condition_id": "mockllm-default-v0.3.257",
+      "model": "mockllm/model",
+      "immutable": true,
+      "api_key_env": null,
+      "route": null,
+      "model_args": {},
+      "generate_config": {}
+    },
+    {
+      "condition_id": "mockllm-temperature-zero-v0.3.257",
+      "model": "mockllm/model",
+      "immutable": true,
+      "api_key_env": null,
+      "route": null,
+      "model_args": {},
+      "generate_config": {
+        "temperature": 0.0
+      }
+    }
+  ],
+  "model_roles": {},
+  "run": {
+    "seed": 42,
+    "sample_shuffle": 42,
+    "expected_samples_per_model": 3,
+    "epochs": 1,
+    "max_connections": 1,
+    "max_retries": 0,
+    "retry_on_error": 0,
+    "retry_attempts": 0,
+    "fail_on_error": true,
+    "sample_cost_limit_usd": 0,
+    "sample_token_limit": 1000,
+    "planned_run_cost_envelope_usd": 0,
+    "planned_run_token_envelope": 6000,
+    "log_model_api": false
+  },
+  "validation": {
+    "human_validation_required": false,
+    "double_coded_n": 0,
+    "probability_sample_seed": null,
+    "probability_strata": [],
+    "codebook_version": null,
+    "macro_f1_min": null,
+    "critical_class": null,
+    "critical_f1_min": null,
+    "maximum_unexplained_failure_rate": 0,
+    "minimum_usable_rate_per_row": 1,
+    "cluster_key": null
+  },
+  "release": {
+    "raw_logs": "controlled",
+    "target_outputs": "public",
+    "judge_traces": "controlled",
+    "public_aggregate_candidate": false,
+    "public_allowlist_only": true,
+    "requires_two_person_review": false
+  }
+}
