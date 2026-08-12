@@ -28,7 +28,7 @@ from atb_eval.paid_execution import (
 from atb_eval.runner import parse_args
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-MANIFEST_PATH = REPO_ROOT / "evals/manifests/diselect-route-preflight-v0.2.json"
+MANIFEST_PATH = REPO_ROOT / "evals/manifests/diselect-route-preflight-v0.3.json"
 COMMIT = "a" * 40
 NOW = datetime(2026, 8, 12, 12, 0, tzinfo=UTC)
 
@@ -562,6 +562,95 @@ def test_runner_gate_failure_prevents_eval_execution(
     with pytest.raises(SystemExit, match="permit rejected"):
         runner.main()
     assert not (tmp_path / "logs").exists()
+
+
+def test_execute_audits_persisted_usage_before_returning_partial_failure(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    manifest, manifest_hash = manifest_and_hash()
+    provenance = {
+        "code_commit": COMMIT,
+        "code_dirty": False,
+        "environment_lock_sha256": "b" * 64,
+    }
+    execution_id = "e" * 32
+    events: list[str] = []
+    monkeypatch.setattr(runner, "build_model", lambda *args: object())
+    monkeypatch.setattr(
+        runner,
+        "runtime_package_versions",
+        lambda *args: {"agency-transfer-evals": "0.1.0"},
+    )
+
+    def failed_eval_set(**kwargs: object) -> tuple[bool, list[object]]:
+        events.append("eval-set")
+        assert kwargs["token_limit"] == manifest.run.sample_token_limit
+        return False, []
+
+    def audit_usage(
+        audited_manifest: object,
+        audited_log_dir: Path,
+        audited_execution_id: str,
+        audited_conditions: list[object],
+    ) -> bool:
+        events.append("usage-audit")
+        assert audited_manifest is manifest
+        assert audited_log_dir == tmp_path
+        assert audited_execution_id == execution_id
+        assert len(audited_conditions) == len(manifest.models)
+        return True
+
+    monkeypatch.setattr(runner, "eval_set", failed_eval_set)
+    monkeypatch.setattr(runner, "ensure_private_permissions", lambda *args, **kwargs: None)
+    monkeypatch.setattr(runner, "recorded_execution_usage_within_envelope", audit_usage)
+
+    assert not runner.execute(
+        manifest,
+        SimpleNamespace(),
+        tmp_path,
+        manifest_hash,
+        provenance,
+        execution_id=execution_id,
+        route_receipt_sha256="f" * 64,
+    )
+    assert events == ["eval-set", "usage-audit"]
+
+
+def test_execute_audits_persisted_usage_before_propagating_eval_exception(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    manifest, manifest_hash = manifest_and_hash()
+    provenance = {
+        "code_commit": COMMIT,
+        "code_dirty": False,
+        "environment_lock_sha256": "b" * 64,
+    }
+    events: list[str] = []
+    monkeypatch.setattr(runner, "build_model", lambda *args: object())
+    monkeypatch.setattr(runner, "runtime_package_versions", lambda *args: {})
+    monkeypatch.setattr(runner, "ensure_private_permissions", lambda *args, **kwargs: None)
+
+    def raised_eval_set(**kwargs: object) -> tuple[bool, list[object]]:
+        events.append("eval-set")
+        raise OSError("transport interrupted after persistence")
+
+    def audit_usage(*args: object) -> bool:
+        events.append("usage-audit")
+        return True
+
+    monkeypatch.setattr(runner, "eval_set", raised_eval_set)
+    monkeypatch.setattr(runner, "recorded_execution_usage_within_envelope", audit_usage)
+    with pytest.raises(RuntimeError, match="after persisted usage was audited"):
+        runner.execute(
+            manifest,
+            SimpleNamespace(),
+            tmp_path,
+            manifest_hash,
+            provenance,
+            execution_id="e" * 32,
+            route_receipt_sha256="f" * 64,
+        )
+    assert events == ["eval-set", "usage-audit"]
 
 
 def test_dry_run_never_checks_paid_authorization_or_executes(
