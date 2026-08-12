@@ -24,6 +24,7 @@ from atb_eval.paid_execution import (
     verify_openrouter_key_budget,
     verify_paid_execution_authorization,
     verify_paid_execution_permit,
+    verify_persisted_openrouter_route_capture,
 )
 from atb_eval.runner import parse_args
 
@@ -407,7 +408,7 @@ def write_fresh_capture(
 def test_fresh_route_capture_must_match_frozen_projection(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
-    manifest, _ = manifest_and_hash()
+    manifest, manifest_hash = manifest_and_hash()
 
     def fake_run(command: list[str], **kwargs: object) -> object:
         output_dir = Path(command[command.index("--output-dir") + 1])
@@ -420,14 +421,135 @@ def test_fresh_route_capture_must_match_frozen_projection(
         manifest,
         REPO_ROOT,
         observed_at="2026-08-12T12:00:00Z",
-        manifest_sha256="a" * 64,
+        manifest_sha256=manifest_hash,
     )
     run_dir = tmp_path / "run"
     run_dir.mkdir(mode=0o700)
     digest = persist_fresh_openrouter_route_capture(capture, run_dir)
     receipt = run_dir / "openrouter-route-capture/receipt.json"
     assert digest == sha256(receipt.read_bytes()).hexdigest()
-    assert json.loads(receipt.read_text())["manifest_sha256"] == "a" * 64
+    assert json.loads(receipt.read_text())["manifest_sha256"] == manifest_hash
+    summary = verify_persisted_openrouter_route_capture(
+        manifest,
+        receipt.parent,
+        manifest_sha256=manifest_hash,
+        expected_receipt_sha256=digest,
+    )
+    assert summary["receipt_sha256"] == digest
+    assert summary["observed_at"] == "2026-08-12T12:00:00Z"
+    assert summary["condition_ids"] == sorted(
+        condition.condition_id
+        for condition in [*manifest.models, *manifest.model_roles.values()]
+    )
+    assert summary["artifact_count"] > 0
+    assert summary["artifact_bytes"] > 0
+    assert len(summary["artifact_inventory_sha256"]) == 64
+
+
+def persisted_route_capture(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> tuple[object, str, Path, str]:
+    manifest, manifest_hash = manifest_and_hash()
+
+    def fake_run(command: list[str], **kwargs: object) -> object:
+        output_dir = Path(command[command.index("--output-dir") + 1])
+        observed_at = command[command.index("--observed-at") + 1]
+        write_fresh_capture(output_dir, manifest, observed_at)
+        return object()
+
+    monkeypatch.setattr("atb_eval.paid_execution.subprocess.run", fake_run)
+    capture = verify_fresh_openrouter_route_capture(
+        manifest,
+        REPO_ROOT,
+        observed_at="2026-08-12T12:00:00Z",
+        manifest_sha256=manifest_hash,
+    )
+    run_dir = tmp_path / "run"
+    run_dir.mkdir(mode=0o700)
+    digest = persist_fresh_openrouter_route_capture(capture, run_dir)
+    return manifest, manifest_hash, run_dir / "openrouter-route-capture", digest
+
+
+def rewrite_route_receipt(capture_dir: Path, receipt: dict[str, object]) -> str:
+    raw = (json.dumps(receipt, indent=2, sort_keys=True) + "\n").encode()
+    (capture_dir / "receipt.json").write_bytes(raw)
+    return sha256(raw).hexdigest()
+
+
+@pytest.mark.parametrize("mutation", ["unsafe-path", "wrong-size", "raw-hash"])
+def test_persisted_route_capture_rejects_tampered_receipt(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    mutation: str,
+) -> None:
+    manifest, manifest_hash, capture_dir, _ = persisted_route_capture(monkeypatch, tmp_path)
+    receipt_path = capture_dir / "receipt.json"
+    receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+    if mutation == "unsafe-path":
+        receipt["artifacts"][0]["path"] = "../outside.json"
+    elif mutation == "wrong-size":
+        receipt["artifacts"][0]["size_bytes"] += 1
+    else:
+        receipt["conditions"][0]["raw_response_sha256"]["model_response_sha256"] = "0" * 64
+    expected_digest = rewrite_route_receipt(capture_dir, receipt)
+    with pytest.raises(ValueError):
+        verify_persisted_openrouter_route_capture(
+            manifest,
+            capture_dir,
+            manifest_sha256=manifest_hash,
+            expected_receipt_sha256=expected_digest,
+        )
+
+
+def test_persisted_route_capture_rejects_frozen_evidence_drift(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    manifest, manifest_hash, capture_dir, _ = persisted_route_capture(monkeypatch, tmp_path)
+    receipt_path = capture_dir / "receipt.json"
+    receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+    condition = receipt["conditions"][0]
+    evidence_path = capture_dir / condition["evidence_path"]
+    evidence = json.loads(evidence_path.read_text(encoding="utf-8"))
+    evidence["canonical_slug"] = "tampered/canonical"
+    evidence_raw = json.dumps(evidence).encode()
+    evidence_path.write_bytes(evidence_raw)
+    evidence_digest = sha256(evidence_raw).hexdigest()
+    condition["evidence_sha256"] = evidence_digest
+    for artifact in receipt["artifacts"]:
+        if artifact["path"] == condition["evidence_path"]:
+            artifact["sha256"] = evidence_digest
+            artifact["size_bytes"] = len(evidence_raw)
+    expected_digest = rewrite_route_receipt(capture_dir, receipt)
+    with pytest.raises(ValueError, match="frozen condition"):
+        verify_persisted_openrouter_route_capture(
+            manifest,
+            capture_dir,
+            manifest_sha256=manifest_hash,
+            expected_receipt_sha256=expected_digest,
+        )
+
+
+def test_persisted_route_capture_rejects_symlink(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    manifest, manifest_hash, capture_dir, digest = persisted_route_capture(monkeypatch, tmp_path)
+    receipt = json.loads((capture_dir / "receipt.json").read_text(encoding="utf-8"))
+    artifact_path = capture_dir / receipt["artifacts"][0]["path"]
+    raw = artifact_path.read_bytes()
+    replacement = tmp_path / "replacement"
+    replacement.write_bytes(raw)
+    artifact_path.unlink()
+    artifact_path.symlink_to(replacement)
+    with pytest.raises(ValueError, match="symlink"):
+        verify_persisted_openrouter_route_capture(
+            manifest,
+            capture_dir,
+            manifest_sha256=manifest_hash,
+            expected_receipt_sha256=digest,
+        )
 
 
 def test_fresh_route_capture_fails_closed_on_canonical_drift(

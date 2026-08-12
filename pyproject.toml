@@ -22,6 +22,7 @@ dependencies = [
 
 [project.scripts]
 atb-eval = "atb_eval.runner:main"
+atb-offline-revalidate = "atb_eval.offline_revalidation:main"
 atb-release-gate = "atb_eval.release_gate:main"
 
 [dependency-groups]

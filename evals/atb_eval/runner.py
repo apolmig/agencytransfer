@@ -562,11 +562,30 @@ def sample_target_output_matches(sample: Any, target_roles: set[str | None] | No
     if event_output is None or sample_output is None:
         return False
 
-    def serialise(output: Any) -> str:
+    def serialise(output: Any) -> str | None:
         payload = output.model_dump(mode="json") if hasattr(output, "model_dump") else vars(output)
+
+        def contains_unresolved_attachment(value: Any) -> bool:
+            if isinstance(value, str):
+                return value.startswith("attachment://")
+            if isinstance(value, dict):
+                return any(contains_unresolved_attachment(item) for item in value.values())
+            if isinstance(value, (list, tuple)):
+                return any(contains_unresolved_attachment(item) for item in value)
+            return False
+
+        if contains_unresolved_attachment(payload):
+            return None
         return json.dumps(payload, sort_keys=True, separators=(",", ":"), default=str)
 
-    return serialise(event_output) == serialise(sample_output)
+    serialised_event = serialise(event_output)
+    return serialised_event is not None and serialised_event == serialise(sample_output)
+
+
+def read_postflight_log(location: str | Path) -> Any:
+    """Read persisted evidence with all Inspect attachment references resolved."""
+
+    return read_eval_log(location, resolve_attachments=True)
 
 
 def _resolved_text(value: Any, sample: Any) -> str | None:
@@ -719,7 +738,7 @@ def openrouter_route_metadata_matches(response: Any, condition: ModelCondition) 
     """Bind a successful OpenRouter response to its invocable model ID and endpoint."""
 
     revision = condition.revision
-    if not isinstance(response, dict) or revision is None:
+    if not isinstance(response, dict) or revision is None or not revision.canonical_slug:
         return False
     if response.get("model") != revision.resolved_model:
         return False
@@ -751,7 +770,7 @@ def openrouter_route_metadata_matches(response: Any, condition: ModelCondition) 
         return False
     if (
         selected[0].get("provider") != revision.provider_name
-        or selected[0].get("model") != revision.resolved_model
+        or selected[0].get("model") != revision.canonical_slug
     ):
         return False
 
@@ -766,7 +785,7 @@ def openrouter_route_metadata_matches(response: Any, condition: ModelCondition) 
     return (
         isinstance(attempt, dict)
         and attempt.get("provider") == revision.provider_name
-        and attempt.get("model") == revision.resolved_model
+        and attempt.get("model") == revision.canonical_slug
         and type(attempt.get("status")) is int
         and attempt.get("status") == 200
     )
@@ -1333,6 +1352,186 @@ def preflight(
     return manifest, controlled_log_dir, manifest_hash
 
 
+def validate_persisted_execution(
+    manifest: ProtocolManifest,
+    log_dir: Path,
+    manifest_hash: str,
+    provenance: dict[str, str | bool],
+    *,
+    execution_id: str,
+    route_receipt_sha256: str | None = None,
+) -> bool:
+    """Apply the complete execution postflight to persisted Inspect evidence.
+
+    This is deliberately shared by live execution and offline replay. It makes
+    no model calls and accepts only the execution provenance embedded in the
+    original logs, not the provenance of the checkout performing a later replay.
+    """
+
+    ordered_conditions = sorted(
+        manifest.models,
+        key=lambda condition: sha256(
+            f"{manifest.run.seed}:{condition.condition_id}".encode()
+        ).hexdigest(),
+    )
+    if not recorded_execution_usage_within_envelope(
+        manifest, log_dir, execution_id, ordered_conditions
+    ):
+        return False
+    fingerprint = run_fingerprint(manifest_hash, provenance)
+    eval_set_id = f"{manifest.protocol_id}-{fingerprint}"
+    metadata: dict[str, Any] = {
+        "atb_protocol_id": manifest.protocol_id,
+        "atb_manifest_sha256": manifest_hash,
+        "atb_condition_map": condition_map(manifest),
+        "atb_schedule": PAIRED_SCHEDULE,
+        "atb_retry_cleanup": False,
+        "atb_runtime_packages": expected_runtime_packages(manifest),
+        "atb_code_commit": provenance["code_commit"],
+        "atb_code_dirty": provenance["code_dirty"],
+        "atb_environment_lock_sha256": provenance["environment_lock_sha256"],
+        "atb_execution_id": execution_id,
+        "release_tier": manifest.release.raw_logs.value,
+    }
+    paid_openrouter = manifest.is_paid and any(
+        condition.model.startswith("openrouter/")
+        for condition in [*manifest.models, *manifest.model_roles.values()]
+    )
+    if paid_openrouter:
+        if route_receipt_sha256 is None or len(route_receipt_sha256) != 64:
+            return False
+        metadata["atb_openrouter_route_receipt_sha256"] = route_receipt_sha256
+
+    evidence_paths = sorted(log_dir.rglob("*.eval"))
+    if len(evidence_paths) != len(ordered_conditions):
+        return False
+    evidence_logs = [read_postflight_log(path) for path in evidence_paths]
+    if task_retry_chain_failures(evidence_logs, manifest):
+        return False
+    seen_conditions: set[str] = set()
+    paired_identity: tuple[tuple[str, ...], tuple[tuple[str, int, str], ...]] | None = None
+    for log in evidence_logs:
+        matching_conditions = [
+            condition
+            for condition in ordered_conditions
+            if log_matches_condition(log, condition, manifest)
+        ]
+        if len(matching_conditions) != 1:
+            return False
+        condition = matching_conditions[0]
+        if condition.condition_id in seen_conditions:
+            return False
+        seen_conditions.add(condition.condition_id)
+        log_metadata = log.eval.metadata or {}
+        if log.status != "success" or any(
+            log_metadata.get(key) != value for key, value in metadata.items()
+        ):
+            return False
+        if log.invalidated or log.eval.eval_set_id != eval_set_id:
+            return False
+        revision = log.eval.revision
+        if (
+            revision is None
+            or not str(provenance["code_commit"]).startswith(revision.commit)
+            or len(revision.commit) < 7
+            or bool(revision.dirty) != bool(provenance["code_dirty"])
+        ):
+            return False
+        if (
+            log.eval.task != manifest.task.name
+            or str(log.eval.task_version) != manifest.task.version
+            or log.eval.task_registry_name != manifest.task.registry_name
+            or not official_base_url(condition, log.eval.model_base_url)
+            or not logged_packages_match(log, manifest)
+        ):
+            return False
+        expected_config = effective_generate_config(condition, manifest)
+        if not generate_config_matches(log.eval.model_generate_config, expected_config):
+            return False
+        eval_config = log.eval.config.model_dump()
+        expected_eval_config = {
+            "sample_shuffle": manifest.run.sample_shuffle,
+            "epochs": manifest.run.epochs,
+            "fail_on_error": manifest.run.fail_on_error,
+            "retry_on_error": manifest.run.retry_on_error,
+            "token_limit": manifest.run.sample_token_limit,
+            "cost_limit": manifest.run.sample_cost_limit_usd or None,
+            "max_samples": 1,
+            "max_tasks": len(manifest.models),
+            "log_model_api": manifest.run.log_model_api,
+        }
+        if any(eval_config.get(key) != value for key, value in expected_eval_config.items()):
+            return False
+        logged_roles = log.eval.model_roles or {}
+        if set(logged_roles) != set(manifest.model_roles):
+            return False
+        for role, expected_role in manifest.model_roles.items():
+            actual_role = logged_roles[role]
+            if (
+                actual_role.model != expected_role.model
+                or actual_role.args != expected_role.inspect_model_args()
+                or not official_base_url(expected_role, actual_role.base_url)
+            ):
+                return False
+            expected_role_config = effective_generate_config(expected_role, manifest)
+            if not generate_config_matches(actual_role.config, expected_role_config):
+                return False
+        expected_count = manifest.run.expected_samples_per_model * manifest.run.epochs
+        current_paired_identity = paired_dataset_identity(log)
+        if paired_identity is None:
+            paired_identity = current_paired_identity
+        elif current_paired_identity != paired_identity:
+            return False
+        if (
+            log.eval.dataset.samples != manifest.run.expected_samples_per_model
+            or not log.eval.dataset.shuffled
+            or len(log.eval.dataset.sample_ids or [])
+            != manifest.run.expected_samples_per_model
+            or log.results is None
+            or log.results.completed_samples != expected_count
+            or log.samples is None
+            or len(log.samples) != expected_count
+            or not diselect_score_contract_matches(log, manifest)
+            or any(sample.model_fallbacks for sample in log.samples)
+            or (
+                manifest.task.kind in {"canary", "diselect"}
+                and any(not sample_target_output_matches(sample) for sample in log.samples)
+            )
+            or any(
+                not sample_model_inputs_match(sample, condition, manifest)
+                for sample in log.samples
+            )
+            or any(
+                not sample_routes_match(
+                    sample,
+                    condition,
+                    manifest.model_roles,
+                    target_roles=(
+                        {None, "persuader"} if manifest.task.kind == "ape" else {None}
+                    ),
+                    required_roles=required_sample_roles(sample, manifest),
+                    manifest=manifest,
+                )
+                for sample in log.samples
+            )
+            or any(
+                not retry_events_routes_match(
+                    retry,
+                    condition,
+                    manifest.model_roles,
+                    target_roles=(
+                        {None, "persuader"} if manifest.task.kind == "ape" else {None}
+                    ),
+                    manifest=manifest,
+                )
+                for sample in log.samples
+                for retry in (sample.error_retries or [])
+            )
+        ):
+            return False
+    return seen_conditions == {condition.condition_id for condition in ordered_conditions}
+
+
 def execute(
     manifest: ProtocolManifest,
     task: Task,
@@ -1431,130 +1630,14 @@ def execute(
         return False
     if not success or len(logs) != len(ordered_conditions):
         return False
-    evidence_logs = [read_eval_log(path) for path in sorted(log_dir.rglob("*.eval"))]
-    if task_retry_chain_failures(evidence_logs, manifest):
-        return False
-    seen_conditions: set[str] = set()
-    paired_identity: tuple[tuple[str, ...], tuple[tuple[str, int, str], ...]] | None = None
-    for returned_log in logs:
-        log = (
-            read_eval_log(returned_log.location)
-            if returned_log.samples is None and returned_log.location
-            else returned_log
-        )
-        matching_conditions = [
-            condition
-            for condition in ordered_conditions
-            if log_matches_condition(log, condition, manifest)
-        ]
-        if len(matching_conditions) != 1:
-            return False
-        condition = matching_conditions[0]
-        if condition.condition_id in seen_conditions:
-            return False
-        seen_conditions.add(condition.condition_id)
-        log_metadata = log.eval.metadata or {}
-        if log.status != "success" or any(
-            log_metadata.get(key) != value for key, value in metadata.items()
-        ):
-            return False
-        if log.invalidated or log.eval.eval_set_id != eval_set_id:
-            return False
-        revision = log.eval.revision
-        if (
-            revision is None
-            or not str(provenance["code_commit"]).startswith(revision.commit)
-            or len(revision.commit) < 7
-            or bool(revision.dirty) != bool(provenance["code_dirty"])
-        ):
-            return False
-        if (
-            log.eval.task != manifest.task.name
-            or str(log.eval.task_version) != manifest.task.version
-            or log.eval.task_registry_name != manifest.task.registry_name
-            or not official_base_url(condition, log.eval.model_base_url)
-            or not logged_packages_match(log, manifest)
-        ):
-            return False
-        expected_config = effective_generate_config(condition, manifest)
-        if not generate_config_matches(log.eval.model_generate_config, expected_config):
-            return False
-        eval_config = log.eval.config.model_dump()
-        expected_eval_config = {
-            "sample_shuffle": manifest.run.sample_shuffle,
-            "epochs": manifest.run.epochs,
-            "fail_on_error": manifest.run.fail_on_error,
-            "retry_on_error": manifest.run.retry_on_error,
-            "token_limit": manifest.run.sample_token_limit,
-            "cost_limit": manifest.run.sample_cost_limit_usd or None,
-            "max_samples": 1,
-            "max_tasks": len(manifest.models),
-            "log_model_api": manifest.run.log_model_api,
-        }
-        if any(eval_config.get(key) != value for key, value in expected_eval_config.items()):
-            return False
-        logged_roles = log.eval.model_roles or {}
-        if set(logged_roles) != set(manifest.model_roles):
-            return False
-        for role, expected_role in manifest.model_roles.items():
-            actual_role = logged_roles[role]
-            if (
-                actual_role.model != expected_role.model
-                or actual_role.args != expected_role.inspect_model_args()
-                or not official_base_url(expected_role, actual_role.base_url)
-            ):
-                return False
-            expected_role_config = effective_generate_config(expected_role, manifest)
-            if not generate_config_matches(actual_role.config, expected_role_config):
-                return False
-        expected_count = manifest.run.expected_samples_per_model * manifest.run.epochs
-        current_paired_identity = paired_dataset_identity(log)
-        if paired_identity is None:
-            paired_identity = current_paired_identity
-        elif current_paired_identity != paired_identity:
-            return False
-        if (
-            log.eval.dataset.samples != manifest.run.expected_samples_per_model
-            or not log.eval.dataset.shuffled
-            or len(log.eval.dataset.sample_ids or []) != manifest.run.expected_samples_per_model
-            or log.results is None
-            or log.results.completed_samples != expected_count
-            or log.samples is None
-            or len(log.samples) != expected_count
-            or not diselect_score_contract_matches(log, manifest)
-            or any(sample.model_fallbacks for sample in log.samples)
-            or (
-                manifest.task.kind in {"canary", "diselect"}
-                and any(not sample_target_output_matches(sample) for sample in log.samples)
-            )
-            or any(
-                not sample_model_inputs_match(sample, condition, manifest) for sample in log.samples
-            )
-            or any(
-                not sample_routes_match(
-                    sample,
-                    condition,
-                    manifest.model_roles,
-                    target_roles=({None, "persuader"} if manifest.task.kind == "ape" else {None}),
-                    required_roles=required_sample_roles(sample, manifest),
-                    manifest=manifest,
-                )
-                for sample in log.samples
-            )
-            or any(
-                not retry_events_routes_match(
-                    retry,
-                    condition,
-                    manifest.model_roles,
-                    target_roles=({None, "persuader"} if manifest.task.kind == "ape" else {None}),
-                    manifest=manifest,
-                )
-                for sample in log.samples
-                for retry in (sample.error_retries or [])
-            )
-        ):
-            return False
-    return seen_conditions == {condition.condition_id for condition in ordered_conditions}
+    return validate_persisted_execution(
+        manifest,
+        log_dir,
+        manifest_hash,
+        provenance,
+        execution_id=execution_id,
+        route_receipt_sha256=route_receipt_sha256,
+    )
 
 
 def main() -> None:
