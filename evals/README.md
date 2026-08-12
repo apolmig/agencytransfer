@@ -58,43 +58,92 @@ uv run atb-eval \
   --log-dir /controlled/atb/logs/diselect-wave1a
 ```
 
-Execution of a later frozen paid manifest also requires `--execute
---allow-paid`. The manifest sets per-sample token and recorded-cost stops plus a
-conservative planned run envelope over models and epochs. Provider-SDK, sample,
-and task retries are all disabled for confirmatory runs. Inspect checks the
-per-sample stops after model responses; the planned run envelope is not a
-provider billing hard cap. The runner rejects a completed eval set whose
-cumulative recorded usage exceeds that envelope. Provider invoices can still
-differ after ambiguous transport failures.
+Execution of a frozen paid manifest also requires an owner-only external
+execution permit in addition to `--execute --allow-paid`. The manifest sets
+per-sample token and recorded-cost stops plus a conservative planned run
+envelope over models and epochs. Provider-SDK, sample, and task retries are all
+disabled for confirmatory runs. Inspect checks the per-sample stops after model
+responses; the planned run envelope is not a provider billing hard cap. The
+runner rejects a completed eval set whose cumulative recorded usage exceeds
+that envelope. Provider invoices can still differ after ambiguous transport
+failures.
 
 The primary outcome is the native four-class DisElect response label. Optional
 actionability is a separate exploratory instrument. Personalisation, pressure,
 factuality, persuasion efficacy, and agency transfer are not inferred from
 DisElect.
 
-### Paid route preflight (draft)
+### Paid route preflight (frozen, not yet executed)
 
 `diselect-route-preflight-v0.1.json` is a transport canary, not a scientific
-run. It schedules one benign control against the two exact DeepSeek V4 Flash
-aliases, pins both to DeepInfra/fp4, and uses the pinned Gemini grader route.
+run. It schedules one benign control against the two invocable DeepSeek V4 Flash
+IDs, binds each ID to its permanent canonical slug, pins both to DeepInfra/fp4,
+and pins the Gemini grader to the ZDR-eligible Google Vertex endpoint.
 It has zero harmful items, one epoch, no retries, one connection, a local
 USD 0.02 per-sample stop, and a USD 0.04 total envelope. It is ineligible for
 public aggregation and makes no safety or comparative-performance claim.
 
-The draft cannot execute until a fresh OpenRouter endpoint inventory is
-committed for every condition, its hashes and exact endpoint fields are added
-to the manifest, and the manifest is frozen. A controlled execution must also
-use a rotated inference-only key and an independent provider/workspace hard cap
-of USD 0.10; the Inspect envelope is a post-response safeguard, not a billing
-guarantee.
+The manifest is frozen against a credential-free capture of OpenRouter's model,
+endpoint, and ZDR inventories, including content-addressed raw provider
+responses. Reproduce a fresh candidate capture in a new directory with:
+
+```bash
+uv run python scripts/capture_openrouter_routes.py \
+  --output-dir /controlled/atb/route-capture
+```
+
+A controlled execution must use a rotated inference-only key with a lifetime
+per-key cap of USD 0.04 configured with `include_byok_in_limit=true`. The runner
+verifies that cap through `GET /api/v1/key`, requires an authorization denial
+from the management-only key-list API, rejects a management key on the
+evaluation host, and repeats the public route capture immediately before
+spending. Any canonical-ID, route, ZDR, supported-parameter, reasoning-effort,
+completion-limit, token-price, or fixed-request-price drift blocks the run. The
+complete fresh public capture is retained with owner-only permissions beside
+the Inspect logs; a content hash of its receipt is embedded in every log. The
+Inspect envelope remains a post-response safeguard, not a billing guarantee.
+
+The external permit is a mode-`0600` JSON file outside the repository. It records
+the operator's deliberate acknowledgement and binds it to the exact protocol,
+canonical manifest hash, clean Git commit, and maximum USD 0.04 run envelope:
+
+```json
+{
+  "schema_version": "atb-paid-execution-permit-v0.1",
+  "protocol_id": "atb-diselect-route-preflight-v0.1",
+  "manifest_sha256": "<canonical manifest SHA-256>",
+  "code_commit": "<40-character merged commit>",
+  "acknowledged_by": "<operator identity>",
+  "acknowledged_at": "<UTC timestamp>",
+  "expires_at": "<later UTC timestamp>",
+  "maximum_cost_usd": 0.04
+}
+```
+
+This file is a local execution interlock, not a cryptographic signature or
+evidence of independent review. Independent authorization would require a
+separately issued signed token or an external approval service.
+
+On the controlled host, with no proxy variables and no management key present:
+
+```bash
+uv run atb-eval \
+  --manifest evals/manifests/diselect-route-preflight-v0.1.json \
+  --source-dir /controlled/election-ai-safety \
+  --log-dir /controlled/atb/logs/diselect-route-preflight \
+  --execute --allow-paid \
+  --paid-permit /controlled/atb/permits/route-preflight.json
+```
 
 Inspect requests opt in to official OpenRouter Router Metadata. Postflight
-requires the requested alias, canonical response model, uniquely selected
-provider endpoint, first successful attempt, non-BYOK route, and absence of
-pipeline transformations to match the frozen evidence. OpenRouter's optional
-`attempts` field and unknown additive fields are tolerated, but any fields that
-are present must be internally consistent. Raw OpenRouter `usage.cost` and the
-independent Inspect price estimate must each remain under the envelope.
+requires the requested invocable ID, identical response model ID, uniquely
+selected provider endpoint, first successful attempt, non-BYOK route, and
+absence of pipeline transformations to match the frozen evidence. The permanent
+canonical slug is bound separately by the committed public inventory capture.
+OpenRouter's optional `attempts` field and unknown additive fields are tolerated,
+but any fields that are present must be internally consistent. Raw OpenRouter
+`usage.cost` and the independent Inspect price estimate must each remain under
+the envelope.
 
 Validate the bounded plan without network calls:
 
