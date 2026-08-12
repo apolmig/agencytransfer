@@ -562,11 +562,30 @@ def sample_target_output_matches(sample: Any, target_roles: set[str | None] | No
     if event_output is None or sample_output is None:
         return False
 
-    def serialise(output: Any) -> str:
+    def serialise(output: Any) -> str | None:
         payload = output.model_dump(mode="json") if hasattr(output, "model_dump") else vars(output)
+
+        def contains_unresolved_attachment(value: Any) -> bool:
+            if isinstance(value, str):
+                return value.startswith("attachment://")
+            if isinstance(value, dict):
+                return any(contains_unresolved_attachment(item) for item in value.values())
+            if isinstance(value, (list, tuple)):
+                return any(contains_unresolved_attachment(item) for item in value)
+            return False
+
+        if contains_unresolved_attachment(payload):
+            return None
         return json.dumps(payload, sort_keys=True, separators=(",", ":"), default=str)
 
-    return serialise(event_output) == serialise(sample_output)
+    serialised_event = serialise(event_output)
+    return serialised_event is not None and serialised_event == serialise(sample_output)
+
+
+def read_postflight_log(location: str | Path) -> Any:
+    """Read persisted evidence with all Inspect attachment references resolved."""
+
+    return read_eval_log(location, resolve_attachments=True)
 
 
 def _resolved_text(value: Any, sample: Any) -> str | None:
@@ -719,7 +738,7 @@ def openrouter_route_metadata_matches(response: Any, condition: ModelCondition) 
     """Bind a successful OpenRouter response to its invocable model ID and endpoint."""
 
     revision = condition.revision
-    if not isinstance(response, dict) or revision is None:
+    if not isinstance(response, dict) or revision is None or not revision.canonical_slug:
         return False
     if response.get("model") != revision.resolved_model:
         return False
@@ -751,7 +770,7 @@ def openrouter_route_metadata_matches(response: Any, condition: ModelCondition) 
         return False
     if (
         selected[0].get("provider") != revision.provider_name
-        or selected[0].get("model") != revision.resolved_model
+        or selected[0].get("model") != revision.canonical_slug
     ):
         return False
 
@@ -766,7 +785,7 @@ def openrouter_route_metadata_matches(response: Any, condition: ModelCondition) 
     return (
         isinstance(attempt, dict)
         and attempt.get("provider") == revision.provider_name
-        and attempt.get("model") == revision.resolved_model
+        and attempt.get("model") == revision.canonical_slug
         and type(attempt.get("status")) is int
         and attempt.get("status") == 200
     )
@@ -1333,115 +1352,65 @@ def preflight(
     return manifest, controlled_log_dir, manifest_hash
 
 
-def execute(
+def validate_persisted_execution(
     manifest: ProtocolManifest,
-    task: Task,
     log_dir: Path,
     manifest_hash: str,
     provenance: dict[str, str | bool],
-    execution_id: str | None = None,
+    *,
+    execution_id: str,
     route_receipt_sha256: str | None = None,
 ) -> bool:
-    roles = {
-        role: build_model(condition, manifest.run.max_connections, manifest.run.max_retries)
-        for role, condition in manifest.model_roles.items()
-    }
+    """Apply the complete execution postflight to persisted Inspect evidence.
+
+    This is deliberately shared by live execution and offline replay. It makes
+    no model calls and accepts only the execution provenance embedded in the
+    original logs, not the provenance of the checkout performing a later replay.
+    """
+
     ordered_conditions = sorted(
         manifest.models,
         key=lambda condition: sha256(
             f"{manifest.run.seed}:{condition.condition_id}".encode()
         ).hexdigest(),
     )
+    if not recorded_execution_usage_within_envelope(
+        manifest, log_dir, execution_id, ordered_conditions
+    ):
+        return False
     fingerprint = run_fingerprint(manifest_hash, provenance)
     eval_set_id = f"{manifest.protocol_id}-{fingerprint}"
-    execution_condition_map = condition_map(manifest)
-    runtime_packages = runtime_package_versions(manifest)
-    execution_id = execution_id or secrets.token_hex(16)
-    metadata = {
+    metadata: dict[str, Any] = {
         "atb_protocol_id": manifest.protocol_id,
         "atb_manifest_sha256": manifest_hash,
-        "atb_condition_map": execution_condition_map,
+        "atb_condition_map": condition_map(manifest),
         "atb_schedule": PAIRED_SCHEDULE,
         "atb_retry_cleanup": False,
-        "atb_runtime_packages": runtime_packages,
+        "atb_runtime_packages": expected_runtime_packages(manifest),
         "atb_code_commit": provenance["code_commit"],
         "atb_code_dirty": provenance["code_dirty"],
         "atb_environment_lock_sha256": provenance["environment_lock_sha256"],
         "atb_execution_id": execution_id,
         "release_tier": manifest.release.raw_logs.value,
     }
-    if manifest.is_paid and any(
+    paid_openrouter = manifest.is_paid and any(
         condition.model.startswith("openrouter/")
         for condition in [*manifest.models, *manifest.model_roles.values()]
-    ):
-        if route_receipt_sha256 is None or len(route_receipt_sha256) != 64:
-            raise ValueError("paid OpenRouter execution requires a fresh route receipt")
-        metadata["atb_openrouter_route_receipt_sha256"] = route_receipt_sha256
-    models = [
-        build_model(condition, manifest.run.max_connections, manifest.run.max_retries)
-        for condition in ordered_conditions
-    ]
-    previous_umask = os.umask(0o077)
-    eval_error: Exception | None = None
-    try:
-        try:
-            success, logs = eval_set(
-                tasks=[task],
-                model=models,
-                model_roles=roles or None,
-                log_dir=str(log_dir),
-                log_format="eval",
-                log_samples=True,
-                log_model_api=manifest.run.log_model_api,
-                log_refusals=True,
-                retry_attempts=manifest.run.retry_attempts,
-                retry_cleanup=False,
-                retry_immediate=manifest.run.retry_attempts > 0,
-                retry_on_error=manifest.run.retry_on_error,
-                epochs=manifest.run.epochs,
-                sample_shuffle=manifest.run.sample_shuffle,
-                fail_on_error=manifest.run.fail_on_error,
-                token_limit=manifest.run.sample_token_limit,
-                cost_limit=manifest.run.sample_cost_limit_usd or None,
-                model_cost_config=model_cost_config(manifest),
-                max_samples=1,
-                max_tasks=len(models),
-                seed=manifest.run.seed,
-                max_connections=manifest.run.max_connections,
-                max_retries=manifest.run.max_retries,
-                eval_set_id=eval_set_id,
-                metadata=metadata,
-            )
-        except Exception as exc:  # Persisted paid evidence must still be audited.
-            eval_error = exc
-            success, logs = False, []
-    finally:
-        os.umask(previous_umask)
-    ensure_private_permissions(log_dir, create=False)
-    usage_audit_passed = recorded_execution_usage_within_envelope(
-        manifest, log_dir, execution_id, ordered_conditions
     )
-    if eval_error is not None:
-        if not usage_audit_passed:
-            raise RuntimeError(
-                "Inspect eval raised and persisted usage could not be verified"
-            ) from eval_error
-        raise RuntimeError("Inspect eval raised after persisted usage was audited") from eval_error
-    if not usage_audit_passed:
+    if paid_openrouter:
+        if route_receipt_sha256 is None or len(route_receipt_sha256) != 64:
+            return False
+        metadata["atb_openrouter_route_receipt_sha256"] = route_receipt_sha256
+
+    evidence_paths = sorted(log_dir.rglob("*.eval"))
+    if len(evidence_paths) != len(ordered_conditions):
         return False
-    if not success or len(logs) != len(ordered_conditions):
-        return False
-    evidence_logs = [read_eval_log(path) for path in sorted(log_dir.rglob("*.eval"))]
+    evidence_logs = [read_postflight_log(path) for path in evidence_paths]
     if task_retry_chain_failures(evidence_logs, manifest):
         return False
     seen_conditions: set[str] = set()
     paired_identity: tuple[tuple[str, ...], tuple[tuple[str, int, str], ...]] | None = None
-    for returned_log in logs:
-        log = (
-            read_eval_log(returned_log.location)
-            if returned_log.samples is None and returned_log.location
-            else returned_log
-        )
+    for log in evidence_logs:
         matching_conditions = [
             condition
             for condition in ordered_conditions
@@ -1555,6 +1524,114 @@ def execute(
         ):
             return False
     return seen_conditions == {condition.condition_id for condition in ordered_conditions}
+
+
+def execute(
+    manifest: ProtocolManifest,
+    task: Task,
+    log_dir: Path,
+    manifest_hash: str,
+    provenance: dict[str, str | bool],
+    execution_id: str | None = None,
+    route_receipt_sha256: str | None = None,
+) -> bool:
+    roles = {
+        role: build_model(condition, manifest.run.max_connections, manifest.run.max_retries)
+        for role, condition in manifest.model_roles.items()
+    }
+    ordered_conditions = sorted(
+        manifest.models,
+        key=lambda condition: sha256(
+            f"{manifest.run.seed}:{condition.condition_id}".encode()
+        ).hexdigest(),
+    )
+    fingerprint = run_fingerprint(manifest_hash, provenance)
+    eval_set_id = f"{manifest.protocol_id}-{fingerprint}"
+    execution_condition_map = condition_map(manifest)
+    runtime_packages = runtime_package_versions(manifest)
+    execution_id = execution_id or secrets.token_hex(16)
+    metadata = {
+        "atb_protocol_id": manifest.protocol_id,
+        "atb_manifest_sha256": manifest_hash,
+        "atb_condition_map": execution_condition_map,
+        "atb_schedule": PAIRED_SCHEDULE,
+        "atb_retry_cleanup": False,
+        "atb_runtime_packages": runtime_packages,
+        "atb_code_commit": provenance["code_commit"],
+        "atb_code_dirty": provenance["code_dirty"],
+        "atb_environment_lock_sha256": provenance["environment_lock_sha256"],
+        "atb_execution_id": execution_id,
+        "release_tier": manifest.release.raw_logs.value,
+    }
+    if manifest.is_paid and any(
+        condition.model.startswith("openrouter/")
+        for condition in [*manifest.models, *manifest.model_roles.values()]
+    ):
+        if route_receipt_sha256 is None or len(route_receipt_sha256) != 64:
+            raise ValueError("paid OpenRouter execution requires a fresh route receipt")
+        metadata["atb_openrouter_route_receipt_sha256"] = route_receipt_sha256
+    models = [
+        build_model(condition, manifest.run.max_connections, manifest.run.max_retries)
+        for condition in ordered_conditions
+    ]
+    previous_umask = os.umask(0o077)
+    eval_error: Exception | None = None
+    try:
+        try:
+            success, logs = eval_set(
+                tasks=[task],
+                model=models,
+                model_roles=roles or None,
+                log_dir=str(log_dir),
+                log_format="eval",
+                log_samples=True,
+                log_model_api=manifest.run.log_model_api,
+                log_refusals=True,
+                retry_attempts=manifest.run.retry_attempts,
+                retry_cleanup=False,
+                retry_immediate=manifest.run.retry_attempts > 0,
+                retry_on_error=manifest.run.retry_on_error,
+                epochs=manifest.run.epochs,
+                sample_shuffle=manifest.run.sample_shuffle,
+                fail_on_error=manifest.run.fail_on_error,
+                token_limit=manifest.run.sample_token_limit,
+                cost_limit=manifest.run.sample_cost_limit_usd or None,
+                model_cost_config=model_cost_config(manifest),
+                max_samples=1,
+                max_tasks=len(models),
+                seed=manifest.run.seed,
+                max_connections=manifest.run.max_connections,
+                max_retries=manifest.run.max_retries,
+                eval_set_id=eval_set_id,
+                metadata=metadata,
+            )
+        except Exception as exc:  # Persisted paid evidence must still be audited.
+            eval_error = exc
+            success, logs = False, []
+    finally:
+        os.umask(previous_umask)
+    ensure_private_permissions(log_dir, create=False)
+    usage_audit_passed = recorded_execution_usage_within_envelope(
+        manifest, log_dir, execution_id, ordered_conditions
+    )
+    if eval_error is not None:
+        if not usage_audit_passed:
+            raise RuntimeError(
+                "Inspect eval raised and persisted usage could not be verified"
+            ) from eval_error
+        raise RuntimeError("Inspect eval raised after persisted usage was audited") from eval_error
+    if not usage_audit_passed:
+        return False
+    if not success or len(logs) != len(ordered_conditions):
+        return False
+    return validate_persisted_execution(
+        manifest,
+        log_dir,
+        manifest_hash,
+        provenance,
+        execution_id=execution_id,
+        route_receipt_sha256=route_receipt_sha256,
+    )
 
 
 def main() -> None:

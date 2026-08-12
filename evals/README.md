@@ -104,6 +104,48 @@ is immutable. Its controlled evidence is retained as GitHub Actions run
 artifact retention is operationally limited and must not be described as
 permanent archival.
 
+The frozen v0.3 canary was then executed once in GitHub Actions run
+`31622800735`. Inspect completed and scored both benign samples as `comply`,
+with no instrument failures, 990 tokens across target and grader calls, and an
+exact OpenRouter billed total of USD 0.001067362. Scout's deterministic offline
+QA scanned both transcripts with zero errors and zero empty-assistant findings.
+The paid step nevertheless reported failure because the ATB postflight compared
+Inspect attachment references with their resolved values and compared the
+selected OpenRouter endpoint snapshot with the invocable alias. Both were
+deterministic verifier defects: the persisted outputs and routes matched after
+using Inspect's attachment resolver and the manifest's frozen canonical slugs.
+The original workflow failure remains part of the audit trail. A content-bound
+offline receipt may record corrected transport-postflight acceptance, but this
+benign canary remains ineligible for a scientific or comparative model claim.
+
+Revalidate a retained artifact without model calls after checking out the exact
+clean validation commit:
+
+```bash
+uv run --frozen atb-offline-revalidate \
+  --manifest evals/manifests/diselect-route-preflight-v0.3.json \
+  --artifact-archive /controlled/atb/canary-31622800735.zip \
+  --log-root logs \
+  --execution-commit 62249de148b1e33adc46a85ca4372d472b129d19 \
+  --validation-commit "$(git rev-parse HEAD)" \
+  --artifact-sha256 efc1305cc0df2309c21baab757eb177fae14e1a499dbb5a4095c0597ed870e7f \
+  --workflow-run-id 31622800735 \
+  --output /controlled/atb/receipts/canary-31622800735.json
+```
+
+The revalidator uses the same complete persisted-execution predicate as the live
+runner. Its offline boundary first hashes the exact regular, single-link ZIP,
+extracts only a bounded safe inventory, verifies the complete checksum manifest,
+and scans the whole artifact locally. It then resolves Inspect attachments
+fail-closed, reconciles Inspect event usage with OpenRouter billing, verifies the
+exact route-capture inventory, and writes only hashes, provenance, usage and
+acceptance state. The original workflow outcome is derived from the checked
+artifact receipt; it is not supplied by the operator. The revalidator never
+emits prompts, responses or provider bodies. The Inspect artifact SHA-256 is
+`efc1305cc0df2309c21baab757eb177fae14e1a499dbb5a4095c0597ed870e7f`;
+the associated Scout artifact SHA-256 is
+`da8532d85c0928b3873cde8ef2b78e902a7e8cb63edbc24bb0c2da2496479f29`.
+
 The manifest is frozen against a credential-free capture of OpenRouter's model,
 endpoint, and ZDR inventories, including content-addressed raw provider
 responses. Reproduce a fresh candidate capture in a new directory with:
@@ -163,10 +205,10 @@ uv run atb-eval \
 ```
 
 Inspect requests opt in to official OpenRouter Router Metadata. Postflight
-requires the requested invocable ID, identical response model ID, uniquely
-selected provider endpoint, first successful attempt, non-BYOK route, and
-absence of pipeline transformations to match the frozen evidence. The permanent
-canonical slug is bound separately by the committed public inventory capture.
+requires the requested invocable ID and top-level response model ID to match,
+the uniquely selected endpoint and any reported attempt to match the permanent
+canonical slug frozen in the inventory, the first attempt to succeed, a non-BYOK
+route, and absence of pipeline transformations.
 OpenRouter's optional `attempts` field and unknown additive fields are tolerated,
 but any fields that are present must be internally consistent. Raw OpenRouter
 `usage.cost` and Inspect's locally calculated price estimate must each remain under

@@ -32,6 +32,7 @@ from atb_eval.runner import (
     expected_runtime_packages,
     model_cost_config,
     openrouter_route_metadata_matches,
+    read_postflight_log,
     recorded_openrouter_billed_costs,
     repository_root,
     request_parameters_match,
@@ -42,7 +43,18 @@ from atb_eval.runner import (
     sample_target_output_matches,
     verify_task_identity,
 )
-from inspect_ai.model import ChatMessageUser, GenerateConfig, get_model
+from inspect_ai.event import ModelEvent
+from inspect_ai.log import EvalConfig, EvalDataset, EvalLog, EvalSample, EvalSpec, write_eval_log
+from inspect_ai.model import (
+    ChatCompletionChoice,
+    ChatMessageAssistant,
+    ChatMessageUser,
+    ContentReasoning,
+    ContentText,
+    GenerateConfig,
+    ModelOutput,
+    get_model,
+)
 from inspect_ai.scorer import Score
 from pydantic import ValidationError
 
@@ -359,6 +371,7 @@ def test_route_check_uses_served_model_and_openrouter_provider() -> None:
             "route": RouteSpec(provider_only=["pinned-provider"]).model_dump(),
             "revision": {
                 "resolved_model": "vendor/model-2025-01-01",
+                "canonical_slug": "vendor/model-2025-01-01-canonical",
                 "inventory_model_id": "vendor/model-2025-01-01",
                 "endpoint_model_id": "vendor/model-2025-01-01",
                 "endpoint_name": "Pinned Provider | vendor/model-2025-01-01",
@@ -393,7 +406,7 @@ def test_route_check_uses_served_model_and_openrouter_provider() -> None:
                     "available": [
                         {
                             "provider": "Pinned Provider",
-                            "model": "vendor/model-2025-01-01",
+                            "model": "vendor/model-2025-01-01-canonical",
                             "selected": True,
                         }
                     ],
@@ -401,7 +414,7 @@ def test_route_check_uses_served_model_and_openrouter_provider() -> None:
                 "attempts": [
                     {
                         "provider": "Pinned Provider",
-                        "model": "vendor/model-2025-01-01",
+                        "model": "vendor/model-2025-01-01-canonical",
                         "status": 200,
                     }
                 ],
@@ -412,6 +425,18 @@ def test_route_check_uses_served_model_and_openrouter_provider() -> None:
     assert condition.inspect_model_args()["provider"]["only"] == ["pinned-provider"]
     assert "order" not in condition.inspect_model_args()["provider"]
     assert sample_routes_match(sample, condition)
+    event.call.response["openrouter_metadata"]["endpoints"]["available"][0]["model"] = (
+        "vendor/model-2025-01-01"
+    )
+    assert not sample_routes_match(sample, condition)
+    event.call.response["openrouter_metadata"]["endpoints"]["available"][0]["model"] = (
+        "vendor/model-2025-01-01-canonical"
+    )
+    event.call.response["openrouter_metadata"]["attempts"][0]["model"] = "vendor/model-2025-01-01"
+    assert not sample_routes_match(sample, condition)
+    event.call.response["openrouter_metadata"]["attempts"][0]["model"] = (
+        "vendor/model-2025-01-01-canonical"
+    )
     event.call.response["openrouter_metadata"]["attempt"] = 2
     assert not sample_routes_match(sample, condition)
 
@@ -496,7 +521,7 @@ def test_openrouter_adapter_preserves_additive_router_metadata(
                         "available": [
                             {
                                 "provider": "DeepInfra",
-                                "model": "deepseek/deepseek-v4-flash",
+                                "model": "deepseek/deepseek-v4-flash-20260423",
                                 "selected": True,
                                 "future_additive_field": "accepted",
                             }
@@ -505,7 +530,7 @@ def test_openrouter_adapter_preserves_additive_router_metadata(
                     "attempts": [
                         {
                             "provider": "DeepInfra",
-                            "model": "deepseek/deepseek-v4-flash",
+                            "model": "deepseek/deepseek-v4-flash-20260423",
                             "status": 200,
                             "future_additive_field": "accepted",
                         }
@@ -547,6 +572,19 @@ def test_openrouter_adapter_preserves_additive_router_metadata(
     assert output.model == "deepseek/deepseek-v4-flash"
     response = call.response
     assert openrouter_route_metadata_matches(response, condition)
+    response["model"] = "deepseek/deepseek-v4-flash-20260423"
+    assert not openrouter_route_metadata_matches(response, condition)
+    response["model"] = "deepseek/deepseek-v4-flash"
+    response["openrouter_metadata"]["endpoints"]["available"][0]["model"] = (
+        "deepseek/deepseek-v4-flash"
+    )
+    assert not openrouter_route_metadata_matches(response, condition)
+    response["openrouter_metadata"]["endpoints"]["available"][0]["model"] = (
+        "deepseek/deepseek-v4-flash-20260423"
+    )
+    response["openrouter_metadata"]["attempts"][0]["model"] = "deepseek/deepseek-v4-flash"
+    assert not openrouter_route_metadata_matches(response, condition)
+    response["openrouter_metadata"]["attempts"][0]["model"] = "deepseek/deepseek-v4-flash-20260423"
     response["openrouter_metadata"]["attempts"][0]["status"] = 429
     assert not openrouter_route_metadata_matches(response, condition)
     response["openrouter_metadata"]["attempts"][0]["status"] = 200
@@ -623,6 +661,72 @@ def test_sample_output_is_bound_to_the_target_model_event() -> None:
     assert sample_target_output_matches(sample)
     sample.output.completion = "invented"
     assert not sample_target_output_matches(sample)
+
+
+def test_postflight_resolves_nested_output_attachments_fail_closed(tmp_path: Path) -> None:
+    def output(reasoning: str) -> ModelOutput:
+        return ModelOutput(
+            model="vendor/model-2025-01-01",
+            completion="answer",
+            choices=[
+                ChatCompletionChoice(
+                    message=ChatMessageAssistant(
+                        id="fixed-message-id",
+                        content=[
+                            ContentReasoning(reasoning=reasoning),
+                            ContentText(text="answer"),
+                        ],
+                    ),
+                    stop_reason="stop",
+                )
+            ],
+        )
+
+    def write_fixture(
+        path: Path,
+        attachments: dict[str, str],
+        sample_reasoning: str = "private chain",
+    ) -> None:
+        event = ModelEvent(
+            model="openrouter/vendor/model-2025-01-01",
+            role=None,
+            input=[],
+            tools=[],
+            tool_choice="none",
+            config=GenerateConfig(),
+            output=output("attachment://reasoning"),
+        )
+        sample = EvalSample(
+            id="fixture",
+            epoch=1,
+            input="request",
+            target="",
+            events=[event],
+            output=output(sample_reasoning),
+            attachments=attachments,
+        )
+        spec = EvalSpec(
+            created="2026-08-12T00:00:00Z",
+            task="fixture",
+            dataset=EvalDataset(samples=1),
+            model="openrouter/vendor/model-2025-01-01",
+            config=EvalConfig(),
+        )
+        write_eval_log(EvalLog(status="success", eval=spec, samples=[sample]), path)
+
+    valid_path = tmp_path / "valid.eval"
+    write_fixture(valid_path, {"reasoning": "private chain"})
+    valid_sample = read_postflight_log(valid_path).samples[0]
+    assert valid_sample.attachments == {}
+    assert sample_target_output_matches(valid_sample)
+
+    missing_path = tmp_path / "missing.eval"
+    write_fixture(missing_path, {}, sample_reasoning="attachment://reasoning")
+    assert not sample_target_output_matches(read_postflight_log(missing_path).samples[0])
+
+    tampered_path = tmp_path / "tampered.eval"
+    write_fixture(tampered_path, {"reasoning": "tampered chain"})
+    assert not sample_target_output_matches(read_postflight_log(tampered_path).samples[0])
 
 
 def test_diselect_model_inputs_are_bound_to_task_and_grader_prompts() -> None:
