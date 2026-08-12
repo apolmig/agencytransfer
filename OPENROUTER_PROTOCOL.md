@@ -53,6 +53,11 @@ Before each wave, archive the following time-stamped material:
 
 The freeze record has a content hash and is retained with the private run
 manifest. A sanitised version without credentials or unsafe content is published.
+For an OpenRouter alias, the evidence binds the alias in the endpoint-inventory
+URL to the inventory's exact `data.id`, then binds the selected endpoint's
+`model_id`, provider name, provider tag, quantisation, supported parameters, and
+prices from that same endpoint record. The endpoint display name is retained
+for auditability but is not used as an identity key.
 
 ## Exact model resolution
 
@@ -196,6 +201,19 @@ more convenient prompt or attempt. It cannot supply a public aggregate; a new
 execution requires a new execution ID and the full preregistered schedule.
 
 ## Response and route validation
+
+Every OpenRouter request opts in to the official router telemetry with
+`X-OpenRouter-Metadata: enabled`. For a completed call, the logged request model
+must equal the frozen alias while `response.model`, the Inspect output model,
+and the uniquely selected metadata endpoint must equal the frozen canonical
+model. The metadata's requested alias, provider, first successful attempt,
+non-BYOK status, and empty transformation pipeline must also agree. The
+`attempts` array is optional; when present it must describe only the same
+successful endpoint. Unknown additive metadata fields are ignored.
+
+OpenRouter omits router metadata on cache replays. Because a replay cannot prove
+the current route, a completed paid call without router metadata fails route
+integrity rather than being accepted as a cache hit.
 
 For each attempt, record:
 

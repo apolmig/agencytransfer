@@ -78,18 +78,65 @@ class DatasetSpec(StrictModel):
     required_files: list[RequiredFile] = Field(default_factory=list)
 
 
+class RouteMaxPriceSpec(StrictModel):
+    """OpenRouter's per-million-token provider price ceiling."""
+
+    prompt: float = Field(gt=0)
+    completion: float = Field(gt=0)
+
+
 class RouteSpec(StrictModel):
     provider_only: list[str] = Field(default_factory=list)
     allow_fallbacks: bool = False
     require_parameters: bool = True
     data_collection: Literal["deny", "allow"] = "deny"
     zdr: bool = False
+    quantizations: list[str] = Field(default_factory=list)
+    max_price: RouteMaxPriceSpec | None = None
+
+    @field_validator("provider_only")
+    @classmethod
+    def valid_provider_slugs(cls, value: list[str]) -> list[str]:
+        if len(value) != len(set(value)):
+            raise ValueError("OpenRouter provider slugs must be unique")
+        if any(not re.fullmatch(r"[a-z0-9][a-z0-9._/-]{0,63}", item) for item in value):
+            raise ValueError("OpenRouter providers must use stable lowercase endpoint slugs")
+        return value
+
+    @field_validator("quantizations")
+    @classmethod
+    def valid_quantizations(cls, value: list[str]) -> list[str]:
+        if len(value) != len(set(value)):
+            raise ValueError("OpenRouter quantizations must be unique")
+        if any(not re.fullmatch(r"[a-z0-9][a-z0-9._-]{0,31}", item) for item in value):
+            raise ValueError("OpenRouter quantizations must use stable lowercase slugs")
+        return value
+
+
+class ModelCostSpec(StrictModel):
+    """Frozen Inspect cost inputs in USD per million tokens."""
+
+    input: float = Field(gt=0)
+    output: float = Field(gt=0)
+    input_cache_write: float = Field(ge=0)
+    input_cache_read: float = Field(ge=0)
 
 
 class ModelRevisionSpec(StrictModel):
     """Committed evidence that a paid model id resolved to a fixed snapshot."""
 
-    resolved_model: str = Field(min_length=1)
+    resolved_model: str = Field(pattern=r"^[a-zA-Z0-9][a-zA-Z0-9._:/-]{0,255}$")
+    inventory_model_id: str | None = Field(
+        default=None, pattern=r"^[a-zA-Z0-9][a-zA-Z0-9._:/-]{0,255}$"
+    )
+    endpoint_model_id: str | None = Field(
+        default=None, pattern=r"^[a-zA-Z0-9][a-zA-Z0-9._:/-]{0,255}$"
+    )
+    endpoint_name: str | None = Field(default=None, min_length=1)
+    provider_name: str | None = Field(default=None, min_length=1)
+    provider_tag: str | None = Field(default=None, pattern=r"^[a-z0-9][a-z0-9._/-]{0,63}$")
+    quantization: str | None = Field(default=None, pattern=r"^[a-z0-9][a-z0-9._-]{0,31}$")
+    supported_parameters: list[str] = Field(default_factory=list)
     observed_at: str = Field(pattern=r"^20\d{2}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$")
     source_url: str = Field(pattern=r"^https://")
     evidence_path: str = Field(pattern=r"^evals/model-revisions/[a-zA-Z0-9._/-]+\.json$")
@@ -103,6 +150,15 @@ class ModelRevisionSpec(StrictModel):
             raise ValueError("model revision evidence must be a repository-relative JSON path")
         return value
 
+    @field_validator("supported_parameters")
+    @classmethod
+    def stable_supported_parameters(cls, value: list[str]) -> list[str]:
+        if value != sorted(set(value)):
+            raise ValueError("supported parameters must be sorted and unique")
+        if any(not re.fullmatch(r"[a-z][a-z0-9_]{0,63}", item) for item in value):
+            raise ValueError("supported parameters must use stable API field names")
+        return value
+
 
 class ModelCondition(StrictModel):
     condition_id: str = Field(pattern=r"^[a-z0-9][a-z0-9._-]{0,127}$")
@@ -112,6 +168,7 @@ class ModelCondition(StrictModel):
     route: RouteSpec | None = None
     openai_api_mode: Literal["chat_completions"] | None = None
     revision: ModelRevisionSpec | None = None
+    pricing: ModelCostSpec | None = None
     model_args: dict[str, Any] = Field(default_factory=dict)
     generate_config: dict[str, Any] = Field(default_factory=dict)
 
@@ -170,8 +227,16 @@ class ModelCondition(StrictModel):
     @model_validator(mode="after")
     def validate_route(self) -> ModelCondition:
         if self.model.startswith("mockllm/"):
-            if self.api_key_env or self.route or self.openai_api_mode or self.revision:
-                raise ValueError("mock conditions cannot declare credentials or provider routing")
+            if (
+                self.api_key_env
+                or self.route
+                or self.openai_api_mode
+                or self.revision
+                or self.pricing
+            ):
+                raise ValueError(
+                    "mock conditions cannot declare credentials, routing, revisions, or pricing"
+                )
             return self
 
         if self.model.startswith("openrouter/"):
@@ -230,8 +295,12 @@ class ModelCondition(StrictModel):
                     "immutable conditions require an explicit provider snapshot or revision "
                     "identifier; mutable aliases are forbidden"
                 )
-            if self.revision is not None and self.revision.resolved_model != self.model:
-                raise ValueError("model revision evidence must resolve the exact declared model")
+            if (
+                self.revision is not None
+                and not self.model.startswith("openrouter/")
+                and self.revision.resolved_model != served_model
+            ):
+                raise ValueError("direct-provider revision evidence must match the served model id")
         return self
 
     def inspect_model_args(self) -> dict[str, Any]:
@@ -244,13 +313,18 @@ class ModelCondition(StrictModel):
         if self.openai_api_mode == "chat_completions":
             args["responses_api"] = False
         if self.route is not None:
-            args["provider"] = {
+            provider: dict[str, Any] = {
                 "only": self.route.provider_only,
                 "allow_fallbacks": self.route.allow_fallbacks,
                 "require_parameters": self.route.require_parameters,
                 "data_collection": self.route.data_collection,
                 "zdr": self.route.zdr,
             }
+            if self.route.quantizations:
+                provider["quantizations"] = self.route.quantizations
+            if self.route.max_price is not None:
+                provider["max_price"] = self.route.max_price.model_dump()
+            args["provider"] = provider
         return args
 
 
@@ -376,6 +450,9 @@ class ProtocolManifest(StrictModel):
                 "target conditions require unique model, route, and generation configurations"
             )
         if self.status is ProtocolStatus.FROZEN:
+            paid_conditions = [
+                condition for condition in conditions if not condition.model.startswith("mockllm/")
+            ]
             if not self.models:
                 raise ValueError("frozen protocols require at least one model condition")
             if not self.frozen_at:
@@ -393,6 +470,93 @@ class ProtocolManifest(StrictModel):
                 raise ValueError(
                     "frozen paid conditions require a committed model revision evidence record"
                 )
+            if any(condition.pricing is None for condition in paid_conditions):
+                raise ValueError("frozen paid conditions require explicit per-model pricing")
+            frozen_prices: dict[str, ModelCostSpec] = {}
+            for condition in conditions:
+                if condition.pricing is None:
+                    continue
+                previous = frozen_prices.setdefault(condition.model, condition.pricing)
+                if previous != condition.pricing:
+                    raise ValueError(
+                        "conditions sharing a model id must use identical Inspect pricing"
+                    )
+            for condition in conditions:
+                if not condition.model.startswith("openrouter/"):
+                    continue
+                route = condition.route
+                pricing = condition.pricing
+                revision = condition.revision
+                if (
+                    route is None
+                    or route.data_collection != "deny"
+                    or not route.zdr
+                    or route.max_price is None
+                    or len(route.quantizations) != 1
+                ):
+                    raise ValueError(
+                        "frozen OpenRouter conditions require data_collection=deny, ZDR, "
+                        "one quantization, and max_price"
+                    )
+                if pricing is None:
+                    raise ValueError("frozen OpenRouter conditions require Inspect pricing")
+                if (
+                    revision is None
+                    or not revision.inventory_model_id
+                    or not revision.endpoint_model_id
+                    or not revision.endpoint_name
+                    or not revision.provider_name
+                    or not revision.provider_tag
+                    or not revision.quantization
+                ):
+                    raise ValueError(
+                        "frozen OpenRouter conditions require endpoint resolution evidence"
+                    )
+                if revision.provider_tag != route.provider_only[0]:
+                    raise ValueError(
+                        "OpenRouter revision provider tag must match the frozen endpoint slug"
+                    )
+                if revision.quantization != route.quantizations[0]:
+                    raise ValueError("OpenRouter revision quantization must match the frozen route")
+                if revision.resolved_model.startswith("openrouter/"):
+                    raise ValueError(
+                        "OpenRouter resolved_model must be the provider response model id"
+                    )
+                requested_model = condition.model.removeprefix("openrouter/")
+                expected_source_url = (
+                    f"https://openrouter.ai/api/v1/models/{requested_model}/endpoints"
+                )
+                if revision.source_url != expected_source_url:
+                    raise ValueError(
+                        "OpenRouter endpoint evidence must use the requested snapshot inventory"
+                    )
+                if (
+                    revision.inventory_model_id != revision.resolved_model
+                    or revision.endpoint_model_id != revision.resolved_model
+                ):
+                    raise ValueError(
+                        "OpenRouter inventory and endpoint model ids must match resolved_model"
+                    )
+                required_parameters = set(condition.generate_config).difference(
+                    {"attempt_timeout", "timeout"}
+                )
+                if condition in self.models and self.task.kind == "diselect":
+                    required_parameters.update({"temperature", "max_tokens"})
+                elif condition in self.models and self.task.kind == "ape":
+                    required_parameters.add("temperature")
+                if not required_parameters.issubset(revision.supported_parameters):
+                    missing = sorted(required_parameters.difference(revision.supported_parameters))
+                    raise ValueError(
+                        "OpenRouter endpoint evidence lacks required parameters: "
+                        + ", ".join(missing)
+                    )
+                if (
+                    route.max_price.prompt < pricing.input
+                    or route.max_price.completion < pricing.output
+                ):
+                    raise ValueError(
+                        "OpenRouter max_price cannot be lower than the frozen Inspect pricing"
+                    )
             if self.task.kind == "diselect" and not self.dataset.selected_inventory_sha256:
                 raise ValueError(
                     "frozen DisElect protocols require a selected dataset inventory hash"
@@ -671,10 +835,26 @@ def verify_model_revision_evidence(manifest: ProtocolManifest, repo_root: Path) 
                 f"model revision evidence is not valid JSON for {condition.condition_id}"
             ) from exc
         expected_evidence = {
-            "resolved_model": condition.model,
+            "requested_model": condition.model.partition("/")[2],
+            "resolved_model": revision.resolved_model,
             "observed_at": revision.observed_at,
             "source_url": revision.source_url,
+            "pricing_usd_per_million": (
+                condition.pricing.model_dump() if condition.pricing is not None else None
+            ),
         }
+        if condition.model.startswith("openrouter/"):
+            expected_evidence.update(
+                {
+                    "inventory_model_id": revision.inventory_model_id,
+                    "endpoint_model_id": revision.endpoint_model_id,
+                    "endpoint_name": revision.endpoint_name,
+                    "provider_name": revision.provider_name,
+                    "provider_tag": revision.provider_tag,
+                    "quantization": revision.quantization,
+                    "supported_parameters": revision.supported_parameters,
+                }
+            )
         if not isinstance(evidence, dict) or any(
             evidence.get(key) != value for key, value in expected_evidence.items()
         ):

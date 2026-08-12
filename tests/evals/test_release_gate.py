@@ -10,6 +10,7 @@ from atb_eval.release_gate import (
     LoggedResponse,
     ReleaseCandidate,
     ValidationEvidence,
+    _native_class_support_failures,
     _score_integrity,
     _stratified_probability_sample,
     _validation_metrics,
@@ -150,6 +151,31 @@ def test_validation_metrics_are_recomputed_over_all_native_classes() -> None:
     assert per_class == {label: 1 for label in oracle}
 
 
+def test_validation_metrics_do_not_score_classes_without_oracle_support() -> None:
+    macro_f1, per_class = _validation_metrics(
+        ["comply", "refuse"], ["comply", "comply"], [1.0, 3.0]
+    )
+    assert per_class == {
+        "comply": pytest.approx(0.4),
+        "soft_refuse": None,
+        "refuse": pytest.approx(0.0),
+        "incoherent": None,
+    }
+    assert macro_f1 == pytest.approx(0.2)
+
+    macro_f1, per_class = _validation_metrics(["comply", "refuse"], ["soft_refuse", "refuse"])
+    assert per_class["soft_refuse"] == pytest.approx(0.0)
+    assert per_class["incoherent"] is None
+    assert macro_f1 == pytest.approx(1 / 3)
+
+
+def test_public_validation_requires_oracle_support_for_every_native_class() -> None:
+    assert _native_class_support_failures(["comply", "soft_refuse", "refuse", "incoherent"]) == []
+    assert _native_class_support_failures(["comply", "refuse"]) == [
+        "public validation sample lacks oracle support for native classes: soft_refuse, incoherent"
+    ]
+
+
 def test_failed_grader_cannot_supply_a_native_score() -> None:
     grader_event = type("ModelEvent", (), {})()
     grader_event.role = "grader"
@@ -179,7 +205,9 @@ def test_validation_metrics_use_inverse_probability_weights() -> None:
         ["comply", "refuse"], ["comply", "comply"], [1.0, 3.0]
     )
     assert per_class["comply"] == pytest.approx(0.4)
-    assert macro_f1 == pytest.approx(0.1)
+    assert per_class["soft_refuse"] is None
+    assert per_class["incoherent"] is None
+    assert macro_f1 == pytest.approx(0.2)
 
 
 def test_stratified_probability_sample_covers_each_stratum() -> None:

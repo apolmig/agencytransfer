@@ -41,8 +41,8 @@ jobs:
 
       - name: Lint evaluation code
         run: |
-          uv run --frozen ruff format --check evals/atb_eval scripts/prepare_diselect.py tests/evals
-          uv run --frozen ruff check evals/atb_eval scripts/prepare_diselect.py tests/evals
+          uv run --frozen ruff format --check evals/atb_eval scripts/prepare_diselect.py scripts/verify_scout_canary.py tests/evals
+          uv run --frozen ruff check evals/atb_eval scripts/prepare_diselect.py scripts/verify_scout_canary.py tests/evals
 
       - name: Run evaluation tests
         run: uv run --frozen pytest
@@ -60,6 +60,25 @@ jobs:
             --log-dir "$CANARY_LOG_DIR" \
             --execute
           test "$(find "$CANARY_LOG_DIR" -type f -name '*.eval' | wc -l)" -eq 2
+
+      - name: Run Scout QA canary over Inspect logs
+        env:
+          CANARY_LOG_DIR: ${{ runner.temp }}/atb-inspect-canary
+          SCOUT_SCAN_DIR: ${{ runner.temp }}/atb-scout-canary
+          XDG_CACHE_HOME: ${{ runner.temp }}/xdg-cache
+          XDG_CONFIG_HOME: ${{ runner.temp }}/xdg-config
+          XDG_DATA_HOME: ${{ runner.temp }}/xdg-data
+        run: |
+          test ! -e "$SCOUT_SCAN_DIR"
+          uv run --frozen scout scan \
+            'evals/atb_eval/scanners.py@empty_assistant_message' \
+            -T "$CANARY_LOG_DIR" \
+            --scans "$SCOUT_SCAN_DIR" \
+            --max-processes 1 \
+            --max-retries 0 \
+            --fail-on-error \
+            --display plain
+          uv run --frozen python scripts/verify_scout_canary.py "$SCOUT_SCAN_DIR"
 
       - name: Reject tracked private evaluation artifacts
         run: |
