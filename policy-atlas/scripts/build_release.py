@@ -144,6 +144,7 @@ def build_atlas(
     implementations: list[dict[str, str]],
     families: list[dict[str, str]],
     implementation_claims: list[dict[str, str]],
+    claim_types: dict[str, str],
     claim_statuses: dict[str, str],
     claim_sources: dict[str, set[str]],
     implementation_mechanisms: list[dict[str, str]],
@@ -155,6 +156,7 @@ def build_atlas(
     family_names = {row["control_family_id"]: row["family_name"] for row in families}
     claims_by_implementation: dict[str, set[str]] = defaultdict(set)
     effects_by_implementation: dict[str, set[str]] = defaultdict(set)
+    legal_claims_by_implementation: dict[str, set[str]] = defaultdict(set)
     sources_by_implementation: dict[str, set[str]] = defaultdict(set)
     mechanisms_by_implementation: dict[str, set[str]] = defaultdict(set)
     contexts_by_implementation: dict[str, set[str]] = defaultdict(set)
@@ -168,6 +170,8 @@ def build_atlas(
         sources_by_implementation[implementation_id].update(claim_sources.get(claim_id, set()))
         if relation["claim_role"] == "Direct effectiveness":
             effects_by_implementation[implementation_id].add(claim_id)
+        if claim_types.get(claim_id) == "Legal status / scope":
+            legal_claims_by_implementation[implementation_id].add(claim_id)
     for relation in implementation_mechanisms:
         mechanisms_by_implementation[relation["implementation_id"]].add(relation["mechanism_id"])
     for relation in implementation_contexts:
@@ -186,6 +190,12 @@ def build_atlas(
             for claim_id in effect_claims
             if claim_statuses.get(claim_id) == "claim_checked"
         }
+        legal_claims = legal_claims_by_implementation.get(implementation_id, set())
+        checked_legal_claims = {
+            claim_id
+            for claim_id in legal_claims
+            if claim_statuses.get(claim_id) == "claim_checked"
+        }
         reviewed_effects = [
             priority_reviews[claim_id]
             for claim_id in sorted(effect_claims)
@@ -198,9 +208,11 @@ def build_atlas(
         row["research_gap_ids"] = join_ids(gaps_by_implementation.get(implementation_id, set()))
         row["claim_ids"] = join_ids(claims_by_implementation.get(implementation_id, set()))
         row["effect_claim_ids"] = join_ids(effect_claims)
+        row["legal_claim_ids"] = join_ids(legal_claims)
         row["source_ids"] = join_ids(sources_by_implementation.get(implementation_id, set()))
         row["policy_package_ids"] = join_ids(packages_by_implementation.get(implementation_id, set()))
         row["effect_claim_checked"] = "true" if checked_effects else "false"
+        row["legal_claim_checked"] = "true" if checked_legal_claims else "false"
         row["effect_claim_reviewed"] = "true" if reviewed_effects else "false"
         row["priority_effect_review_outcomes"] = join_ids(
             [review["review_outcome"] for review in reviewed_effects]
@@ -210,6 +222,11 @@ def build_atlas(
         )
         if implementation["claim_class"] == "Established — component effect" and not checked_effects:
             row["publication_claim_class"] = "Provisional — effect evidence not claim-checked"
+        elif (
+            implementation["claim_class"] == "Established — legal status"
+            and not checked_legal_claims
+        ):
+            row["publication_claim_class"] = "Provisional — legal status not claim-checked"
         else:
             row["publication_claim_class"] = implementation["claim_class"]
         row["publication_status"] = "research_preview"
@@ -240,6 +257,7 @@ def main() -> None:
     claim_sources_raw = read_csv(SOURCE / "claim_sources.csv")
     claim_sources = deduplicate_claim_sources(claim_sources_raw)
     public_claims, claim_statuses, sources_by_claim = claim_verification(claims, claim_sources)
+    claim_types = {row["claim_id"]: row["claim_type"] for row in claims}
 
     public_sources = []
     for source in sources:
@@ -256,6 +274,7 @@ def main() -> None:
         implementations,
         families,
         implementation_claims,
+        claim_types,
         claim_statuses,
         sources_by_claim,
         implementation_mechanisms,
@@ -297,6 +316,12 @@ def main() -> None:
         for row in effect_claims
         if row["publication_verification_status"] == "claim_checked"
     ]
+    established_legal_implementations = [
+        row for row in atlas if row["claim_class"] == "Established — legal status"
+    ]
+    checked_legal_implementations = [
+        row for row in established_legal_implementations if row["legal_claim_checked"] == "true"
+    ]
     duplicate_edges_removed = len(claim_sources_raw) - len(claim_sources)
 
     files = sorted(
@@ -317,6 +342,7 @@ def main() -> None:
         "stable_release_blockers": [
             "98 of 114 source records require claim-by-claim checking",
             "no control-effectiveness claim has a checked empirical source",
+            "some established legal-status implementations lack a checked legal claim",
             "portfolio packages require independent review",
             "context entities require stable links to the Part 3 dataset",
         ],
@@ -336,6 +362,8 @@ def main() -> None:
             "duplicate_claim_source_edges_removed": duplicate_edges_removed,
             "control_effectiveness_claims": len(effect_claims),
             "control_effectiveness_claims_checked": len(checked_effect_claims),
+            "established_legal_status_implementations": len(established_legal_implementations),
+            "established_legal_status_implementations_checked": len(checked_legal_implementations),
             "priority_effect_claims_reviewed": len(priority_review_rows),
         },
         "claim_boundary": (

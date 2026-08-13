@@ -26,13 +26,18 @@ const LIST_COLUMNS = new Set([
   "research_gap_ids",
   "claim_ids",
   "effect_claim_ids",
+  "legal_claim_ids",
   "source_ids",
   "policy_package_ids",
   "priority_effect_review_outcomes",
   "priority_effect_publication_actions"
 ]);
 
-const BOOLEAN_COLUMNS = new Set(["effect_claim_checked", "effect_claim_reviewed"]);
+const BOOLEAN_COLUMNS = new Set([
+  "effect_claim_checked",
+  "effect_claim_reviewed",
+  "legal_claim_checked"
+]);
 const INTEGER_COLUMNS = new Set(["implementation_count"]);
 
 function walk(directory) {

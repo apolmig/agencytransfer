@@ -228,6 +228,11 @@ def main() -> int:
         bool(checked_effect_claims),
         "no control-effectiveness claim has a checked source; stable release is blocked",
     )
+    missing_legal_sources = [row["legal_id"] for row in legal if not row["source_id"].strip()]
+    check.warn(
+        not missing_legal_sources,
+        f"{len(missing_legal_sources)} legal instruments have no source_id: {missing_legal_sources}",
+    )
 
     release_manifest = RELEASE / "manifests" / "release.json"
     check.require(release_manifest.exists(), "generated release manifest missing; run build_release.py")
@@ -241,6 +246,11 @@ def main() -> int:
         check.require(
             manifest["counts"]["priority_effect_claims_reviewed"] == len(priority_reviews),
             "manifest priority-review count mismatch",
+        )
+        check.require(
+            manifest["counts"]["established_legal_status_implementations_checked"]
+            < manifest["counts"]["established_legal_status_implementations"],
+            "beta manifest must expose unchecked established legal-status implementations",
         )
         for relative, metadata in manifest["files"].items():
             path = RELEASE / relative

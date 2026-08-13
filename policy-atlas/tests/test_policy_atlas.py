@@ -58,6 +58,22 @@ class PolicyAtlasReleaseTest(unittest.TestCase):
             )
         )
 
+        established_legal_rows = [
+            row for row in atlas if row["claim_class"] == "Established — legal status"
+        ]
+        unchecked_legal_rows = [
+            row for row in established_legal_rows if row["legal_claim_checked"] == "false"
+        ]
+        self.assertTrue(established_legal_rows)
+        self.assertTrue(unchecked_legal_rows)
+        self.assertTrue(
+            all(
+                row["publication_claim_class"]
+                == "Provisional — legal status not claim-checked"
+                for row in unchecked_legal_rows
+            )
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

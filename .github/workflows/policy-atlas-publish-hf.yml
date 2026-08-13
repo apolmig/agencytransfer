@@ -7,15 +7,23 @@ on:
         description: "Type publish-beta to publish the research preview"
         required: true
         type: string
+  push:
+    branches: [main]
+    paths:
+      - "policy-atlas/**"
+      - ".github/workflows/policy-atlas-publish-hf.yml"
 
 permissions:
   contents: read
 
 jobs:
   publish:
-    if: ${{ inputs.confirm == 'publish-beta' }}
+    if: ${{ github.event_name == 'push' || inputs.confirm == 'publish-beta' }}
     runs-on: ubuntu-latest
     environment: policy-atlas-release
+    concurrency:
+      group: policy-atlas-hugging-face
+      cancel-in-progress: false
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5

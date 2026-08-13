@@ -16,6 +16,7 @@ This snapshot is structurally valid but evidentially incomplete.
 - every source marked “URL recorded — recheck before citation”;
 - claim–source edges marked “Context only / pending claim check”;
 - any effectiveness claim without a checked empirical source;
+- any legal-status implementation without a checked legal claim;
 - prospective Brazil and United States records before their dated observations.
 
 ## Stable-release gate
@@ -41,3 +42,8 @@ provisional in the public derived view. None has a claim-checked empirical
 source that supports its full wording. Two have narrower experimentally
 observed endpoints; four require downgrade or reformulation. See
 [review/PRIORITY_VERIFICATION.md](review/PRIORITY_VERIFICATION.md).
+
+The derived atlas applies the same rule to legal status: implementations retain
+their source wording for provenance, but the public claim class becomes
+`Provisional — legal status not claim-checked` unless a linked legal claim has
+been checked against a primary source.

@@ -123,6 +123,8 @@ intervention works are different claims. In this preview:
 - none of 118 control-effect claims has a checked empirical source;
 - all six claims formerly labelled established component effects are exposed
   as provisional, with their priority review in a separate configuration.
+- established legal-status rows without a checked legal claim are also exposed
+  as provisional in the default atlas view.
 
 The dataset therefore supports mapping, audit, and research-priority setting.
 It does not support claims that the listed controls reduce democratic harm.
