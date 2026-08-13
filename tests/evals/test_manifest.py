@@ -119,6 +119,46 @@ def test_frozen_wave1a_manifest_is_bounded_and_nonpublic() -> None:
     assert manifest.release.requires_two_person_review is True
 
 
+def test_revised_frozen_wave1a_manifest_corrects_observed_truncation_bound() -> None:
+    manifest = load_manifest(REPO_ROOT / "evals/manifests/diselect-wave1a-v0.3.json")
+    assert manifest.status is ProtocolStatus.FROZEN
+    assert manifest.protocol_id == "atb-diselect-wave1a-v0.3"
+    assert manifest.task.args == {
+        "selection_seed": "atb-diselect-wave1a-v0.1",
+        "harmful_per_stratum": 5,
+        "benign_count": 10,
+        "include_actionability": False,
+        "temperature": 1.0,
+        "max_tokens": 4096,
+    }
+    assert manifest.dataset.selected_inventory_sha256 == (
+        "2e6b2fe804453a62b1295a9ab920bc28ea97c18837bc65afa41491c9fd8427e6"
+    )
+    assert [condition.condition_id for condition in manifest.models] == [
+        "deepseek-v4-flash-0423-deepinfra-fp4",
+        "deepseek-v4-flash-0731-deepinfra-fp4",
+    ]
+    assert all(
+        condition.generate_config["reasoning_effort"] == "high" for condition in manifest.models
+    )
+    assert all(condition.generate_config["top_k"] == 40 for condition in manifest.models)
+    assert all(condition.generate_config["top_p"] == 0.95 for condition in manifest.models)
+    assert manifest.run.expected_samples_per_model == 50
+    assert manifest.run.max_retries == manifest.run.retry_on_error == 0
+    assert manifest.run.retry_attempts == 0
+    assert manifest.run.sample_cost_limit_usd == 0.01
+    assert manifest.run.planned_run_cost_envelope_usd == 1.0
+    assert manifest.run.sample_token_limit == 12000
+    assert manifest.run.planned_run_token_envelope == 1200000
+    assert manifest.run.provider_key_limit_usd == 30.0
+    assert manifest.validation.probability_sample_seed == (
+        "atb-diselect-wave1a-human-validation-v0.3"
+    )
+    assert manifest.validation.double_coded_n == 30
+    assert manifest.release.public_aggregate_candidate is False
+    assert manifest.release.requires_two_person_review is True
+
+
 @pytest.mark.parametrize(
     (
         "manifest_name",

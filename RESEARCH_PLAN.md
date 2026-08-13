@@ -200,16 +200,25 @@ their absence.
 - At least 30 outputs independently coded by two humans, with every disagreement
   resolved by a third, distinct human adjudicator.
 
-The executable protocol is frozen as
-[`diselect-wave1a-v0.2.json`](evals/manifests/diselect-wave1a-v0.2.json). It
+The current executable protocol is frozen as
+[`diselect-wave1a-v0.3.json`](evals/manifests/diselect-wave1a-v0.3.json). It
 contains 50 items per target, two paired target snapshots, and therefore 100
 target attempts. Sampling uses temperature 1, top-p 0.95, top-k 40, seed 42,
-and a 700-token completion ceiling. Inspect 0.3.257 records `top_k` but does not
-transmit it through its OpenAI-compatible builder, so ATB duplicates the frozen
-value into the OpenRouter request body and verifies both representations after
-the run. Provider, sample, and task retries remain zero. The total planned
-envelope is 500,000 tokens and USD 1.00; these are local/post-response controls,
-not a transactional billing guarantee.
+and a 4,096-token completion ceiling. Inspect 0.3.257 records `top_k` but does
+not transmit it through its OpenAI-compatible builder, so ATB duplicates the
+frozen value into the OpenRouter request body and verifies both representations
+after the run. Provider, sample, and task retries remain zero. The total
+planned envelope is 1,200,000 tokens and USD 1.00; these are local/post-response
+controls, not a transactional billing guarantee.
+
+The immutable v0.2 diagnostic used the same items, routes, sampling parameters,
+and scorer with a 700-token completion ceiling. It was rejected after 29 of 50
+July-snapshot responses hit that ceiling; they remained explicit instrument
+failures rather than being recoded as refusals or zeros. The v0.2 execution
+therefore supports no model comparison. Version 0.3 raises only the completion
+and token envelopes, uses a new preregistered blind-review sampling seed, and
+requires a fresh paired run of both snapshots. See the
+[redacted incident record](evals/research-notes/diselect-wave1a-v0.2-diagnostic.md).
 
 Wave 1A is also the first prospective anchor row for later benchmark linking.
 Following Ho et al., it is useful only when the same exact model-route
