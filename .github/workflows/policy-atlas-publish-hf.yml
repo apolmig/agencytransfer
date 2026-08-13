@@ -29,12 +29,21 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - name: Set up locked uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.11.33"
+          enable-cache: true
+          cache-dependency-glob: uv.lock
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
           cache: npm
           cache-dependency-path: policy-atlas/package-lock.json
-      - run: python -m pip install --disable-pip-version-check huggingface_hub
-      - run: python policy-atlas/scripts/publish_hf.py
+      - name: Verify the frozen Python environment
+        run: |
+          uv lock --check
+          uv sync --frozen --group dev
+      - run: uv run --frozen python policy-atlas/scripts/publish_hf.py
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}

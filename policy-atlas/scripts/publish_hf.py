@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Publish a prepared, validated beta to Hugging Face after explicit dispatch."""
+"""Publish the prepared, validated beta through the dedicated release workflow."""
 
 from __future__ import annotations
 
@@ -93,6 +93,14 @@ def main() -> None:
     if identity.get("name") != "apol":
         raise SystemExit(f"Refusing to publish as unexpected Hugging Face identity: {identity.get('name')!r}")
     api.create_repo(REPO_ID, repo_type="dataset", exist_ok=True, private=False)
+    refs = api.list_repo_refs(REPO_ID, repo_type="dataset")
+    if any(
+        getattr(tag, "name", None) == VERSION or getattr(tag, "ref", None) == f"refs/tags/{VERSION}"
+        for tag in refs.tags
+    ):
+        raise SystemExit(
+            f"Immutable release tag {VERSION} already exists; bump VERSION instead of moving it"
+        )
     commit = api.upload_folder(
         repo_id=REPO_ID,
         repo_type="dataset",
@@ -105,7 +113,7 @@ def main() -> None:
         repo_type="dataset",
         tag=VERSION,
         revision=commit.oid,
-        exist_ok=True,
+        exist_ok=False,
     )
     remote = set(api.list_repo_files(REPO_ID, repo_type="dataset"))
     expected_remote = expected | {".gitattributes"}

@@ -9,8 +9,7 @@
 - downgrades every unchecked established claim in the public view;
 - records the priority review of six component-effect claims;
 - adds typed Parquet companions, manifests, checksums, validation, and tests;
-- prepares a Hugging Face dataset package without publishing it or minting a
-  DOI.
+- prepares a fail-closed Hugging Face sync without minting a DOI.
 
 The eight-row working-register changelog remains preserved in the source
 snapshot for provenance.

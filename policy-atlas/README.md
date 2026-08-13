@@ -85,6 +85,14 @@ The validator checks stable IDs, uniqueness, foreign keys, controlled
 vocabularies, package membership, family counts, source verification, and
 claim-discipline invariants.
 
+## Publication
+
+Changes under `policy-atlas/` merged into `main` trigger the dedicated Hugging
+Face publisher. The workflow fails closed unless it can authenticate as
+`apol`, reproduce the release, pass the evidence warnings as explicit beta
+conditions, match the staged and remote file inventories exactly, and bind the
+immutable version tag to the uploaded commit. It can also be invoked manually.
+
 ## Responsible use
 
 This dataset maps defensive interventions and public evidence. It does not
