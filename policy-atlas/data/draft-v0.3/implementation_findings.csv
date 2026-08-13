@@ -1,0 +1,104 @@
+relation_id,implementation_id,finding_id,relationship,link_strength,scope_limit
+IF-0001,I-001,P1-F001,Targets,Direct,Direct only for confirmatory mechanism.
+IF-0002,I-002,P1-F001,Targets,Direct,Direct only for confirmatory mechanism.
+IF-0003,I-003,P1-F001,Motivates,Exploratory,Exploratory only; not a confirmatory endpoint.
+IF-0004,I-004,P1-F001,Motivates,Exploratory,Exploratory only; not a confirmatory endpoint.
+IF-0005,I-014,P1-F001,Motivates,Exploratory,Exploratory only; not a confirmatory endpoint.
+IF-0006,I-015,P1-F001,Motivates,Exploratory,Exploratory only; not a confirmatory endpoint.
+IF-0007,I-030,P1-F001,Motivates,Exploratory,Exploratory only; not a confirmatory endpoint.
+IF-0008,I-109,P1-F001,Motivates,Exploratory,Exploratory only; not a confirmatory endpoint.
+IF-0009,I-005,P2-F001,Tests,Direct,E0 signal; not effectiveness.
+IF-0010,I-011,P2-F001,Tests,Direct,E0 signal; not effectiveness.
+IF-0011,I-120,P2-F001,Tests,Direct,E0 signal; not effectiveness.
+IF-0012,I-005,P2-F002,Tests,Direct,E0 signal; not effectiveness.
+IF-0013,I-013,P2-F002,Tests,Direct,E0 signal; not effectiveness.
+IF-0014,I-120,P2-F002,Tests,Direct,E0 signal; not effectiveness.
+IF-0015,I-005,P2-F003,Constrains,Conditional,Human endpoints bound what policy claims can say.
+IF-0016,I-012,P2-F003,Constrains,Conditional,Human endpoints bound what policy claims can say.
+IF-0017,I-031,P2-F003,Constrains,Conditional,Human endpoints bound what policy claims can say.
+IF-0018,I-120,P2-F003,Constrains,Conditional,Human endpoints bound what policy claims can say.
+IF-0019,I-003,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0020,I-007,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0021,I-008,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0022,I-023,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0023,I-024,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0024,I-029,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0025,I-031,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0026,I-034,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0027,I-035,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0028,I-038,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0029,I-039,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0030,I-040,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0031,I-041,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0032,I-042,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0033,I-043,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0034,I-044,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0035,I-045,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0036,I-046,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0037,I-047,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0038,I-048,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0039,I-049,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0040,I-050,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0041,I-051,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0042,I-052,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0043,I-053,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0044,I-054,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0045,I-055,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0046,I-056,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0047,I-058,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0048,I-059,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0049,I-060,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0050,I-061,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0051,I-062,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0052,I-063,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0053,I-064,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0054,I-065,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0055,I-066,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0056,I-067,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0057,I-068,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0058,I-069,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0059,I-070,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0060,I-071,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0061,I-072,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0062,I-073,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0063,I-074,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0064,I-075,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0065,I-076,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0066,I-077,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0067,I-078,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0068,I-079,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0069,I-080,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0070,I-081,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0071,I-082,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0072,I-086,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0073,I-088,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0074,I-089,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0075,I-090,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0076,I-091,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0077,I-092,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0078,I-094,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0079,I-095,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0080,I-097,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0081,I-098,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0082,I-099,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0083,I-100,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0084,I-101,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0085,I-102,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0086,I-103,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0087,I-104,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0088,I-105,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0089,I-106,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0090,I-107,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0091,I-108,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0092,I-109,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0093,I-110,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0094,I-111,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0095,I-112,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0096,I-113,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0097,I-114,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0098,I-115,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0099,I-116,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0100,I-118,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0101,I-119,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0102,I-120,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.
+IF-0103,I-121,P3-F001,Motivates,Context only,Use specific case relations; no generic outcome claim.

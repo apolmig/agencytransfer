@@ -1,0 +1,36 @@
+name: Policy Atlas CI
+
+on:
+  pull_request:
+    paths:
+      - "policy-atlas/**"
+      - ".github/workflows/policy-atlas-ci.yml"
+  push:
+    branches: [main]
+    paths:
+      - "policy-atlas/**"
+      - ".github/workflows/policy-atlas-ci.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: policy-atlas/package-lock.json
+      - run: npm ci --prefix policy-atlas
+      - run: python policy-atlas/scripts/build_release.py
+      - run: python policy-atlas/scripts/validate_release.py
+      - run: npm --prefix policy-atlas run build:parquet
+      - run: python policy-atlas/scripts/validate_release.py
+      - run: python -m unittest discover -s policy-atlas/tests -p 'test_*.py'
+      - run: python policy-atlas/scripts/prepare_hf_release.py

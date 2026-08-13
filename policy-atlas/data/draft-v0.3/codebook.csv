@@ -1,0 +1,18 @@
+object,field,definition_rule,allowed_values_format
+Intervention,Implementation ID,"One concrete implementation, jurisdictional rule or operational control.",I-###
+Intervention,Control family ID,Groups related implementations without pretending they are duplicates.,CF-###
+Intervention,Legal force,Normative force of the operative instrument.,Binding; Binding — limited scope; Binding — phased; Mixed; Non-binding official guidance; Voluntary / private; Proposed; Research; Unknown / verify
+Intervention,Legal status,"Application/operational stage, separate from effect evidence.",Applicable; Operational voluntary; Enacted / not yet applicable; Proposed / pending; Research proposal; Pilot; Contested / enjoined; Partial / verify
+Intervention,Operational maturity,Real implementation stage.,Operational; Partial / uneven; Pilot; Design-ready; Research; Not applicable yet
+Intervention,Mechanism evidence tier,Project-C confirmatory project mechanism; Project-X exploratory; E0 model proxy; E1 immediate controlled human outcome; E2 persistence/low-cost real behavior; E3 naturalistic/system-level outcome; None.,Project-C; Project-X; E0; E1; E2; E3; None
+Intervention,Intervention-effect evidence,"Evidence that the control itself works, not that a law exists or a risk mechanism exists.",Field / operational component evidence; Direct component evidence; None — legal existence only; None — mechanism or proposal only; Indirect / mixed
+Intervention,Claim class,Object-specific claim class; never infer effectiveness from legal status.,Established — legal status; Established — component effect; Established — project mechanism; Strong inference; Plausible hypothesis; Open question
+Intervention,Decision tier,Decision category after rights gate; intentionally no numeric ranking.,Enforce now; Implement now; Prepare; Pilot; Research / hold; Monitor / shape
+Source,Verification level,Depth of v0.3 verification.,Claim checked — primary legal source; Claim checked — empirical source; Canonical project URL fixed; URL recorded — recheck before citation
+Relation,Support type,What a source is actually used to support.,Legal basis / scope; Project finding; Capability / mechanism evidence; Operational precedent / context; Primary anchor / context
+Case,Entity type,"Separates incidents from prospective studies, audit domains, legitimate-use counterexamples and structural risk patterns.",Observed incident; Prospective implementation study; Historical governance baseline; Audit domain; Legitimate-use counterexample; Structural risk pattern
+Evidence,APE,Model-to-model harmful-persuasion attempt signal; no human outcome.,E0 only
+Evidence,MASK,"Pressured lie-of-commission signal; no persuasion, manipulation or agency-transfer outcome.",E0 only
+Evidence,Human evidence boundary,"Controlled evidence includes immediate attitudes, one-month persistence and low-cost actions; not vote choice, naturalistic campaign reach, dependency or agency transfer.",E1–E2; E3 not established
+Policy,G0 rights gate,"Legality, necessity, proportionality, due process, remedy, independent oversight and anti-capture are non-compensable.",Pass / fail before tiering
+Policy,Ranking,No composite score or novelty weight in v0.3.,Deliberately absent

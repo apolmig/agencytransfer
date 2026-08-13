@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/apolmig/agencytransfer/policy-atlas/schemas/claim.schema.json",
+  "title": "Policy Atlas claim",
+  "type": "object",
+  "required": ["claim_id", "atomic_claim", "claim_type", "endpoint", "epistemic_status", "claim_status", "as_of_date"],
+  "properties": {
+    "claim_id": {"type": "string", "pattern": "^CLM-[0-9]{4}$"},
+    "atomic_claim": {"type": "string", "minLength": 1},
+    "claim_type": {"enum": ["Legal status / scope", "Mechanism", "Control effectiveness"]},
+    "endpoint": {"type": "string", "minLength": 1},
+    "epistemic_status": {"type": "string", "minLength": 1},
+    "publication_epistemic_status": {"type": "string", "minLength": 1},
+    "publication_verification_status": {
+      "enum": ["claim_checked", "source_link_pending_claim_check", "no_source_link"]
+    },
+    "as_of_date": {"type": "string", "format": "date"}
+  },
+  "additionalProperties": true
+}

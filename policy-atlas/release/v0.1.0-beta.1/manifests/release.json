@@ -1,0 +1,191 @@
+{
+  "artifact": "Agency Transfer Policy Atlas",
+  "artifact_version": "0.1.0-beta.1",
+  "release_stage": "research-preview",
+  "source_snapshot_version": "sheets-v0.3",
+  "source_spreadsheet_id": "1uL9hoNdWo_5PMEmgFnBkUrNHJSB9Hd53YTNqJYIrqYY",
+  "source_as_of_date": "2026-08-11",
+  "release_prepared_on": "2026-08-13",
+  "formats": [
+    "csv",
+    "parquet"
+  ],
+  "stable_release_ready": false,
+  "stable_release_blockers": [
+    "98 of 114 source records require claim-by-claim checking",
+    "no control-effectiveness claim has a checked empirical source",
+    "some established legal-status implementations lack a checked legal claim",
+    "project mechanism claims require claim-specific source verification",
+    "portfolio packages require independent review",
+    "context entities require stable links to the Part 3 dataset"
+  ],
+  "counts": {
+    "control_families": 68,
+    "implementations": 118,
+    "claims": 320,
+    "sources": 114,
+    "mechanisms": 16,
+    "legal_instruments": 28,
+    "policy_packages": 15,
+    "decision_gates": 24,
+    "context_entities": 9,
+    "research_gaps": 16,
+    "claim_source_rows_raw": 193,
+    "claim_source_edges_unique": 137,
+    "duplicate_claim_source_edges_removed": 56,
+    "control_effectiveness_claims": 118,
+    "control_effectiveness_claims_checked": 0,
+    "established_legal_status_implementations": 53,
+    "established_legal_status_implementations_checked": 23,
+    "established_project_mechanism_implementations": 2,
+    "established_project_mechanism_implementations_checked": 0,
+    "priority_effect_claims_reviewed": 6
+  },
+  "claim_boundary": "Legal existence, mechanism plausibility, and control effectiveness are separate. This preview is not evidence that the mapped controls work.",
+  "files": {
+    "data/core/claims.csv": {
+      "sha256": "b9d378a19830998c839f5f9944a9daf6251bf0ec6e03aa60f00c393f7893c4d3",
+      "bytes": 172086
+    },
+    "data/core/claims.parquet": {
+      "sha256": "ec81f61fab5e720734599c4bb133f97c45ebdbb2dad68ddeed72655dfe6cfeb1",
+      "bytes": 195421
+    },
+    "data/core/context_entities.csv": {
+      "sha256": "e184d10204f12bba4a8ed51c3199c910d54ea820901e579bbee0bdfb1cf7906e",
+      "bytes": 5986
+    },
+    "data/core/context_entities.parquet": {
+      "sha256": "01b0a0fd2978024296fdb51eda0bea9bdfb6357c9e20f831685ca3c30fd0d2f6",
+      "bytes": 17783
+    },
+    "data/core/decision_gates.csv": {
+      "sha256": "e28ab5fab6ba5b10636c7fa48dca8516dbf2c20cc0e57b67d4bfd665b7d002bc",
+      "bytes": 4182
+    },
+    "data/core/decision_gates.parquet": {
+      "sha256": "7bc41ca521a025f3dc71752dd088cf85d658311be6c9271d8f49bafad362af0a",
+      "bytes": 8328
+    },
+    "data/core/implementations.csv": {
+      "sha256": "7e1a5c9a438d4722f082e667fe621af8dda973341bb5a9d81f7569b5c9198f9d",
+      "bytes": 190964
+    },
+    "data/core/implementations.parquet": {
+      "sha256": "e3c1b5bfba1d858a9a1a6aa1564b84febc63a735fe3a3392a85d8fd2ba9a5450",
+      "bytes": 229262
+    },
+    "data/core/intervention_families.csv": {
+      "sha256": "0a7b85211061784e1b2da7e5f2a80cea28d8521aee237d18aa5b8462ab99eeec",
+      "bytes": 30536
+    },
+    "data/core/intervention_families.parquet": {
+      "sha256": "f5afc2b5c17dbbb5da1fd02aee0ad5d312b5f065d656f5b7ff015f7b255a83d4",
+      "bytes": 41329
+    },
+    "data/core/legal_instruments.csv": {
+      "sha256": "b4ac75de93e0e8c68c18a272795cf20e5d482d40a62dedf2a5ff82d7730b11a7",
+      "bytes": 14451
+    },
+    "data/core/legal_instruments.parquet": {
+      "sha256": "72ea0cfd02bd9a03b779d7cf651149b512c661a05d90568fd1d9a5232455647e",
+      "bytes": 25233
+    },
+    "data/core/mechanisms.csv": {
+      "sha256": "d7a06de3bf53def41d9f335810becd73912c646a3c12879d3cedf4bdbd801c95",
+      "bytes": 5353
+    },
+    "data/core/mechanisms.parquet": {
+      "sha256": "fc00d2d03c6413ef903a29cfad3a79788e5c6281a476ad9598fe15921ab3fe2b",
+      "bytes": 11539
+    },
+    "data/core/policy_packages.csv": {
+      "sha256": "0d0b28851463cebfdb554589964df3c34fde5b2da3f9f9ce29d8ba29ce760e59",
+      "bytes": 7581
+    },
+    "data/core/policy_packages.parquet": {
+      "sha256": "e138607763b69f5728d6934ecea333987a5fd892c49f0078a286de81184a888a",
+      "bytes": 15738
+    },
+    "data/core/priority_claim_reviews.csv": {
+      "sha256": "07ef8301279271a120212a10e64cb287754d2d783ad013c901262770db1bfdd5",
+      "bytes": 1966
+    },
+    "data/core/priority_claim_reviews.parquet": {
+      "sha256": "fc08b62f937d6a6361d3212bdb1da0a9f0e85ff64be1d8c28e9cb3bcd6efe883",
+      "bytes": 7641
+    },
+    "data/core/research_gaps.csv": {
+      "sha256": "e2bf4811878af8fa4f08166fe37f0a3b627c3bc8c50c498044da7ab1df8d95c4",
+      "bytes": 9328
+    },
+    "data/core/research_gaps.parquet": {
+      "sha256": "e806203f17a4106aba047beb444c19ea6d43bf23cb12b7a25663e57ba2d92b29",
+      "bytes": 19736
+    },
+    "data/core/sources.csv": {
+      "sha256": "06f55569bf5409b676f11329420ffeceb4a5862c69ae4a6b27ae2b466e7f35bc",
+      "bytes": 36851
+    },
+    "data/core/sources.parquet": {
+      "sha256": "bfbb4689866765790b60109f97a9db38b067293123873146141a63418ad7464a",
+      "bytes": 47232
+    },
+    "data/derived/atlas.csv": {
+      "sha256": "aa243a9d9a962adc06a23b818f10877dbc1d8ff126ec596e2d1c463bdc8ad27c",
+      "bytes": 219658
+    },
+    "data/derived/atlas.parquet": {
+      "sha256": "07e7c335939bedbe4de149eb366a3cbf1a9dd16966675efbed82124dbf3aea96",
+      "bytes": 267409
+    },
+    "data/relations/claim_sources.csv": {
+      "sha256": "53b2477eebaa01344c9bcadc21a19ac32cf5989be9ad17a89ff0b930acb0dbd6",
+      "bytes": 37656
+    },
+    "data/relations/claim_sources.parquet": {
+      "sha256": "3c6bacf4ee1c2b1af511ba699dc77c087da338cce69e07d8b40bc8a3a93d63c4",
+      "bytes": 45646
+    },
+    "data/relations/implementation_claims.csv": {
+      "sha256": "b88c2f2b3c604e12ab6a984ff74e0d80f6c0c4bf956e3e57000f08953a0492ac",
+      "bytes": 39243
+    },
+    "data/relations/implementation_claims.parquet": {
+      "sha256": "59f5aee6c24ea84af4d07794d6b0ef300a652d93fccb1de3b60d46790f43012a",
+      "bytes": 47311
+    },
+    "data/relations/implementation_contexts.csv": {
+      "sha256": "8b40c3b7d4a034fcc9f37c9a3733bb9eb17203650d27300ce32f884aa1ab0193",
+      "bytes": 26437
+    },
+    "data/relations/implementation_contexts.parquet": {
+      "sha256": "4eef79d27a8a1879c1057195975709aed574095b1780d1483ebd31dd90fa7ab4",
+      "bytes": 32461
+    },
+    "data/relations/implementation_gaps.csv": {
+      "sha256": "654a695489a43b3302af34a3d66494c878050b0c657f821dbca35b4dc0c11808",
+      "bytes": 31293
+    },
+    "data/relations/implementation_gaps.parquet": {
+      "sha256": "c249f7d1030ac85724954655445333cf424cfdfe3c86be3d078f9ff6f69ae7a7",
+      "bytes": 38022
+    },
+    "data/relations/implementation_mechanisms.csv": {
+      "sha256": "787f58951a712b5537914ae5d4ffb1a63f736d16acee0537ce1360bc2fbc67c1",
+      "bytes": 71251
+    },
+    "data/relations/implementation_mechanisms.parquet": {
+      "sha256": "62447603cb05c3e8ae6a700e67797224d43b5baae241c4a8102531dcde139a47",
+      "bytes": 85058
+    },
+    "data/relations/package_implementations.csv": {
+      "sha256": "d0cbc7442c4303c7f29cb6c2b2236fef85780cd5e35a66d09b9a473fe1efc0fa",
+      "bytes": 2691
+    },
+    "data/relations/package_implementations.parquet": {
+      "sha256": "5c39a02d05e17f83644cb3f41c8459014417ecf34e3b83b38254cf892675061f",
+      "bytes": 4629
+    }
+  }
+}
