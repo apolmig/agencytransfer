@@ -48,7 +48,7 @@ from atb_eval.paid_execution import (
     verify_paid_execution_authorization,
     verify_paid_execution_permit_current,
 )
-from atb_eval.scorers import ACTIONABILITY_PROMPT, RESPONSE_CLASS_PROMPT
+from atb_eval.scorers import ACTIONABILITY_PROMPT, RESPONSE_CLASS_PROMPT, parse_response_class
 from atb_eval.tasks.canary import inspect_canary
 from atb_eval.tasks.diselect import diselect_pilot
 
@@ -165,6 +165,11 @@ def build_model(condition: ModelCondition, run_max_connections: int, max_retries
     config_values.setdefault("max_retries", max_retries)
     if condition.model.startswith("openrouter/"):
         config_values["extra_headers"] = {OPENROUTER_METADATA_HEADER: OPENROUTER_METADATA_VALUE}
+        # Inspect 0.3.257 records GenerateConfig.top_k but its OpenAI-compatible
+        # request builder does not transmit it. Preserve the declared field for
+        # provenance and inject the same value into the provider request body.
+        if "top_k" in config_values:
+            config_values["extra_body"] = {"top_k": config_values["top_k"]}
     return get_model(
         condition.model,
         config=GenerateConfig(**config_values),
@@ -205,6 +210,8 @@ def effective_generate_config(
     config.setdefault("max_retries", manifest.run.max_retries)
     if condition.model.startswith("openrouter/"):
         config["extra_headers"] = {OPENROUTER_METADATA_HEADER: OPENROUTER_METADATA_VALUE}
+        if "top_k" in config:
+            config["extra_body"] = {"top_k": config["top_k"]}
     return config
 
 
@@ -289,6 +296,11 @@ def request_parameters_match(
         ):
             return False
         expected_extra_keys = {"provider"}
+        top_k = expected.get("top_k")
+        if top_k is not None:
+            expected_extra_keys.add("top_k")
+            if extra_body.get("top_k") != top_k:
+                return False
         if reasoning_effort is not None or reasoning_tokens is not None:
             expected_extra_keys.add("reasoning")
         if set(extra_body) != expected_extra_keys:
@@ -518,7 +530,7 @@ def target_output_scorable(sample: Any) -> bool:
 
 
 def diselect_score_contract_matches(log: Any, manifest: ProtocolManifest) -> bool:
-    """Require the exact frozen DisElect scorer set and one usable primary score."""
+    """Bind native scores or explicit instrument missingness to model events."""
 
     if manifest.task.kind != "diselect":
         return True
@@ -529,6 +541,7 @@ def diselect_score_contract_matches(log: Any, manifest: ProtocolManifest) -> boo
         return False
     if {item.name for item in (log.eval.scorers or [])} != expected_scorers:
         return False
+    rows: dict[str, list[bool]] = {}
     for sample in log.samples or []:
         scores = sample.scores or {}
         if set(scores) != expected_scorers:
@@ -536,14 +549,81 @@ def diselect_score_contract_matches(log: Any, manifest: ProtocolManifest) -> boo
         primary = scores["diselect_response_class"]
         value = getattr(primary.value, "value", primary.value)
         metadata = primary.metadata or {}
-        if (
-            value not in NATIVE_RESPONSE_CLASSES
-            or primary.answer != value
-            or metadata.get("codebook") != "atb-diselect-response-v0.1"
-            or metadata.get("instrument_failure") is not None
-        ):
+        model_events = [
+            event for event in (sample.events or []) if type(event).__name__ == "ModelEvent"
+        ]
+        target_events = [event for event in model_events if getattr(event, "role", None) is None]
+        grader_events = [
+            event for event in model_events if getattr(event, "role", None) == "grader"
+        ]
+        if len(target_events) != 1 or len(grader_events) > 1:
             return False
-    return bool(log.samples)
+        target_failure = _output_instrument_failure(sample.output, grader=False)
+        grader_failure = (
+            _output_instrument_failure(grader_events[0].output, grader=True)
+            if grader_events
+            else None
+        )
+        usable = value in NATIVE_RESPONSE_CLASSES
+        if usable:
+            if (
+                target_failure is not None
+                or len(grader_events) != 1
+                or grader_failure is not None
+                or primary.answer != value
+                or metadata != {"codebook": "atb-diselect-response-v0.1"}
+                or parse_response_class(grader_events[0].output.completion) != value
+            ):
+                return False
+        else:
+            if (
+                not isinstance(value, float)
+                or not math.isnan(value)
+                or primary.answer is not None
+                or not manifest.validation.human_validation_required
+            ):
+                return False
+            if target_failure is not None:
+                expected_failure = target_failure
+                if grader_events:
+                    return False
+            else:
+                if len(grader_events) != 1:
+                    return False
+                expected_failure = grader_failure or "grader_parse_failure"
+                if (
+                    expected_failure == "grader_parse_failure"
+                    and parse_response_class(grader_events[0].output.completion) is not None
+                ):
+                    return False
+            if metadata != {"instrument_failure": expected_failure}:
+                return False
+        subset = (sample.metadata or {}).get("subset")
+        if not isinstance(subset, str) or not subset:
+            return False
+        rows.setdefault(subset, []).append(usable)
+    if not rows:
+        return False
+    return all(
+        sum(values) / len(values) >= manifest.validation.minimum_usable_rate_per_row
+        for values in rows.values()
+    )
+
+
+def _output_instrument_failure(output: Any, *, grader: bool) -> str | None:
+    """Reproject the scorer's exact failure code from persisted model output."""
+
+    prefix = "grader_" if grader else ""
+    if output is None or getattr(output, "error", None):
+        return f"{prefix}model_error" if grader else "target_model_error"
+    stop_reason = getattr(output, "stop_reason", None)
+    if stop_reason == "content_filter":
+        return f"{prefix}provider_or_policy_block"
+    if stop_reason in {"max_tokens", "model_length"}:
+        return f"{prefix}truncated"
+    if not str(getattr(output, "completion", "") or "").strip():
+        return f"{prefix}empty_response"
+    return None
 
 
 def sample_target_output_matches(sample: Any, target_roles: set[str | None] | None = None) -> bool:
@@ -1173,6 +1253,7 @@ def recorded_execution_usage_within_envelope(
     recorded_cost = 0.0
     recorded_tokens = 0
     event_usage: dict[str, tuple[int, float, str]] = {}
+    openrouter_event_usage: dict[str, tuple[int, float, str]] = {}
     billed_event_usage: dict[str, tuple[float, str]] = {}
     evidence_paths = sorted(log_dir.rglob("*.eval"))
     if not evidence_paths:
@@ -1213,6 +1294,20 @@ def recorded_execution_usage_within_envelope(
             if event_id in event_usage and event_usage[event_id] != value:
                 return False
             event_usage[event_id] = value
+        openrouter_event_ids = {
+            str(getattr(event, "uuid", "") or "")
+            for sample in (evidence_log.samples or [])
+            for event in (sample.events or [])
+            if type(event).__name__ == "ModelEvent"
+            and str(getattr(event, "model", "")).startswith("openrouter/")
+        }
+        if "" in openrouter_event_ids or not openrouter_event_ids.issubset(events):
+            return False
+        for event_id in openrouter_event_ids:
+            value = events[event_id]
+            if event_id in openrouter_event_usage and openrouter_event_usage[event_id] != value:
+                return False
+            openrouter_event_usage[event_id] = value
         for event_id, value in billed_events.items():
             if event_id in billed_event_usage and billed_event_usage[event_id] != value:
                 return False
@@ -1221,6 +1316,12 @@ def recorded_execution_usage_within_envelope(
     event_cost = sum(value[1] for value in event_usage.values())
     billed_cost = sum(value[0] for value in billed_event_usage.values())
     if recorded_tokens != event_tokens or not math.isclose(recorded_cost, event_cost, abs_tol=1e-9):
+        return False
+    if set(openrouter_event_usage) != set(billed_event_usage) or not math.isclose(
+        sum(value[1] for value in openrouter_event_usage.values()),
+        billed_cost,
+        abs_tol=1e-9,
+    ):
         return False
     return not (
         recorded_tokens > manifest.run.planned_run_token_envelope
