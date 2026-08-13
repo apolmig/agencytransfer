@@ -18,10 +18,11 @@ require claim-by-claim verification, and no numeric policy ranking is provided.
 - 68 control families and 118 jurisdiction-specific or operational
   implementations;
 - 320 atomic legal, mechanism, and control-effectiveness claims;
-- 114 canonical sources and an explicit verification log;
+- 123 canonical sources and explicit claim-specific verification status;
 - 16 mechanisms, 28 legal instruments, 15 policy packages, 24
   non-compensable decision gates, 9 cases or contexts, and 16 research gaps;
-- bridge tables that preserve the many-to-many relations among those objects;
+- bridge tables for implementation–claim, claim–source,
+  implementation–mechanism/context/gap, and package–implementation relations;
 - CSV for diff-friendly review and typed Parquet for Hugging Face/Data Studio.
 
 The unit of analysis is a concrete **implementation**, not a broad idea such as
@@ -48,20 +49,24 @@ hypothesis, and open question. It also separates:
 4. operational maturity; and
 5. source-verification depth.
 
-The current snapshot contains 98 sources marked “URL recorded — recheck before
-citation”. Those records are useful for research triage but must not be treated
-as publication-ready support. A priority review found that none of the six
-effect claims labelled established was fully supported as written. See
+The curated preview contains 22 source records used in at least one checked
+claim–source relation; the other 101 remain candidate source records. These
+records are useful for research triage but must not be treated as
+publication-ready support. The first evidence wave checked six priority
+effect claims, rewrote each to its observed endpoint, and recoded five of the
+six implementation-level effect classifications. See
 [PUBLICATION_STATUS.md](PUBLICATION_STATUS.md) and
 [review/PRIORITY_VERIFICATION.md](review/PRIORITY_VERIFICATION.md).
 
 ## Decision architecture
 
-There is no composite “best policy” score. Every candidate first passes
+There is no composite “best policy” score. The release proposes
 non-compensable gates for legality, rights, necessity, proportionality,
-contestability, remedy, independent oversight, and anti-capture. Surviving
-candidates are assigned to action tiers: enforce now, implement now, prepare,
-pilot, research or hold, and monitor or shape.
+contestability, remedy, independent oversight, and anti-capture. Applying
+those gates implementation by implementation remains a review task; this beta
+does not publish gate-assessment results. Working-register action tiers—enforce
+now, implement now, prepare, pilot, research or hold, and monitor or shape—are
+therefore decision postures, not reproduced gate outcomes.
 
 These are decision postures, not effect estimates.
 
@@ -69,8 +74,9 @@ These are decision postures, not effect estimates.
 
 The source snapshot is under
 [data/draft-v0.3/](data/draft-v0.3/). The internal Sheets version is retained
-for provenance; the first public dataset release uses semantic version
-v0.1.0-beta.1.
+for provenance. Claim-specific corrections are applied from the transparent
+[data/curation-v0.4/](data/curation-v0.4/) overlay; the current public dataset
+release uses semantic version v0.1.0-beta.2.
 
 Run:
 
@@ -89,9 +95,10 @@ claim-discipline invariants.
 
 Changes under `policy-atlas/` merged into `main` trigger the dedicated Hugging
 Face publisher. The workflow fails closed unless it can authenticate as
-`apol`, reproduce the release, pass the evidence warnings as explicit beta
-conditions, match the staged and remote file inventories exactly, and bind the
-immutable version tag to the uploaded commit. It can also be invoked manually.
+`apol`, reproduce the release, encode the unresolved evidence blockers in the
+beta manifest, pass validation, match the staged and remote file inventories
+exactly, and bind the immutable version tag to the uploaded commit. It can also
+be invoked manually.
 
 ## Responsible use
 
@@ -102,8 +109,9 @@ establish vote effects or counterfactual policy effectiveness.
 
 ## Status
 
-- Artifact version: v0.1.0-beta.1
+- Artifact version: v0.1.0-beta.2
 - Source snapshot: sheets-v0.3
+- Curation overlay: curation-v0.4-wave1
 - Source as-of date: 2026-08-11
 - Release preparation date: 2026-08-13
 - Language: English
@@ -113,3 +121,6 @@ establish vote effects or counterfactual policy effectiveness.
 Until a stable release is archived, cite the repository and version. A DOI
 should be minted only after claim-by-claim verification reaches the stable
 release gate.
+
+After publication, the immutable dataset snapshot for this release is
+`https://huggingface.co/datasets/apol/agency-transfer-policy-atlas/tree/v0.1.0-beta.2`.

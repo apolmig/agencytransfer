@@ -104,12 +104,12 @@ modes, rights risks, maturity, and evaluability.
 
 ## Status
 
-`v0.1.0-beta.1` is a **research preview**, not a validated policy benchmark.
+`v0.1.0-beta.2` is a **research preview**, not a validated policy benchmark.
 The `train` split name is only the Hugging Face Dataset Viewer container; these
 records are not intended as model-training examples.
 
 The release has 68 control families, 118 implementations, 320 atomic claims,
-114 sources, 16 mechanisms, 15 candidate policy packages, and 24
+123 sources, 16 mechanisms, 15 candidate policy packages, and 24
 non-compensable decision gates. It has no composite effectiveness score or
 leaderboard.
 
@@ -118,13 +118,17 @@ leaderboard.
 The existence of a law, the plausibility of a mechanism, and evidence that an
 intervention works are different claims. In this preview:
 
-- 98 of 114 source records require claim-by-claim checking;
+- 22 of 123 source records participate in at least one checked claim–source
+  relation; the other 101 remain candidate source records;
 - 56 duplicate claim–source rows are removed from the generated release;
-- none of 118 control-effect claims has a checked empirical source;
-- all six claims formerly labelled established component effects are exposed
-  as provisional, with their priority review in a separate configuration.
+- 6 of 118 control-effect claims have a checked empirical source and a bounded
+  observed endpoint; the other 112 remain unchecked;
+- of the six priority implementations, three are now strong inference, two
+  are open questions, and only technique-recognition prebunking retains an
+  established component-effect classification;
 - established legal-status rows without a checked legal claim are also exposed
-  as provisional in the default atlas view.
+  as provisional in the default atlas view; 25 of 53 currently have a checked
+  primary-legal claim;
 - the two project-mechanism rows are provisional until their mechanism claims
   receive claim-specific source verification.
 
@@ -156,3 +160,6 @@ version using `CITATION.cff` until a stable, independently reviewed release.
 
 Canonical repository:
 https://github.com/apolmig/agencytransfer/tree/main/policy-atlas
+
+Immutable dataset version:
+https://huggingface.co/datasets/apol/agency-transfer-policy-atlas/tree/v0.1.0-beta.2

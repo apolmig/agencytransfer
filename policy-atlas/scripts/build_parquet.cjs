@@ -10,7 +10,10 @@ const parquet = require("parquetjs-lite");
 const { parse } = require("csv-parse/sync");
 
 const ROOT = path.resolve(__dirname, "..");
-const VERSION = "v0.1.0-beta.1";
+const releaseConfig = fs.readFileSync(path.join(ROOT, "scripts", "release_config.py"), "utf8");
+const versionMatch = releaseConfig.match(/^VERSION\s*=\s*["']([^"']+)["']/m);
+if (!versionMatch) throw new Error("Could not read VERSION from scripts/release_config.py");
+const VERSION = versionMatch[1];
 const RELEASE = path.join(ROOT, "release", VERSION);
 const DATA = path.join(RELEASE, "data");
 const MANIFEST_PATH = path.join(RELEASE, "manifests", "release.json");
@@ -107,11 +110,20 @@ async function convert(csvPath) {
 }
 
 async function main() {
+  if (!fs.existsSync(MANIFEST_PATH)) {
+    throw new Error(`Release manifest missing for ${VERSION}; run build_release.py first`);
+  }
   const csvFiles = walk(DATA).filter((filePath) => filePath.endsWith(".csv")).sort();
+  if (csvFiles.length === 0) throw new Error(`No CSV files found for ${VERSION}`);
   const results = [];
   for (const csvPath of csvFiles) results.push(await convert(csvPath));
 
   const manifest = JSON.parse(fs.readFileSync(MANIFEST_PATH, "utf8"));
+  if (manifest.artifact_version !== VERSION.replace(/^v/, "")) {
+    throw new Error(
+      `Manifest version ${manifest.artifact_version} does not match release ${VERSION}`
+    );
+  }
   manifest.formats = ["csv", "parquet"];
   manifest.files = {};
   for (const filePath of walk(DATA).sort()) {

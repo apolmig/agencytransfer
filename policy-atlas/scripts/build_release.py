@@ -10,15 +10,18 @@ import shutil
 from collections import defaultdict
 from pathlib import Path
 
+from curation import load_table
+from release_config import CURATION_VERSION, VERSION
+
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "data" / "draft-v0.3"
 PRIORITY_REVIEW = ROOT / "review" / "priority_claim_review.csv"
-VERSION = "v0.1.0-beta.1"
 RELEASE = ROOT / "release" / VERSION
 
 CHECKED_LEVELS = {
     "Claim checked — primary legal source",
+    "Claim checked — primary official policy source",
     "Claim checked — empirical source",
 }
 
@@ -105,7 +108,17 @@ def claim_verification(
     for claim in claims:
         claim_id = claim["claim_id"]
         linked = edges.get(claim_id, [])
-        if any(edge["verification_level"] in CHECKED_LEVELS for edge in linked):
+        claim_type = claim["claim_type"]
+        if claim_type == "Control effectiveness":
+            required_levels = {"Claim checked — empirical source"}
+        elif claim_type == "Legal status / scope":
+            required_levels = {
+                "Claim checked — primary legal source",
+                "Claim checked — primary official policy source",
+            }
+        else:
+            required_levels = CHECKED_LEVELS
+        if any(edge["verification_level"] in required_levels for edge in linked):
             status = "claim_checked"
         elif linked:
             status = "source_link_pending_claim_check"
@@ -147,6 +160,8 @@ def build_atlas(
     claim_types: dict[str, str],
     claim_statuses: dict[str, str],
     claim_sources: dict[str, set[str]],
+    empirically_checked_claims: set[str],
+    legally_checked_claims: set[str],
     implementation_mechanisms: list[dict[str, str]],
     implementation_contexts: list[dict[str, str]],
     implementation_gaps: list[dict[str, str]],
@@ -169,7 +184,7 @@ def build_atlas(
         claim_id = relation["claim_id"]
         claims_by_implementation[implementation_id].add(claim_id)
         sources_by_implementation[implementation_id].update(claim_sources.get(claim_id, set()))
-        if relation["claim_role"] == "Direct effectiveness":
+        if claim_types.get(claim_id) == "Control effectiveness":
             effects_by_implementation[implementation_id].add(claim_id)
         if claim_types.get(claim_id) == "Legal status / scope":
             legal_claims_by_implementation[implementation_id].add(claim_id)
@@ -191,13 +206,13 @@ def build_atlas(
         checked_effects = {
             claim_id
             for claim_id in effect_claims
-            if claim_statuses.get(claim_id) == "claim_checked"
+            if claim_id in empirically_checked_claims
         }
         legal_claims = legal_claims_by_implementation.get(implementation_id, set())
         checked_legal_claims = {
             claim_id
             for claim_id in legal_claims
-            if claim_statuses.get(claim_id) == "claim_checked"
+            if claim_id in legally_checked_claims
         }
         mechanism_claims = mechanism_claims_by_implementation.get(implementation_id, set())
         checked_mechanism_claims = {
@@ -258,29 +273,45 @@ def main() -> None:
     (RELEASE / "data" / "derived").mkdir(parents=True)
     (RELEASE / "manifests").mkdir(parents=True)
 
-    families = read_csv(SOURCE / "intervention_families.csv")
-    implementations = read_csv(SOURCE / "implementations.csv")
-    claims = read_csv(SOURCE / "claims.csv")
-    sources = read_csv(SOURCE / "sources.csv")
-    packages = read_csv(SOURCE / "policy_packages.csv")
-    implementation_claims = read_csv(SOURCE / "implementation_claims.csv")
-    implementation_mechanisms = read_csv(SOURCE / "implementation_mechanisms.csv")
-    implementation_contexts = read_csv(SOURCE / "implementation_cases.csv")
-    implementation_gaps = read_csv(SOURCE / "implementation_gaps.csv")
+    families = load_table("intervention_families.csv")
+    implementations = load_table("implementations.csv")
+    claims = load_table("claims.csv")
+    sources = load_table("sources.csv")
+    packages = load_table("policy_packages.csv")
+    implementation_claims = load_table("implementation_claims.csv")
+    implementation_mechanisms = load_table("implementation_mechanisms.csv")
+    implementation_contexts = load_table("implementation_cases.csv")
+    implementation_gaps = load_table("implementation_gaps.csv")
     priority_review_rows = read_csv(PRIORITY_REVIEW)
     priority_reviews = {row["claim_id"]: row for row in priority_review_rows}
 
-    claim_sources_raw = read_csv(SOURCE / "claim_sources.csv")
+    claim_sources_raw = load_table("claim_sources.csv")
     claim_sources = deduplicate_claim_sources(claim_sources_raw)
     public_claims, claim_statuses, sources_by_claim = claim_verification(claims, claim_sources)
+    empirically_checked_claim_ids = {
+        relation["claim_id"]
+        for relation in claim_sources
+        if relation["verification_level"] == "Claim checked — empirical source"
+    }
+    legally_checked_claim_ids = {
+        relation["claim_id"]
+        for relation in claim_sources
+        if relation["verification_level"] == "Claim checked — primary legal source"
+        or relation["verification_level"] == "Claim checked — primary official policy source"
+    }
     claim_types = {row["claim_id"]: row["claim_type"] for row in claims}
 
     public_sources = []
+    checked_source_ids_in_relations = {
+        relation["source_id"]
+        for relation in claim_sources
+        if relation["verification_level"] in CHECKED_LEVELS
+    }
     for source in sources:
         row = dict(source)
         row["publication_status"] = (
-            "claim_checked_source"
-            if source["verification_level"] in CHECKED_LEVELS
+            "used_in_claim_checked_relation"
+            if source["source_id"] in checked_source_ids_in_relations
             else "candidate_source"
         )
         public_sources.append(row)
@@ -293,6 +324,8 @@ def main() -> None:
         claim_types,
         claim_statuses,
         sources_by_claim,
+        empirically_checked_claim_ids,
+        legally_checked_claim_ids,
         implementation_mechanisms,
         implementation_contexts,
         implementation_gaps,
@@ -306,13 +339,13 @@ def main() -> None:
         elif source_name == "sources.csv":
             rows = public_sources
         else:
-            rows = read_csv(SOURCE / source_name)
+            rows = load_table(source_name)
         write_csv(RELEASE / "data" / "core" / release_name, rows)
 
     for source_name, release_name in RELATION_FILES.items():
         write_csv(
             RELEASE / "data" / "relations" / release_name,
-            read_csv(SOURCE / source_name),
+            load_table(source_name),
         )
 
     write_csv(RELEASE / "data" / "relations" / "claim_sources.csv", claim_sources)
@@ -330,7 +363,7 @@ def main() -> None:
     checked_effect_claims = [
         row
         for row in effect_claims
-        if row["publication_verification_status"] == "claim_checked"
+        if row["claim_id"] in empirically_checked_claim_ids
     ]
     established_legal_implementations = [
         row for row in atlas if row["claim_class"] == "Established — legal status"
@@ -345,6 +378,14 @@ def main() -> None:
         row for row in established_project_mechanisms if row["mechanism_claim_checked"] == "true"
     ]
     duplicate_edges_removed = len(claim_sources_raw) - len(claim_sources)
+    checked_source_records = [
+        row for row in sources if row["source_id"] in checked_source_ids_in_relations
+    ]
+    unchecked_source_records = len(sources) - len(checked_source_records)
+    checked_relations = [
+        row for row in claim_sources if row["verification_level"] in CHECKED_LEVELS
+    ]
+    unchecked_effect_claims = len(effect_claims) - len(checked_effect_claims)
 
     files = sorted(
         path
@@ -356,16 +397,18 @@ def main() -> None:
         "artifact_version": VERSION.removeprefix("v"),
         "release_stage": "research-preview",
         "source_snapshot_version": "sheets-v0.3",
+        "curation_version": CURATION_VERSION,
+        "curation_as_of_date": "2026-08-13",
         "source_spreadsheet_id": "1uL9hoNdWo_5PMEmgFnBkUrNHJSB9Hd53YTNqJYIrqYY",
         "source_as_of_date": "2026-08-11",
         "release_prepared_on": "2026-08-13",
         "formats": ["csv"],
         "stable_release_ready": False,
         "stable_release_blockers": [
-            "98 of 114 source records require claim-by-claim checking",
-            "no control-effectiveness claim has a checked empirical source",
-            "some established legal-status implementations lack a checked legal claim",
-            "project mechanism claims require claim-specific source verification",
+            f"{unchecked_source_records} of {len(sources)} source records do not participate in a checked claim-source relation",
+            f"{unchecked_effect_claims} of {len(effect_claims)} control-effectiveness claims lack a checked empirical source",
+            f"{len(established_legal_implementations) - len(checked_legal_implementations)} of {len(established_legal_implementations)} established legal-status implementations lack a checked primary-legal claim",
+            f"{len(established_project_mechanisms) - len(checked_project_mechanisms)} of {len(established_project_mechanisms)} project-mechanism implementations lack claim-specific verification",
             "portfolio packages require independent review",
             "context entities require stable links to the Part 3 dataset",
         ],
@@ -374,17 +417,20 @@ def main() -> None:
             "implementations": len(implementations),
             "claims": len(claims),
             "sources": len(sources),
-            "mechanisms": len(read_csv(SOURCE / "mechanisms.csv")),
-            "legal_instruments": len(read_csv(SOURCE / "legal_instruments.csv")),
+            "mechanisms": len(load_table("mechanisms.csv")),
+            "legal_instruments": len(load_table("legal_instruments.csv")),
             "policy_packages": len(packages),
-            "decision_gates": len(read_csv(SOURCE / "decision_gates.csv")),
-            "context_entities": len(read_csv(SOURCE / "case_index.csv")),
-            "research_gaps": len(read_csv(SOURCE / "research_gaps.csv")),
+            "decision_gates": len(load_table("decision_gates.csv")),
+            "context_entities": len(load_table("case_index.csv")),
+            "research_gaps": len(load_table("research_gaps.csv")),
             "claim_source_rows_raw": len(claim_sources_raw),
             "claim_source_edges_unique": len(claim_sources),
             "duplicate_claim_source_edges_removed": duplicate_edges_removed,
             "control_effectiveness_claims": len(effect_claims),
             "control_effectiveness_claims_checked": len(checked_effect_claims),
+            "source_records_checked": len(checked_source_records),
+            "source_records_pending_claim_check": unchecked_source_records,
+            "claim_source_edges_checked": len(checked_relations),
             "established_legal_status_implementations": len(established_legal_implementations),
             "established_legal_status_implementations_checked": len(checked_legal_implementations),
             "established_project_mechanism_implementations": len(established_project_mechanisms),

@@ -1,14 +1,14 @@
 cff-version: 1.2.0
 message: "If you use the Agency Transfer Policy Atlas, cite this version."
 title: "Agency Transfer Policy Atlas: A Causal Evidence Map of Interventions Against AI-Mediated Manipulation"
-version: 0.1.0-beta.1
+version: 0.1.0-beta.2
 date-released: 2026-08-13
 type: dataset
 authors:
   - family-names: Guerrero
     given-names: Miguel
 repository-code: "https://github.com/apolmig/agencytransfer/tree/main/policy-atlas"
-url: "https://github.com/apolmig/agencytransfer/tree/main/policy-atlas"
+url: "https://huggingface.co/datasets/apol/agency-transfer-policy-atlas/tree/v0.1.0-beta.2"
 license: CC-BY-4.0
 keywords:
   - agency transfer
@@ -16,4 +16,3 @@ keywords:
   - AI governance
   - policy interventions
   - election integrity
-

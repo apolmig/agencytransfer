@@ -1,0 +1,25 @@
+gate,criterion_code,criterion,decision_question,if_failed,applies_to,evidence_required
+G0,G0-R01,Fundamental rights,"Does the control preserve lawful expression, association, privacy and non-discrimination?",Fail or redesign,All tiers,Rights analysis and affected-group review
+G0,G0-R02,"Autonomy, contestability and remedy","Can affected people understand, contest and remedy the decision or intervention?",Fail or redesign,All tiers,"Appeal, remedy and reversibility design"
+G0,G0-R03,Equality and vulnerability,Does the control avoid discriminatory burdens and exploitation of vulnerability?,Fail or redesign,All tiers,Distributional and accessibility analysis
+G0,G0-R04,Pluralism and political expression,"Does the control protect opposition, satire, journalism, minority speech and legitimate campaigning?",Fail or redesign,All tiers,Pluralism and chilling-effect analysis
+G0,G0-R05,Anti-capture and independent oversight,"Can states, incumbents or providers weaponize the control to entrench power?",Fail or independent constraint,All tiers,"Independent oversight, transparency and sunset"
+G1,G1-C01,Complete causal chain,Is capability → controller → vector → target → proximal change → agency transfer → concentration → harm specified?,Research first,Implement / Pilot,Mechanism claim and boundary conditions
+G1,G1-C02,Precise intervention point,Does the control act at a defined failure point rather than invoke generic safety?,Research first,Implement / Pilot,Mechanism relation
+G1,G1-C03,Evidence-endpoint match,Does the evidence measure the endpoint claimed?,Downgrade claim/tier,All tiers,Atomic claim and source locator
+G1,G1-C04,Transfer conditions,"Are actor, jurisdiction, scale and deployment conditions for transfer explicit?",Limit scope,All tiers,Applicability analysis
+G2,G2-L01,Authority and legal status,"Is the legal basis, force and responsible authority correctly identified?",Cannot enforce,Enforce / Prepare,Primary legal source
+G2,G2-L02,Temporal and material applicability,"Does the rule apply now, to this actor and this conduct?",Prepare or exclude,Enforce / Prepare,"Date, scope and exception analysis"
+G2,G2-L03,Necessity and proportionality,Is the intervention necessary and proportionate to the evidenced risk?,Fail or redesign,All tiers,Alternatives and rights-cost comparison
+G2,G2-L04,Least-restrictive alternative,"Are narrower, reversible and contestable alternatives considered?",Fail or condition,All tiers,Alternative analysis and safeguards
+G3,G3-O01,Named implementer,Is there an actor with authority and capacity to implement?,Hold,Implement / Pilot,Owner and authority
+G3,G3-O02,Protocol and resources,"Are operating steps, resources and dependencies defined?",Pilot only,Implement / Pilot,Protocol and resource plan
+G3,G3-O03,Operational maturity,Is the control mature enough for the proposed tier?,Downgrade tier,Implement / Pilot,Maturity evidence
+G3,G3-O04,Evasion and capture resistance,"Are bypass, substitution, gaming and abuse paths tested?",Condition or hold,All tiers,Adversarial testing
+G4,G4-E01,Outcome and metric,Is the desired outcome defined separately from legal compliance and activity?,Pilot/research only,All tiers,Outcome metric
+G4,G4-E02,Baseline or counterfactual,Can effectiveness be compared to a credible baseline?,No effectiveness claim,Implement / Pilot,Evaluation design
+G4,G4-E03,"Stop rule, review or sunset","Are harm, failure and termination conditions defined?",Condition or hold,All tiers,Stop rule and review date
+G4,G4-E04,"Audit, appeal and remedy",Can implementation and harms be independently audited and remedied?,Fail or condition,All tiers,Audit/access/remedy design
+O,OBS-01,Logs and independent access,Is there proportionate observability without indiscriminate surveillance?,Condition,Implement / Pilot,Privacy-preserving logs and access
+O,OBS-02,Incident traceability,"Can incidents, versions, actors and actions be reconstructed?",Condition,Implement / Pilot,Trace and evidence plan
+O,OBS-03,Independent evaluation,Can qualified outsiders test implementation and outcomes?,Condition,Implement / Pilot,"Access, compute and publication safeguards"

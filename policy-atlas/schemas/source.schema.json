@@ -11,7 +11,7 @@
     "source_class": {"type": "string", "minLength": 1},
     "direct_url": {"type": "string", "format": "uri", "pattern": "^https?://"},
     "verification_level": {"type": "string", "minLength": 1},
-    "publication_status": {"enum": ["claim_checked_source", "candidate_source"]}
+    "publication_status": {"enum": ["used_in_claim_checked_relation", "candidate_source"]}
   },
   "additionalProperties": true
 }

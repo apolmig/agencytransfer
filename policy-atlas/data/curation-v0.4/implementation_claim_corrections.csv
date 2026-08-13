@@ -1,0 +1,7 @@
+relation_id,claim_role,relevance,notes
+ICL-0016,Adjacent component evidence,Contextual,"Static election-security message experiments support bounded survey outcomes; they are indirect evidence for assistant grounding and do not test voting access or disenfranchisement."
+ICL-0115,Adjacent component evidence,Contextual,"The interface experiment supports a bounded acceptance endpoint; it does not test the effect of a legal prohibition or agency transfer."
+ICL-0181,Implementation limitation evidence,Cautionary,"Observed FMT label non-coverage and evasion constrain the intervention claim; no causal effect on delay, reach, virality, or harm was estimated."
+ICL-0184,Direct component evidence,Core,"Randomized experiments and a YouTube field study directly support immediate recognition of the specifically taught manipulation techniques."
+ICL-0232,Adjacent component evidence,Contextual,"Offline recommender experiments support bounded minimisation feasibility, not effects of assistant-memory controls on manipulation or dependency."
+ICL-0235,Implementation limitation evidence,Cautionary,"Partial relevant-data receipt and failed import or direct transfer constrain functional-portability claims; assistant-state exit remains untested."

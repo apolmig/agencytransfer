@@ -2,54 +2,51 @@
 
 Review date: 2026-08-13
 
-The six control-effect claims labelled `Established evidence` in the working
-register were checked first because they could most easily be misread as
-demonstrated policy effects. None is fully supported as written. Two retain
-established evidence only for narrower experimental endpoints; four require a
-downgrade, a new source, or both.
+The six control-effect claims initially labelled `Established evidence` were
+checked against primary empirical sources. None supported the original policy
+effect as written. The release therefore rewrites all six claims to the
+observed endpoint and separately recodes the implementation-level inference.
 
-The public release preserves the source wording for provenance but marks every
-unchecked established claim `Unverified candidate`. The structured review is
-in [priority_claim_review.csv](priority_claim_review.csv).
+This distinction matters: an empirical result can be established for a narrow
+endpoint while remaining indirect, negative, or insufficient evidence for the
+proposed policy.
+
+The structured review, including source IDs, designs, samples, endpoints, and
+limitations, is in [priority_claim_review.csv](priority_claim_review.csv).
 
 ## Effect claims
 
-| Claim | Review | Required publication treatment |
+| Claim | Observed endpoint | Implementation treatment |
 |---|---|---|
-| CLM-0016 | Unsupported as written | Downgrade to strong inference. Evidence on credible corrections and prebunking does not establish that assistant grounding prevents voting-access errors or abstention. |
-| CLM-0115 | Partially supported with different evidence | Limit the endpoint to consent choices in privacy and commerce interfaces; do not infer pluralism or agency transfer. |
-| CLM-0181 | Partially supported | Forwarding limits add friction and delay, but evidence is not a causal estimate of reduced electoral harm and evasion remains possible. |
-| CLM-0184 | Partially supported | Keep only recognition, discernment, and sharing-quality outcomes measured in the experiments; remove unmeasured pluralism and reflective-agency claims. |
-| CLM-0232 | Unsupported as written | Separate data-protection duties from intervention effectiveness; downgrade the manipulation and dependency claim. |
-| CLM-0235 | Unsupported as written | Separate the conditional GDPR right from functional assistant-state portability; downgrade the effect claim. |
+| CLM-0016 | Survey confidence, fraud beliefs, and factual accuracy after static election-security messages | `Strong inference`; no assistant or voting-access endpoint |
+| CLM-0115 | Cookie-notice acceptance under first-page button prominence | `Strong inference`; no test of regulatory enforcement or agency |
+| CLM-0181 | Substantial non-coverage of FMT labels among duplicated media in selected public groups | `Open question`; no causal estimate of friction, reach, or harm |
+| CLM-0184 | Immediate recognition of specifically taught manipulation techniques | Retains `Established — component effect` only for this bounded endpoint |
+| CLM-0232 | Recommender quality under reduced per-user rating histories | `Strong inference`; no assistant-memory or manipulation endpoint |
+| CLM-0235 | Data receipt but failed functional import/direct transfer across four IoT systems | `Open question`; negative implementation evidence, not assistant-state portability |
 
-Primary or first-party sources used in the review include the [Science
-Advances correction and prebunking study](https://www.science.org/doi/10.1126/sciadv.adv3758),
-the [consent-interface field experiment](https://doi.org/10.1145/3313831.3376321),
-the [forwarding-limit observational study](https://doi.org/10.1609/icwsm.v18i1.31372),
-the [inoculation experiments](https://www.science.org/doi/10.1126/sciadv.abo6254),
-and the [data-portability study](https://doi.org/10.1177/1461444820934033).
+All six corrected claims now have a `Claim checked — empirical source`
+relation. This does not make the wider interventions effective: 112 of 118
+control-effectiveness claims still lack checked empirical support, and five of
+the six priority implementations are no longer classified as established
+component effects.
 
-## Legal-scope corrections queued
+## Legal-scope wave
 
-The review also identified publication-critical scope corrections. These are
-queued for claim-by-claim incorporation before a stable release:
+Five previously source-less legal instruments were also checked against
+official primary sources:
 
-- EU AI Act Article 5 prohibits only practices satisfying all statutory
-  elements; it does not mandate a specific technical enforcement layer.
-- EU AI Act Article 55 duties apply to providers of general-purpose AI models
-  with systemic risk; named testing methods are not thereby mandatory.
-- DSA risk assessment, researcher access, audits, and non-profiled recommender
-  options apply to designated VLOPs or VLOSEs and include procedural limits.
-- The EU Code of Conduct on Disinformation remains voluntary; for signatory
-  VLOPs or VLOSEs, commitments can serve as a DSA compliance benchmark and
-  audit object rather than autonomous universal duties.
-- GDPR access, deletion, portability, and automated-decision provisions are
-  conditional and do not create a general legal object called assistant
-  memory.
-- The Council of Europe AI Framework Convention is not treated as a present
-  binding obligation before entry into force.
+- the DMA applies only to formally designated gatekeepers and core platform
+  services, even though virtual assistants are within the service taxonomy;
+- the UK ATRS mandate is an administrative policy for in-scope central
+  government organisations, not a general statutory duty;
+- the Seoul commitments are voluntary commitments by listed frontier-AI
+  organisations;
+- the UCPD is binding through national transposition, while the 2021
+  Commission guidance is expressly non-binding; and
+- the Digital Fairness Act remains a planned Q4 2026 initiative with no legal
+  force or adopted proposal as of 2026-08-13.
 
-This review is a triage layer, not independent peer review. Stable publication
-requires the corrected claims and sources to be incorporated into the
-relational tables and checked by a second reviewer.
+This is a claim-specific internal evidence audit, not independent peer review.
+Stable publication still requires verification of the remaining public claims
+and independent review of the policy packages.
