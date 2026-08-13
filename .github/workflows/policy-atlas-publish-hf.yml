@@ -25,8 +25,10 @@ jobs:
       group: policy-atlas-hugging-face
       cancel-in-progress: false
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: "3.12"
       - name: Set up locked uv
@@ -35,7 +37,7 @@ jobs:
           version: "0.11.33"
           enable-cache: true
           cache-dependency-glob: uv.lock
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: "22"
           cache: npm
@@ -44,6 +46,15 @@ jobs:
         run: |
           uv lock --check
           uv sync --frozen --group dev
-      - run: uv run --frozen python policy-atlas/scripts/publish_hf.py
+      - name: Build and stage the research preview without release credentials
+        run: |
+          uv run --frozen python policy-atlas/scripts/build_release.py
+          uv run --frozen python policy-atlas/scripts/validate_release.py
+          npm ci --prefix policy-atlas
+          npm --prefix policy-atlas run build:parquet
+          uv run --frozen python policy-atlas/scripts/validate_release.py
+          uv run --frozen python policy-atlas/scripts/prepare_hf_release.py
+      - name: Upload the validated staged release
+        run: uv run --frozen python policy-atlas/scripts/publish_hf.py
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}

@@ -6,8 +6,6 @@ from __future__ import annotations
 import os
 import json
 import re
-import subprocess
-import sys
 from pathlib import Path
 
 
@@ -77,12 +75,6 @@ def main() -> None:
     if not token:
         raise SystemExit("HF_TOKEN is required")
 
-    subprocess.run([sys.executable, str(ROOT / "scripts" / "build_release.py")], check=True)
-    subprocess.run([sys.executable, str(ROOT / "scripts" / "validate_release.py")], check=True)
-    subprocess.run(["npm", "ci", "--prefix", str(ROOT)], check=True)
-    subprocess.run(["npm", "--prefix", str(ROOT), "run", "build:parquet"], check=True)
-    subprocess.run([sys.executable, str(ROOT / "scripts" / "validate_release.py")], check=True)
-    subprocess.run([sys.executable, str(ROOT / "scripts" / "prepare_hf_release.py")], check=True)
     destination = ROOT / "dist" / "huggingface"
     expected = validate_staged_release(destination)
 
@@ -108,6 +100,15 @@ def main() -> None:
         delete_patterns="*",
         commit_message=f"Publish {VERSION} research preview",
     )
+    remote = set(
+        api.list_repo_files(REPO_ID, repo_type="dataset", revision=commit.oid)
+    )
+    expected_remote = expected | {".gitattributes"}
+    if remote != expected_remote:
+        raise SystemExit(
+            f"Remote inventory mismatch: missing={sorted(expected_remote - remote)}, "
+            f"unexpected={sorted(remote - expected_remote)}"
+        )
     api.create_tag(
         repo_id=REPO_ID,
         repo_type="dataset",
@@ -115,13 +116,6 @@ def main() -> None:
         revision=commit.oid,
         exist_ok=False,
     )
-    remote = set(api.list_repo_files(REPO_ID, repo_type="dataset"))
-    expected_remote = expected | {".gitattributes"}
-    if remote != expected_remote:
-        raise SystemExit(
-            f"Remote inventory mismatch: missing={sorted(expected_remote - remote)}, "
-            f"unexpected={sorted(remote - expected_remote)}"
-        )
     print(f"Published https://huggingface.co/datasets/{REPO_ID}/tree/{VERSION}")
 
 

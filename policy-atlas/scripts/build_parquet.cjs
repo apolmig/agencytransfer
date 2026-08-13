@@ -27,6 +27,7 @@ const LIST_COLUMNS = new Set([
   "claim_ids",
   "effect_claim_ids",
   "legal_claim_ids",
+  "mechanism_claim_ids",
   "source_ids",
   "policy_package_ids",
   "priority_effect_review_outcomes",
@@ -36,7 +37,8 @@ const LIST_COLUMNS = new Set([
 const BOOLEAN_COLUMNS = new Set([
   "effect_claim_checked",
   "effect_claim_reviewed",
-  "legal_claim_checked"
+  "legal_claim_checked",
+  "mechanism_claim_checked"
 ]);
 const INTEGER_COLUMNS = new Set(["implementation_count"]);
 

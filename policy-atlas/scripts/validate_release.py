@@ -252,6 +252,11 @@ def main() -> int:
             < manifest["counts"]["established_legal_status_implementations"],
             "beta manifest must expose unchecked established legal-status implementations",
         )
+        check.require(
+            manifest["counts"]["established_project_mechanism_implementations_checked"]
+            < manifest["counts"]["established_project_mechanism_implementations"],
+            "beta manifest must expose unchecked established project mechanisms",
+        )
         for relative, metadata in manifest["files"].items():
             path = RELEASE / relative
             check.require(path.exists(), f"manifest file missing: {relative}")

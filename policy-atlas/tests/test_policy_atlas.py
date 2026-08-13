@@ -58,6 +58,19 @@ class PolicyAtlasReleaseTest(unittest.TestCase):
             )
         )
 
+        project_mechanism_rows = [
+            row for row in atlas if row["claim_class"] == "Established — project mechanism"
+        ]
+        self.assertEqual(len(project_mechanism_rows), 2)
+        self.assertTrue(all(row["mechanism_claim_checked"] == "false" for row in project_mechanism_rows))
+        self.assertTrue(
+            all(
+                row["publication_claim_class"]
+                == "Provisional — project mechanism not claim-checked"
+                for row in project_mechanism_rows
+            )
+        )
+
         established_legal_rows = [
             row for row in atlas if row["claim_class"] == "Established — legal status"
         ]

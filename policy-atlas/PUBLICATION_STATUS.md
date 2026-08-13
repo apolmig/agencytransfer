@@ -17,6 +17,7 @@ This snapshot is structurally valid but evidentially incomplete.
 - claim–source edges marked “Context only / pending claim check”;
 - any effectiveness claim without a checked empirical source;
 - any legal-status implementation without a checked legal claim;
+- any project mechanism without a claim-checked source relation;
 - prospective Brazil and United States records before their dated observations.
 
 ## Stable-release gate
@@ -47,3 +48,7 @@ The derived atlas applies the same rule to legal status: implementations retain
 their source wording for provenance, but the public claim class becomes
 `Provisional — legal status not claim-checked` unless a linked legal claim has
 been checked against a primary source.
+
+The two project mechanisms are also provisional. A canonical link to a
+self-authored research agenda establishes provenance, not external or
+claim-specific support.

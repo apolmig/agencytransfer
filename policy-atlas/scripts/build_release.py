@@ -157,6 +157,7 @@ def build_atlas(
     claims_by_implementation: dict[str, set[str]] = defaultdict(set)
     effects_by_implementation: dict[str, set[str]] = defaultdict(set)
     legal_claims_by_implementation: dict[str, set[str]] = defaultdict(set)
+    mechanism_claims_by_implementation: dict[str, set[str]] = defaultdict(set)
     sources_by_implementation: dict[str, set[str]] = defaultdict(set)
     mechanisms_by_implementation: dict[str, set[str]] = defaultdict(set)
     contexts_by_implementation: dict[str, set[str]] = defaultdict(set)
@@ -172,6 +173,8 @@ def build_atlas(
             effects_by_implementation[implementation_id].add(claim_id)
         if claim_types.get(claim_id) == "Legal status / scope":
             legal_claims_by_implementation[implementation_id].add(claim_id)
+        if claim_types.get(claim_id) == "Mechanism":
+            mechanism_claims_by_implementation[implementation_id].add(claim_id)
     for relation in implementation_mechanisms:
         mechanisms_by_implementation[relation["implementation_id"]].add(relation["mechanism_id"])
     for relation in implementation_contexts:
@@ -196,6 +199,12 @@ def build_atlas(
             for claim_id in legal_claims
             if claim_statuses.get(claim_id) == "claim_checked"
         }
+        mechanism_claims = mechanism_claims_by_implementation.get(implementation_id, set())
+        checked_mechanism_claims = {
+            claim_id
+            for claim_id in mechanism_claims
+            if claim_statuses.get(claim_id) == "claim_checked"
+        }
         reviewed_effects = [
             priority_reviews[claim_id]
             for claim_id in sorted(effect_claims)
@@ -209,10 +218,12 @@ def build_atlas(
         row["claim_ids"] = join_ids(claims_by_implementation.get(implementation_id, set()))
         row["effect_claim_ids"] = join_ids(effect_claims)
         row["legal_claim_ids"] = join_ids(legal_claims)
+        row["mechanism_claim_ids"] = join_ids(mechanism_claims)
         row["source_ids"] = join_ids(sources_by_implementation.get(implementation_id, set()))
         row["policy_package_ids"] = join_ids(packages_by_implementation.get(implementation_id, set()))
         row["effect_claim_checked"] = "true" if checked_effects else "false"
         row["legal_claim_checked"] = "true" if checked_legal_claims else "false"
+        row["mechanism_claim_checked"] = "true" if checked_mechanism_claims else "false"
         row["effect_claim_reviewed"] = "true" if reviewed_effects else "false"
         row["priority_effect_review_outcomes"] = join_ids(
             [review["review_outcome"] for review in reviewed_effects]
@@ -227,6 +238,11 @@ def build_atlas(
             and not checked_legal_claims
         ):
             row["publication_claim_class"] = "Provisional — legal status not claim-checked"
+        elif (
+            implementation["claim_class"] == "Established — project mechanism"
+            and not checked_mechanism_claims
+        ):
+            row["publication_claim_class"] = "Provisional — project mechanism not claim-checked"
         else:
             row["publication_claim_class"] = implementation["claim_class"]
         row["publication_status"] = "research_preview"
@@ -322,6 +338,12 @@ def main() -> None:
     checked_legal_implementations = [
         row for row in established_legal_implementations if row["legal_claim_checked"] == "true"
     ]
+    established_project_mechanisms = [
+        row for row in atlas if row["claim_class"] == "Established — project mechanism"
+    ]
+    checked_project_mechanisms = [
+        row for row in established_project_mechanisms if row["mechanism_claim_checked"] == "true"
+    ]
     duplicate_edges_removed = len(claim_sources_raw) - len(claim_sources)
 
     files = sorted(
@@ -343,6 +365,7 @@ def main() -> None:
             "98 of 114 source records require claim-by-claim checking",
             "no control-effectiveness claim has a checked empirical source",
             "some established legal-status implementations lack a checked legal claim",
+            "project mechanism claims require claim-specific source verification",
             "portfolio packages require independent review",
             "context entities require stable links to the Part 3 dataset",
         ],
@@ -364,6 +387,8 @@ def main() -> None:
             "control_effectiveness_claims_checked": len(checked_effect_claims),
             "established_legal_status_implementations": len(established_legal_implementations),
             "established_legal_status_implementations_checked": len(checked_legal_implementations),
+            "established_project_mechanism_implementations": len(established_project_mechanisms),
+            "established_project_mechanism_implementations_checked": len(checked_project_mechanisms),
             "priority_effect_claims_reviewed": len(priority_review_rows),
         },
         "claim_boundary": (

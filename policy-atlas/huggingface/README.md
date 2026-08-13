@@ -125,6 +125,8 @@ intervention works are different claims. In this preview:
   as provisional, with their priority review in a separate configuration.
 - established legal-status rows without a checked legal claim are also exposed
   as provisional in the default atlas view.
+- the two project-mechanism rows are provisional until their mechanism claims
+  receive claim-specific source verification.
 
 The dataset therefore supports mapping, audit, and research-priority setting.
 It does not support claims that the listed controls reduce democratic harm.

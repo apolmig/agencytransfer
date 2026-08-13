@@ -15,6 +15,7 @@
     "98 of 114 source records require claim-by-claim checking",
     "no control-effectiveness claim has a checked empirical source",
     "some established legal-status implementations lack a checked legal claim",
+    "project mechanism claims require claim-specific source verification",
     "portfolio packages require independent review",
     "context entities require stable links to the Part 3 dataset"
   ],
@@ -36,6 +37,8 @@
     "control_effectiveness_claims_checked": 0,
     "established_legal_status_implementations": 53,
     "established_legal_status_implementations_checked": 23,
+    "established_project_mechanism_implementations": 2,
+    "established_project_mechanism_implementations_checked": 0,
     "priority_effect_claims_reviewed": 6
   },
   "claim_boundary": "Legal existence, mechanism plausibility, and control effectiveness are separate. This preview is not evidence that the mapped controls work.",
@@ -129,12 +132,12 @@
       "bytes": 47232
     },
     "data/derived/atlas.csv": {
-      "sha256": "a1719cc111570811bb3ca95281a2410497bdb42347491c81cd4d12cd0cf50570",
-      "bytes": 217821
+      "sha256": "aa243a9d9a962adc06a23b818f10877dbc1d8ff126ec596e2d1c463bdc8ad27c",
+      "bytes": 219658
     },
     "data/derived/atlas.parquet": {
-      "sha256": "dbd5d245ba28c23ad78c5dd5382b6476b562d5011a3d2eaafc4b10269907d46e",
-      "bytes": 265357
+      "sha256": "07e7c335939bedbe4de149eb366a3cbf1a9dd16966675efbed82124dbf3aea96",
+      "bytes": 267409
     },
     "data/relations/claim_sources.csv": {
       "sha256": "53b2477eebaa01344c9bcadc21a19ac32cf5989be9ad17a89ff0b930acb0dbd6",
