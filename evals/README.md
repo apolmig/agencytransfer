@@ -49,25 +49,36 @@ capability or safety.
 
 ## DisElect Wave 1A
 
-`diselect-wave1a-v0.2.json` is the frozen non-public diagnostic protocol. It
-selects 40 harmful items across eight strata and 10 benign controls, then runs
-the identical paired schedule against the 23 April and 31 July DeepSeek V4
-Flash snapshots. Both targets are pinned to DeepInfra/fp4; the native response-
-class grader is pinned to Gemini 3.6 Flash on Google Vertex. Every route is ZDR,
-fallback-disabled, price-bounded, and bound to committed provider inventory.
+`diselect-wave1a-v0.3.json` is the current frozen non-public diagnostic
+protocol. It selects 40 harmful items across eight strata and 10 benign
+controls, then runs the identical paired schedule against the 23 April and 31
+July DeepSeek V4 Flash snapshots. Both targets are pinned to DeepInfra/fp4; the
+native response-class grader is pinned to Gemini 3.6 Flash on Google Vertex.
+Every route is ZDR, fallback-disabled, price-bounded, and bound to committed
+provider inventory.
 
 The target sampling contract is seed 42, temperature 1, top-p 0.95, top-k 40,
-and at most 700 completion tokens. Inspect 0.3.257 records `top_k` but its
+and at most 4,096 completion tokens. Inspect 0.3.257 records `top_k` but its
 OpenAI-compatible request builder does not send it. The runner therefore also
 places the same value in OpenRouter `extra_body`; postflight requires the
 manifest value, logged effective configuration, and transmitted request body
 to agree. This is a pinned adapter, not an unrecorded runtime override.
 
+The immutable v0.2 execution is retained as diagnostic evidence. Its 700-token
+target ceiling truncated 29 of 50 responses for the July snapshot, so ATB
+preserved them as unscored and rejected the paired run. No comparative result
+was accepted. The redacted incident record is
+[`research-notes/diselect-wave1a-v0.2-diagnostic.md`](research-notes/diselect-wave1a-v0.2-diagnostic.md).
+Version 0.3 changes the completion and token envelopes and the blind-review
+sampling seed; it does not change items, routes, sampling parameters, scorers,
+missingness gates, retries, or the USD 1.00 run envelope. Both snapshots must be
+rerun under v0.3; v0.2 results cannot be mixed into it.
+
 Validate the source checkout and inspect the planned run without making calls:
 
 ```bash
 uv run atb-eval \
-  --manifest evals/manifests/diselect-wave1a-v0.2.json \
+  --manifest evals/manifests/diselect-wave1a-v0.3.json \
   --source-dir /controlled/election-ai-safety \
   --log-dir /controlled/atb/logs/diselect-wave1a
 ```
@@ -77,7 +88,7 @@ execution permit in addition to `--execute --allow-paid`. The manifest sets
 per-sample token and recorded-cost stops plus a conservative planned run
 envelope over models and epochs. Provider-SDK, sample, and task retries are all
 disabled. The frozen plan contains 100 target attempts, a USD 0.01 per-sample
-stop, a USD 1.00 total envelope, and a 500,000-token envelope. Inspect checks
+stop, a USD 1.00 total envelope, and a 1,200,000-token envelope. Inspect checks
 the per-sample stops after model responses; the planned run envelope is not a
 provider billing hard cap. The
 runner audits cumulative persisted usage before it accepts or rejects the
@@ -104,7 +115,7 @@ review packets outside the repository with an owner-only HMAC key:
 
 ```bash
 uv run --frozen atb-validation-packet \
-  --manifest evals/manifests/diselect-wave1a-v0.2.json \
+  --manifest evals/manifests/diselect-wave1a-v0.3.json \
   --log-dir /controlled/atb/logs/diselect-wave1a \
   --key-file /controlled/atb/validation/wave1a-hmac.key \
   --output-dir /controlled/atb/validation/packets \

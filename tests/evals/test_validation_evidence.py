@@ -13,7 +13,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 
 
 def _frame() -> packet.ExecutionFrame:
-    manifest = load_manifest(REPO_ROOT / "evals/manifests/diselect-wave1a-v0.2.json")
+    manifest = load_manifest(REPO_ROOT / "evals/manifests/diselect-wave1a-v0.3.json")
     items: list[packet.FrameItem] = []
     index = 0
     for condition in manifest.models:
@@ -47,7 +47,7 @@ def _packets(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> tuple[Path, Pat
     key.chmod(0o600)
     output = tmp_path / "packets"
     packet.create_validation_packets(
-        manifest_path=REPO_ROOT / "evals/manifests/diselect-wave1a-v0.2.json",
+        manifest_path=REPO_ROOT / "evals/manifests/diselect-wave1a-v0.3.json",
         log_dir=tmp_path / "logs",
         key_file=key,
         output_dir=output,
