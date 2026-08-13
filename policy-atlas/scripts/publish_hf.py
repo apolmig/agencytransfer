@@ -4,14 +4,16 @@
 from __future__ import annotations
 
 import os
+import hashlib
 import json
 import re
 from pathlib import Path
 
+from release_config import CURATION_VERSION, VERSION
+
 
 ROOT = Path(__file__).resolve().parents[1]
 REPO_ID = "apol/agency-transfer-policy-atlas"
-VERSION = "v0.1.0-beta.1"
 
 FORBIDDEN_PATH_PARTS = {"logs", "raw", "private", "scans"}
 CREDENTIAL_PATTERN = re.compile(
@@ -25,6 +27,14 @@ def validate_staged_release(destination: Path) -> set[str]:
     manifest = json.loads(
         (destination / "manifests" / "release.json").read_text(encoding="utf-8")
     )
+    if manifest.get("artifact") != "Agency Transfer Policy Atlas":
+        raise SystemExit("Unexpected staged artifact")
+    if manifest.get("artifact_version") != VERSION.removeprefix("v"):
+        raise SystemExit("Staged manifest version does not match release_config.py")
+    if manifest.get("curation_version") != CURATION_VERSION:
+        raise SystemExit("Unexpected staged curation version")
+    if set(manifest.get("formats", [])) != {"csv", "parquet"}:
+        raise SystemExit("Staged release must contain CSV and Parquet")
     expected = set(manifest["files"])
     expected.update(
         {
@@ -53,6 +63,43 @@ def validate_staged_release(destination: Path) -> set[str]:
             f"Staged inventory mismatch: missing={sorted(expected - actual)}, "
             f"unexpected={sorted(actual - expected)}"
         )
+
+    for relative, metadata in manifest["files"].items():
+        path = destination / relative
+        digest = hashlib.sha256(path.read_bytes()).hexdigest()
+        if digest != metadata["sha256"] or path.stat().st_size != metadata["bytes"]:
+            raise SystemExit(f"Manifest integrity mismatch: {relative}")
+    manifest_path = destination / "manifests" / "release.json"
+    expected_checksums = {
+        **{relative: metadata["sha256"] for relative, metadata in manifest["files"].items()},
+        "manifests/release.json": hashlib.sha256(manifest_path.read_bytes()).hexdigest(),
+    }
+    actual_checksums: dict[str, str] = {}
+    for line in (destination / "manifests" / "checksums.sha256").read_text(
+        encoding="utf-8"
+    ).splitlines():
+        digest, relative = line.split("  ", 1)
+        actual_checksums[relative] = digest
+    if actual_checksums != expected_checksums:
+        raise SystemExit("Checksum manifest does not match staged release")
+
+    static_sources = {
+        "README.md": ROOT / "huggingface" / "README.md",
+        "CITATION.cff": ROOT / "CITATION.cff",
+        "DATA_DICTIONARY.md": ROOT / "DATA_DICTIONARY.md",
+        "PUBLICATION_STATUS.md": ROOT / "PUBLICATION_STATUS.md",
+        "LICENSE.md": ROOT / "LICENSES" / "DATA.md",
+    }
+    for directory in (ROOT / "schemas", ROOT / "review"):
+        for path in directory.rglob("*"):
+            if path.is_file():
+                static_sources[path.relative_to(ROOT).as_posix()] = path
+    for relative, source in static_sources.items():
+        staged = destination / relative
+        if hashlib.sha256(staged.read_bytes()).digest() != hashlib.sha256(
+            source.read_bytes()
+        ).digest():
+            raise SystemExit(f"Staged static file differs from canonical source: {relative}")
 
     for path in destination.rglob("*"):
         relative = path.relative_to(destination)

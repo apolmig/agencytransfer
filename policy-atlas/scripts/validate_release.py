@@ -11,11 +11,22 @@ import sys
 from collections import Counter, defaultdict
 from pathlib import Path
 
+from curation import load_table
+from release_config import CURATION_VERSION, VERSION
+
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "data" / "draft-v0.3"
 PRIORITY_REVIEW = ROOT / "review" / "priority_claim_review.csv"
-RELEASE = ROOT / "release" / "v0.1.0-beta.1"
+RELEASE = ROOT / "release" / VERSION
+PRIORITY_CLAIM_IDS = {
+    "CLM-0016",
+    "CLM-0115",
+    "CLM-0181",
+    "CLM-0184",
+    "CLM-0232",
+    "CLM-0235",
+}
 
 
 class Validation:
@@ -103,27 +114,40 @@ def main() -> int:
             print(f"ERROR: {error}")
         return 1
 
-    families = read_csv(SOURCE / "intervention_families.csv")
-    implementations = read_csv(SOURCE / "implementations.csv")
-    claims = read_csv(SOURCE / "claims.csv")
-    sources = read_csv(SOURCE / "sources.csv")
-    claim_sources = read_csv(SOURCE / "claim_sources.csv")
-    implementation_claims = read_csv(SOURCE / "implementation_claims.csv")
-    mechanisms = read_csv(SOURCE / "mechanisms.csv")
-    implementation_mechanisms = read_csv(SOURCE / "implementation_mechanisms.csv")
-    legal = read_csv(SOURCE / "legal_instruments.csv")
-    contexts = read_csv(SOURCE / "case_index.csv")
-    implementation_contexts = read_csv(SOURCE / "implementation_cases.csv")
-    gaps = read_csv(SOURCE / "research_gaps.csv")
-    implementation_gaps = read_csv(SOURCE / "implementation_gaps.csv")
-    packages = read_csv(SOURCE / "policy_packages.csv")
-    gates = read_csv(SOURCE / "decision_gates.csv")
+    families = load_table("intervention_families.csv")
+    implementations = load_table("implementations.csv")
+    claims = load_table("claims.csv")
+    sources = load_table("sources.csv")
+    claim_sources = load_table("claim_sources.csv")
+    implementation_claims = load_table("implementation_claims.csv")
+    mechanisms = load_table("mechanisms.csv")
+    implementation_mechanisms = load_table("implementation_mechanisms.csv")
+    legal = load_table("legal_instruments.csv")
+    contexts = load_table("case_index.csv")
+    implementation_contexts = load_table("implementation_cases.csv")
+    gaps = load_table("research_gaps.csv")
+    implementation_gaps = load_table("implementation_gaps.csv")
+    packages = load_table("policy_packages.csv")
+    gates = load_table("decision_gates.csv")
     priority_reviews = read_csv(PRIORITY_REVIEW)
+    package_metadata = json.loads((ROOT / "package.json").read_text(encoding="utf-8"))
+    package_lock = json.loads((ROOT / "package-lock.json").read_text(encoding="utf-8"))
+    expected_package_version = VERSION.removeprefix("v")
+    check.require(
+        package_metadata.get("version") == expected_package_version,
+        "package.json version does not match release_config.py",
+    )
+    check.require(
+        package_lock.get("version") == expected_package_version
+        and package_lock.get("packages", {}).get("", {}).get("version") == expected_package_version,
+        "package-lock.json version does not match release_config.py",
+    )
 
     family_ids = unique_ids(check, families, "control_family_id", r"CF-\d{3}", "families")
     implementation_ids = unique_ids(check, implementations, "implementation_id", r"I-\d{3}", "implementations")
     claim_ids = unique_ids(check, claims, "claim_id", r"CLM-\d{4}", "claims")
     source_ids = unique_ids(check, sources, "source_id", r"SRC-\d{3}", "sources")
+    unique_ids(check, claim_sources, "relation_id", r"CS-\d{4}", "claim_sources")
     mechanism_ids = unique_ids(check, mechanisms, "mechanism_id", r"M-\d{2}", "mechanisms")
     unique_ids(check, legal, "legal_id", r"L-\d{3}", "legal instruments")
     context_ids = unique_ids(
@@ -153,6 +177,7 @@ def main() -> int:
     foreign_keys(check, implementations, "control_family_id", family_ids, "implementations")
     foreign_keys(check, claim_sources, "claim_id", claim_ids, "claim_sources")
     foreign_keys(check, claim_sources, "source_id", source_ids, "claim_sources")
+    foreign_keys(check, legal, "source_id", source_ids, "legal instruments")
     foreign_keys(check, implementation_claims, "implementation_id", implementation_ids, "implementation_claims")
     foreign_keys(check, implementation_claims, "claim_id", claim_ids, "implementation_claims")
     foreign_keys(check, implementation_mechanisms, "implementation_id", implementation_ids, "implementation_mechanisms")
@@ -162,21 +187,28 @@ def main() -> int:
     foreign_keys(check, implementation_gaps, "implementation_id", implementation_ids, "implementation_gaps")
     foreign_keys(check, implementation_gaps, "gap_id", gap_ids, "implementation_gaps")
     check.require(review_claim_ids <= claim_ids, "priority claim reviews: orphan claim_id")
+    check.require(
+        review_claim_ids == PRIORITY_CLAIM_IDS,
+        "priority claim review must contain the six frozen wave-1 claims",
+    )
 
     established_effect_implementations = {
         row["implementation_id"]
         for row in implementations
         if row["claim_class"] == "Established — component effect"
     }
+    effect_claims_by_type = {
+        row["claim_id"] for row in claims if row["claim_type"] == "Control effectiveness"
+    }
     established_effect_claims = {
         row["claim_id"]
         for row in implementation_claims
         if row["implementation_id"] in established_effect_implementations
-        and row["claim_role"] == "Direct effectiveness"
+        and row["claim_id"] in effect_claims_by_type
     }
     check.require(
-        review_claim_ids == established_effect_claims,
-        "priority review must cover every established component-effect claim exactly",
+        established_effect_claims <= review_claim_ids,
+        "priority review must cover every established component-effect claim",
     )
 
     family_counts = Counter(row["control_family_id"] for row in implementations)
@@ -197,8 +229,10 @@ def main() -> int:
         check.require(members <= implementation_ids, f"{package['package_id']}: invalid implementation member")
 
     controlled(check, implementations, "legal_force", {
-        "Binding", "Binding — limited scope", "Binding — phased", "Mixed",
-        "Non-binding official guidance", "Voluntary / private", "Proposed", "Research",
+        "Binding", "Binding — limited scope", "Binding — phased",
+        "Mandatory administrative policy — limited scope", "Mixed",
+        "Non-binding official guidance", "Voluntary / private",
+        "Planned / no legal force", "Proposed", "Research",
     })
     controlled(check, implementations, "operational_maturity", {
         "Operational", "Partial / uneven", "Pilot", "Design-ready", "Research", "Not applicable yet",
@@ -218,18 +252,28 @@ def main() -> int:
     duplicate_pairs = len(pairs) - len(set(pairs))
     check.warn(duplicate_pairs == 0, f"source snapshot has {duplicate_pairs} duplicate claim-source rows; release must deduplicate")
 
-    checked_levels = {"Claim checked — primary legal source", "Claim checked — empirical source"}
-    checked_claims = {
-        row["claim_id"] for row in claim_sources if row["verification_level"] in checked_levels
+    empirically_checked_claims = {
+        row["claim_id"]
+        for row in claim_sources
+        if row["verification_level"] == "Claim checked — empirical source"
     }
-    effect_claims = {row["claim_id"] for row in claims if row["claim_type"] == "Control effectiveness"}
-    checked_effect_claims = checked_claims & effect_claims
+    checked_levels = {
+        "Claim checked — primary legal source",
+        "Claim checked — primary official policy source",
+        "Claim checked — empirical source",
+    }
+    effect_claims = effect_claims_by_type
+    checked_effect_claims = empirically_checked_claims & effect_claims
+    check.require(
+        review_claim_ids <= checked_effect_claims,
+        "every priority effect claim must have a checked empirical relation after curation wave 1",
+    )
     check.warn(
         bool(checked_effect_claims),
         "no control-effectiveness claim has a checked source; stable release is blocked",
     )
     missing_legal_sources = [row["legal_id"] for row in legal if not row["source_id"].strip()]
-    check.warn(
+    check.require(
         not missing_legal_sources,
         f"{len(missing_legal_sources)} legal instruments have no source_id: {missing_legal_sources}",
     )
@@ -238,7 +282,15 @@ def main() -> int:
     check.require(release_manifest.exists(), "generated release manifest missing; run build_release.py")
     if release_manifest.exists():
         manifest = json.loads(release_manifest.read_text(encoding="utf-8"))
+        check.require(
+            manifest.get("artifact_version") == expected_package_version,
+            "manifest artifact version mismatch",
+        )
         check.require(manifest["stable_release_ready"] is False, "beta must not claim stable release readiness")
+        check.require(
+            manifest.get("curation_version") == CURATION_VERSION,
+            "manifest curation version mismatch",
+        )
         check.require(
             manifest["counts"]["control_effectiveness_claims_checked"] == len(checked_effect_claims),
             "manifest checked-effect count mismatch",
@@ -262,6 +314,25 @@ def main() -> int:
             check.require(path.exists(), f"manifest file missing: {relative}")
             if path.exists():
                 check.require(sha256(path) == metadata["sha256"], f"checksum mismatch: {relative}")
+                check.require(path.stat().st_size == metadata["bytes"], f"byte-size mismatch: {relative}")
+        data_files = {
+            path.relative_to(RELEASE).as_posix()
+            for path in (RELEASE / "data").rglob("*")
+            if path.is_file()
+        }
+        csv_files = {path for path in data_files if path.endswith(".csv")}
+        parquet_files = {path for path in data_files if path.endswith(".parquet")}
+        if set(manifest.get("formats", [])) == {"csv", "parquet"}:
+            check.require(
+                {path.removesuffix(".csv") for path in csv_files}
+                == {path.removesuffix(".parquet") for path in parquet_files},
+                "CSV/Parquet table parity mismatch",
+            )
+        else:
+            check.require(
+                manifest.get("formats") == ["csv"] and not parquet_files,
+                "intermediate release must contain CSV only",
+            )
         checksums_path = RELEASE / "manifests" / "checksums.sha256"
         check.require(checksums_path.exists(), "checksum manifest missing")
         if checksums_path.exists():

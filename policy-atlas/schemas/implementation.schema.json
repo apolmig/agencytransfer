@@ -28,7 +28,7 @@
     "implementer": {"type": "string", "minLength": 1},
     "jurisdiction": {"type": "string", "minLength": 1},
     "legal_force": {
-      "enum": ["Binding", "Binding — limited scope", "Binding — phased", "Mixed", "Non-binding official guidance", "Voluntary / private", "Proposed", "Research"]
+      "enum": ["Binding", "Binding — limited scope", "Binding — phased", "Mandatory administrative policy — limited scope", "Mixed", "Non-binding official guidance", "Voluntary / private", "Planned / no legal force", "Proposed", "Research"]
     },
     "legal_status": {"type": "string", "minLength": 1},
     "operational_maturity": {

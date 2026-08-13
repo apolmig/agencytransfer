@@ -3,17 +3,36 @@
 
 from __future__ import annotations
 
+import json
 import shutil
 from pathlib import Path
 
+from release_config import VERSION
+
 
 ROOT = Path(__file__).resolve().parents[1]
-VERSION = "v0.1.0-beta.1"
 SOURCE = ROOT / "release" / VERSION
 DESTINATION = ROOT / "dist" / "huggingface"
 
 
 def main() -> None:
+    manifest = json.loads(
+        (SOURCE / "manifests" / "release.json").read_text(encoding="utf-8")
+    )
+    if manifest.get("artifact_version") != VERSION.removeprefix("v"):
+        raise SystemExit("Release manifest version does not match release_config.py")
+    if set(manifest.get("formats", [])) != {"csv", "parquet"}:
+        raise SystemExit("Refusing to stage a release without both CSV and Parquet")
+    csv_stems = {
+        path.relative_to(SOURCE / "data").with_suffix("").as_posix()
+        for path in (SOURCE / "data").rglob("*.csv")
+    }
+    parquet_stems = {
+        path.relative_to(SOURCE / "data").with_suffix("").as_posix()
+        for path in (SOURCE / "data").rglob("*.parquet")
+    }
+    if not csv_stems or csv_stems != parquet_stems:
+        raise SystemExit("Refusing to stage a release with CSV/Parquet table mismatch")
     if DESTINATION.exists():
         shutil.rmtree(DESTINATION)
     shutil.copytree(SOURCE / "data", DESTINATION / "data")

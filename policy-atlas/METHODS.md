@@ -61,6 +61,7 @@ documented risk mechanism is not proof that a control reduces harm.
 Verification is claim-specific:
 
 - Claim checked — primary legal source;
+- Claim checked — primary official policy source;
 - Claim checked — empirical source;
 - Canonical project URL fixed;
 - URL recorded — recheck before citation.
@@ -68,12 +69,19 @@ Verification is claim-specific:
 A working URL proves only retrievability. It does not prove that the source
 supports the linked claim.
 
+The frozen Sheets snapshot is not silently rewritten. Claim-specific evidence
+corrections and additions are stored in a versioned curation overlay and
+applied deterministically when building a release. The original claim, the
+corrected public claim, and the review decision therefore remain auditable.
+
 ## Decision tiers
 
-Candidates first pass non-compensable rights and institutional gates. Decision
-tiers then reflect current legal authority, operational maturity, causal
-plausibility, reversibility, evaluability, and evidence. No numeric aggregation
-is used.
+The Atlas proposes non-compensable rights and institutional gates. This beta
+publishes the gate definitions but not implementation-by-gate assessments, so
+the working decision tiers must not be read as reproduced pass/fail results.
+They reflect current legal authority, operational maturity, causal
+plausibility, reversibility, evaluability, and evidence without numeric
+aggregation.
 
 ## Limitations
 
@@ -88,4 +96,3 @@ treatment bundles.
 Stable IDs are never renumbered. Corrections record the affected object, prior
 value, new value, reason, date, and supporting claim. Material schema or
 construct changes require a new minor or major version.
-
