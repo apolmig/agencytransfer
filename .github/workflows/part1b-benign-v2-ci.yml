@@ -24,7 +24,10 @@ jobs:
         with:
           python-version: "3.12"
       - name: Compile
-        run: python -m py_compile part1b/benign_adapters_v2/jobs/train_lora.py
+        run: |
+          python -m py_compile \
+            part1b/benign_adapters_v2/jobs/train_lora.py \
+            part1b/benign_adapters_v2/jobs/ml_stack_preflight.py
       - name: Frozen dataset contracts
         run: python -m unittest discover -s part1b/benign_adapters_v2/tests -v
       - name: Validate both adapters without ML dependencies

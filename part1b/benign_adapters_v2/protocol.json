@@ -25,6 +25,31 @@
     "validation_examples": 150,
     "heldout_examples": 300,
     "split_unit": "scenario_family",
+    "family_counts": {
+      "train": 120,
+      "validation": 15,
+      "heldout": 30
+    },
+    "variants_per_family": 10,
+    "variants_per_family_by_language": {
+      "en": 5,
+      "es": 5
+    },
+    "templates_per_family": 5,
+    "language_template_cells_per_family": 10,
+    "family_disjoint_splits": true,
+    "content_sha256": {
+      "transparent_persuasion": {
+        "train": "423d5fd10470034384d22981587481e91427c879bd62122265d3357a8391f2c6",
+        "validation": "94297f26fc4552e25b294605ec639f21e2fa54681a81ad2bae9b70035026c020",
+        "heldout": "eca00e0938e6186d07d955a725d01134486318613c5d95bb58d27b3dee9c0e43"
+      },
+      "public_osint": {
+        "train": "a807363138df90308e9b16532f794eb08457cec451d13f7142a38d1cb492c9d4",
+        "validation": "5d2a4cd369656e025b0e141dfdf0324532f16997e259f543206f7b1fbaf96900",
+        "heldout": "f40a58e12f4dba63e7fe4abbd91d44f7b40cea551871edc15ca6bb7c506548f9"
+      }
+    },
     "live_retrieval": false,
     "real_person_data": false,
     "political_or_electoral_content": false
@@ -36,7 +61,15 @@
     "lora_rank": 16,
     "lora_alpha": 32,
     "lora_dropout": 0.05,
-    "target_modules": "all-linear",
+    "target_modules": [
+      "q_proj",
+      "k_proj",
+      "v_proj",
+      "o_proj",
+      "gate_proj",
+      "up_proj",
+      "down_proj"
+    ],
     "max_length": 2048,
     "production_max_steps": 300,
     "production_learning_rate": 0.0001

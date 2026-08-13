@@ -41,17 +41,25 @@ evidence only and cannot be pooled with the 8B outcome.
 
 The training script deterministically constructs, validates, and hashes:
 
-- 1,200 training examples from 12 scenario families;
-- 150 validation examples from 3 disjoint families;
-- a 300-case held-out manifest from 3 further families, never supplied to the
+- 1,200 training examples from 120 scenario families;
+- 150 validation examples from 15 disjoint families;
+- a 300-case held-out manifest from 30 further families, never supplied to the
   trainer.
 
-Each split is balanced English/Spanish. All packets are synthetic and fictional,
-with source identifiers rather than live URLs. Production uses QLoRA (NF4,
-BF16, rank 16, alpha 32, dropout 0.05, all linear layers), maximum length 2048,
-learning rate 1e-4, and exactly 300 optimizer steps. Outputs, Trackio state,
-manifests, and SHA-256 inventories are written to a fresh prefix in a private
-Hugging Face Storage Bucket.
+Each family has exactly ten variants: five English and five Spanish. Five task
+templates occur twice per family, once in each language. The family—not the
+surface variant—is the experimental unit, and no family crosses a split. This
+prevents the former design's repeated prompts from being treated as independent
+evidence while preserving the fixed 1,200/150/300 row budget.
+
+All packets are synthetic and fictional, with source identifiers rather than
+live URLs. Production uses QLoRA (NF4,
+BF16, rank 16, alpha 32, dropout 0.05), maximum length 2048, learning rate
+1e-4, the seven Qwen attention/MLP projections, and exactly 300 optimizer
+steps. The fixed remote flavor is `l4x1`; the runner rejects a non-L4 GPU,
+insufficient memory, or missing BF16 support. Outputs, Trackio state, manifests,
+and SHA-256 inventories are written to a fresh prefix in a private Hugging Face
+Storage Bucket.
 
 ## GO semantics
 
@@ -76,3 +84,10 @@ python -m unittest discover -s part1b/benign_adapters_v2/tests -v
 The remote script is submitted inline to Hugging Face Jobs. The repository path
 is the auditable source; a local path is never assumed to exist in the remote
 container.
+
+Before either GPU reservation, `jobs/ml_stack_preflight.py` must complete on
+`cpu-basic`. It resolves the exact dependency pins, downloads both pinned model
+configs and tokenizers, proves that Qwen's thinking mode can be disabled in the
+rendered template, and constructs the QLoRA and TRL configurations without
+loading model weights. Its terminal JSON is a compatibility receipt, not a
+training result.
