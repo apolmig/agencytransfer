@@ -24,6 +24,8 @@ dependencies = [
 atb-eval = "atb_eval.runner:main"
 atb-offline-revalidate = "atb_eval.offline_revalidation:main"
 atb-release-gate = "atb_eval.release_gate:main"
+atb-validation-evidence = "atb_eval.validation_evidence:main"
+atb-validation-packet = "atb_eval.validation_packet:main"
 
 [dependency-groups]
 dev = [

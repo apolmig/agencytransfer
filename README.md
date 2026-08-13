@@ -106,13 +106,22 @@ benchmark score, a model-risk label, or evidence of agency transfer.
 
 ## Benchmark linking
 
-ATB uses Ho et al.'s Epoch–DeepMind benchmark-stitching work as a design
-reference for longitudinal measurement: instruments should be connected by
-model configurations evaluated on both sides of each link. The present data do
-not support a shared latent scale. The deterministic readiness diagnostic finds
-no model observed on at least four instruments and no shared model anchor inside
-either multi-instrument construct family, so it emits no capability scores,
-difficulty scores, rankings, or forecasts.
+ATB uses Ho et al.'s Epoch AI–Google DeepMind paper
+[A Rosetta Stone for AI Benchmarks](https://arxiv.org/abs/2512.00193) as the
+conceptual reference for longitudinal measurement. Its central requirement is
+overlap: model configurations evaluated across instruments must connect the
+benchmark graph. ATB therefore records exact model-route configurations, tests
+anchor coverage before fitting, and prespecifies sensitivity to anchor choice,
+benchmark inclusion, overlap, and statistical form. Wave 1A creates a paired
+within-DisElect anchor only; it does not connect DisElect to APE or MASK.
+
+The present data do not support a shared latent scale. The deterministic
+readiness diagnostic finds no model observed on at least four instruments and
+no shared model anchor inside either multi-instrument construct family, so it
+emits no capability scores, difficulty scores, rankings, trends, or forecasts.
+This is also a construct boundary: harmful-manipulation behaviour is
+multidimensional, and a mathematically connected graph would not by itself
+justify collapsing unlike outcomes into one number.
 
 See the [method and readiness gate](research/methods/BENCHMARK_STITCHING.md) and
 the generated
@@ -129,6 +138,7 @@ data/diagnostics/     generated no-fit/readiness diagnostics
 data/published/       transformed, source-linked published observations
 data/runs/            sanitised historical audits and gated aggregate artifacts
 evals/                Inspect harness, manifests, fixtures, and legacy runner
+archive/              public recipient certificate and encrypted-archive policy
 public/data/          versioned frontend data
 research/testing/     one clear research note per project-tested model
 research/methods/     construct map and benchmark-linking specification

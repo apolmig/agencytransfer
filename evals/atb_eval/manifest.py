@@ -234,6 +234,7 @@ class ModelCondition(StrictModel):
                 "reasoning_tokens",
                 "seed",
                 "temperature",
+                "top_k",
                 "top_p",
             },
             "mistral": {"max_tokens", "reasoning_effort", "seed", "temperature", "top_p"},
@@ -254,6 +255,11 @@ class ModelCondition(StrictModel):
             raise ValueError(
                 "OpenRouter accepts either reasoning_effort or reasoning_tokens, not both"
             )
+        top_k = self.generate_config.get("top_k")
+        if top_k is not None and (
+            isinstance(top_k, bool) or not isinstance(top_k, int) or top_k <= 0
+        ):
+            raise ValueError("OpenRouter top_k must be a positive integer")
         if service == "mistral" and self.generate_config.get("reasoning_effort") not in {
             None,
             "none",

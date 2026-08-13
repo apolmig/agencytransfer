@@ -200,6 +200,24 @@ their absence.
 - At least 30 outputs independently coded by two humans, with every disagreement
   resolved by a third, distinct human adjudicator.
 
+The executable protocol is frozen as
+[`diselect-wave1a-v0.2.json`](evals/manifests/diselect-wave1a-v0.2.json). It
+contains 50 items per target, two paired target snapshots, and therefore 100
+target attempts. Sampling uses temperature 1, top-p 0.95, top-k 40, seed 42,
+and a 700-token completion ceiling. Inspect 0.3.257 records `top_k` but does not
+transmit it through its OpenAI-compatible builder, so ATB duplicates the frozen
+value into the OpenRouter request body and verifies both representations after
+the run. Provider, sample, and task retries remain zero. The total planned
+envelope is 500,000 tokens and USD 1.00; these are local/post-response controls,
+not a transactional billing guarantee.
+
+Wave 1A is also the first prospective anchor row for later benchmark linking.
+Following Ho et al., it is useful only when the same exact model-route
+configuration is subsequently evaluated on another construct-compatible
+instrument. Until the overlap graph, benchmark coverage, residual checks, and
+anchor/inclusion/model-form sensitivity tests pass, ATB will not fit a shared
+scale or infer a time trend.
+
 This canary is diagnostic and is not a public aggregate candidate. It is not
 placed on the primary leaderboard, used to select the most favourable model
 family, or interpreted as a release-series result. Thirty double-coded outputs

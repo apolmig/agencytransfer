@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fail closed unless a Scout canary scan has the exact expected result shape."""
+"""Fail closed unless a deterministic Scout scan has the expected result shape."""
 
 import argparse
 from pathlib import Path
@@ -7,7 +7,6 @@ from pathlib import Path
 from inspect_scout import scan_results_df
 
 SCANNER_NAME = "empty_assistant_message"
-EXPECTED_ROWS = 6
 
 
 def fail(message: str) -> None:
@@ -29,7 +28,7 @@ def resolve_scan_dir(scans_path: Path) -> Path:
     return candidates[0]
 
 
-def verify(scan_dir: Path) -> None:
+def verify(scan_dir: Path, expected_rows: int, *, require_negative: bool) -> None:
     results = scan_results_df(str(scan_dir))
 
     if not results.complete or not results.summary.complete:
@@ -46,14 +45,14 @@ def verify(scan_dir: Path) -> None:
         fail("scanner summary is missing")
     if summary.errors != 0:
         fail(f"scanner recorded {summary.errors} error(s)")
-    if summary.scans != EXPECTED_ROWS:
-        fail(f"scanner summary contains {summary.scans} scans, expected {EXPECTED_ROWS}")
-    if summary.results != 0:
+    if summary.scans != expected_rows:
+        fail(f"scanner summary contains {summary.scans} scans, expected {expected_rows}")
+    if require_negative and summary.results != 0:
         fail(f"scanner summary contains {summary.results} positive result(s)")
 
     frame = results.scanners[SCANNER_NAME]
-    if len(frame.index) != EXPECTED_ROWS:
-        fail(f"scanner output contains {len(frame.index)} rows, expected {EXPECTED_ROWS}")
+    if len(frame.index) != expected_rows:
+        fail(f"scanner output contains {len(frame.index)} rows, expected {expected_rows}")
 
     required_columns = {"transcript_id", "value"}
     missing_columns = required_columns.difference(frame.columns)
@@ -61,8 +60,8 @@ def verify(scan_dir: Path) -> None:
         fail(f"scanner output is missing columns: {sorted(missing_columns)}")
     if frame["transcript_id"].isna().any():
         fail("scanner output contains a missing transcript id")
-    if frame["transcript_id"].nunique() != EXPECTED_ROWS:
-        fail("scanner output does not contain six distinct transcripts")
+    if frame["transcript_id"].nunique() != expected_rows:
+        fail(f"scanner output does not contain {expected_rows} distinct transcripts")
 
     values = frame["value"]
     if values.isna().any():
@@ -70,10 +69,14 @@ def verify(scan_dir: Path) -> None:
     boolean_values = values.tolist()
     if any(type(value) is not bool for value in boolean_values):
         fail(f"scanner values are not boolean: {values.dtype}")
-    if any(boolean_values):
+    positive_count = sum(boolean_values)
+    if summary.results != positive_count:
+        fail("scanner summary result count does not match row values")
+    if require_negative and positive_count:
         fail("empty-message scanner returned a positive result")
 
-    print(f"Scout canary verified: {EXPECTED_ROWS} complete negative results.")
+    disposition = "negative" if require_negative else "diagnostic"
+    print(f"Scout scan verified: {expected_rows} complete {disposition} results.")
 
 
 def main() -> None:
@@ -83,8 +86,25 @@ def main() -> None:
         type=Path,
         help="Scout scans root or the single scan_id directory to verify.",
     )
+    parser.add_argument(
+        "--expected-rows",
+        type=int,
+        default=6,
+        help="Exact number of transcripts and scanner rows required.",
+    )
+    parser.add_argument(
+        "--allow-findings",
+        action="store_true",
+        help="Allow positive QA findings while still reconciling every result.",
+    )
     args = parser.parse_args()
-    verify(resolve_scan_dir(args.scans_path))
+    if args.expected_rows < 1:
+        fail("expected rows must be positive")
+    verify(
+        resolve_scan_dir(args.scans_path),
+        args.expected_rows,
+        require_negative=not args.allow_findings,
+    )
 
 
 if __name__ == "__main__":

@@ -33,6 +33,7 @@ from atb_eval.runner import (
     model_cost_config,
     openrouter_route_metadata_matches,
     read_postflight_log,
+    recorded_execution_usage_within_envelope,
     recorded_openrouter_billed_costs,
     repository_root,
     request_parameters_match,
@@ -84,6 +85,38 @@ def test_draft_protocols_are_schema_valid() -> None:
         manifest = load_manifest(REPO_ROOT / "evals/manifests" / name)
         assert manifest.status is ProtocolStatus.DRAFT
         assert manifest.models == []
+
+
+def test_frozen_wave1a_manifest_is_bounded_and_nonpublic() -> None:
+    manifest = load_manifest(REPO_ROOT / "evals/manifests/diselect-wave1a-v0.2.json")
+    assert manifest.status is ProtocolStatus.FROZEN
+    assert manifest.protocol_id == "atb-diselect-wave1a-v0.2"
+    assert manifest.task.args == {
+        "selection_seed": "atb-diselect-wave1a-v0.1",
+        "harmful_per_stratum": 5,
+        "benign_count": 10,
+        "include_actionability": False,
+        "temperature": 1.0,
+        "max_tokens": 700,
+    }
+    assert manifest.dataset.selected_inventory_sha256 == (
+        "2e6b2fe804453a62b1295a9ab920bc28ea97c18837bc65afa41491c9fd8427e6"
+    )
+    assert len(manifest.models) == 2
+    assert all(condition.generate_config["top_k"] == 40 for condition in manifest.models)
+    assert all(condition.generate_config["top_p"] == 0.95 for condition in manifest.models)
+    assert manifest.run.expected_samples_per_model == 50
+    assert manifest.run.max_retries == manifest.run.retry_on_error == 0
+    assert manifest.run.retry_attempts == 0
+    assert manifest.run.sample_cost_limit_usd == 0.01
+    assert manifest.run.planned_run_cost_envelope_usd == 1.0
+    assert manifest.run.sample_token_limit == 5000
+    assert manifest.run.planned_run_token_envelope == 500000
+    assert manifest.run.provider_key_limit_usd == 30.0
+    assert manifest.validation.double_coded_n == 30
+    assert manifest.validation.probability_strata == ["condition_id", "use_case"]
+    assert manifest.release.public_aggregate_candidate is False
+    assert manifest.release.requires_two_person_review is True
 
 
 @pytest.mark.parametrize(
@@ -941,6 +974,54 @@ def test_openrouter_reasoning_token_budget_is_verified() -> None:
     )
 
 
+def test_openrouter_top_k_is_logged_and_transmitted_in_extra_body() -> None:
+    condition = ModelCondition.model_validate(
+        {
+            "condition_id": "openrouter-top-k",
+            "model": "openrouter/vendor/model-2025-01-01",
+            "immutable": True,
+            "api_key_env": "OPENROUTER_API_KEY",
+            "route": RouteSpec(provider_only=["pinned-provider"]).model_dump(),
+            "model_args": {},
+            "generate_config": {"seed": 42, "top_k": 40, "top_p": 0.95},
+        }
+    )
+    expected = {"seed": 42, "top_k": 40, "top_p": 0.95, "extra_body": {"top_k": 40}}
+    request = {
+        "model": "vendor/model-2025-01-01",
+        "messages": [],
+        "extra_headers": {
+            "x-irid": "request-id",
+            "X-OpenRouter-Metadata": "enabled",
+        },
+        "seed": 42,
+        "top_p": 0.95,
+        "extra_body": {
+            "provider": condition.inspect_model_args()["provider"],
+            "top_k": 40,
+        },
+    }
+    assert request_parameters_match(request, condition, expected)
+    request["extra_body"]["top_k"] = 20
+    assert not request_parameters_match(request, condition, expected)
+
+
+@pytest.mark.parametrize("top_k", [0, -1, 1.5, True])
+def test_openrouter_top_k_must_be_a_positive_integer(top_k: object) -> None:
+    with pytest.raises(ValidationError, match="top_k must be a positive integer"):
+        ModelCondition.model_validate(
+            {
+                "condition_id": "openrouter-top-k",
+                "model": "openrouter/vendor/model-2025-01-01",
+                "immutable": True,
+                "api_key_env": "OPENROUTER_API_KEY",
+                "route": RouteSpec(provider_only=["pinned-provider"]).model_dump(),
+                "model_args": {},
+                "generate_config": {"seed": 42, "top_k": top_k},
+            }
+        )
+
+
 def test_mistral_rejects_ambiguous_reasoning_effort() -> None:
     payload = {
         "condition_id": "mistral-reasoning",
@@ -1328,40 +1409,154 @@ def test_model_cost_config_is_explicit_and_consistent() -> None:
         ProtocolManifest.model_validate(payload)
 
 
-def test_diselect_postflight_requires_exact_task_scorers_and_native_score() -> None:
-    manifest = ProtocolManifest.model_validate(_frozen_diselect_payload())
-    sample = SimpleNamespace(
-        scores={
-            "diselect_response_class": Score(
-                value="comply",
-                answer="comply",
+def _score_contract_sample(
+    *,
+    native_class: str = "comply",
+    subset: str = "harmful",
+    instrument_failure: str | None = None,
+) -> SimpleNamespace:
+    target = type("ModelEvent", (), {})()
+    target.role = None
+    target.output = SimpleNamespace(error=None, stop_reason="stop", completion="target answer")
+    events = [target]
+    if instrument_failure in {
+        "target_model_error",
+        "provider_or_policy_block",
+        "truncated",
+        "empty_response",
+    }:
+        if instrument_failure == "target_model_error":
+            target.output.error = "provider error"
+        elif instrument_failure == "provider_or_policy_block":
+            target.output.stop_reason = "content_filter"
+        elif instrument_failure == "truncated":
+            target.output.stop_reason = "max_tokens"
+        else:
+            target.output.completion = ""
+        score = Score.unscored(metadata={"instrument_failure": instrument_failure})
+    else:
+        grader = type("ModelEvent", (), {})()
+        grader.role = "grader"
+        grader.output = SimpleNamespace(
+            error=None,
+            stop_reason="stop",
+            completion=f"FINAL_LABEL: {native_class}",
+        )
+        events.append(grader)
+        if instrument_failure is None:
+            score = Score(
+                value=native_class,
+                answer=native_class,
                 metadata={"codebook": "atb-diselect-response-v0.1"},
             )
-        }
+        else:
+            if instrument_failure == "grader_model_error":
+                grader.output.error = "provider error"
+            elif instrument_failure == "grader_truncated":
+                grader.output.stop_reason = "max_tokens"
+            elif instrument_failure == "grader_parse_failure":
+                grader.output.completion = "invalid"
+            score = Score.unscored(metadata={"instrument_failure": instrument_failure})
+    return SimpleNamespace(
+        output=target.output,
+        events=events,
+        metadata={"subset": subset},
+        scores={"diselect_response_class": score},
     )
-    log = SimpleNamespace(
+
+
+def _score_contract_log(samples: list[SimpleNamespace]) -> SimpleNamespace:
+    return SimpleNamespace(
         eval=SimpleNamespace(
             task_version="0.1.0",
             scorers=[SimpleNamespace(name="diselect_response_class")],
         ),
-        samples=[sample],
+        samples=samples,
     )
+
+
+def test_diselect_postflight_requires_exact_task_scorers_and_native_score() -> None:
+    manifest = ProtocolManifest.model_validate(_frozen_diselect_payload())
+    sample = _score_contract_sample()
+    log = _score_contract_log([sample])
     assert diselect_score_contract_matches(log, manifest)
 
-    sample.scores["diselect_response_class"] = Score.unscored(
-        metadata={"instrument_failure": "grader_parse_failure"}
-    )
+    sample.scores["diselect_response_class"].answer = "refuse"
     assert not diselect_score_contract_matches(log, manifest)
-    sample.scores["diselect_response_class"] = Score(
-        value="comply",
-        answer="comply",
-        metadata={"codebook": "atb-diselect-response-v0.1"},
-    )
+    sample = _score_contract_sample()
+    log = _score_contract_log([sample])
     log.eval.task_version = "different"
     assert not diselect_score_contract_matches(log, manifest)
     log.eval.task_version = "0.1.0"
     log.eval.scorers.append(SimpleNamespace(name="unfrozen_scorer"))
     assert not diselect_score_contract_matches(log, manifest)
+
+
+def test_diselect_postflight_accepts_only_bounded_explained_missingness() -> None:
+    manifest = ProtocolManifest.model_validate(_frozen_diselect_payload())
+    samples = [_score_contract_sample() for _ in range(19)]
+    samples.append(_score_contract_sample(instrument_failure="grader_parse_failure"))
+    samples.extend(_score_contract_sample(subset="benign") for _ in range(10))
+    assert diselect_score_contract_matches(_score_contract_log(samples), manifest)
+
+    samples[-1] = _score_contract_sample(subset="benign", instrument_failure="target_model_error")
+    assert not diselect_score_contract_matches(_score_contract_log(samples), manifest)
+
+
+def test_diselect_postflight_rejects_instrument_failure_tampering() -> None:
+    manifest = ProtocolManifest.model_validate(_frozen_diselect_payload())
+    samples = [_score_contract_sample() for _ in range(19)]
+    failed = _score_contract_sample(instrument_failure="grader_truncated")
+    samples.append(failed)
+    failed.scores["diselect_response_class"].metadata = {
+        "instrument_failure": "grader_parse_failure"
+    }
+    assert not diselect_score_contract_matches(_score_contract_log(samples), manifest)
+
+
+def test_non_human_protocol_rejects_unscored_samples() -> None:
+    manifest = ProtocolManifest.model_validate(_frozen_diselect_payload())
+    manifest.validation.human_validation_required = False
+    samples = [_score_contract_sample() for _ in range(19)]
+    samples.append(_score_contract_sample(instrument_failure="grader_parse_failure"))
+    assert not diselect_score_contract_matches(_score_contract_log(samples), manifest)
+
+
+def test_usage_reconciliation_ignores_direct_events_when_matching_openrouter_billing(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    manifest = ProtocolManifest.model_validate(_frozen_diselect_payload())
+    evidence_path = tmp_path / "evidence.eval"
+    evidence_path.touch()
+    openrouter = type("ModelEvent", (), {})()
+    openrouter.uuid = "openrouter-event"
+    openrouter.model = "openrouter/vendor/model-2025-01-01"
+    direct = type("ModelEvent", (), {})()
+    direct.uuid = "direct-event"
+    direct.model = "openai/model-2025-01-01"
+    log = SimpleNamespace(
+        eval=SimpleNamespace(metadata={"atb_execution_id": "execution"}),
+        status="success",
+        samples=[SimpleNamespace(events=[openrouter, direct])],
+    )
+    monkeypatch.setattr(manifest_module, "load_manifest", lambda *_: manifest)
+    monkeypatch.setattr("atb_eval.runner.read_eval_log", lambda *_: log)
+    monkeypatch.setattr("atb_eval.runner.log_matches_condition", lambda *_: True)
+    monkeypatch.setattr("atb_eval.runner.recorded_log_usage", lambda *_args, **_kwargs: (30, 0.003))
+    monkeypatch.setattr(
+        "atb_eval.runner.recorded_event_usage",
+        lambda *_args, **_kwargs: {
+            "openrouter-event": (10, 0.001, "a" * 64),
+            "direct-event": (20, 0.002, "b" * 64),
+        },
+    )
+    monkeypatch.setattr(
+        "atb_eval.runner.recorded_openrouter_billed_costs",
+        lambda *_: {"openrouter-event": (0.001, "c" * 64)},
+    )
+    assert recorded_execution_usage_within_envelope(
+        manifest, tmp_path, "execution", manifest.models
+    )
 
 
 def test_openrouter_billed_cost_is_read_separately_from_local_estimate() -> None:
