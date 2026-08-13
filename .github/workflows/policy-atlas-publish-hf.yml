@@ -1,0 +1,32 @@
+name: Publish Policy Atlas to Hugging Face
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: "Type publish-beta to publish the research preview"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    if: ${{ inputs.confirm == 'publish-beta' }}
+    runs-on: ubuntu-latest
+    environment: policy-atlas-release
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: policy-atlas/package-lock.json
+      - run: python -m pip install --disable-pip-version-check huggingface_hub
+      - run: python policy-atlas/scripts/publish_hf.py
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}

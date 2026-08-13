@@ -1,0 +1,321 @@
+relation_id,implementation_id,claim_id,claim_role,relevance,notes
+ICL-0001,I-001,CLM-0001,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0002,I-001,CLM-0002,Direct effectiveness,Cautionary,Do not upgrade this claim from Plausible hypothesis because a legal duty or risk mechanism exists.
+ICL-0003,I-002,CLM-0003,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0004,I-002,CLM-0004,Direct effectiveness,Cautionary,Do not upgrade this claim from Plausible hypothesis because a legal duty or risk mechanism exists.
+ICL-0005,I-003,CLM-0005,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0006,I-003,CLM-0006,Direct effectiveness,Cautionary,Do not upgrade this claim from Plausible hypothesis because a legal duty or risk mechanism exists.
+ICL-0007,I-004,CLM-0007,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0008,I-004,CLM-0008,Direct effectiveness,Cautionary,Do not upgrade this claim from Strong inference because a legal duty or risk mechanism exists.
+ICL-0009,I-005,CLM-0009,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0010,I-005,CLM-0010,Direct effectiveness,Cautionary,Do not upgrade this claim from Plausible hypothesis because a legal duty or risk mechanism exists.
+ICL-0011,I-006,CLM-0011,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0012,I-006,CLM-0012,Direct effectiveness,Cautionary,Do not upgrade this claim from Plausible hypothesis because a legal duty or risk mechanism exists.
+ICL-0013,I-007,CLM-0013,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0014,I-007,CLM-0014,Direct effectiveness,Cautionary,Do not upgrade this claim from Plausible hypothesis because a legal duty or risk mechanism exists.
+ICL-0015,I-008,CLM-0015,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0016,I-008,CLM-0016,Direct effectiveness,Core,Do not upgrade this claim from Established evidence because a legal duty or risk mechanism exists.
+ICL-0017,I-009,CLM-0017,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0018,I-009,CLM-0018,Direct effectiveness,Cautionary,Do not upgrade this claim from Plausible hypothesis because a legal duty or risk mechanism exists.
+ICL-0019,I-010,CLM-0019,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0020,I-010,CLM-0020,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0021,I-010,CLM-0021,Direct effectiveness,Cautionary,Do not upgrade this claim from Strong inference because a legal duty or risk mechanism exists.
+ICL-0022,I-011,CLM-0022,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0023,I-011,CLM-0023,Direct effectiveness,Cautionary,Do not upgrade this claim from Plausible hypothesis because a legal duty or risk mechanism exists.
+ICL-0024,I-012,CLM-0024,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0025,I-012,CLM-0025,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0026,I-012,CLM-0026,Direct effectiveness,Cautionary,Do not upgrade this claim from Plausible hypothesis because a legal duty or risk mechanism exists.
+ICL-0027,I-013,CLM-0027,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0028,I-013,CLM-0028,Direct effectiveness,Cautionary,Do not upgrade this claim from Plausible hypothesis because a legal duty or risk mechanism exists.
+ICL-0029,I-014,CLM-0029,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0030,I-014,CLM-0030,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0031,I-014,CLM-0031,Direct effectiveness,Cautionary,Do not upgrade this claim from Open question because a legal duty or risk mechanism exists.
+ICL-0032,I-015,CLM-0032,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0033,I-015,CLM-0033,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0034,I-015,CLM-0034,Direct effectiveness,Cautionary,Do not upgrade this claim from Plausible hypothesis because a legal duty or risk mechanism exists.
+ICL-0035,I-016,CLM-0035,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0036,I-016,CLM-0036,Direct effectiveness,Cautionary,Do not upgrade this claim from Plausible hypothesis because a legal duty or risk mechanism exists.
+ICL-0037,I-017,CLM-0037,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0038,I-017,CLM-0038,Direct effectiveness,Cautionary,Do not upgrade this claim from Plausible hypothesis because a legal duty or risk mechanism exists.
+ICL-0039,I-018,CLM-0039,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0040,I-018,CLM-0040,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0041,I-018,CLM-0041,Direct effectiveness,Cautionary,Do not upgrade this claim from Open question because a legal duty or risk mechanism exists.
+ICL-0042,I-019,CLM-0042,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0043,I-019,CLM-0043,Direct effectiveness,Cautionary,Do not upgrade this claim from Strong inference because a legal duty or risk mechanism exists.
+ICL-0044,I-020,CLM-0044,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0045,I-020,CLM-0045,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0046,I-020,CLM-0046,Direct effectiveness,Cautionary,Do not upgrade this claim from Strong inference because a legal duty or risk mechanism exists.
+ICL-0047,I-021,CLM-0047,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0048,I-021,CLM-0048,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0049,I-021,CLM-0049,Direct effectiveness,Cautionary,Do not upgrade this claim from Open question because a legal duty or risk mechanism exists.
+ICL-0050,I-022,CLM-0050,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0051,I-022,CLM-0051,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0052,I-022,CLM-0052,Direct effectiveness,Cautionary,Do not upgrade this claim from Plausible hypothesis because a legal duty or risk mechanism exists.
+ICL-0053,I-023,CLM-0053,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0054,I-023,CLM-0054,Direct effectiveness,Cautionary,Do not upgrade this claim from Strong inference because a legal duty or risk mechanism exists.
+ICL-0055,I-024,CLM-0055,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0056,I-024,CLM-0056,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0057,I-024,CLM-0057,Direct effectiveness,Cautionary,Do not upgrade this claim from Open question because a legal duty or risk mechanism exists.
+ICL-0058,I-025,CLM-0058,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0059,I-025,CLM-0059,Direct effectiveness,Cautionary,Do not upgrade this claim from Plausible hypothesis because a legal duty or risk mechanism exists.
+ICL-0060,I-026,CLM-0060,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0061,I-026,CLM-0061,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0062,I-026,CLM-0062,Direct effectiveness,Cautionary,Do not upgrade this claim from Strong inference because a legal duty or risk mechanism exists.
+ICL-0063,I-027,CLM-0063,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0064,I-027,CLM-0064,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0065,I-027,CLM-0065,Direct effectiveness,Cautionary,Do not upgrade this claim from Open question because a legal duty or risk mechanism exists.
+ICL-0066,I-028,CLM-0066,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0067,I-028,CLM-0067,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0068,I-028,CLM-0068,Direct effectiveness,Cautionary,Do not upgrade this claim from Open question because a legal duty or risk mechanism exists.
+ICL-0069,I-029,CLM-0069,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0070,I-029,CLM-0070,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0071,I-029,CLM-0071,Direct effectiveness,Cautionary,Do not upgrade this claim from Open question because a legal duty or risk mechanism exists.
+ICL-0072,I-030,CLM-0072,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0073,I-030,CLM-0073,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0074,I-030,CLM-0074,Direct effectiveness,Cautionary,Do not upgrade this claim from Strong inference because a legal duty or risk mechanism exists.
+ICL-0075,I-031,CLM-0075,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0076,I-031,CLM-0076,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0077,I-031,CLM-0077,Direct effectiveness,Cautionary,Do not upgrade this claim from Plausible hypothesis because a legal duty or risk mechanism exists.
+ICL-0078,I-032,CLM-0078,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0079,I-032,CLM-0079,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0080,I-032,CLM-0080,Direct effectiveness,Cautionary,Do not upgrade this claim from Open question because a legal duty or risk mechanism exists.
+ICL-0081,I-033,CLM-0081,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0082,I-033,CLM-0082,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0083,I-033,CLM-0083,Direct effectiveness,Cautionary,Do not upgrade this claim from Open question because a legal duty or risk mechanism exists.
+ICL-0084,I-034,CLM-0084,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0085,I-034,CLM-0085,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0086,I-034,CLM-0086,Direct effectiveness,Cautionary,Do not upgrade this claim from Strong inference because a legal duty or risk mechanism exists.
+ICL-0087,I-035,CLM-0087,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0088,I-035,CLM-0088,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0089,I-035,CLM-0089,Direct effectiveness,Cautionary,Do not upgrade this claim from Plausible hypothesis because a legal duty or risk mechanism exists.
+ICL-0090,I-036,CLM-0090,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0091,I-036,CLM-0091,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0092,I-036,CLM-0092,Direct effectiveness,Cautionary,Do not upgrade this claim from Strong inference because a legal duty or risk mechanism exists.
+ICL-0093,I-037,CLM-0093,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0094,I-037,CLM-0094,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0095,I-037,CLM-0095,Direct effectiveness,Cautionary,Do not upgrade this claim from Open question because a legal duty or risk mechanism exists.
+ICL-0096,I-038,CLM-0096,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0097,I-038,CLM-0097,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0098,I-038,CLM-0098,Direct effectiveness,Cautionary,Do not upgrade this claim from Open question because a legal duty or risk mechanism exists.
+ICL-0099,I-039,CLM-0099,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0100,I-039,CLM-0100,Direct effectiveness,Cautionary,Do not upgrade this claim from Strong inference because a legal duty or risk mechanism exists.
+ICL-0101,I-040,CLM-0101,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0102,I-040,CLM-0102,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0103,I-040,CLM-0103,Direct effectiveness,Cautionary,Do not upgrade this claim from Strong inference because a legal duty or risk mechanism exists.
+ICL-0104,I-041,CLM-0104,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0105,I-041,CLM-0105,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0106,I-041,CLM-0106,Direct effectiveness,Cautionary,Do not upgrade this claim from Plausible hypothesis because a legal duty or risk mechanism exists.
+ICL-0107,I-042,CLM-0107,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0108,I-042,CLM-0108,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0109,I-042,CLM-0109,Direct effectiveness,Cautionary,Do not upgrade this claim from Open question because a legal duty or risk mechanism exists.
+ICL-0110,I-043,CLM-0110,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0111,I-043,CLM-0111,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0112,I-043,CLM-0112,Direct effectiveness,Cautionary,Do not upgrade this claim from Open question because a legal duty or risk mechanism exists.
+ICL-0113,I-044,CLM-0113,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0114,I-044,CLM-0114,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0115,I-044,CLM-0115,Direct effectiveness,Core,Do not upgrade this claim from Established evidence because a legal duty or risk mechanism exists.
+ICL-0116,I-045,CLM-0116,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0117,I-045,CLM-0117,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0118,I-045,CLM-0118,Direct effectiveness,Cautionary,Do not upgrade this claim from Open question because a legal duty or risk mechanism exists.
+ICL-0119,I-046,CLM-0119,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0120,I-046,CLM-0120,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0121,I-046,CLM-0121,Direct effectiveness,Cautionary,Do not upgrade this claim from Open question because a legal duty or risk mechanism exists.
+ICL-0122,I-047,CLM-0122,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0123,I-047,CLM-0123,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0124,I-047,CLM-0124,Direct effectiveness,Cautionary,Do not upgrade this claim from Open question because a legal duty or risk mechanism exists.
+ICL-0125,I-048,CLM-0125,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0126,I-048,CLM-0126,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0127,I-048,CLM-0127,Direct effectiveness,Cautionary,Do not upgrade this claim from Strong inference because a legal duty or risk mechanism exists.
+ICL-0128,I-049,CLM-0128,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0129,I-049,CLM-0129,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0130,I-049,CLM-0130,Direct effectiveness,Cautionary,Do not upgrade this claim from Open question because a legal duty or risk mechanism exists.
+ICL-0131,I-050,CLM-0131,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0132,I-050,CLM-0132,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0133,I-050,CLM-0133,Direct effectiveness,Cautionary,Do not upgrade this claim from Open question because a legal duty or risk mechanism exists.
+ICL-0134,I-051,CLM-0134,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0135,I-051,CLM-0135,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0136,I-051,CLM-0136,Direct effectiveness,Cautionary,Do not upgrade this claim from Open question because a legal duty or risk mechanism exists.
+ICL-0137,I-052,CLM-0137,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0138,I-052,CLM-0138,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0139,I-052,CLM-0139,Direct effectiveness,Cautionary,Do not upgrade this claim from Open question because a legal duty or risk mechanism exists.
+ICL-0140,I-053,CLM-0140,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0141,I-053,CLM-0141,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0142,I-053,CLM-0142,Direct effectiveness,Cautionary,Do not upgrade this claim from Strong inference because a legal duty or risk mechanism exists.
+ICL-0143,I-054,CLM-0143,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0144,I-054,CLM-0144,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0145,I-054,CLM-0145,Direct effectiveness,Cautionary,Do not upgrade this claim from Strong inference because a legal duty or risk mechanism exists.
+ICL-0146,I-055,CLM-0146,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0147,I-055,CLM-0147,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0148,I-055,CLM-0148,Direct effectiveness,Cautionary,Do not upgrade this claim from Strong inference because a legal duty or risk mechanism exists.
+ICL-0149,I-056,CLM-0149,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0150,I-056,CLM-0150,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0151,I-056,CLM-0151,Direct effectiveness,Cautionary,Do not upgrade this claim from Open question because a legal duty or risk mechanism exists.
+ICL-0152,I-057,CLM-0152,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0153,I-057,CLM-0153,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0154,I-057,CLM-0154,Direct effectiveness,Cautionary,Do not upgrade this claim from Open question because a legal duty or risk mechanism exists.
+ICL-0155,I-058,CLM-0155,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0156,I-058,CLM-0156,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0157,I-058,CLM-0157,Direct effectiveness,Cautionary,Do not upgrade this claim from Plausible hypothesis because a legal duty or risk mechanism exists.
+ICL-0158,I-059,CLM-0158,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0159,I-059,CLM-0159,Direct effectiveness,Cautionary,Do not upgrade this claim from Strong inference because a legal duty or risk mechanism exists.
+ICL-0160,I-060,CLM-0160,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0161,I-060,CLM-0161,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0162,I-060,CLM-0162,Direct effectiveness,Cautionary,Do not upgrade this claim from Open question because a legal duty or risk mechanism exists.
+ICL-0163,I-061,CLM-0163,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0164,I-061,CLM-0164,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0165,I-061,CLM-0165,Direct effectiveness,Cautionary,Do not upgrade this claim from Open question because a legal duty or risk mechanism exists.
+ICL-0166,I-062,CLM-0166,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0167,I-062,CLM-0167,Direct effectiveness,Cautionary,Do not upgrade this claim from Strong inference because a legal duty or risk mechanism exists.
+ICL-0168,I-063,CLM-0168,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0169,I-063,CLM-0169,Direct effectiveness,Cautionary,Do not upgrade this claim from Strong inference because a legal duty or risk mechanism exists.
+ICL-0170,I-064,CLM-0170,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0171,I-064,CLM-0171,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0172,I-064,CLM-0172,Direct effectiveness,Cautionary,Do not upgrade this claim from Strong inference because a legal duty or risk mechanism exists.
+ICL-0173,I-065,CLM-0173,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0174,I-065,CLM-0174,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0175,I-065,CLM-0175,Direct effectiveness,Cautionary,Do not upgrade this claim from Strong inference because a legal duty or risk mechanism exists.
+ICL-0176,I-066,CLM-0176,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0177,I-066,CLM-0177,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0178,I-066,CLM-0178,Direct effectiveness,Cautionary,Do not upgrade this claim from Strong inference because a legal duty or risk mechanism exists.
+ICL-0179,I-067,CLM-0179,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0180,I-067,CLM-0180,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0181,I-067,CLM-0181,Direct effectiveness,Core,Do not upgrade this claim from Established evidence because a legal duty or risk mechanism exists.
+ICL-0182,I-068,CLM-0182,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0183,I-068,CLM-0183,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0184,I-068,CLM-0184,Direct effectiveness,Core,Do not upgrade this claim from Established evidence because a legal duty or risk mechanism exists.
+ICL-0185,I-069,CLM-0185,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0186,I-069,CLM-0186,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0187,I-069,CLM-0187,Direct effectiveness,Cautionary,Do not upgrade this claim from Strong inference because a legal duty or risk mechanism exists.
+ICL-0188,I-070,CLM-0188,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0189,I-070,CLM-0189,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0190,I-070,CLM-0190,Direct effectiveness,Cautionary,Do not upgrade this claim from Open question because a legal duty or risk mechanism exists.
+ICL-0191,I-071,CLM-0191,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0192,I-071,CLM-0192,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0193,I-071,CLM-0193,Direct effectiveness,Cautionary,Do not upgrade this claim from Open question because a legal duty or risk mechanism exists.
+ICL-0194,I-072,CLM-0194,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0195,I-072,CLM-0195,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0196,I-072,CLM-0196,Direct effectiveness,Cautionary,Do not upgrade this claim from Open question because a legal duty or risk mechanism exists.
+ICL-0197,I-073,CLM-0197,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0198,I-073,CLM-0198,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0199,I-073,CLM-0199,Direct effectiveness,Cautionary,Do not upgrade this claim from Open question because a legal duty or risk mechanism exists.
+ICL-0200,I-074,CLM-0200,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0201,I-074,CLM-0201,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0202,I-074,CLM-0202,Direct effectiveness,Cautionary,Do not upgrade this claim from Open question because a legal duty or risk mechanism exists.
+ICL-0203,I-075,CLM-0203,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0204,I-075,CLM-0204,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0205,I-075,CLM-0205,Direct effectiveness,Cautionary,Do not upgrade this claim from Open question because a legal duty or risk mechanism exists.
+ICL-0206,I-076,CLM-0206,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0207,I-076,CLM-0207,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0208,I-076,CLM-0208,Direct effectiveness,Cautionary,Do not upgrade this claim from Open question because a legal duty or risk mechanism exists.
+ICL-0209,I-077,CLM-0209,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0210,I-077,CLM-0210,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0211,I-077,CLM-0211,Direct effectiveness,Cautionary,Do not upgrade this claim from Open question because a legal duty or risk mechanism exists.
+ICL-0212,I-078,CLM-0212,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0213,I-078,CLM-0213,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0214,I-078,CLM-0214,Direct effectiveness,Cautionary,Do not upgrade this claim from Open question because a legal duty or risk mechanism exists.
+ICL-0215,I-079,CLM-0215,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0216,I-079,CLM-0216,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0217,I-079,CLM-0217,Direct effectiveness,Cautionary,Do not upgrade this claim from Strong inference because a legal duty or risk mechanism exists.
+ICL-0218,I-080,CLM-0218,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0219,I-080,CLM-0219,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0220,I-080,CLM-0220,Direct effectiveness,Cautionary,Do not upgrade this claim from Open question because a legal duty or risk mechanism exists.
+ICL-0221,I-081,CLM-0221,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0222,I-081,CLM-0222,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0223,I-081,CLM-0223,Direct effectiveness,Cautionary,Do not upgrade this claim from Open question because a legal duty or risk mechanism exists.
+ICL-0224,I-082,CLM-0224,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0225,I-082,CLM-0225,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0226,I-082,CLM-0226,Direct effectiveness,Cautionary,Do not upgrade this claim from Open question because a legal duty or risk mechanism exists.
+ICL-0227,I-084,CLM-0227,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0228,I-084,CLM-0228,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0229,I-084,CLM-0229,Direct effectiveness,Cautionary,Do not upgrade this claim from Open question because a legal duty or risk mechanism exists.
+ICL-0230,I-086,CLM-0230,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0231,I-086,CLM-0231,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0232,I-086,CLM-0232,Direct effectiveness,Core,Do not upgrade this claim from Established evidence because a legal duty or risk mechanism exists.
+ICL-0233,I-087,CLM-0233,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0234,I-087,CLM-0234,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0235,I-087,CLM-0235,Direct effectiveness,Core,Do not upgrade this claim from Established evidence because a legal duty or risk mechanism exists.
+ICL-0236,I-088,CLM-0236,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0237,I-088,CLM-0237,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0238,I-088,CLM-0238,Direct effectiveness,Cautionary,Do not upgrade this claim from Open question because a legal duty or risk mechanism exists.
+ICL-0239,I-089,CLM-0239,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0240,I-089,CLM-0240,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0241,I-089,CLM-0241,Direct effectiveness,Cautionary,Do not upgrade this claim from Open question because a legal duty or risk mechanism exists.
+ICL-0242,I-090,CLM-0242,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0243,I-090,CLM-0243,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0244,I-090,CLM-0244,Direct effectiveness,Cautionary,Do not upgrade this claim from Open question because a legal duty or risk mechanism exists.
+ICL-0245,I-091,CLM-0245,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0246,I-091,CLM-0246,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0247,I-091,CLM-0247,Direct effectiveness,Cautionary,Do not upgrade this claim from Open question because a legal duty or risk mechanism exists.
+ICL-0248,I-092,CLM-0248,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0249,I-092,CLM-0249,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0250,I-092,CLM-0250,Direct effectiveness,Cautionary,Do not upgrade this claim from Open question because a legal duty or risk mechanism exists.
+ICL-0251,I-094,CLM-0251,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0252,I-094,CLM-0252,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0253,I-094,CLM-0253,Direct effectiveness,Cautionary,Do not upgrade this claim from Strong inference because a legal duty or risk mechanism exists.
+ICL-0254,I-095,CLM-0254,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0255,I-095,CLM-0255,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0256,I-095,CLM-0256,Direct effectiveness,Cautionary,Do not upgrade this claim from Open question because a legal duty or risk mechanism exists.
+ICL-0257,I-096,CLM-0257,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0258,I-096,CLM-0258,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0259,I-096,CLM-0259,Direct effectiveness,Cautionary,Do not upgrade this claim from Open question because a legal duty or risk mechanism exists.
+ICL-0260,I-097,CLM-0260,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0261,I-097,CLM-0261,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0262,I-097,CLM-0262,Direct effectiveness,Cautionary,Do not upgrade this claim from Open question because a legal duty or risk mechanism exists.
+ICL-0263,I-098,CLM-0263,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0264,I-098,CLM-0264,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0265,I-098,CLM-0265,Direct effectiveness,Cautionary,Do not upgrade this claim from Open question because a legal duty or risk mechanism exists.
+ICL-0266,I-099,CLM-0266,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0267,I-099,CLM-0267,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0268,I-099,CLM-0268,Direct effectiveness,Cautionary,Do not upgrade this claim from Open question because a legal duty or risk mechanism exists.
+ICL-0269,I-100,CLM-0269,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0270,I-100,CLM-0270,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0271,I-100,CLM-0271,Direct effectiveness,Cautionary,Do not upgrade this claim from Strong inference because a legal duty or risk mechanism exists.
+ICL-0272,I-101,CLM-0272,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0273,I-101,CLM-0273,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0274,I-101,CLM-0274,Direct effectiveness,Cautionary,Do not upgrade this claim from Strong inference because a legal duty or risk mechanism exists.
+ICL-0275,I-102,CLM-0275,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0276,I-102,CLM-0276,Direct effectiveness,Cautionary,Do not upgrade this claim from Strong inference because a legal duty or risk mechanism exists.
+ICL-0277,I-103,CLM-0277,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0278,I-103,CLM-0278,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0279,I-103,CLM-0279,Direct effectiveness,Cautionary,Do not upgrade this claim from Open question because a legal duty or risk mechanism exists.
+ICL-0280,I-104,CLM-0280,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0281,I-104,CLM-0281,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0282,I-104,CLM-0282,Direct effectiveness,Cautionary,Do not upgrade this claim from Open question because a legal duty or risk mechanism exists.
+ICL-0283,I-105,CLM-0283,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0284,I-105,CLM-0284,Direct effectiveness,Cautionary,Do not upgrade this claim from Strong inference because a legal duty or risk mechanism exists.
+ICL-0285,I-106,CLM-0285,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0286,I-106,CLM-0286,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0287,I-106,CLM-0287,Direct effectiveness,Cautionary,Do not upgrade this claim from Open question because a legal duty or risk mechanism exists.
+ICL-0288,I-107,CLM-0288,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0289,I-107,CLM-0289,Direct effectiveness,Cautionary,Do not upgrade this claim from Plausible hypothesis because a legal duty or risk mechanism exists.
+ICL-0290,I-108,CLM-0290,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0291,I-108,CLM-0291,Direct effectiveness,Cautionary,Do not upgrade this claim from Plausible hypothesis because a legal duty or risk mechanism exists.
+ICL-0292,I-109,CLM-0292,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0293,I-109,CLM-0293,Direct effectiveness,Cautionary,Do not upgrade this claim from Strong inference because a legal duty or risk mechanism exists.
+ICL-0294,I-110,CLM-0294,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0295,I-110,CLM-0295,Direct effectiveness,Cautionary,Do not upgrade this claim from Plausible hypothesis because a legal duty or risk mechanism exists.
+ICL-0296,I-111,CLM-0296,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0297,I-111,CLM-0297,Direct effectiveness,Cautionary,Do not upgrade this claim from Plausible hypothesis because a legal duty or risk mechanism exists.
+ICL-0298,I-112,CLM-0298,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0299,I-112,CLM-0299,Direct effectiveness,Cautionary,Do not upgrade this claim from Strong inference because a legal duty or risk mechanism exists.
+ICL-0300,I-113,CLM-0300,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0301,I-113,CLM-0301,Direct effectiveness,Cautionary,Do not upgrade this claim from Strong inference because a legal duty or risk mechanism exists.
+ICL-0302,I-114,CLM-0302,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0303,I-114,CLM-0303,Direct effectiveness,Cautionary,Do not upgrade this claim from Strong inference because a legal duty or risk mechanism exists.
+ICL-0304,I-115,CLM-0304,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0305,I-115,CLM-0305,Direct effectiveness,Cautionary,Do not upgrade this claim from Strong inference because a legal duty or risk mechanism exists.
+ICL-0306,I-116,CLM-0306,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0307,I-116,CLM-0307,Direct effectiveness,Cautionary,Do not upgrade this claim from Plausible hypothesis because a legal duty or risk mechanism exists.
+ICL-0308,I-117,CLM-0308,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0309,I-117,CLM-0309,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0310,I-117,CLM-0310,Direct effectiveness,Cautionary,Do not upgrade this claim from Open question because a legal duty or risk mechanism exists.
+ICL-0311,I-118,CLM-0311,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0312,I-118,CLM-0312,Direct effectiveness,Cautionary,Do not upgrade this claim from Plausible hypothesis because a legal duty or risk mechanism exists.
+ICL-0313,I-119,CLM-0313,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0314,I-119,CLM-0314,Direct effectiveness,Cautionary,Do not upgrade this claim from Strong inference because a legal duty or risk mechanism exists.
+ICL-0315,I-120,CLM-0315,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0316,I-120,CLM-0316,Direct effectiveness,Cautionary,Do not upgrade this claim from Plausible hypothesis because a legal duty or risk mechanism exists.
+ICL-0317,I-121,CLM-0317,Legal basis,Core,Legal status never implies control effectiveness.
+ICL-0318,I-121,CLM-0318,Expected mechanism,Core,Mechanism claim is distinct from evidence that the control works.
+ICL-0319,I-121,CLM-0319,Direct effectiveness,Cautionary,Do not upgrade this claim from Open question because a legal duty or risk mechanism exists.
+ICL-0320,I-063,CLM-0320,Legal basis,Core,Contested/enjoined status is the operative legal claim.
