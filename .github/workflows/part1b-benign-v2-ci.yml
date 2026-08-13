@@ -1,0 +1,40 @@
+name: Part 1B benign adapters v2
+
+on:
+  pull_request:
+    paths:
+      - "part1b/benign_adapters_v2/**"
+      - ".github/workflows/part1b-benign-v2-ci.yml"
+  push:
+    branches: [main]
+    paths:
+      - "part1b/benign_adapters_v2/**"
+      - ".github/workflows/part1b-benign-v2-ci.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile
+        run: python -m py_compile part1b/benign_adapters_v2/jobs/train_lora.py
+      - name: Frozen dataset contracts
+        run: python -m unittest discover -s part1b/benign_adapters_v2/tests -v
+      - name: Validate both adapters without ML dependencies
+        run: |
+          python part1b/benign_adapters_v2/jobs/train_lora.py \
+            --adapter transparent_persuasion --phase production \
+            --run-id github-ci-validation --seed 17 --validate-only >/tmp/p.json
+          python part1b/benign_adapters_v2/jobs/train_lora.py \
+            --adapter public_osint --phase production \
+            --run-id github-ci-validation --seed 17 --validate-only >/tmp/o.json
+          python -m json.tool /tmp/p.json >/dev/null
+          python -m json.tool /tmp/o.json >/dev/null
+          python -m json.tool part1b/benign_adapters_v2/protocol.json >/dev/null
