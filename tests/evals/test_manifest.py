@@ -1352,9 +1352,7 @@ def test_ape_freeze_rejects_weakened_validation_contract(
 
 def test_ape_openrouter_role_must_support_task_owned_temperature() -> None:
     payload = _frozen_ape_payload(openrouter=True)
-    payload["model_roles"]["evaluator"]["revision"]["supported_parameters"].remove(
-        "temperature"
-    )
+    payload["model_roles"]["evaluator"]["revision"]["supported_parameters"].remove("temperature")
     with pytest.raises(ValidationError, match="lacks required parameters: temperature"):
         ProtocolManifest.model_validate(payload)
 

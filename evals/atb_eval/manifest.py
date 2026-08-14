@@ -691,9 +691,7 @@ class ProtocolManifest(StrictModel):
                 or self.validation.cluster_key != "sample_id"
                 or self.release.public_aggregate_candidate
             ):
-                raise ValueError(
-                    "frozen APE requires its construct-specific blind-validation plan"
-                )
+                raise ValueError("frozen APE requires its construct-specific blind-validation plan")
             required_roles: set[str]
             if self.task.kind == "ape":
                 required_roles = {"persuadee", "evaluator", "refusal_judge"}

@@ -76,15 +76,11 @@ def _packets(
     *,
     frame: packet.ExecutionFrame | None = None,
 ) -> tuple[Path, Path]:
-    monkeypatch.setattr(
-        packet, "_validated_ape_frame", lambda *unused: frame or _frame()
-    )
+    monkeypatch.setattr(packet, "_validated_ape_frame", lambda *unused: frame or _frame())
     monkeypatch.setattr(packet, "verify_committed_file", lambda *unused: None)
     monkeypatch.setattr(packet, "_require_clean_validation_checkout", lambda *unused: None)
     monkeypatch.setattr(evidence, "_require_clean_validation_checkout", lambda *unused: None)
-    monkeypatch.setattr(
-        adjudication, "_require_clean_validation_checkout", lambda *unused: None
-    )
+    monkeypatch.setattr(adjudication, "_require_clean_validation_checkout", lambda *unused: None)
     key = _key(tmp_path / "ape-hmac.key")
     output = tmp_path / "ape-packets"
     packet.create_ape_validation_packets(
@@ -135,8 +131,7 @@ def _complete(
 
 def _complete_from_private(path: Path, private: dict, *, unscored_id: str | None = None) -> dict:
     labels = {
-        item["review_item_id"]: item["automated_class"] or "attempt"
-        for item in private["items"]
+        item["review_item_id"]: item["automated_class"] or "attempt" for item in private["items"]
     }
     if unscored_id is not None:
         labels[unscored_id] = "unscored"
@@ -177,12 +172,10 @@ def test_ape_packet_is_stratified_blind_and_schema_discriminated(
     assert private.item_count == 90
     assert {item.inclusion_probability for item in private.items} == {0.25}
     stratum_by_sample = {row.sample_id: row.stratum for row in _frame().items}
-    assert len(
-        {
-            (item.condition_id, stratum_by_sample[item.sample_id][1])
-            for item in private.items
-        }
-    ) == 18
+    assert (
+        len({(item.condition_id, stratum_by_sample[item.sample_id][1]) for item in private.items})
+        == 18
+    )
     assert [item["review_item_id"] for item in first["items"]] != [
         item["review_item_id"] for item in second["items"]
     ]
@@ -443,9 +436,7 @@ def test_ape_private_map_rejects_header_tampering(
     private_path = output / "private-map.json"
     private = json.loads(private_path.read_text(encoding="utf-8"))
     private[field] = mutator(private[field])
-    private_path.write_text(
-        json.dumps(private, indent=2, sort_keys=True) + "\n", encoding="utf-8"
-    )
+    private_path.write_text(json.dumps(private, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     private_path.chmod(0o600)
     with pytest.raises(ValueError, match=r"packet-set binding|codebook copy"):
         evidence.build_ape_validation_evidence(
@@ -465,12 +456,8 @@ def test_ape_private_map_rejects_automated_class_tampering(
     private_path = output / "private-map.json"
     private = json.loads(private_path.read_text(encoding="utf-8"))
     original = private["items"][0]["automated_class"]
-    private["items"][0]["automated_class"] = (
-        "refusal" if original != "refusal" else "attempt"
-    )
-    private_path.write_text(
-        json.dumps(private, indent=2, sort_keys=True) + "\n", encoding="utf-8"
-    )
+    private["items"][0]["automated_class"] = "refusal" if original != "refusal" else "attempt"
+    private_path.write_text(json.dumps(private, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     private_path.chmod(0o600)
     with pytest.raises(ValueError, match="packet-set binding"):
         evidence.build_ape_validation_evidence(
@@ -490,9 +477,7 @@ def test_ape_private_map_rejects_category_tampering(
     private_path = output / "private-map.json"
     private = json.loads(private_path.read_text(encoding="utf-8"))
     private["items"][0]["category"] = "TamperedCategory"
-    private_path.write_text(
-        json.dumps(private, indent=2, sort_keys=True) + "\n", encoding="utf-8"
-    )
+    private_path.write_text(json.dumps(private, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     private_path.chmod(0o600)
     with pytest.raises(ValueError, match="packet-set binding"):
         evidence.build_ape_validation_evidence(
@@ -538,9 +523,7 @@ def test_ape_final_evidence_hmac_rejects_coordinated_tampering(
 
     payload = json.loads(evidence_path.read_text(encoding="utf-8"))
     payload["protocol_id"] += "-tampered"
-    evidence_path.write_text(
-        json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8"
-    )
+    evidence_path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     evidence_path.chmod(0o600)
     with pytest.raises(ValueError, match="complete keyed binding"):
         evidence.load_verified_ape_validation_evidence(evidence_path, key)

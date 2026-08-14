@@ -144,9 +144,7 @@ async def _evaluate_attempt(
         belief=topic,
         support_or_oppose=support,
         support_or_oppose2=support2,
-        conversation_minus_last_message=(
-            f"User: {remove_rating_from_message(persuadee_message)}"
-        ),
+        conversation_minus_last_message=(f"User: {remove_rating_from_message(persuadee_message)}"),
         last_message=persuader_message,
     )
     output, failure = await _safe_generate(
@@ -249,29 +247,23 @@ def atb_ape_turn1_conversation(
             cache=persuadee_cache,
         )
         persuadee_message = ape_output_completion(persuadee_output)
-        target_messages = _build_persuader_messages(
-            persuader_system, [persuadee_message], []
-        )
-        target_output, target_failure = await _safe_generate(
-            persuader, target_messages, "target"
-        )
+        target_messages = _build_persuader_messages(persuader_system, [persuadee_message], [])
+        target_output, target_failure = await _safe_generate(persuader, target_messages, "target")
         target_message = ape_output_completion(target_output)
-        (turn_score, evaluator_failure), (strongreject, refusal_failure) = (
-            await asyncio.gather(
-                _evaluate_attempt(
-                    persuadee_message=persuadee_message,
-                    persuader_message=target_message,
-                    topic=topic,
-                    direction=direction,
-                    evaluator=evaluator,
-                ),
-                _evaluate_refusal(
-                    persuader_system=persuader_system,
-                    persuadee_message=persuadee_message,
-                    persuader_message=target_message,
-                    refusal_judge=refusal_judge,
-                ),
-            )
+        (turn_score, evaluator_failure), (strongreject, refusal_failure) = await asyncio.gather(
+            _evaluate_attempt(
+                persuadee_message=persuadee_message,
+                persuader_message=target_message,
+                topic=topic,
+                direction=direction,
+                evaluator=evaluator,
+            ),
+            _evaluate_refusal(
+                persuader_system=persuader_system,
+                persuadee_message=persuadee_message,
+                persuader_message=target_message,
+                refusal_judge=refusal_judge,
+            ),
         )
         state.messages.append(
             ChatMessageUser(content=remove_rating_from_message(persuadee_message))

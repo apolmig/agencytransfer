@@ -104,9 +104,7 @@ def repository_root() -> Path:
 
 
 def execution_schedule(manifest: ProtocolManifest) -> str:
-    if manifest.task.kind == "ape" and manifest.task.args.get(
-        "paired_interlocutor_cache"
-    ) is True:
+    if manifest.task.kind == "ape" and manifest.task.args.get("paired_interlocutor_cache") is True:
         return APE_PAIRED_SCHEDULE
     return PAIRED_SCHEDULE
 
@@ -530,9 +528,7 @@ def ape_paired_dataset_identity(
         belief_level = metadata.get("belief_level")
         if metadata.get("belief_trajectory") != [belief_level]:
             return None
-        static_metadata = {
-            key: metadata[key] for key in sorted(APE_STATIC_SAMPLE_METADATA)
-        }
+        static_metadata = {key: metadata[key] for key in sorted(APE_STATIC_SAMPLE_METADATA)}
         item = {
             "id": str(sample.id),
             "input": dumped.get("input"),
@@ -560,8 +556,7 @@ def ape_interlocutor_identity(log: Any) -> tuple[tuple[str, int, str], ...] | No
         persuadee_events = [
             event
             for event in (sample.events or [])
-            if type(event).__name__ == "ModelEvent"
-            and getattr(event, "role", None) == "persuadee"
+            if type(event).__name__ == "ModelEvent" and getattr(event, "role", None) == "persuadee"
         ]
         if len(persuadee_events) != 1:
             return None
@@ -580,9 +575,7 @@ def ape_interlocutor_cache_contract(logs: list[Any], manifest: ProtocolManifest)
     if manifest.task.args.get("paired_interlocutor_cache") is not True:
         return False
     expected_conditions = len(manifest.models)
-    records: dict[
-        tuple[str, int], list[tuple[int, str | None, str, bool, bool]]
-    ] = {}
+    records: dict[tuple[str, int], list[tuple[int, str | None, str, bool, bool]]] = {}
     for log_index, log in enumerate(logs):
         for sample in log.samples or []:
             events = [
@@ -600,9 +593,7 @@ def ape_interlocutor_cache_contract(logs: list[Any], manifest: ProtocolManifest)
             payload = output.model_dump(mode="json")
             serialised = json.dumps(payload, sort_keys=True, separators=(",", ":"))
             call = getattr(event, "call", None)
-            event_failed = bool(getattr(event, "error", None)) or bool(
-                getattr(call, "error", None)
-            )
+            event_failed = bool(getattr(event, "error", None)) or bool(getattr(call, "error", None))
             records.setdefault((str(sample.id), int(sample.epoch)), []).append(
                 (
                     log_index,
@@ -852,19 +843,13 @@ def ape_score_contract_matches(log: Any, manifest: ProtocolManifest) -> bool:
             "unscored",
         }:
             return False
-        events = [
-            event for event in (sample.events or []) if type(event).__name__ == "ModelEvent"
-        ]
+        events = [event for event in (sample.events or []) if type(event).__name__ == "ModelEvent"]
         evaluators = [event for event in events if getattr(event, "role", None) == "evaluator"]
         refusal_judges = [
             event for event in events if getattr(event, "role", None) == "refusal_judge"
         ]
         persuadees = [event for event in events if getattr(event, "role", None) == "persuadee"]
-        targets = [
-            event
-            for event in events
-            if getattr(event, "role", None) in {None, "persuader"}
-        ]
+        targets = [event for event in events if getattr(event, "role", None) in {None, "persuader"}]
         if not all(
             len(role_events) == 1
             for role_events in (persuadees, targets, evaluators, refusal_judges)
@@ -875,16 +860,12 @@ def ape_score_contract_matches(log: Any, manifest: ProtocolManifest) -> bool:
         evaluator_completion = ape_output_completion(evaluator_output)
         refusal_completion = ape_output_completion(refusal_output)
         evaluator_rating = extract_rating(evaluator_completion)
-        refusal, convincingness, specificity = parse_strongreject_response(
-            refusal_completion
-        )
+        refusal, convincingness, specificity = parse_strongreject_response(refusal_completion)
         instrument_failures = {
             "persuadee": ape_event_instrument_failure(persuadees[0], "persuadee"),
             "target": ape_event_instrument_failure(targets[0], "target"),
             "evaluator": ape_event_instrument_failure(evaluators[0], "evaluator"),
-            "refusal_judge": ape_event_instrument_failure(
-                refusal_judges[0], "refusal_judge"
-            ),
+            "refusal_judge": ape_event_instrument_failure(refusal_judges[0], "refusal_judge"),
         }
         failure: str | None = None
         if any(instrument_failures.values()):
@@ -943,8 +924,7 @@ def ape_score_contract_matches(log: Any, manifest: ProtocolManifest) -> bool:
                     "strongreject_score": strongreject_score,
                 }
             ]
-            or (sample.metadata or {}).get("instrument_failures")
-            != instrument_failures
+            or (sample.metadata or {}).get("instrument_failures") != instrument_failures
         ):
             return False
         if not category:
@@ -998,6 +978,7 @@ def sample_target_output_matches(
     event_failed = bool(getattr(target_events[0], "error", None)) or bool(
         getattr(call, "error", None)
     )
+
     def serialise(output: Any, *, ignore_choice_message_ids: bool = False) -> str | None:
         payload = output.model_dump(mode="json") if hasattr(output, "model_dump") else vars(output)
 
@@ -1028,9 +1009,10 @@ def sample_target_output_matches(
         return json.dumps(payload, sort_keys=True, separators=(",", ":"), default=str)
 
     if event_failed and allow_failed_placeholder:
-        if ape_output_completion(event_output).strip() or ape_output_completion(
-            sample_output
-        ).strip():
+        if (
+            ape_output_completion(event_output).strip()
+            or ape_output_completion(sample_output).strip()
+        ):
             return False
         serialised_event = serialise(event_output, ignore_choice_message_ids=True)
         return serialised_event is not None and serialised_event == serialise(
@@ -1446,9 +1428,9 @@ def _events_routes_match(
             ):
                 return False
             request = getattr(call, "request", None) if call is not None else None
-            if (
-                configured.model.startswith("mockllm/") and request is None
-            ) or (cache_read and call is None and not event_failed):
+            if (configured.model.startswith("mockllm/") and request is None) or (
+                cache_read and call is None and not event_failed
+            ):
                 pass
             elif isinstance(request, dict) and request:
                 if not request_parameters_match(
@@ -2056,9 +2038,7 @@ def validate_persisted_execution(
     if not ape_interlocutor_cache_contract(evidence_logs, manifest):
         return False
     seen_conditions: set[str] = set()
-    paired_identity: (
-        tuple[tuple[str, ...], tuple[tuple[str, int, str], ...] | str] | None
-    ) = None
+    paired_identity: tuple[tuple[str, ...], tuple[tuple[str, int, str], ...] | str] | None = None
     paired_ape_interlocutors: tuple[tuple[str, int, str], ...] | None = None
     for log in evidence_logs:
         matching_conditions = [
@@ -2249,8 +2229,7 @@ def execute(
         for condition in ordered_conditions
     ]
     paired_ape_cache = bool(
-        manifest.task.kind == "ape"
-        and manifest.task.args.get("paired_interlocutor_cache") is True
+        manifest.task.kind == "ape" and manifest.task.args.get("paired_interlocutor_cache") is True
     )
     cache_dir: Path | None = None
     previous_cache_dir = os.environ.get("INSPECT_CACHE_DIR")

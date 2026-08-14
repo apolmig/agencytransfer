@@ -14,9 +14,7 @@ from jsonschema import Draft202012Validator, ValidationError
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SCHEMA = json.loads(
-    (REPO_ROOT / "evals/schemas/ape-validation-v0.2.schema.json").read_text(
-        encoding="utf-8"
-    )
+    (REPO_ROOT / "evals/schemas/ape-validation-v0.2.schema.json").read_text(encoding="utf-8")
 )
 VALIDATOR = Draft202012Validator(SCHEMA)
 HEX64 = "a" * 64
@@ -220,9 +218,7 @@ def _validation_evidence() -> dict[str, Any]:
         (_validation_evidence(), APEValidationEvidence),
     ],
 )
-def test_ape_v02_schema_accepts_each_pydantic_artifact(
-    payload: dict[str, Any], model: Any
-) -> None:
+def test_ape_v02_schema_accepts_each_pydantic_artifact(payload: dict[str, Any], model: Any) -> None:
     Draft202012Validator.check_schema(SCHEMA)
     VALIDATOR.validate(payload)
     model.model_validate(payload)

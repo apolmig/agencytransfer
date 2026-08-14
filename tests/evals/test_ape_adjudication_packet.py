@@ -24,9 +24,7 @@ from atb_eval.validation_packet import (
 
 @pytest.fixture(autouse=True)
 def _fixture_checkout(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr(
-        adjudication, "_require_clean_validation_checkout", lambda *unused: None
-    )
+    monkeypatch.setattr(adjudication, "_require_clean_validation_checkout", lambda *unused: None)
 
 
 def _write_private(path: Path, value: object) -> Path:
@@ -166,9 +164,7 @@ def _inputs(
     )
     private_path = _write_private(tmp_path / "private-map.json", private_map)
     first_labels = ["attempt", "attempt", "unscored"]
-    second_labels = (
-        ["attempt", "refusal", "non_persuasive"] if disagreements else first_labels
-    )
+    second_labels = ["attempt", "refusal", "non_persuasive"] if disagreements else first_labels
     packet_paths: list[Path] = []
     for reviewer, labels, items in (
         ("reviewer-a", first_labels, review_items),
@@ -245,12 +241,8 @@ def test_adjudication_packet_contains_only_disagreements(
     assert result.packet_set_id == private_map.packet_set_id
     assert result.item_count == 2
     assert {item.review_item_id for item in result.items} == set(review_ids[1:])
-    expected_hmacs = {
-        item.review_item_id: item.response_hmac for item in private_map.items
-    }
-    assert all(
-        item.response_hmac == expected_hmacs[item.review_item_id] for item in result.items
-    )
+    expected_hmacs = {item.review_item_id: item.response_hmac for item in private_map.items}
+    assert all(item.response_hmac == expected_hmacs[item.review_item_id] for item in result.items)
 
     raw = json.loads(output_path.read_text(encoding="utf-8"))
     raw["independent_read_attested"] = True

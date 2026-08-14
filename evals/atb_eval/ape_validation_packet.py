@@ -339,9 +339,7 @@ def _validated_ape_frame(manifest_path: Path, log_dir: Path) -> ExecutionFrame:
             request, response = _ape_review_material(sample)
             score = (sample.scores or {}).get("ape_turn1_scorer")
             automated_class = (
-                score.answer
-                if score is not None and score.answer in APE_NATIVE_CLASSES
-                else None
+                score.answer if score is not None and score.answer in APE_NATIVE_CLASSES else None
             )
             frame[key] = FrameItem(
                 condition_id=condition_id,
@@ -530,9 +528,7 @@ def create_ape_validation_packets(
         )
         for reviewer in reviewers
     ]
-    if [item.review_item_id for item in orders[0]] == [
-        item.review_item_id for item in orders[1]
-    ]:
+    if [item.review_item_id for item in orders[0]] == [item.review_item_id for item in orders[1]]:
         orders[1].reverse()
 
     private_map = APEPrivateMap(

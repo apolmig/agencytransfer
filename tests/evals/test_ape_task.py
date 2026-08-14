@@ -34,9 +34,7 @@ from inspect_ai.model import ModelOutput, ModelUsage, get_model
 from inspect_ai.model._model import ModelGenerateError
 
 
-def _inspect_test_environment(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def _inspect_test_environment(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("INSPECT_TRACE_FILE", str(tmp_path / "trace.log"))
     monkeypatch.setenv("XDG_DATA_HOME", str(tmp_path / "xdg-data"))
     monkeypatch.setenv("XDG_CACHE_HOME", str(tmp_path / "xdg-cache"))
@@ -111,8 +109,7 @@ def test_ape_parse_failure_is_unscored_not_non_persuasive() -> None:
             "turn_scores": [None],
             "strongreject_scores": [{"refusal": 0.0}],
             "instrument_failures": {
-                role: None
-                for role in ("persuadee", "target", "evaluator", "refusal_judge")
+                role: None for role in ("persuadee", "target", "evaluator", "refusal_judge")
             },
         }
     )
@@ -136,8 +133,7 @@ def test_ape_turn1_classes_are_mutually_exclusive(
             "turn_scores": [turn_score],
             "strongreject_scores": [{"refusal": refused}],
             "instrument_failures": {
-                role: None
-                for role in ("persuadee", "target", "evaluator", "refusal_judge")
+                role: None for role in ("persuadee", "target", "evaluator", "refusal_judge")
             },
         }
     )
@@ -169,10 +165,7 @@ def test_ape_role_failure_is_unscored_before_behaviour() -> None:
 def test_ape_output_failures_are_role_specific() -> None:
     empty = ModelOutput.from_content("mockllm", "")
     assert ape_output_instrument_failure(empty, "target") == "target_empty_response"
-    assert (
-        ape_output_instrument_failure(empty, "refusal_judge")
-        == "refusal_judge_empty_response"
-    )
+    assert ape_output_instrument_failure(empty, "refusal_judge") == "refusal_judge_empty_response"
     no_choices = ModelOutput(model="mockllm", choices=[])
     assert ape_output_instrument_failure(no_choices, "target") == "target_empty_response"
     assert not target_output_scorable(SimpleNamespace(output=no_choices, error=None))
@@ -215,9 +208,7 @@ def test_ape_mock_execution_reprojects_prompts_roles_and_score(
             version="0.1.0",
             args={"persuader_prompt_type": "persuade"},
         ),
-        model_roles={
-            role: condition for role in ("persuadee", "evaluator", "refusal_judge")
-        },
+        model_roles={role: condition for role in ("persuadee", "evaluator", "refusal_judge")},
         validation=SimpleNamespace(minimum_usable_rate_per_row=0.95),
     )
     assert ape_sample_model_inputs_match(log.samples[0], condition, manifest)
@@ -262,9 +253,7 @@ def test_ape_mock_target_failure_remains_explicit_missingness(
             version="0.1.0",
             args={"persuader_prompt_type": "persuade"},
         ),
-        model_roles={
-            role: condition for role in ("persuadee", "evaluator", "refusal_judge")
-        },
+        model_roles={role: condition for role in ("persuadee", "evaluator", "refusal_judge")},
         validation=SimpleNamespace(minimum_usable_rate_per_row=0.0),
     )
     sample = log.samples[0]
@@ -315,9 +304,7 @@ def test_ape_model_generate_error_is_bound_as_explicit_missingness(
             version="0.1.0",
             args={"persuader_prompt_type": "persuade"},
         ),
-        model_roles={
-            role: condition for role in ("persuadee", "evaluator", "refusal_judge")
-        },
+        model_roles={role: condition for role in ("persuadee", "evaluator", "refusal_judge")},
         validation=SimpleNamespace(minimum_usable_rate_per_row=0.0),
     )
     sample = log.samples[0]
@@ -325,9 +312,7 @@ def test_ape_model_generate_error_is_bound_as_explicit_missingness(
     assert score.answer == "unscored"
     assert score.metadata["instrument_failure"] == "target_model_error"
     assert not sample_target_output_matches(sample, {None, "persuader"})
-    assert sample_target_output_matches(
-        sample, {None, "persuader"}, allow_failed_placeholder=True
-    )
+    assert sample_target_output_matches(sample, {None, "persuader"}, allow_failed_placeholder=True)
     assert ape_sample_model_inputs_match(sample, condition, manifest)
     assert ape_score_contract_matches(log, manifest)
 
@@ -379,9 +364,7 @@ def test_ape_persuadee_is_generated_once_and_replayed_exactly(
             outputs("mockllm/target-b", ["Target B1", "Target B2"]),
         ],
         model_roles={
-            "persuadee": get_model(
-                "mockllm/persuadee", custom_outputs=persuadee_output
-            ),
+            "persuadee": get_model("mockllm/persuadee", custom_outputs=persuadee_output),
             "evaluator": outputs("mockllm/evaluator", ["Attempt | 1"] * 4),
             "refusal_judge": outputs(
                 "mockllm/refusal",
@@ -396,13 +379,9 @@ def test_ape_persuadee_is_generated_once_and_replayed_exactly(
         metadata={"atb_schedule": APE_PAIRED_SCHEDULE},
     )
     manifest = SimpleNamespace(
-        task=SimpleNamespace(
-            kind="ape", args={"paired_interlocutor_cache": True}
-        ),
+        task=SimpleNamespace(kind="ape", args={"paired_interlocutor_cache": True}),
         models=[SimpleNamespace(), SimpleNamespace()],
-        dataset=SimpleNamespace(
-            selected_inventory_sha256=dataset_inventory_sha256(task.dataset)
-        ),
+        dataset=SimpleNamespace(selected_inventory_sha256=dataset_inventory_sha256(task.dataset)),
     )
     assert success
     assert calls == 2

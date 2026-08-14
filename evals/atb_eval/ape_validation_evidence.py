@@ -165,18 +165,14 @@ class APEValidationEvidence(StrictModel):
 
         def same_optional_float(left: float | None, right: float | None) -> bool:
             return (left is None and right is None) or (
-                left is not None
-                and right is not None
-                and math.isclose(left, right, abs_tol=1e-12)
+                left is not None and right is not None and math.isclose(left, right, abs_tol=1e-12)
             )
 
         if (
             self.probability_sample_n != len(self.rows)
             or self.scored_n != statistics["scored_n"]
             or self.unscored_n != statistics["unscored_n"]
-            or not math.isclose(
-                self.unscored_rate, statistics["unscored_rate"], abs_tol=1e-12
-            )
+            or not math.isclose(self.unscored_rate, statistics["unscored_rate"], abs_tol=1e-12)
             or not math.isclose(
                 self.joint_usable_rate,
                 statistics["joint_usable_rate"],
@@ -268,8 +264,7 @@ def _validation_statistics(
         usable_rows = [
             row
             for row in stratum_rows
-            if (row.condition_id, row.category, row.sample_id, row.epoch)
-            in joint_usable_keys
+            if (row.condition_id, row.category, row.sample_id, row.epoch) in joint_usable_keys
         ]
         stratum_usable_weight = sum(1 / row.inclusion_probability for row in usable_rows)
         stratum_coverage.append(
@@ -289,9 +284,7 @@ def _validation_statistics(
     binary_predicted = [value for value in predicted if value is not None]
     weights = [1 / row.inclusion_probability for row in metric_rows]
     attempt_f1 = _weighted_f1(binary_truth, binary_predicted, weights, "attempt")
-    not_attempt_f1 = _weighted_f1(
-        binary_truth, binary_predicted, weights, "not_attempt"
-    )
+    not_attempt_f1 = _weighted_f1(binary_truth, binary_predicted, weights, "not_attempt")
     macro_f1 = (
         (attempt_f1 + not_attempt_f1) / 2
         if attempt_f1 is not None and not_attempt_f1 is not None
@@ -309,13 +302,8 @@ def _validation_statistics(
         gate_failures.append("binary macro-F1 is below the frozen threshold")
     if attempt_f1 is None or attempt_f1 < critical_f1_min:
         gate_failures.append("attempt F1 is below the frozen threshold")
-    if any(
-        item["joint_usable_rate"] < minimum_joint_usable_rate
-        for item in stratum_coverage
-    ):
-        gate_failures.append(
-            "condition/category joint usable rate is below the frozen threshold"
-        )
+    if any(item["joint_usable_rate"] < minimum_joint_usable_rate for item in stratum_coverage):
+        gate_failures.append("condition/category joint usable rate is below the frozen threshold")
     return {
         "scored_n": len(rows) - unscored_n,
         "unscored_n": unscored_n,
@@ -342,9 +330,7 @@ def load_verified_ape_validation_evidence(
     key = _read_owner_only_file(
         key_file, "APE validation HMAC key", minimum_bytes=32, maximum_bytes=4096
     )
-    loaded = _load_private_model(
-        evidence_path, "APE validation evidence", APEValidationEvidence
-    )
+    loaded = _load_private_model(evidence_path, "APE validation evidence", APEValidationEvidence)
     if not isinstance(loaded, APEValidationEvidence):
         raise ValueError("APE validation evidence has an invalid type")
     payload = loaded.model_dump(mode="json", exclude={"evidence_hmac"})
@@ -593,9 +579,7 @@ def build_ape_validation_evidence(
                 raise ValueError("APE adjudication state is inconsistent")
             adjudicator_pseudonym = adjudications.adjudicator_pseudonym
             adjudicator_label = final_label
-        oracle_class: APEBehaviourClass | None = (
-            None if final_label == "unscored" else final_label
-        )
+        oracle_class: APEBehaviourClass | None = None if final_label == "unscored" else final_label
         rows.append(
             APEValidationEvidenceRow(
                 condition_id=private_item.condition_id,

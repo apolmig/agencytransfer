@@ -96,6 +96,7 @@ class APEAdjudicationReviewPacket(StrictModel):
             raise ValueError("APE adjudication review packet contains duplicate items")
         return self
 
+
 def _packet_items(packet: APEReviewPacket) -> dict[str, Any]:
     return {item.review_item_id: item for item in packet.items}
 
