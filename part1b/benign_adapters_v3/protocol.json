@@ -77,8 +77,8 @@
   "authorization": {
     "schema": "era-part1b-training-authorization/v3",
     "algorithm": "Ed25519",
-    "key_id": "era-part1b-v3-ed25519-20260814",
-    "public_key_spki_der_sha256": "4329b50d6e1d4b093018f60e4bd6b1a571f01b4dc6260a31bd256d17573cdbce",
+    "key_id": "era-part1b-v4-ed25519-20260814",
+    "public_key_spki_der_sha256": "09f6fe3693f80663d6cb603eb8acf6d74a18a52cf2f157775217a131a5ae0ecb",
     "canonicalization": "UTF-8 JSON sort_keys separators comma-colon plus newline; signature field excluded",
     "maximum_validity_hours": 24,
     "trainer_has_signing_secret": false,

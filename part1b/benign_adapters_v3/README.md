@@ -1,5 +1,10 @@
 # ERA Part 1B — private-Hub benign adapters v3
 
+The current immutable execution revision rotates the single accepted signing
+key to `era-part1b-v4-ed25519-20260814` for the fresh v4 run. Payload and
+receipt schemas remain v3; no old-key fallback or dual-key acceptance exists.
+The earlier public commit preserves the abandoned v3 execution bytes.
+
 Version 3 is an additive persistence path for the same two independent
 interventions defined in v2:
 
@@ -74,10 +79,10 @@ target repositories, or training Job.
 
 ## Expected run-specific repositories
 
-For operation `era-p1b-v3-20260814t010317z` the controlled plane uses:
+For operation `era-p1b-v4-20260814t030306z` the controlled plane uses:
 
-- `apol/era-p1b-v3-20260814t010317z-transparent-persuasion-qwen3-8b-lora`;
-- `apol/era-p1b-v3-20260814t010317z-public-osint-qwen3-8b-lora`.
+- `apol/era-p1b-v4-20260814t030306z-transparent-persuasion-qwen3-8b-lora`;
+- `apol/era-p1b-v4-20260814t030306z-public-osint-qwen3-8b-lora`.
 
 They must already exist, be private, and contain only the producer-created
 genesis before authorization. The public runner never creates a repository.
@@ -87,14 +92,19 @@ genesis before authorization. The public runner never creates a repository.
 ```bash
 python part1b/benign_adapters_v3/jobs/train_lora.py \
   --adapter transparent_persuasion --phase production \
-  --run-id era-p1b-v3-20260814t010317z --seed 17 --validate-only
+  --run-id era-p1b-v4-20260814t030306z --seed 17 --validate-only
 python -m unittest discover -s part1b/benign_adapters_v3/tests -v
 ```
 
-The script must be submitted inline to Hugging Face Jobs with flavor `l4x1`, a
-training-sized timeout, no volume mount, and an encrypted `HF_TOKEN` secret
-whose value comes from the separately stored fine-grained write token. Do not
-use the read-only OAuth placeholder for a write-stage Job. Remote arguments additionally include
+The script must be submitted through the controlled Docker `run` launcher with
+flavor `l4x1`, a training-sized timeout, no volume mount, and an encrypted
+`HF_TOKEN` secret whose value comes from the separately stored fine-grained
+write token. The launcher carries a deterministic gzip/base64 encoding of the
+exact script, writes it to a fixed private `/tmp` path, checks the decompressed
+SHA-256 before execution, and then invokes `uv run` on that physical file. This
+is required because the MCP inline-stdin form does not define `__file__` and a
+plain uncompressed command approaches the kernel single-argument size limit.
+Do not use the read-only OAuth placeholder for a write-stage Job. Remote arguments additionally include
 the exact target repo, authorization base64, authorization SHA-256,
 authorization revision, and operation SHA-256. Do not place a token value in
 arguments, logs, source, or Git.

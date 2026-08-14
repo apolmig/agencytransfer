@@ -23,6 +23,12 @@ SPEC = importlib.util.spec_from_file_location("era_part1b_v3_train_lora", SCRIPT
 MODULE = importlib.util.module_from_spec(SPEC)
 assert SPEC.loader is not None
 SPEC.loader.exec_module(MODULE)
+ML_SPEC = importlib.util.spec_from_file_location(
+    "era_part1b_v3_ml_stack_preflight", ML_PREFLIGHT
+)
+ML_MODULE = importlib.util.module_from_spec(ML_SPEC)
+assert ML_SPEC.loader is not None
+ML_SPEC.loader.exec_module(ML_MODULE)
 
 RUN_ID = "era-p1b-v3-20260814t010317z"
 PERSUASION_REPO = (
@@ -519,6 +525,47 @@ class PersistenceAndMLContractTest(unittest.TestCase):
             locked,
             {f"{name}=={version}" for name, version in MODULE.EXPECTED_RUNTIME_VERSIONS.items()},
         )
+
+    def test_v4_signing_key_is_exact_and_has_no_v3_fallback(self) -> None:
+        expected_key_id = "era-part1b-v4-ed25519-20260814"
+        expected_public_b64 = (
+            "MCowBQYDK2VwAyEAt6Z/Q+8pKbYCLbeLH+Ilw9D7V6k4iIKtgGhU4fl1hsg="
+        )
+        expected_public_sha256 = (
+            "09f6fe3693f80663d6cb603eb8acf6d74a18a52cf2f157775217a131a5ae0ecb"
+        )
+        old_key_material = (
+            "era-part1b-v3-ed25519-20260814",
+            "MCowBQYDK2VwAyEAeW8JSPbwuS8bi70ezdax5XZu5kBqYM3G9KCTaTN8zjA=",
+            "4329b50d6e1d4b093018f60e4bd6b1a571f01b4dc6260a31bd256d17573cdbce",
+        )
+        protocol = json.loads((ROOT / "protocol.json").read_text(encoding="utf-8"))
+        self.assertEqual(MODULE.AUTHORIZATION_KEY_ID, expected_key_id)
+        self.assertEqual(
+            MODULE.AUTHORIZATION_PUBLIC_KEY_SPKI_DER_B64, expected_public_b64
+        )
+        self.assertEqual(
+            MODULE.AUTHORIZATION_PUBLIC_KEY_SPKI_DER_SHA256,
+            expected_public_sha256,
+        )
+        self.assertEqual(
+            ML_MODULE.AUTHORIZATION_PUBLIC_KEY_SPKI_DER_B64, expected_public_b64
+        )
+        self.assertEqual(
+            ML_MODULE.AUTHORIZATION_PUBLIC_KEY_SPKI_DER_SHA256,
+            expected_public_sha256,
+        )
+        self.assertEqual(protocol["authorization"]["key_id"], expected_key_id)
+        self.assertEqual(
+            protocol["authorization"]["public_key_spki_der_sha256"],
+            expected_public_sha256,
+        )
+        public_source = "\n".join(
+            path.read_text(encoding="utf-8")
+            for path in (SCRIPT, ML_PREFLIGHT, ROOT / "protocol.json")
+        )
+        for forbidden in old_key_material:
+            self.assertNotIn(forbidden, public_source)
 
     def test_preflight_is_weight_free_and_checks_crypto_hub_and_only_8b(self) -> None:
         source = ML_PREFLIGHT.read_text(encoding="utf-8")
