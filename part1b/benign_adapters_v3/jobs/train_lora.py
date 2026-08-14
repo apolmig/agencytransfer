@@ -199,7 +199,13 @@ assert len(OSINT_NAME_PREFIXES) * len(OSINT_ENTITY_TYPES) == TOTAL_FAMILIES
 
 def canonical_bytes(value: Any) -> bytes:
     return (
-        json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+        json.dumps(
+            value,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+            allow_nan=False,
+        )
         .encode("utf-8")
     )
 
@@ -223,6 +229,10 @@ def strict_object(pairs: list[tuple[str, object]]) -> dict[str, object]:
             raise ValueError(f"duplicate JSON key: {key}")
         result[key] = value
     return result
+
+
+def reject_json_constant(value: str) -> None:
+    raise ValueError(f"non-finite JSON constant is forbidden: {value}")
 
 
 def provider_job_id() -> str:
@@ -986,7 +996,11 @@ def decode_authorization(encoded: str, expected_sha256: str) -> tuple[dict[str, 
     if sha256_bytes(raw) != expected_sha256:
         raise RuntimeError("authorization hash mismatch")
     try:
-        authorization = json.loads(raw, object_pairs_hook=strict_object)
+        authorization = json.loads(
+            raw,
+            object_pairs_hook=strict_object,
+            parse_constant=reject_json_constant,
+        )
     except (UnicodeDecodeError, json.JSONDecodeError, ValueError) as error:
         raise RuntimeError("authorization JSON is invalid") from error
     if not isinstance(authorization, dict):
@@ -1006,7 +1020,11 @@ def validate_persisted_operation(
     if sha256_bytes(raw) != expected_sha256:
         raise RuntimeError("persisted operation hash mismatch")
     try:
-        operation = json.loads(raw, object_pairs_hook=strict_object)
+        operation = json.loads(
+            raw,
+            object_pairs_hook=strict_object,
+            parse_constant=reject_json_constant,
+        )
     except (UnicodeDecodeError, json.JSONDecodeError, ValueError) as error:
         raise RuntimeError("persisted operation JSON is invalid") from error
     if not isinstance(operation, dict):

@@ -366,6 +366,20 @@ class AuthorizationContractTest(unittest.TestCase):
                 expected_sha256=hashlib.sha256(noncanonical).hexdigest(),
                 run_id=RUN_ID,
             )
+        for constant in (b"NaN", b"Infinity", b"-Infinity"):
+            nonfinite = (
+                b'{"operation_id":"'
+                + RUN_ID.encode()
+                + b'","schema":"era-part1b-hf-operation/v3","status":"GO_FOR_AUTHORIZATION_ISSUER_ONLY","value":'
+                + constant
+                + b"}\n"
+            )
+            with self.assertRaisesRegex(RuntimeError, "invalid"):
+                MODULE.validate_persisted_operation(
+                    nonfinite,
+                    expected_sha256=hashlib.sha256(nonfinite).hexdigest(),
+                    run_id=RUN_ID,
+                )
 
 
 class PersistenceAndMLContractTest(unittest.TestCase):
