@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/apolmig/agencytransfer/policy-atlas/schemas/stable-release-gate.schema.json",
+  "title": "Policy Atlas stable-release gate",
+  "type": "object",
+  "required": [
+    "gate_id",
+    "gate",
+    "requirement",
+    "status",
+    "evidence_path",
+    "evidence_sha256",
+    "blocking_reason",
+    "human_signoff_required",
+    "human_signoff_role"
+  ],
+  "properties": {
+    "gate_id": {"type": "string", "pattern": "^SR-[0-9]{2}$"},
+    "gate": {"type": "string", "minLength": 1},
+    "requirement": {"type": "string", "minLength": 1},
+    "status": {"enum": ["blocked", "in_progress", "satisfied", "ready_for_deposit"]},
+    "evidence_path": {"type": ["string", "null"]},
+    "evidence_sha256": {
+      "type": ["string", "null"],
+      "pattern": "^(?:[a-f0-9]{64})?$"
+    },
+    "blocking_reason": {"type": "string", "minLength": 1},
+    "human_signoff_required": {"enum": ["true", "false", true, false]},
+    "human_signoff_role": {
+      "type": ["string", "null"],
+      "enum": ["evidence", "legal", "methods", "independent", "release", "", null]
+    }
+  },
+  "additionalProperties": false
+}

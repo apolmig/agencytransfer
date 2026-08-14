@@ -3,15 +3,23 @@
   "$id": "https://github.com/apolmig/agencytransfer/policy-atlas/schemas/release-manifest.schema.json",
   "title": "Policy Atlas release manifest",
   "type": "object",
-  "required": ["artifact", "artifact_version", "release_stage", "source_snapshot_version", "curation_version", "curation_as_of_date", "source_as_of_date", "stable_release_ready", "stable_release_blockers", "counts", "files"],
+  "required": ["artifact", "artifact_version", "release_stage", "source_snapshot_version", "curation_version", "curation_as_of_date", "stable_core_selection_version", "stable_core_source_version", "stable_core_source_manifest_sha256", "ranking_protocol_version", "ranking_preregistration_status", "source_as_of_date", "stable_release_ready", "stable_release_blockers", "counts", "files"],
   "properties": {
     "artifact": {"const": "Agency Transfer Policy Atlas"},
     "artifact_version": {"type": "string"},
+    "claim_boundary": {"type": "string"},
     "release_stage": {"const": "research-preview"},
     "source_snapshot_version": {"const": "sheets-v0.3"},
     "curation_version": {"const": "curation-v0.4-wave1"},
     "curation_as_of_date": {"type": "string", "format": "date"},
+    "stable_core_selection_version": {"const": "stable-core-selection-v0.1"},
+    "stable_core_source_version": {"const": "v0.1.0-beta.2"},
+    "stable_core_source_manifest_sha256": {"const": "26fc870523b1a2482b505dbb590d7504507b034fca4726442c2d343eb184e926"},
+    "ranking_protocol_version": {"const": "ranking-protocol-v0.1"},
+    "ranking_preregistration_status": {"const": "draft_not_preregistered"},
     "source_as_of_date": {"type": "string", "format": "date"},
+    "source_spreadsheet_id": {"type": "string"},
+    "release_prepared_on": {"type": "string", "format": "date"},
     "stable_release_ready": {"const": false},
     "stable_release_blockers": {"type": "array", "minItems": 1, "items": {"type": "string"}},
     "formats": {"type": "array", "items": {"enum": ["csv", "parquet"]}},
@@ -29,5 +37,6 @@
       }
     }
   },
-  "additionalProperties": true
+  "not": {"required": ["doi"]},
+  "additionalProperties": false
 }

@@ -1,0 +1,22 @@
+Policy Atlas code licence
+
+SPDX-License-Identifier: Apache-2.0
+
+Software, tests, schemas, build tooling, and validation scripts under
+policy-atlas/ are licensed under the Apache License, Version 2.0, using the
+copy distributed alongside this notice at:
+
+  Apache-2.0.txt
+
+The repository-wide canonical copy is also available at ../../LICENSE in a
+source checkout.
+
+Canonical upstream text:
+
+  https://www.apache.org/licenses/LICENSE-2.0
+
+Copyright 2026 Agency Transfer Benchmark contributors
+
+Project-authored data and annotations are not covered by Apache-2.0; see
+../LICENSE for their CC BY 4.0 terms. Third-party dependencies and cited
+materials retain their respective licences.

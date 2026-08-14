@@ -18,6 +18,10 @@ const RELEASE = path.join(ROOT, "release", VERSION);
 const DATA = path.join(RELEASE, "data");
 const MANIFEST_PATH = path.join(RELEASE, "manifests", "release.json");
 const CHECKSUM_PATH = path.join(RELEASE, "manifests", "checksums.sha256");
+const PUBLIC_COLUMNS = JSON.parse(
+  fs.readFileSync(path.join(ROOT, "schemas", "public-table-columns.json"), "utf8")
+);
+const PUBLIC_TABLE_STEMS = new Set(Object.keys(PUBLIC_COLUMNS));
 
 const LIST_COLUMNS = new Set([
   "legacy_ids",
@@ -34,16 +38,21 @@ const LIST_COLUMNS = new Set([
   "source_ids",
   "policy_package_ids",
   "priority_effect_review_outcomes",
-  "priority_effect_publication_actions"
+  "priority_effect_publication_actions",
+  "linked_gap_ids"
 ]);
 
 const BOOLEAN_COLUMNS = new Set([
   "effect_claim_checked",
   "effect_claim_reviewed",
   "legal_claim_checked",
-  "mechanism_claim_checked"
+  "mechanism_claim_checked",
+  "effect_direction_used_for_selection",
+  "human_signoff_required",
+  "stable_core_ready",
+  "ranking_ready"
 ]);
-const INTEGER_COLUMNS = new Set(["implementation_count"]);
+const INTEGER_COLUMNS = new Set(["implementation_count", "display_order"]);
 
 function walk(directory) {
   return fs.readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
@@ -65,7 +74,7 @@ function parquetField(column) {
 
 function valueFor(column, value) {
   if (LIST_COLUMNS.has(column)) {
-    return value ? value.split(";").map((item) => item.trim()).filter(Boolean) : [];
+    return value ? value.split(/[;|]/).map((item) => item.trim()).filter(Boolean) : [];
   }
   if (BOOLEAN_COLUMNS.has(column)) return value === "true";
   if (INTEGER_COLUMNS.has(column)) return value === "" ? null : Number.parseInt(value, 10);
@@ -80,6 +89,14 @@ async function convert(csvPath) {
   });
   if (rows.length === 0) throw new Error(`Cannot infer schema for empty CSV: ${csvPath}`);
   const columns = Object.keys(rows[0]);
+  const stem = path
+    .relative(RELEASE, csvPath)
+    .split(path.sep)
+    .join("/")
+    .replace(/\.csv$/, "");
+  if (JSON.stringify(columns) !== JSON.stringify(PUBLIC_COLUMNS[stem])) {
+    throw new Error(`${stem}: CSV header violates public column contract`);
+  }
   const schema = new parquet.ParquetSchema(
     Object.fromEntries(columns.map((column) => [column, parquetField(column)]))
   );
@@ -115,6 +132,24 @@ async function main() {
   }
   const csvFiles = walk(DATA).filter((filePath) => filePath.endsWith(".csv")).sort();
   if (csvFiles.length === 0) throw new Error(`No CSV files found for ${VERSION}`);
+  const dataFiles = walk(DATA);
+  const unexpectedExtensions = dataFiles.filter(
+    (filePath) => !filePath.endsWith(".csv") && !filePath.endsWith(".parquet")
+  );
+  if (unexpectedExtensions.length > 0) {
+    throw new Error(`Non-tabular release artifacts are forbidden: ${unexpectedExtensions.join(", ")}`);
+  }
+  const csvStems = new Set(
+    csvFiles.map((filePath) =>
+      path.relative(RELEASE, filePath).split(path.sep).join("/").replace(/\.csv$/, "")
+    )
+  );
+  if (
+    csvStems.size !== PUBLIC_TABLE_STEMS.size ||
+    [...csvStems].some((stem) => !PUBLIC_TABLE_STEMS.has(stem))
+  ) {
+    throw new Error("CSV table inventory differs from the frozen public contract");
+  }
   const results = [];
   for (const csvPath of csvFiles) results.push(await convert(csvPath));
 

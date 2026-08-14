@@ -66,6 +66,10 @@ configs:
     data_files:
       - split: train
         path: data/core/priority_claim_reviews.parquet
+  - config_name: stable_release_gates
+    data_files:
+      - split: train
+        path: data/core/stable_release_gates.parquet
   - config_name: claim_sources
     data_files:
       - split: train
@@ -90,6 +94,14 @@ configs:
     data_files:
       - split: train
         path: data/relations/package_implementations.parquet
+  - config_name: stable_core_candidates
+    data_files:
+      - split: train
+        path: data/derived/stable_core_candidates.parquet
+  - config_name: candidate_registry
+    data_files:
+      - split: train
+        path: data/derived/candidate_registry.parquet
 ---
 
 # Agency Transfer Policy Atlas
@@ -104,7 +116,7 @@ modes, rights risks, maturity, and evaluability.
 
 ## Status
 
-`v0.1.0-beta.2` is a **research preview**, not a validated policy benchmark.
+`v0.2.0-beta.1` is a **research preview**, not a validated policy benchmark.
 The `train` split name is only the Hugging Face Dataset Viewer container; these
 records are not intended as model-training examples.
 
@@ -113,13 +125,24 @@ The release has 68 control families, 118 implementations, 320 atomic claims,
 non-compensable decision gates. It has no composite effectiveness score or
 leaderboard.
 
+This version records 30 **proposed** stable-core candidates for intensive
+verification and retains the other 88 implementations in a candidate
+registry. The editorial selection was retrospective and not preregistered; its
+ledger records that apparent effect direction was not used, but no complete
+118-row screening ledger exists. Every selected row remains blocked from
+stable admission and ranking; no rank results are published.
+
 ## Critical evidence boundary
 
 The existence of a law, the plausibility of a mechanism, and evidence that an
 intervention works are different claims. In this preview:
 
-- 22 of 123 source records participate in at least one checked claim–source
-  relation; the other 101 remain candidate source records;
+- 20 of 123 source records participate in at least one type-eligible, fully
+  supporting, checked claim–source relation; the other 103 remain candidate
+  source records;
+- 38 of 144 unique claim–source edges meet that public support rule; 10 other
+  source-checked edges use a verification type that is not eligible for the
+  linked claim type;
 - 56 duplicate claim–source rows are removed from the generated release;
 - 6 of 118 control-effect claims have a checked empirical source and a bounded
   observed endpoint; the other 112 remain unchecked;
@@ -131,6 +154,12 @@ intervention works are different claims. In this preview:
   primary-legal claim;
 - the two project-mechanism rows are provisional until their mechanism claims
   receive claim-specific source verification.
+- 3 of 118 mechanism claims currently have a fully supporting checked
+  empirical relation; a legal-source check does not establish a mechanism.
+- source-register action tiers appear only in normalized provenance fields;
+  the default atlas omits them. Every implementation, family, and package has
+  authoritative `publication_decision_posture=not_assessed`, because gate
+  assessments are incomplete.
 
 The dataset therefore supports mapping, audit, and research-priority setting.
 It does not support claims that the listed controls reduce democratic harm.
@@ -145,11 +174,13 @@ for transparent diffs.
 ## Responsible use
 
 Use the Atlas to compare intervention points, trace claims to sources, identify
-coverage gaps, and design bounded evaluations. Do not use a decision tier as
-an effectiveness estimate. Do not infer vote effects from reach, virality, or
-case linkage. The dataset contains no targeting profiles, current-campaign
-playbooks, safeguard-bypass prompts, personally identifiable data, or raw
-harmful model outputs.
+coverage gaps, and design bounded evaluations. Do not treat a working-register
+tier as a recommendation or effectiveness estimate. Do not infer vote effects
+from reach, virality, or case linkage. The dataset contains no
+participant-level or sensitive personal data, targeting profiles,
+current-campaign playbooks, safeguard-bypass prompts, or raw harmful model
+outputs. Public bibliographic and contributor names remain where required for
+attribution.
 
 ## Licensing and citation
 
@@ -157,9 +188,14 @@ CC BY 4.0 covers project-authored taxonomy, annotations, relations, and
 metadata. It does not relicense linked statutes, papers, reports, or other
 third-party material. No DOI is minted for this beta. Cite the repository and
 version using `CITATION.cff` until a stable, independently reviewed release.
+Zenodo is the sole planned DOI archive; Hugging Face remains the Viewer and
+distribution mirror.
 
-Canonical repository:
+Immutable source version:
+https://github.com/apolmig/agencytransfer/tree/v0.2.0-beta.1/policy-atlas
+
+Living source repository:
 https://github.com/apolmig/agencytransfer/tree/main/policy-atlas
 
 Immutable dataset version:
-https://huggingface.co/datasets/apol/agency-transfer-policy-atlas/tree/v0.1.0-beta.2
+https://huggingface.co/datasets/apol/agency-transfer-policy-atlas/tree/v0.2.0-beta.1
