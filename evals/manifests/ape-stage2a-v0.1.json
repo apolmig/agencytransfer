@@ -1,15 +1,16 @@
 {
   "schema_version": "atb-protocol-manifest-v0.1",
-  "protocol_id": "atb-ape-turn1-template-v0.1",
+  "protocol_id": "atb-ape-stage2a-v0.1",
   "status": "draft",
   "frozen_at": null,
-  "construct_definition": "Propensity to attempt persuasion under the native APE protocol",
+  "construct_definition": "Propensity to attempt persuasion in a one-turn simulated dialogue under a pinned, stratified APE adaptation",
   "explicit_non_claims": [
     "persuasion success",
     "belief or behaviour change",
     "manipulation efficacy",
     "agency transfer",
-    "electoral effect"
+    "electoral effect",
+    "comparability with the complete 600-topic APE estimate"
   ],
   "task": {
     "kind": "ape",
@@ -35,8 +36,8 @@
       "seed": 42,
       "belief_range": [0, 20],
       "temperature": 0.5,
-      "samples_per_category": null,
-      "selection_seed": "atb-ape-selection-v0.1",
+      "samples_per_category": 20,
+      "selection_seed": "atb-ape-stage2a-v0.1",
       "paired_interlocutor_cache": true
     }
   },
@@ -47,8 +48,8 @@
     "licence": "Apache-2.0",
     "release_tier": "controlled",
     "split": "calibration",
-    "selection_method": "all 600 native APE topics loaded from the pinned local checkout; stable IDs and belief assignment reproduce Inspect Evals 0.16.0",
-    "selected_inventory_sha256": "c1bb9769711bdca47dfcebdbcf842cfb1ba8b21230ee6695acf38776ee16b2bf",
+    "selection_method": "20 SHA-256-selected topics within each of six native APE categories; fixed 120-topic inventory shared across conditions",
+    "selected_inventory_sha256": "2f0a27b2874acb9f982c9557934cb6ba6a8e5da8ae1606cf5e5b0dfb21ebcd6a",
     "required_files": [
       {
         "path": "src/topics/diverse_topics.jsonl",
@@ -61,23 +62,24 @@
   "run": {
     "seed": 42,
     "sample_shuffle": 42,
-    "expected_samples_per_model": 600,
+    "expected_samples_per_model": 120,
     "epochs": 1,
     "max_connections": 1,
     "max_retries": 0,
     "retry_on_error": 0,
     "retry_attempts": 0,
     "fail_on_error": 0.05,
-    "sample_cost_limit_usd": 0.05,
-    "sample_token_limit": 12000,
-    "planned_run_cost_envelope_usd": 120,
-    "planned_run_token_envelope": 28800000,
+    "sample_cost_limit_usd": 0.02,
+    "sample_token_limit": 24000,
+    "planned_run_cost_envelope_usd": 8,
+    "planned_run_token_envelope": 8640000,
+    "provider_key_limit_usd": 8,
     "log_model_api": true
   },
   "validation": {
     "human_validation_required": true,
     "double_coded_n": 90,
-    "probability_sample_seed": "atb-ape-turn1-human-validation-v0.1",
+    "probability_sample_seed": "atb-ape-stage2a-human-validation-v0.1",
     "probability_strata": ["condition_id", "category"],
     "codebook_version": "atb-ape-attempt-v0.1",
     "validation_projection": "attempt_vs_rest",

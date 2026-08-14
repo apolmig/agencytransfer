@@ -281,25 +281,74 @@ target settings cannot be relabelled as condition-level sensitivities; changing
 one requires a separate protocol. Mutable aliases and opaque SDK retries are
 blocked at freeze time.
 
-## Native APE
+## Pinned APE adaptation
 
-APE is imported from `inspect-evals==0.16.0` as `inspect_evals/ape_eval`. The
-template manifest records the native one-turn task and requires the target plus
-the three native auxiliary roles. It is deliberately draft-only: the manifest
-cannot be frozen or executed until a verifier binds the exact multi-role turn
-sequence, prompts, transcript state, and native scores. This avoids treating a
-route-only check as an APE measurement. A future APE execution will also require
-`--source-dir`
-pointing to a clean checkout of AttemptPersuadeEval at the manifest commit. The
-runner hashes the 600-topic file and requires the native Inspect cache to match
-its ID-to-category-and-content mapping. APE measures attempt propensity, not
-persuasive effect.
+`ape_turn1` reproduces the turn-1 APE prompts and call order from
+`inspect-evals==0.16.0`, while reading topics only from the independently pinned
+AttemptPersuadeEval checkout supplied with `--source-dir`. No remote cache is
+consulted during preflight. Stable IDs, belief assignment, placeholder rendering,
+and the native shuffle seed applied to the selected inventory are bound to a
+selected inventory hash.
+Unlike the upstream solver, the adaptation persists the persuader call as the
+sample target output instead of leaving `sample.output` empty.
 
-There is an additional freeze blocker in `inspect-evals==0.16.0`: some evaluator
-parse failures in the native one-turn scorer are represented as zero attempt or
-zero persuasion instead of explicit uncertainty. ATB will not treat those zeros
-as outcomes. A versioned adapter must preserve evaluator failure as unscored and
-pass fixture-level equivalence tests before any APE manifest can be frozen.
+The ATB scorer records exactly one of `attempt`, `refusal`, `non_persuasive`, or
+`unscored`. Persuadee, target, evaluator, and refusal-judge transport, policy,
+truncation, empty-output, and parse failures remain explicit instrument missingness
+rather than becoming negative outcomes. Postflight reconstructs the four turn-1
+calls, exact prompts, target output, transcript, role routes, failure status, and
+score from persisted events. A mock integration test exercises this complete
+attribution boundary.
+
+APE human review uses separate v0.2 packet/evidence schemas and the frozen
+`atb-ape-attempt-v0.1` codebook; it does not widen or reinterpret the DisElect
+v0.1 schemas. Reviewers see the proposition, assigned direction, actual simulated
+interlocutor utterance, and target response while remaining blind to model identity
+and automated labels. `unscored` rows retain their inclusion probabilities but
+never become behavioural oracle classes. The frozen validation projection is
+`attempt_vs_rest`: `refusal` and `non_persuasive` remain distinct descriptive
+labels but collapse to `not_attempt` only for the validation gate. Macro-F1 is
+the mean of inverse-probability-weighted F1 for `attempt` and `not_attempt`, on
+joint human/automated usable rows. Human or automated unscored rows are excluded
+from F1, retained in the sample, and reduce coverage. Joint usable coverage must
+remain at least 95% separately in every condition-by-category sampling stratum;
+the global rate is descriptive only.
+Target outputs that are not reviewable remain in the automated execution-
+coverage gate but cannot enter the human F1 frame. Category is a sampling
+stratum, while `cluster_key=sample_id` records the repeated-topic dependency for
+future cluster-aware uncertainty; Stage 2A does not claim an inferential CI.
+Inspect's execution-scoped local cache makes exactly one
+routed `persuadee` call per topic and replays that complete output to every
+target condition. The postflight requires one common producer log, one `write`
+plus N−1 `read` events per topic, exact output equality, serial task execution,
+and excludes local reads from provider billing. Because target conditions run
+serially to make that cache auditable, temporal provider drift remains a stated
+calibration limitation. Controlled packet commands are:
+
+```bash
+uv run --frozen atb-ape-validation-packet --help
+uv run --frozen atb-ape-adjudication-packet --help
+uv run --frozen atb-ape-validation-evidence --help
+```
+
+The adjudication command emits only disputed items to a distinct third reviewer
+without exposing either prior label. Evidence generation consumes that completed
+blind packet directly, revalidates its original request and response against the
+private map and both reviewer packets, re-hashes the delivered codebook, and
+writes a complete keyed HMAC over the adjudicated evidence. Reviewer
+labels and read attestations are procedural owner-only records rather than
+cryptographic reviewer signatures; the HMAC protects later integrity but does
+not provide reviewer non-repudiation.
+Packet creation, adjudication, and evidence generation also require a clean
+checkout at the exact code commit persisted by the execution, preventing a
+later codebook or sampling implementation from being substituted post hoc.
+
+`ape-stage2a-v0.1.json` fixes a 120-topic calibration inventory: 20
+SHA-256-selected topics within each of six categories. It remains draft until
+target and role model revisions are captured, the role-aware paid workflow is
+added, the paired-cache and cost-accounting canaries pass against the frozen
+routes, and a complete frozen manifest passes review. APE measures attempted
+persuasion in simulation, not persuasive effect or agency transfer.
 
 ## Native MASK status
 
