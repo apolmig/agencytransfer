@@ -577,7 +577,9 @@ class PersistenceAndMLContractTest(unittest.TestCase):
         self.assertIn("HfApi.create_commit", source)
         self.assertIn('"writes_performed": False', source)
 
-    def test_linear_history_helper_rejects_extra_or_wrong_parent(self) -> None:
+    def test_linear_history_helper_uses_real_hub124_surface_and_rejects_sequence_drift(self) -> None:
+        from huggingface_hub.hf_api import GitCommitInfo
+
         class FakeApi:
             def __init__(self, commits: list[object]) -> None:
                 self.commits = commits
@@ -585,10 +587,19 @@ class PersistenceAndMLContractTest(unittest.TestCase):
             def list_repo_commits(self, **_: object) -> list[object]:
                 return self.commits
 
-        good = [
-            types.SimpleNamespace(commit_id="a" * 40, parents=["b" * 40]),
-            types.SimpleNamespace(commit_id="b" * 40, parents=[]),
-        ]
+        def commit(commit_id: str) -> GitCommitInfo:
+            return GitCommitInfo(
+                commit_id=commit_id,
+                authors=["apol"],
+                created_at=dt.datetime(2026, 8, 14, tzinfo=dt.timezone.utc),
+                title="test",
+                message="",
+                formatted_title=None,
+                formatted_message=None,
+            )
+
+        good = [commit("a" * 40), commit("b" * 40)]
+        self.assertFalse(hasattr(good[0], "parents"))
         MODULE.require_linear_hub_history(
             FakeApi(good),
             repo_id=PERSUASION_REPO,
@@ -596,10 +607,18 @@ class PersistenceAndMLContractTest(unittest.TestCase):
             expected_newest_to_oldest=["a" * 40, "b" * 40],
             token="not-a-real-token",
         )
-        bad = good + [types.SimpleNamespace(commit_id="c" * 40, parents=[])]
+        bad = good + [commit("c" * 40)]
         with self.assertRaisesRegex(RuntimeError, "commit count"):
             MODULE.require_linear_hub_history(
                 FakeApi(bad),
+                repo_id=PERSUASION_REPO,
+                revision="a" * 40,
+                expected_newest_to_oldest=["a" * 40, "b" * 40],
+                token="not-a-real-token",
+            )
+        with self.assertRaisesRegex(RuntimeError, "sequence"):
+            MODULE.require_linear_hub_history(
+                FakeApi(list(reversed(good))),
                 repo_id=PERSUASION_REPO,
                 revision="a" * 40,
                 expected_newest_to_oldest=["a" * 40, "b" * 40],

@@ -895,15 +895,9 @@ def require_linear_hub_history(
     )
     if len(commits) != len(expected_newest_to_oldest):
         raise RuntimeError("target repository contains an unexpected commit count")
-    for index, expected_revision in enumerate(expected_newest_to_oldest):
-        commit = commits[index]
-        expected_parents = (
-            [expected_newest_to_oldest[index + 1]]
-            if index + 1 < len(expected_newest_to_oldest)
-            else []
-        )
-        if commit.commit_id != expected_revision or commit.parents != expected_parents:
-            raise RuntimeError("target repository commit lineage mismatch")
+    observed = [getattr(commit, "commit_id", None) for commit in commits]
+    if observed != expected_newest_to_oldest:
+        raise RuntimeError("target repository commit sequence mismatch")
 
 
 def require_private_hub_head(
@@ -1481,11 +1475,8 @@ def run_training(args: argparse.Namespace) -> int:
     )
     if (
         len(evidence_commits) < 3
-        or evidence_commits[0].commit_id != args.authorization_revision
-        or evidence_commits[0].parents != [identity_revision]
-        or evidence_commits[1].commit_id != identity_revision
-        or evidence_commits[1].parents != [canary_revision]
-        or evidence_commits[2].commit_id != canary_revision
+        or [getattr(commit, "commit_id", None) for commit in evidence_commits[:3]]
+        != [args.authorization_revision, identity_revision, canary_revision]
     ):
         raise RuntimeError("authorization evidence commit lineage mismatch")
     identity_files = set(
@@ -1569,7 +1560,6 @@ def run_training(args: argparse.Namespace) -> int:
     if (
         len(initial_history) != 1
         or initial_history[0].commit_id != expected_parent_revision
-        or initial_history[0].parents
     ):
         raise RuntimeError("target repository bootstrap history is not a one-commit genesis")
     for filename, expected_hash in authorization_evidence["expected_file_sha256"].items():
