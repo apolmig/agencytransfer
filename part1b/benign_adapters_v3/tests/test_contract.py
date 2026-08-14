@@ -8,6 +8,7 @@ import hashlib
 import importlib.util
 import json
 import os
+import sys
 import tempfile
 import types
 import unittest
@@ -415,6 +416,26 @@ class PersistenceAndMLContractTest(unittest.TestCase):
         ):
             self.assertIn(required, source)
         self.assertGreaterEqual(source.count("require_private_hub_head("), 7)
+
+    def test_terminal_head_rehashes_artifacts_and_rejects_byte_substitution(self) -> None:
+        source = SCRIPT.read_text(encoding="utf-8")
+        terminal_section = source[source.index("expected_final_files =") :]
+        self.assertIn("**artifact_commit_sha256", terminal_section)
+        with tempfile.TemporaryDirectory() as directory:
+            tampered = Path(directory) / "adapter_model.safetensors"
+            tampered.write_bytes(b"different adapter bytes")
+            expected = hashlib.sha256(b"authorized adapter bytes").hexdigest()
+            fake_hub = types.SimpleNamespace(
+                hf_hub_download=lambda **_: str(tampered),
+            )
+            with mock.patch.dict(sys.modules, {"huggingface_hub": fake_hub}):
+                with self.assertRaisesRegex(RuntimeError, "remote lineage hash mismatch"):
+                    MODULE.verify_remote_hashes(
+                        repo_id=PERSUASION_REPO,
+                        revision="a" * 40,
+                        expected_sha256={"adapter_model.safetensors": expected},
+                        token="not-a-real-token",
+                    )
 
     def test_no_bucket_combination_or_signing_secret_in_runner(self) -> None:
         source = SCRIPT.read_text(encoding="utf-8")
