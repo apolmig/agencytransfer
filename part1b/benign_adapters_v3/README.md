@@ -38,11 +38,13 @@ variants spanning five templates.
 The runner accepts only a canonical authorization committed to the private
 `apol/era-part1b-training-evidence` dataset at an exact revision. It verifies:
 
-1. the inline bytes, SHA-256, and persisted Hub bytes are identical;
+1. the inline authorization bytes, SHA-256, and persisted Hub bytes are identical;
 2. an Ed25519 signature under the public key pinned in the runner;
-3. a maximum 24-hour validity window and exact operation, script, protocol,
-   runtime, control-Job, model, step, adapter, seed, and repository bindings;
-4. the target is private and has the signed one-commit genesis, exact file
+3. the canonical operation bytes are persisted in the same Hub revision and
+   match the signed operation path and SHA-256;
+4. a maximum 24-hour validity window and exact script, protocol, runtime,
+   control-Job, model, step, adapter, seed, and repository bindings;
+5. the target is private and has the signed one-commit genesis, exact file
    tree, and exact file hashes.
 
 Before importing Torch or downloading model weights, the Job atomically

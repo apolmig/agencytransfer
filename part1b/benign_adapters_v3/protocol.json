@@ -84,6 +84,7 @@
     "trainer_has_signing_secret": false,
     "binds": [
       "operation_sha256",
+      "operation_path_and_same_revision_canonical_bytes",
       "training_script_sha256",
       "protocol_sha256",
       "runtime_versions",
@@ -122,6 +123,7 @@
     "requires": [
       "valid_nonexpired_ed25519_authorization",
       "exact_private_evidence_revision_readback",
+      "exact_persisted_operation_same_authorization_revision",
       "exact_private_target_genesis",
       "atomic_single_job_reservation_before_gpu_work",
       "exact_model_revision",

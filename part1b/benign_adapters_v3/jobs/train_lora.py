@@ -62,7 +62,7 @@ AUTHORIZATION_PUBLIC_KEY_SPKI_DER_B64 = (
 AUTHORIZATION_PUBLIC_KEY_SPKI_DER_SHA256 = (
     "4329b50d6e1d4b093018f60e4bd6b1a571f01b4dc6260a31bd256d17573cdbce"
 )
-EXPECTED_PROTOCOL_SHA256 = "e2698637675cb63763806d50bedc479b328e52648f4c437a8d815f3884559c46"
+EXPECTED_PROTOCOL_SHA256 = "69faad051962d2c85584a3f042c125002263cf99f9d77fbfd64f273c1b845621"
 EXPECTED_RUNTIME_VERSIONS = {
     "accelerate": "1.14.0",
     "bitsandbytes": "0.49.2",
@@ -996,6 +996,32 @@ def decode_authorization(encoded: str, expected_sha256: str) -> tuple[dict[str, 
     return authorization, raw
 
 
+def validate_persisted_operation(
+    raw: bytes,
+    *,
+    expected_sha256: str,
+    run_id: str,
+) -> dict[str, Any]:
+    """Validate the exact operation bytes committed beside the authorization."""
+    if sha256_bytes(raw) != expected_sha256:
+        raise RuntimeError("persisted operation hash mismatch")
+    try:
+        operation = json.loads(raw, object_pairs_hook=strict_object)
+    except (UnicodeDecodeError, json.JSONDecodeError, ValueError) as error:
+        raise RuntimeError("persisted operation JSON is invalid") from error
+    if not isinstance(operation, dict):
+        raise RuntimeError("persisted operation must be an object")
+    if raw != canonical_bytes(operation) + b"\n":
+        raise RuntimeError("persisted operation bytes are not canonical JSON plus newline")
+    if operation.get("schema") != "era-part1b-hf-operation/v3":
+        raise RuntimeError("persisted operation schema mismatch")
+    if operation.get("operation_id") != run_id:
+        raise RuntimeError("persisted operation run mismatch")
+    if operation.get("status") != "GO_FOR_AUTHORIZATION_ISSUER_ONLY":
+        raise RuntimeError("persisted operation authorization gate mismatch")
+    return operation
+
+
 def verify_ed25519_authorization(authorization: dict[str, Any]) -> str:
     from cryptography.exceptions import InvalidSignature
     from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
@@ -1111,6 +1137,7 @@ def validate_training_authorization(
         "identity_path",
         "identity_revision",
         "identity_sha256",
+        "operation_path",
         "authorization_path",
     }:
         raise RuntimeError("authorization control repo evidence mismatch")
@@ -1125,6 +1152,9 @@ def validate_training_authorization(
         raise RuntimeError("authorization evidence identity revision invalid")
     if SHA256_RE.fullmatch(str(control_repo.get("identity_sha256"))) is None:
         raise RuntimeError("authorization evidence identity hash invalid")
+    expected_operation_path = f"runs/{run_id}/control/operation.json"
+    if control_repo.get("operation_path") != expected_operation_path:
+        raise RuntimeError("authorization operation path mismatch")
     expected_path = f"runs/{run_id}/control/authorizations/authorization.json"
     if control_repo.get("authorization_path") != expected_path:
         raise RuntimeError("authorization evidence path mismatch")
@@ -1290,6 +1320,7 @@ def validate_training_authorization(
         "expected_file_sha256": dict(selected["expected_file_sha256"]),
         "signed_payload_sha256": signed_payload_sha256,
         "authorization_path": str(control_repo["authorization_path"]),
+        "operation_path": str(control_repo["operation_path"]),
         "identity_path": str(control_repo["identity_path"]),
         "identity_revision": str(control_repo["identity_revision"]),
         "identity_sha256": str(control_repo["identity_sha256"]),
@@ -1402,6 +1433,18 @@ def run_training(args: argparse.Namespace) -> int:
     )
     if Path(persisted_authorization_path).read_bytes() != authorization_bytes:
         raise RuntimeError("persisted authorization differs from signed inline authorization")
+    persisted_operation_path = hf_hub_download(
+        repo_id=EXPECTED_EVIDENCE_REPO,
+        repo_type="dataset",
+        filename=authorization_evidence["operation_path"],
+        revision=args.authorization_revision,
+        token=token,
+    )
+    validate_persisted_operation(
+        Path(persisted_operation_path).read_bytes(),
+        expected_sha256=args.operation_sha256,
+        run_id=args.run_id,
+    )
     control_head = api.repo_info(
         repo_id=EXPECTED_EVIDENCE_REPO,
         repo_type="dataset",
@@ -1427,6 +1470,28 @@ def run_training(args: argparse.Namespace) -> int:
         or evidence_commits[2].commit_id != canary_revision
     ):
         raise RuntimeError("authorization evidence commit lineage mismatch")
+    identity_files = set(
+        api.list_repo_files(
+            repo_id=EXPECTED_EVIDENCE_REPO,
+            repo_type="dataset",
+            revision=identity_revision,
+            token=token,
+        )
+    )
+    authorization_files = set(
+        api.list_repo_files(
+            repo_id=EXPECTED_EVIDENCE_REPO,
+            repo_type="dataset",
+            revision=args.authorization_revision,
+            token=token,
+        )
+    )
+    expected_authorization_files = identity_files | {
+        authorization_evidence["authorization_path"],
+        authorization_evidence["operation_path"],
+    }
+    if authorization_files != expected_authorization_files:
+        raise RuntimeError("authorization evidence commit file tree mismatch")
     for revision in (identity_revision, canary_revision):
         info = api.repo_info(
             repo_id=EXPECTED_EVIDENCE_REPO,

@@ -67,6 +67,7 @@ def signed_authorization() -> tuple[dict[str, object], bytes, str, str]:
             "identity_path": f"runs/{RUN_ID}/control/identity.json",
             "identity_revision": "8" * 40,
             "identity_sha256": "3" * 64,
+            "operation_path": f"runs/{RUN_ID}/control/operation.json",
             "authorization_path": f"runs/{RUN_ID}/control/authorizations/authorization.json",
         },
         "write_canary": {
@@ -269,6 +270,9 @@ class AuthorizationContractTest(unittest.TestCase):
             )
             self.assertEqual(evidence["target_repo_id"], OSINT_REPO)
             self.assertEqual(evidence["write_canary_job_id"], "canary-job-001")
+            self.assertEqual(
+                evidence["operation_path"], f"runs/{RUN_ID}/control/operation.json"
+            )
             duplicate = copy.deepcopy(authorization)
             duplicate["write_canary"]["job_id"] = "training-job-001"
             with mock.patch.object(
@@ -337,6 +341,32 @@ class AuthorizationContractTest(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError, "official JOB_ID"):
                 MODULE.provider_job_id()
 
+    def test_persisted_operation_is_canonical_hash_bound_and_at_issuer_gate(self) -> None:
+        operation = {
+            "schema": "era-part1b-hf-operation/v3",
+            "operation_id": RUN_ID,
+            "status": "GO_FOR_AUTHORIZATION_ISSUER_ONLY",
+        }
+        raw = MODULE.canonical_bytes(operation) + b"\n"
+        expected = hashlib.sha256(raw).hexdigest()
+        self.assertEqual(
+            MODULE.validate_persisted_operation(
+                raw, expected_sha256=expected, run_id=RUN_ID
+            ),
+            operation,
+        )
+        with self.assertRaisesRegex(RuntimeError, "hash mismatch"):
+            MODULE.validate_persisted_operation(
+                raw, expected_sha256="0" * 64, run_id=RUN_ID
+            )
+        noncanonical = b'{"status":"GO_FOR_AUTHORIZATION_ISSUER_ONLY", "schema":"era-part1b-hf-operation/v3","operation_id":"' + RUN_ID.encode() + b'"}\n'
+        with self.assertRaisesRegex(RuntimeError, "canonical"):
+            MODULE.validate_persisted_operation(
+                noncanonical,
+                expected_sha256=hashlib.sha256(noncanonical).hexdigest(),
+                run_id=RUN_ID,
+            )
+
 
 class PersistenceAndMLContractTest(unittest.TestCase):
     @staticmethod
@@ -382,6 +412,15 @@ class PersistenceAndMLContractTest(unittest.TestCase):
             run_training.index("reservation_commit = api.create_commit("),
             run_training.index("    import torch"),
         )
+        self.assertLess(
+            run_training.index("validate_persisted_operation("),
+            run_training.index("reservation_commit = api.create_commit("),
+        )
+        self.assertLess(
+            run_training.index("authorization evidence commit file tree mismatch"),
+            run_training.index("reservation_commit = api.create_commit("),
+        )
+        self.assertIn('authorization_evidence["operation_path"]', run_training)
         self.assertNotIn("upload_folder(", source)
         self.assertIn("parent_commit=expected_parent_revision", source)
         self.assertIn("parent_commit=reservation_revision", source)
