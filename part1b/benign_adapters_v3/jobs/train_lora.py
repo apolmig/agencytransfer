@@ -1863,6 +1863,10 @@ def run_training(args: argparse.Namespace) -> int:
     artifact_commit_inventory = inventory(
         artifact_root, excluded={terminal_relative}
     )
+    artifact_commit_sha256 = {
+        relative: metadata["sha256"]
+        for relative, metadata in artifact_commit_inventory.items()
+    }
     if set(artifact_commit_inventory) != set(pre_receipt_inventory) | {receipt_relative}:
         raise RuntimeError("artifact inventory changed unexpectedly before Hub commit")
     require_private_hub_head(
@@ -2088,6 +2092,7 @@ def run_training(args: argparse.Namespace) -> int:
         revision=terminal_revision,
         expected_sha256={
             **lineage_hashes,
+            **artifact_commit_sha256,
             terminal_relative: sha256_bytes(terminal_bytes),
         },
         token=token,
