@@ -1108,6 +1108,7 @@ def validate_training_authorization(
     if not isinstance(control_repo, dict) or set(control_repo) != {
         "repo_id",
         "repo_type",
+        "identity_path",
         "identity_revision",
         "identity_sha256",
         "authorization_path",
@@ -1117,6 +1118,9 @@ def validate_training_authorization(
         raise RuntimeError("authorization evidence repo mismatch")
     if control_repo.get("repo_type") != "dataset":
         raise RuntimeError("authorization evidence repo type mismatch")
+    expected_identity_path = f"runs/{run_id}/control/identity.json"
+    if control_repo.get("identity_path") != expected_identity_path:
+        raise RuntimeError("authorization evidence identity path mismatch")
     if REVISION_RE.fullmatch(str(control_repo.get("identity_revision"))) is None:
         raise RuntimeError("authorization evidence identity revision invalid")
     if SHA256_RE.fullmatch(str(control_repo.get("identity_sha256"))) is None:
@@ -1286,6 +1290,7 @@ def validate_training_authorization(
         "expected_file_sha256": dict(selected["expected_file_sha256"]),
         "signed_payload_sha256": signed_payload_sha256,
         "authorization_path": str(control_repo["authorization_path"]),
+        "identity_path": str(control_repo["identity_path"]),
         "identity_revision": str(control_repo["identity_revision"]),
         "identity_sha256": str(control_repo["identity_sha256"]),
         "write_canary_path": str(canary_path),
@@ -1431,11 +1436,10 @@ def run_training(args: argparse.Namespace) -> int:
         )
         if info.private is not True or info.sha != revision:
             raise RuntimeError("authorization evidence revision is not exact and private")
-    identity_path = f"runs/{args.run_id}/control/identity.json"
     persisted_identity = hf_hub_download(
         repo_id=EXPECTED_EVIDENCE_REPO,
         repo_type="dataset",
-        filename=identity_path,
+        filename=authorization_evidence["identity_path"],
         revision=identity_revision,
         token=token,
     )

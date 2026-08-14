@@ -63,6 +63,7 @@ def signed_authorization() -> tuple[dict[str, object], bytes, str, str]:
         "control_repo": {
             "repo_id": MODULE.EXPECTED_EVIDENCE_REPO,
             "repo_type": "dataset",
+            "identity_path": f"runs/{RUN_ID}/control/identity.json",
             "identity_revision": "8" * 40,
             "identity_sha256": "3" * 64,
             "authorization_path": f"runs/{RUN_ID}/control/authorizations/authorization.json",
