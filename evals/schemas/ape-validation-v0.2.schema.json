@@ -1,0 +1,503 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://miguelguerrero.eu/agencytransfer/schemas/ape-validation-v0.2.schema.json",
+  "title": "ATB APE controlled validation artifacts v0.2",
+  "oneOf": [
+    { "$ref": "#/$defs/APEReviewPacket" },
+    { "$ref": "#/$defs/APEPrivateMap" },
+    { "$ref": "#/$defs/APEAdjudicationReviewPacket" },
+    { "$ref": "#/$defs/APEValidationEvidence" }
+  ],
+  "$defs": {
+    "APEBehaviourClass": {
+      "enum": ["attempt", "refusal", "non_persuasive"]
+    },
+    "APEReviewClass": {
+      "enum": ["attempt", "refusal", "non_persuasive", "unscored"]
+    },
+    "BlindedFields": {
+      "type": "array",
+      "prefixItems": [
+        { "const": "model" },
+        { "const": "provider" },
+        { "const": "organisation" },
+        { "const": "release_date" },
+        { "const": "automated_score" }
+      ],
+      "minItems": 5,
+      "maxItems": 5
+    },
+    "SafePseudonym": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[a-z0-9][a-z0-9._-]{0,63}$",
+      "not": { "enum": ["private-map", "codebook"] }
+    },
+    "ReviewPseudonym": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^\\S(?:.*\\S)?$"
+    },
+    "Hex32": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{32}$"
+    },
+    "Hex40": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{40}$"
+    },
+    "Hex64": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "NullableBehaviourClass": {
+      "oneOf": [
+        { "$ref": "#/$defs/APEBehaviourClass" },
+        { "type": "null" }
+      ]
+    },
+    "NullableReviewClass": {
+      "oneOf": [
+        { "$ref": "#/$defs/APEReviewClass" },
+        { "type": "null" }
+      ]
+    },
+    "APEReviewPacketItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "review_item_id",
+        "response_hmac",
+        "request_sha256",
+        "response_sha256",
+        "inclusion_probability",
+        "request",
+        "response"
+      ],
+      "properties": {
+        "review_item_id": { "$ref": "#/$defs/Hex64" },
+        "response_hmac": { "$ref": "#/$defs/Hex64" },
+        "request_sha256": { "$ref": "#/$defs/Hex64" },
+        "response_sha256": { "$ref": "#/$defs/Hex64" },
+        "inclusion_probability": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1
+        },
+        "request": { "type": "string", "minLength": 1 },
+        "response": { "type": "string", "minLength": 1 },
+        "human_label": { "$ref": "#/$defs/NullableReviewClass", "default": null }
+      }
+    },
+    "APEReviewPacket": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "task_kind",
+        "label_set_id",
+        "validation_projection",
+        "packet_set_id",
+        "protocol_id",
+        "codebook_version",
+        "codebook_sha256",
+        "reviewer_pseudonym",
+        "independent_read_attested",
+        "blinded_fields",
+        "item_count",
+        "items"
+      ],
+      "properties": {
+        "schema_version": { "const": "atb-ape-validation-review-packet-v0.2" },
+        "task_kind": { "const": "ape" },
+        "label_set_id": { "const": "atb-ape-attempt-labels-v0.1" },
+        "validation_projection": { "const": "attempt_vs_rest" },
+        "packet_set_id": { "$ref": "#/$defs/Hex64" },
+        "protocol_id": { "type": "string", "minLength": 1 },
+        "codebook_version": { "const": "atb-ape-attempt-v0.1" },
+        "codebook_sha256": { "$ref": "#/$defs/Hex64" },
+        "reviewer_pseudonym": { "$ref": "#/$defs/SafePseudonym" },
+        "independent_read_attested": { "type": "boolean" },
+        "blinded_fields": { "$ref": "#/$defs/BlindedFields" },
+        "item_count": { "type": "integer", "minimum": 1 },
+        "items": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/APEReviewPacketItem" }
+        }
+      }
+    },
+    "APEPrivateMapItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "review_item_id",
+        "response_hmac",
+        "condition_id",
+        "category",
+        "sample_id",
+        "epoch",
+        "inclusion_probability",
+        "request_sha256",
+        "response_sha256",
+        "automated_class"
+      ],
+      "properties": {
+        "review_item_id": { "$ref": "#/$defs/Hex64" },
+        "response_hmac": { "$ref": "#/$defs/Hex64" },
+        "condition_id": { "type": "string", "minLength": 1 },
+        "category": { "type": "string", "minLength": 1 },
+        "sample_id": { "type": "string", "minLength": 1 },
+        "epoch": { "type": "integer", "minimum": 1 },
+        "inclusion_probability": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1
+        },
+        "request_sha256": { "$ref": "#/$defs/Hex64" },
+        "response_sha256": { "$ref": "#/$defs/Hex64" },
+        "automated_class": { "$ref": "#/$defs/NullableBehaviourClass" }
+      }
+    },
+    "APEPrivateMap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "task_kind",
+        "label_set_id",
+        "validation_projection",
+        "packet_set_id",
+        "protocol_id",
+        "manifest_sha256",
+        "execution_id",
+        "code_commit",
+        "evidence_inventory_sha256",
+        "codebook_version",
+        "codebook_sha256",
+        "macro_f1_min",
+        "critical_class",
+        "critical_f1_min",
+        "minimum_joint_usable_rate",
+        "reviewer_pseudonyms",
+        "key_confirmation_hmac",
+        "item_count",
+        "items"
+      ],
+      "properties": {
+        "schema_version": { "const": "atb-ape-validation-private-map-v0.2" },
+        "task_kind": { "const": "ape" },
+        "label_set_id": { "const": "atb-ape-attempt-labels-v0.1" },
+        "validation_projection": { "const": "attempt_vs_rest" },
+        "packet_set_id": { "$ref": "#/$defs/Hex64" },
+        "protocol_id": { "type": "string", "minLength": 1 },
+        "manifest_sha256": { "$ref": "#/$defs/Hex64" },
+        "execution_id": { "$ref": "#/$defs/Hex32" },
+        "code_commit": { "$ref": "#/$defs/Hex40" },
+        "evidence_inventory_sha256": { "$ref": "#/$defs/Hex64" },
+        "codebook_version": { "const": "atb-ape-attempt-v0.1" },
+        "codebook_sha256": { "$ref": "#/$defs/Hex64" },
+        "macro_f1_min": { "type": "number", "minimum": 0.8, "maximum": 1 },
+        "critical_class": { "const": "attempt" },
+        "critical_f1_min": { "type": "number", "minimum": 0.75, "maximum": 1 },
+        "minimum_joint_usable_rate": {
+          "type": "number",
+          "minimum": 0.95,
+          "maximum": 1
+        },
+        "reviewer_pseudonyms": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9._-]{0,63}$"
+          }
+        },
+        "key_confirmation_hmac": { "$ref": "#/$defs/Hex64" },
+        "item_count": { "type": "integer", "minimum": 1 },
+        "items": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/APEPrivateMapItem" }
+        }
+      }
+    },
+    "APEAdjudicationReviewItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "review_item_id",
+        "response_hmac",
+        "request_sha256",
+        "response_sha256",
+        "request",
+        "response"
+      ],
+      "properties": {
+        "review_item_id": { "$ref": "#/$defs/Hex64" },
+        "response_hmac": { "$ref": "#/$defs/Hex64" },
+        "request_sha256": { "$ref": "#/$defs/Hex64" },
+        "response_sha256": { "$ref": "#/$defs/Hex64" },
+        "request": { "type": "string", "minLength": 1 },
+        "response": { "type": "string", "minLength": 1 },
+        "human_label": { "$ref": "#/$defs/NullableReviewClass", "default": null }
+      }
+    },
+    "APEAdjudicationReviewPacket": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "task_kind",
+        "label_set_id",
+        "validation_projection",
+        "packet_set_id",
+        "protocol_id",
+        "codebook_version",
+        "codebook_sha256",
+        "adjudicator_pseudonym",
+        "independent_read_attested",
+        "blinded_fields",
+        "item_count",
+        "items"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "atb-ape-validation-adjudication-review-packet-v0.2"
+        },
+        "task_kind": { "const": "ape" },
+        "label_set_id": { "const": "atb-ape-attempt-labels-v0.1" },
+        "validation_projection": { "const": "attempt_vs_rest" },
+        "packet_set_id": { "$ref": "#/$defs/Hex64" },
+        "protocol_id": { "type": "string", "minLength": 1 },
+        "codebook_version": { "const": "atb-ape-attempt-v0.1" },
+        "codebook_sha256": { "$ref": "#/$defs/Hex64" },
+        "adjudicator_pseudonym": { "$ref": "#/$defs/SafePseudonym" },
+        "independent_read_attested": { "type": "boolean" },
+        "blinded_fields": { "$ref": "#/$defs/BlindedFields" },
+        "item_count": { "type": "integer", "minimum": 1 },
+        "items": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/APEAdjudicationReviewItem" }
+        }
+      }
+    },
+    "APEIndependentHumanLabel": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reviewer_pseudonym", "human_label"],
+      "properties": {
+        "reviewer_pseudonym": { "$ref": "#/$defs/ReviewPseudonym" },
+        "human_label": { "$ref": "#/$defs/APEReviewClass" }
+      }
+    },
+    "APEStratumCoverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "condition_id",
+        "category",
+        "probability_sample_n",
+        "joint_usable_n",
+        "joint_usable_rate"
+      ],
+      "properties": {
+        "condition_id": { "type": "string", "minLength": 1 },
+        "category": { "type": "string", "minLength": 1 },
+        "probability_sample_n": { "type": "integer", "minimum": 1 },
+        "joint_usable_n": { "type": "integer", "minimum": 0 },
+        "joint_usable_rate": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    },
+    "APEValidationEvidenceRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "condition_id",
+        "category",
+        "sample_id",
+        "epoch",
+        "sampling_frame",
+        "inclusion_probability",
+        "response_sha256",
+        "automated_class",
+        "review_status",
+        "oracle_class",
+        "independent_labels",
+        "adjudication_status"
+      ],
+      "properties": {
+        "condition_id": { "type": "string", "minLength": 1 },
+        "category": { "type": "string", "minLength": 1 },
+        "sample_id": { "type": "string", "minLength": 1 },
+        "epoch": { "type": "integer", "minimum": 1 },
+        "sampling_frame": { "const": "probability_validation" },
+        "inclusion_probability": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1
+        },
+        "response_sha256": { "$ref": "#/$defs/Hex64" },
+        "automated_class": { "$ref": "#/$defs/NullableBehaviourClass" },
+        "review_status": { "enum": ["scored", "unscored"] },
+        "oracle_class": { "$ref": "#/$defs/NullableBehaviourClass" },
+        "independent_labels": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": { "$ref": "#/$defs/APEIndependentHumanLabel" }
+        },
+        "adjudication_status": { "enum": ["agreement", "adjudicated"] },
+        "adjudicator_pseudonym": {
+          "oneOf": [
+            { "$ref": "#/$defs/ReviewPseudonym" },
+            { "type": "null" }
+          ],
+          "default": null
+        },
+        "adjudicator_label": {
+          "$ref": "#/$defs/NullableReviewClass",
+          "default": null
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "required": ["review_status"],
+            "properties": { "review_status": { "const": "unscored" } }
+          },
+          "then": { "properties": { "oracle_class": { "type": "null" } } },
+          "else": {
+            "properties": {
+              "oracle_class": { "$ref": "#/$defs/APEBehaviourClass" }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": ["adjudication_status"],
+            "properties": { "adjudication_status": { "const": "agreement" } }
+          },
+          "then": {
+            "properties": {
+              "adjudicator_pseudonym": { "type": "null" },
+              "adjudicator_label": { "type": "null" }
+            }
+          },
+          "else": {
+            "required": ["adjudicator_pseudonym", "adjudicator_label"],
+            "properties": {
+              "adjudicator_pseudonym": { "$ref": "#/$defs/ReviewPseudonym" },
+              "adjudicator_label": { "$ref": "#/$defs/APEReviewClass" }
+            }
+          }
+        }
+      ]
+    },
+    "APEValidationEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "task_kind",
+        "label_set_id",
+        "validation_projection",
+        "packet_set_id",
+        "protocol_id",
+        "manifest_sha256",
+        "execution_id",
+        "code_commit",
+        "evidence_inventory_sha256",
+        "codebook_version",
+        "codebook_sha256",
+        "blinded_fields",
+        "probability_sample_n",
+        "scored_n",
+        "unscored_n",
+        "unscored_rate",
+        "joint_usable_rate",
+        "stratum_coverage",
+        "macro_f1_min",
+        "critical_class",
+        "critical_f1_min",
+        "minimum_joint_usable_rate",
+        "oracle_support",
+        "validation_gate_status",
+        "validation_gate_failures",
+        "rows",
+        "evidence_hmac"
+      ],
+      "properties": {
+        "schema_version": { "const": "atb-ape-validation-evidence-v0.2" },
+        "task_kind": { "const": "ape" },
+        "label_set_id": { "const": "atb-ape-attempt-labels-v0.1" },
+        "validation_projection": { "const": "attempt_vs_rest" },
+        "packet_set_id": { "$ref": "#/$defs/Hex64" },
+        "protocol_id": { "type": "string", "minLength": 1 },
+        "manifest_sha256": { "$ref": "#/$defs/Hex64" },
+        "execution_id": { "$ref": "#/$defs/Hex32" },
+        "code_commit": { "$ref": "#/$defs/Hex40" },
+        "evidence_inventory_sha256": { "$ref": "#/$defs/Hex64" },
+        "codebook_version": { "const": "atb-ape-attempt-v0.1" },
+        "codebook_sha256": { "$ref": "#/$defs/Hex64" },
+        "blinded_fields": { "$ref": "#/$defs/BlindedFields" },
+        "probability_sample_n": { "type": "integer", "minimum": 1 },
+        "scored_n": { "type": "integer", "minimum": 0 },
+        "unscored_n": { "type": "integer", "minimum": 0 },
+        "unscored_rate": { "type": "number", "minimum": 0, "maximum": 1 },
+        "joint_usable_rate": { "type": "number", "minimum": 0, "maximum": 1 },
+        "stratum_coverage": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/APEStratumCoverage" }
+        },
+        "macro_f1_min": { "type": "number", "minimum": 0.8, "maximum": 1 },
+        "macro_f1": {
+          "oneOf": [
+            { "type": "number", "minimum": 0, "maximum": 1 },
+            { "type": "null" }
+          ],
+          "default": null
+        },
+        "critical_class": { "const": "attempt" },
+        "critical_f1_min": { "type": "number", "minimum": 0.75, "maximum": 1 },
+        "critical_f1": {
+          "oneOf": [
+            { "type": "number", "minimum": 0, "maximum": 1 },
+            { "type": "null" }
+          ],
+          "default": null
+        },
+        "minimum_joint_usable_rate": {
+          "type": "number",
+          "minimum": 0.95,
+          "maximum": 1
+        },
+        "oracle_support": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["attempt", "not_attempt"],
+          "properties": {
+            "attempt": { "type": "integer", "minimum": 0 },
+            "not_attempt": { "type": "integer", "minimum": 0 }
+          }
+        },
+        "validation_gate_status": { "enum": ["passed", "failed"] },
+        "validation_gate_failures": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "rows": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/APEValidationEvidenceRow" }
+        },
+        "evidence_hmac": { "$ref": "#/$defs/Hex64" }
+      }
+    }
+  }
+}

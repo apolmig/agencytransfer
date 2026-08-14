@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import os
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -22,12 +23,14 @@ from atb_eval.manifest import (
     verify_model_revision_evidence,
 )
 from atb_eval.runner import (
+    APE_PAIRED_SCHEDULE,
     build_model,
     build_task,
     condition_map,
     diselect_score_contract_matches,
     effective_event_generate_config,
     ensure_private_permissions,
+    execute,
     execution_envelope,
     expected_runtime_packages,
     model_cost_config,
@@ -81,7 +84,11 @@ def test_frozen_canary_manifest_is_valid() -> None:
 
 
 def test_draft_protocols_are_schema_valid() -> None:
-    for name in ("diselect-wave1a-v0.1.json", "ape-turn1-template-v0.1.json"):
+    for name in (
+        "diselect-wave1a-v0.1.json",
+        "ape-turn1-template-v0.1.json",
+        "ape-stage2a-v0.1.json",
+    ):
         manifest = load_manifest(REPO_ROOT / "evals/manifests" / name)
         assert manifest.status is ProtocolStatus.DRAFT
         assert manifest.models == []
@@ -1196,6 +1203,26 @@ def _openrouter_condition(condition_id: str, *, max_tokens: int | None = None) -
     return condition
 
 
+def _frozen_ape_payload(*, openrouter: bool = False) -> dict:
+    payload = json.loads(
+        (REPO_ROOT / "evals/manifests/ape-stage2a-v0.1.json").read_text(encoding="utf-8")
+    )
+    factory = _openrouter_condition if openrouter else _paid_condition
+    payload.update(
+        {
+            "status": "frozen",
+            "frozen_at": "2026-08-15T00:00:00Z",
+            "models": [factory("target", max_tokens=700)],
+            "model_roles": {
+                "persuadee": factory("role-persuadee", max_tokens=512),
+                "evaluator": factory("role-evaluator", max_tokens=256),
+                "refusal_judge": factory("role-refusal-judge", max_tokens=256),
+            },
+        }
+    )
+    return payload
+
+
 def _frozen_diselect_payload() -> dict:
     payload = json.loads(
         (REPO_ROOT / "evals/manifests/diselect-wave1a-v0.1.json").read_text(encoding="utf-8")
@@ -1264,7 +1291,7 @@ def test_route_check_rejects_effective_event_config_drift() -> None:
     assert not sample_routes_match(sample, condition, manifest=manifest)
 
 
-def test_native_ape_cannot_freeze_before_transcript_attribution_verifier() -> None:
+def test_ape_freeze_requires_a_bound_selected_inventory() -> None:
     payload = json.loads(
         (REPO_ROOT / "evals/manifests/ape-turn1-template-v0.1.json").read_text(encoding="utf-8")
     )
@@ -1275,8 +1302,145 @@ def test_native_ape_cannot_freeze_before_transcript_attribution_verifier() -> No
             "models": [_paid_condition("target", max_tokens=700)],
         }
     )
-    with pytest.raises(ValidationError, match="draft-only"):
+    payload["dataset"].pop("selected_inventory_sha256")
+    with pytest.raises(ValidationError, match="selected dataset inventory hash"):
         ProtocolManifest.model_validate(payload)
+
+
+def test_ape_freeze_requires_its_construct_specific_validation_plan() -> None:
+    payload = json.loads(
+        (REPO_ROOT / "evals/manifests/ape-turn1-template-v0.1.json").read_text(encoding="utf-8")
+    )
+    payload.update(
+        {
+            "status": "frozen",
+            "frozen_at": "2026-08-15T00:00:00Z",
+            "models": [_paid_condition("target", max_tokens=700)],
+        }
+    )
+    payload["dataset"]["selected_inventory_sha256"] = "a" * 64
+    payload["validation"]["codebook_version"] = "atb-human-codebook-v0.1"
+    with pytest.raises(ValidationError, match="construct-specific blind-validation plan"):
+        ProtocolManifest.model_validate(payload)
+
+
+def test_ape_frozen_validation_contract_is_binary_paired_and_nonpublic() -> None:
+    manifest = ProtocolManifest.model_validate(_frozen_ape_payload())
+    assert manifest.validation.validation_projection == "attempt_vs_rest"
+    assert manifest.validation.cluster_key == "sample_id"
+    assert manifest.release.public_aggregate_candidate is False
+
+
+@pytest.mark.parametrize(
+    ("path", "value"),
+    [
+        (("validation", "validation_projection"), None),
+        (("validation", "cluster_key"), "category"),
+        (("validation", "macro_f1_min"), 0.0),
+        (("validation", "critical_f1_min"), 0.0),
+        (("release", "public_aggregate_candidate"), True),
+    ],
+)
+def test_ape_freeze_rejects_weakened_validation_contract(
+    path: tuple[str, str], value: object
+) -> None:
+    payload = _frozen_ape_payload()
+    payload[path[0]][path[1]] = value
+    with pytest.raises(ValidationError, match="construct-specific blind-validation plan"):
+        ProtocolManifest.model_validate(payload)
+
+
+def test_ape_openrouter_role_must_support_task_owned_temperature() -> None:
+    payload = _frozen_ape_payload(openrouter=True)
+    payload["model_roles"]["evaluator"]["revision"]["supported_parameters"].remove("temperature")
+    with pytest.raises(ValidationError, match="lacks required parameters: temperature"):
+        ProtocolManifest.model_validate(payload)
+
+
+def test_ape_execute_scopes_restores_and_cleans_interlocutor_cache(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    manifest = ProtocolManifest.model_validate(_frozen_ape_payload())
+    log_dir = tmp_path / "logs"
+    log_dir.mkdir(mode=0o700)
+    log_dir.chmod(0o700)
+    old_cache = str(tmp_path / "existing-cache")
+    old_scope = "existing-scope"
+    monkeypatch.setenv("INSPECT_CACHE_DIR", old_cache)
+    monkeypatch.setenv("ATB_APE_INTERLOCUTOR_CACHE_SCOPE", old_scope)
+    observed_cache: Path | None = None
+
+    def fake_eval_set(**kwargs: object) -> tuple[bool, list[object]]:
+        nonlocal observed_cache
+        observed_cache = Path(str(os.environ["INSPECT_CACHE_DIR"]))
+        assert os.environ["ATB_APE_INTERLOCUTOR_CACHE_SCOPE"] == "1" * 32
+        assert kwargs["max_tasks"] == 1
+        assert kwargs["metadata"]["atb_schedule"] == APE_PAIRED_SCHEDULE  # type: ignore[index]
+        return False, []
+
+    monkeypatch.setattr("atb_eval.runner.build_model", lambda *_args: object())
+    monkeypatch.setattr("atb_eval.runner.runtime_package_versions", lambda *_args: {})
+    monkeypatch.setattr("atb_eval.runner.model_cost_config", lambda *_args: None)
+    monkeypatch.setattr("atb_eval.runner.eval_set", fake_eval_set)
+    monkeypatch.setattr(
+        "atb_eval.runner.recorded_execution_usage_within_envelope",
+        lambda *_args, **_kwargs: True,
+    )
+    result = execute(
+        manifest,
+        SimpleNamespace(),
+        log_dir,
+        "a" * 64,
+        {
+            "code_commit": "b" * 40,
+            "code_dirty": False,
+            "environment_lock_sha256": "c" * 64,
+        },
+        execution_id="1" * 32,
+    )
+    assert result is False
+    assert observed_cache is not None and not observed_cache.exists()
+    assert os.environ["INSPECT_CACHE_DIR"] == old_cache
+    assert os.environ["ATB_APE_INTERLOCUTOR_CACHE_SCOPE"] == old_scope
+
+
+def test_ape_cache_cleanup_failure_does_not_skip_usage_audit(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    manifest = ProtocolManifest.model_validate(_frozen_ape_payload())
+    log_dir = tmp_path / "logs"
+    log_dir.mkdir(mode=0o700)
+    log_dir.chmod(0o700)
+    audited = False
+
+    def audit(*_args: object, **_kwargs: object) -> bool:
+        nonlocal audited
+        audited = True
+        return True
+
+    def fail_cleanup(*_args: object) -> None:
+        raise OSError("fixture")
+
+    monkeypatch.setattr("atb_eval.runner.build_model", lambda *_args: object())
+    monkeypatch.setattr("atb_eval.runner.runtime_package_versions", lambda *_args: {})
+    monkeypatch.setattr("atb_eval.runner.model_cost_config", lambda *_args: None)
+    monkeypatch.setattr("atb_eval.runner.eval_set", lambda **_kwargs: (False, []))
+    monkeypatch.setattr("atb_eval.runner.shutil.rmtree", fail_cleanup)
+    monkeypatch.setattr("atb_eval.runner.recorded_execution_usage_within_envelope", audit)
+    with pytest.raises(RuntimeError, match="after persisted usage was audited"):
+        execute(
+            manifest,
+            SimpleNamespace(),
+            log_dir,
+            "a" * 64,
+            {
+                "code_commit": "b" * 40,
+                "code_dirty": False,
+                "environment_lock_sha256": "c" * 64,
+            },
+            execution_id="2" * 32,
+        )
+    assert audited
 
 
 def test_frozen_paid_protocol_requires_model_revision_evidence() -> None:
@@ -1614,4 +1778,27 @@ def test_openrouter_billed_cost_is_read_separately_from_local_estimate() -> None
 
     event.call.response = {"usage": {"total_tokens": 12}}
     with pytest.raises(ValueError, match=r"billed usage\.cost"):
+        recorded_openrouter_billed_costs(log)
+
+
+def test_openrouter_local_cache_read_is_not_counted_as_provider_billing() -> None:
+    event = type("ModelEvent", (), {})()
+    event.uuid = "openrouter-cache-read"
+    event.model = "openrouter/qwen/model-2025-01-01"
+    event.role = "persuadee"
+    event.cache = "read"
+    event.error = None
+    event.output = SimpleNamespace(
+        error=None,
+        usage=SimpleNamespace(total_tokens=12, total_cost=0.00125),
+    )
+    event.call = None
+    log = SimpleNamespace(
+        eval=SimpleNamespace(metadata={"atb_schedule": APE_PAIRED_SCHEDULE}),
+        samples=[SimpleNamespace(events=[event])],
+    )
+    assert recorded_openrouter_billed_costs(log) == {}
+
+    event.call = SimpleNamespace(error=None, response={"usage": {"cost": 0.00125}})
+    with pytest.raises(ValueError, match="unbound local model-cache read"):
         recorded_openrouter_billed_costs(log)
