@@ -1,9 +1,11 @@
 # ERA Part 1B — private-Hub benign adapters v3
 
-The current immutable execution revision rotates the single accepted signing
-key to `era-part1b-v4-ed25519-20260814` for the fresh v4 run. Payload and
-receipt schemas remain v3; no old-key fallback or dual-key acceptance exists.
-The earlier public commit preserves the abandoned v3 execution bytes.
+The current immutable execution revision accepts only the signing key
+`era-part1b-v4-ed25519-20260814`, which is deliberately retained for the fresh
+v5 recovery because the key was not implicated in the v4 control failure.
+Payload and receipt schemas remain v3; no old-key fallback or dual-key
+acceptance exists. Earlier public commits preserve the abandoned v3 and
+quarantined v4 execution bytes.
 
 Version 3 is an additive persistence path for the same two independent
 interventions defined in v2:
@@ -79,10 +81,12 @@ target repositories, or training Job.
 
 ## Expected run-specific repositories
 
-For operation `era-p1b-v4-20260814t030306z` the controlled plane uses:
+The v4 operation `era-p1b-v4-20260814t030306z` is quarantined and must never
+be resubmitted. For the fresh operation `era-p1b-v5-20260814t034404z`, the
+controlled plane uses:
 
-- `apol/era-p1b-v4-20260814t030306z-transparent-persuasion-qwen3-8b-lora`;
-- `apol/era-p1b-v4-20260814t030306z-public-osint-qwen3-8b-lora`.
+- `apol/era-p1b-v5-20260814t034404z-transparent-persuasion-qwen3-8b-lora`;
+- `apol/era-p1b-v5-20260814t034404z-public-osint-qwen3-8b-lora`.
 
 They must already exist, be private, and contain only the producer-created
 genesis before authorization. The public runner never creates a repository.
@@ -92,7 +96,7 @@ genesis before authorization. The public runner never creates a repository.
 ```bash
 python part1b/benign_adapters_v3/jobs/train_lora.py \
   --adapter transparent_persuasion --phase production \
-  --run-id era-p1b-v4-20260814t030306z --seed 17 --validate-only
+  --run-id era-p1b-v5-20260814t034404z --seed 17 --validate-only
 python -m unittest discover -s part1b/benign_adapters_v3/tests -v
 ```
 
