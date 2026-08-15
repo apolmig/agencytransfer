@@ -30,6 +30,7 @@ from atb_eval.runner import parse_args
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 MANIFEST_PATH = REPO_ROOT / "evals/manifests/diselect-route-preflight-v0.3.json"
+WAVE1A_V04_MANIFEST_PATH = REPO_ROOT / "evals/manifests/diselect-wave1a-v0.4.json"
 COMMIT = "a" * 40
 NOW = datetime(2026, 8, 12, 12, 0, tzinfo=UTC)
 
@@ -350,6 +351,34 @@ def test_manifest_lifetime_cap_is_independent_of_the_per_run_permit() -> None:
     )
     assert manifest.run.planned_run_cost_envelope_usd == 0.04
     assert budget.limit_usd == manifest.run.provider_key_limit_usd == 30.0
+
+
+def test_wave1a_v04_forces_an_exact_fresh_usd_one_lifetime_key() -> None:
+    manifest, _ = load_manifest_with_hash(WAVE1A_V04_MANIFEST_PATH)
+    budget = verify_openrouter_key_budget(
+        manifest,
+        environment={"OPENROUTER_API_KEY": "inference-secret"},
+        opener=key_opener({"data": valid_key_data(limit=1.0, limit_remaining=1.0)}),
+        now=NOW,
+    )
+    assert budget.limit_usd == budget.remaining_usd == 1.0
+    assert manifest.run.provider_key_limit_usd == 1.0
+
+    with pytest.raises(ValueError, match="exceeds the manifest lifetime cap"):
+        verify_openrouter_key_budget(
+            manifest,
+            environment={"OPENROUTER_API_KEY": "inference-secret"},
+            opener=key_opener({"data": valid_key_data(limit=1.01, limit_remaining=1.01)}),
+            now=NOW,
+        )
+
+    with pytest.raises(ValueError, match="below the planned run envelope"):
+        verify_openrouter_key_budget(
+            manifest,
+            environment={"OPENROUTER_API_KEY": "inference-secret"},
+            opener=key_opener({"data": valid_key_data(limit=1.0, limit_remaining=0.99)}),
+            now=NOW,
+        )
 
 
 def write_fresh_capture(

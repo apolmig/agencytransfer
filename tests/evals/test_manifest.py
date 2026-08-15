@@ -166,6 +166,28 @@ def test_revised_frozen_wave1a_manifest_corrects_observed_truncation_bound() -> 
     assert manifest.release.requires_two_person_review is True
 
 
+def test_wave1a_v04_changes_only_identity_freeze_time_and_provider_cap() -> None:
+    historical = load_manifest(REPO_ROOT / "evals/manifests/diselect-wave1a-v0.3.json")
+    manifest = load_manifest(REPO_ROOT / "evals/manifests/diselect-wave1a-v0.4.json")
+
+    assert manifest.status is ProtocolStatus.FROZEN
+    assert manifest.protocol_id == "atb-diselect-wave1a-v0.4"
+    assert manifest.frozen_at > historical.frozen_at
+    assert manifest.run.planned_run_cost_envelope_usd == 1.0
+    assert manifest.run.provider_key_limit_usd == 1.0
+    assert manifest.validation.probability_sample_seed == (
+        "atb-diselect-wave1a-human-validation-v0.3"
+    )
+
+    historical_payload = historical.model_dump(mode="json")
+    manifest_payload = manifest.model_dump(mode="json")
+    for payload in (historical_payload, manifest_payload):
+        payload.pop("protocol_id")
+        payload.pop("frozen_at")
+        payload["run"].pop("provider_key_limit_usd")
+    assert manifest_payload == historical_payload
+
+
 @pytest.mark.parametrize(
     (
         "manifest_name",
