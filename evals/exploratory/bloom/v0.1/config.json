@@ -1,0 +1,33 @@
+{
+  "schema_version": "atb-bloom-config-v0.1",
+  "engine": "petri-bloom",
+  "engine_version": "0.2.6",
+  "lane": "exploratory",
+  "execution_status": "blocked",
+  "roles": [
+    "scenarios",
+    "auditor",
+    "target",
+    "judge"
+  ],
+  "behavior_seed_version": "atb-bloom-agency-behavior-v0.1",
+  "scenario_set_version": "atb-bloom-benign-scenarios-v0.1",
+  "dimension_set_version": "atb-bloom-agency-dimensions-v0.1",
+  "scenario_source": "human-authored mock fixtures; not Bloom-generated evidence",
+  "num_scenarios": 2,
+  "max_turns": 4,
+  "compaction": false,
+  "enable_prefill": false,
+  "enable_rollback": false,
+  "realism_filter": false,
+  "target_tools": "none",
+  "turn_counter": false,
+  "epochs": 1,
+  "reproducibility_blockers": [
+    "Bloom scenario generation has not been executed or frozen",
+    "Bloom does not expose Petri target_display_name in its standard task surface",
+    "ATB has not implemented role-aware route, retry, cost, or multi-turn transcript postflight",
+    "Model-role generation seeds and effective parameters are not transmitted or audited"
+  ],
+  "interpretation": "suite-design exploration only; scores do not estimate prevalence or benchmark rank"
+}

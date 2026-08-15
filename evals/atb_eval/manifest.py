@@ -19,6 +19,8 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
+EXPLORATORY_TASK_KINDS = frozenset({"petri_discovery", "bloom_discovery"})
+
 
 class StrictModel(BaseModel):
     model_config = ConfigDict(extra="forbid")
@@ -37,7 +39,7 @@ class ReleaseTier(StrEnum):
 
 
 class TaskSpec(StrictModel):
-    kind: Literal["canary", "diselect", "ape"]
+    kind: Literal["canary", "diselect", "ape", "petri_discovery", "bloom_discovery"]
     name: str
     registry_name: str
     version: str
@@ -65,6 +67,57 @@ class RequiredFile(StrictModel):
         if len(value) != 64 or any(char not in "0123456789abcdef" for char in value):
             raise ValueError("sha256 must be 64 lowercase hexadecimal characters")
         return value
+
+
+class ExploratoryContentBinding(RequiredFile):
+    content_id: str = Field(pattern=r"^[a-z0-9][a-z0-9._-]{0,127}$")
+    content_version: str = Field(pattern=r"^atb-[a-z0-9][a-z0-9._-]{0,127}$")
+    kind: Literal["seed", "behavior_seed", "scenario", "dimension", "config", "mock_canary"]
+
+
+class ExploratoryLaneSpec(StrictModel):
+    lane: Literal["exploratory"]
+    engine: Literal["inspect-petri", "petri-bloom"]
+    execution_status: Literal["blocked"]
+    roles: list[Literal["scenarios", "auditor", "target", "judge"]]
+    content_root: str
+    content: list[ExploratoryContentBinding] = Field(min_length=4)
+    expected_plan_items: int = Field(gt=0)
+
+    @field_validator("content_root")
+    @classmethod
+    def safe_content_root(cls, value: str) -> str:
+        path = Path(value)
+        if path.is_absolute() or ".." in path.parts or not value.startswith("evals/exploratory/"):
+            raise ValueError("exploratory content root must be repository-relative")
+        return value.rstrip("/")
+
+    @model_validator(mode="after")
+    def validate_content_inventory(self) -> ExploratoryLaneSpec:
+        paths = [item.path for item in self.content]
+        ids = [item.content_id for item in self.content]
+        if len(paths) != len(set(paths)) or len(ids) != len(set(ids)):
+            raise ValueError("exploratory content paths and ids must be unique")
+        root = Path(self.content_root)
+        for item in self.content:
+            try:
+                Path(item.path).relative_to(root)
+            except ValueError as exc:
+                raise ValueError("exploratory content must remain under content_root") from exc
+        kinds = [item.kind for item in self.content]
+        for singleton in ("config", "mock_canary"):
+            if kinds.count(singleton) != 1:
+                raise ValueError(f"exploratory content requires exactly one {singleton}")
+        required = (
+            {"seed", "dimension", "config", "mock_canary"}
+            if self.engine == "inspect-petri"
+            else {"behavior_seed", "scenario", "dimension", "config", "mock_canary"}
+        )
+        if not required.issubset(kinds):
+            raise ValueError(
+                f"{self.engine} exploratory content is missing: {sorted(required - set(kinds))}"
+            )
+        return self
 
 
 class DatasetSpec(StrictModel):
@@ -442,6 +495,7 @@ class ProtocolManifest(StrictModel):
     construct_definition: str
     explicit_non_claims: list[str]
     task: TaskSpec
+    exploratory_lane: ExploratoryLaneSpec | None = None
     dataset: DatasetSpec
     models: list[ModelCondition]
     model_roles: dict[str, ModelCondition] = Field(default_factory=dict)
@@ -459,11 +513,15 @@ class ProtocolManifest(StrictModel):
             "diselect": {"temperature", "max_tokens"},
             "ape": {"temperature"},
             "canary": set(),
+            "petri_discovery": set(),
+            "bloom_discovery": set(),
         }[self.task.kind]
         role_task_owned_generate_keys = {
             "diselect": set(),
             "ape": {"temperature"},
             "canary": set(),
+            "petri_discovery": set(),
+            "bloom_discovery": set(),
         }[self.task.kind]
         if not target_task_owned_generate_keys.issubset(self.task.args):
             missing = sorted(target_task_owned_generate_keys - set(self.task.args))
@@ -500,6 +558,138 @@ class ProtocolManifest(StrictModel):
             raise ValueError(
                 "target conditions require unique model, route, and generation configurations"
             )
+        if self.task.kind in EXPLORATORY_TASK_KINDS:
+            lane = self.exploratory_lane
+            if self.status is not ProtocolStatus.DRAFT:
+                raise ValueError("Petri/Bloom exploratory protocols must remain draft")
+            if self.frozen_at is not None:
+                raise ValueError("Petri/Bloom exploratory protocols cannot declare frozen_at")
+            if lane is None:
+                raise ValueError("Petri/Bloom exploratory protocols require exploratory_lane")
+            expected_engine = {
+                "petri_discovery": "inspect-petri",
+                "bloom_discovery": "petri-bloom",
+            }[self.task.kind]
+            expected_package = {
+                "petri_discovery": ("inspect-petri", "3.0.11"),
+                "bloom_discovery": ("petri-bloom", "0.2.6"),
+            }[self.task.kind]
+            expected_task_identity = {
+                "petri_discovery": ("audit", "inspect_petri/audit", "0"),
+                "bloom_discovery": ("bloom_audit", "petri_bloom/bloom_audit", "0"),
+            }[self.task.kind]
+            expected_roles = (
+                ["auditor", "target", "judge"]
+                if self.task.kind == "petri_discovery"
+                else ["scenarios", "auditor", "target", "judge"]
+            )
+            if lane.engine != expected_engine:
+                raise ValueError("exploratory engine does not match task kind")
+            if (self.task.package, self.task.package_version) != expected_package:
+                raise ValueError(
+                    "exploratory task must pin the supported installable package version"
+                )
+            if (self.task.name, self.task.registry_name, self.task.version) != (
+                expected_task_identity
+            ):
+                raise ValueError(
+                    "exploratory task identity must match the constructed package task"
+                )
+            if self.task.expected_metadata:
+                raise ValueError("blocked Petri/Bloom plans cannot predict runtime metadata")
+            if lane.roles != expected_roles:
+                raise ValueError(f"{lane.engine} requires exact role contract: {expected_roles}")
+            if self.task.args != {"plan_only": True}:
+                raise ValueError("Petri/Bloom task arguments must declare plan_only=true")
+            if self.models or self.model_roles:
+                raise ValueError(
+                    "Petri/Bloom model mapping is deliberately unset until role-aware execution "
+                    "and multi-turn postflight are implemented"
+                )
+            expected_root = {
+                "petri_discovery": "evals/exploratory/petri/v0.1",
+                "bloom_discovery": "evals/exploratory/bloom/v0.1",
+            }[self.task.kind]
+            if lane.content_root != expected_root:
+                raise ValueError("exploratory content_root must use the versioned engine directory")
+            planned_kind = "seed" if self.task.kind == "petri_discovery" else "scenario"
+            if sum(item.kind == planned_kind for item in lane.content) != lane.expected_plan_items:
+                raise ValueError("expected_plan_items must equal the bound seed/scenario count")
+            if (
+                self.dataset.source_url != "https://github.com/apolmig/agencytransfer"
+                or self.dataset.source_revision != self.protocol_id
+                or self.dataset.licence != "Apache-2.0"
+                or self.dataset.split != "discovery"
+                or self.dataset.selected_inventory_sha256 is not None
+                or self.dataset.required_files
+            ):
+                raise ValueError(
+                    "Petri/Bloom plan dataset metadata must use the exact public fixture contract"
+                )
+            if self.dataset.release_tier is not ReleaseTier.PUBLIC:
+                raise ValueError(
+                    "committed benign Petri/Bloom fixtures must be labelled public; generated "
+                    "artifacts remain withheld"
+                )
+            if any(
+                tier is not ReleaseTier.WITHHELD
+                for tier in (
+                    self.release.raw_logs,
+                    self.release.target_outputs,
+                    self.release.judge_traces,
+                )
+            ):
+                raise ValueError("Petri/Bloom exploratory artifacts must remain withheld")
+            if self.release.public_aggregate_candidate:
+                raise ValueError("Petri/Bloom discovery cannot be a public aggregate candidate")
+            if not self.release.requires_two_person_review:
+                raise ValueError("future Petri/Bloom release requires two-person review")
+            required_non_claims = {
+                "prevalence of agency transfer",
+                "comparative model capability",
+                "political persuasion or harmful manipulation",
+                "confirmatory benchmark evidence",
+                "public aggregate eligibility",
+            }
+            if not required_non_claims.issubset(self.explicit_non_claims):
+                raise ValueError("Petri/Bloom plan must retain its minimum explicit non-claims")
+            if (
+                self.validation.human_validation_required
+                or self.validation.double_coded_n != 0
+                or self.validation.probability_sample_seed is not None
+                or self.validation.probability_strata
+                or self.validation.codebook_version is not None
+                or self.validation.macro_f1_min is not None
+                or self.validation.critical_class is not None
+                or self.validation.critical_f1_min is not None
+                or self.validation.validation_projection is not None
+                or self.validation.maximum_unexplained_failure_rate != 0
+                or self.validation.minimum_usable_rate_per_row != 1
+                or self.validation.cluster_key is not None
+            ):
+                raise ValueError(
+                    "blocked Petri/Bloom plans cannot imply completed human validation"
+                )
+            if (
+                self.run.expected_samples_per_model != lane.expected_plan_items
+                or self.run.epochs != 1
+                or self.run.max_connections != 1
+                or self.run.max_retries != 0
+                or self.run.retry_on_error != 0
+                or self.run.retry_attempts != 0
+                or self.run.fail_on_error is not True
+                or self.run.sample_cost_limit_usd != 0
+                or self.run.sample_token_limit != 1
+                or self.run.planned_run_cost_envelope_usd != 0
+                or self.run.planned_run_token_envelope != lane.expected_plan_items
+                or self.run.provider_key_limit_usd is not None
+                or self.run.log_model_api
+                or self.run.seed != 42
+                or self.run.sample_shuffle != 42
+            ):
+                raise ValueError("Petri/Bloom plan run fields must encode a zero-cost blocked lane")
+        elif self.exploratory_lane is not None:
+            raise ValueError("exploratory_lane is only valid for Petri/Bloom discovery tasks")
         if self.status is ProtocolStatus.FROZEN:
             paid_conditions = [
                 condition for condition in conditions if not condition.model.startswith("mockllm/")
@@ -790,6 +980,8 @@ class ProtocolManifest(StrictModel):
                 raise ValueError("the public canary must use mock models only")
             if self.run.sample_cost_limit_usd != 0 or self.run.planned_run_cost_envelope_usd != 0:
                 raise ValueError("the mock canary cost limits must be zero")
+        elif self.task.kind in EXPLORATORY_TASK_KINDS:
+            pass
         else:
             if any(condition.model.startswith("mockllm/") for condition in conditions):
                 raise ValueError("mock models are restricted to the pipeline canary")
@@ -861,9 +1053,18 @@ def sha256_manifest(path: Path) -> str:
     return digest
 
 
+def _unique_json_object(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+    value: dict[str, Any] = {}
+    for key, item in pairs:
+        if key in value:
+            raise ValueError(f"protocol manifest contains duplicate JSON key: {key}")
+        value[key] = item
+    return value
+
+
 def load_manifest_with_hash(path: Path) -> tuple[ProtocolManifest, str]:
     raw = path.read_bytes()
-    parsed = json.loads(raw)
+    parsed = json.loads(raw, object_pairs_hook=_unique_json_object)
     canonical = json.dumps(parsed, sort_keys=True, separators=(",", ":")).encode()
     return ProtocolManifest.model_validate(parsed), hashlib.sha256(canonical).hexdigest()
 

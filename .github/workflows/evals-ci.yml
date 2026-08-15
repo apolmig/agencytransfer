@@ -47,6 +47,13 @@ jobs:
       - name: Run evaluation tests
         run: uv run --frozen pytest
 
+      - name: Construct blocked Petri and Bloom plans without model calls
+        run: |
+          uv run --frozen atb-exploratory-plan \
+            --manifest evals/manifests/petri-discovery-v0.1.json
+          uv run --frozen atb-exploratory-plan \
+            --manifest evals/manifests/bloom-discovery-v0.1.json
+
       - name: Run network-free Inspect canary outside the repository
         env:
           CANARY_LOG_DIR: ${{ runner.temp }}/atb-inspect-canary

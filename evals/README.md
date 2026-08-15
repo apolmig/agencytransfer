@@ -6,9 +6,11 @@ runner for new model evaluations. The earlier
 of a failed pipeline audit; they are not extended into a result series.
 
 The frozen environment currently uses `inspect-ai==0.3.257`,
-`inspect-evals==0.16.0`, and `inspect-scout==0.4.46`. Inspect owns tasks,
+`inspect-evals==0.16.0`, `inspect-scout==0.4.46`,
+`inspect-petri==3.0.11`, and `petri-bloom==0.2.6`. Inspect owns tasks,
 solvers, scorers, model roles, retries, `.eval` logs, and primary outcomes.
-Scout only reads completed Inspect logs offline.
+Scout only reads completed Inspect logs offline. Petri and Bloom are isolated in
+the blocked exploratory lane described below; they are not benchmark scorers.
 
 The current migration establishes four boundaries:
 
@@ -359,16 +361,50 @@ by the ATB route gate. A future `ATB public-set adaptation` therefore needs a
 role-aware adapter, exact stable-ID inventory, explicit failure outcomes, and
 route-event validation. `--limit 40` is not a frozen stratified MASK-40 design.
 
+## Petri and Bloom exploratory plans
+
+The committed Petri and Bloom manifests are validated plan descriptions, not
+executable model evaluations. They pin the installable Meridian packages, bind
+a closed inventory of benign public fixtures by SHA-256, and construct the
+packages' official Inspect tasks with provider credentials removed and socket
+connections blocked:
+
+```bash
+uv run --frozen atb-exploratory-plan \
+  --manifest evals/manifests/petri-discovery-v0.1.json
+uv run --frozen atb-exploratory-plan \
+  --manifest evals/manifests/bloom-discovery-v0.1.json
+```
+
+Both receipts must report `execution_status=blocked`, zero model/network calls,
+no loaded credentials, public input fixtures, and withheld generated artifacts.
+The normal `atb-eval` runner rejects both task kinds before creating a log
+directory or resolving a model. This is intentional: ATB still lacks frozen
+auditor/target/judge routes, a per-target role mapping, paid authorization, and
+multi-turn transcript/cost postflight for these tools.
+
+Petri may later be used to discover hypotheses on a controlled split. Reviewed
+findings may then seed a separately versioned Bloom suite. Neither native judge
+score estimates prevalence, enters the ATB comparative ledger, or changes a
+DisElect, APE, or future MASK result. Any live pilot requires a new manifest,
+route capture, bounded key, controlled logs, and independent review.
+
 ## Scout QA
 
 Scout is an offline post-hoc QA lane, not a benchmark scorer:
 
 ```bash
-uv run scout scan evals/atb_eval/scanners.py \
+uv run --frozen scout scan \
+  'evals/atb_eval/scanners.py@deterministic_model_event_qa' \
   -T /controlled/atb/logs/diselect-wave1a \
-  --model <pinned-scanner-model> \
   --scans /controlled/atb/scans/diselect-wave1a
 ```
+
+For APE, also run
+`evals/atb_eval/scanners.py@ape_role_contract_qa`. It verifies the four explicit
+roles, cache/read-call structure, schedule metadata, and recorded instrument
+missingness for each transcript. Cross-condition equality and billing remain
+runner-level postflight checks.
 
 Controlled Inspect and Scout artifacts are scanned fail-closed before upload.
 The scanner reads raw bytes and also parses compressed `.eval` and Parquet
@@ -382,15 +418,19 @@ uv run --frozen python -m atb_eval.artifact_scan /controlled/atb/artifacts
 Scanner findings do not alter benchmark outcomes or denominators. They control
 artifact handling only.
 
-The deterministic empty-message scanner can be used immediately. LLM scanners
-for refusal and evaluation awareness require validation against blind human
-labels. Multi-role APE transcripts need an additional attribution audit before
-Scout output is interpreted.
+The deterministic event, APE-role, and empty-message scanners can be used
+immediately. The refusal and evaluation-awareness LLM scanner entry points are
+universally fail-closed: their loader requests metadata only, they never
+construct a judge or send transcript text, and they return a blocked diagnostic.
+Enabling either requires a target-only projection plus a separately frozen and
+human-calibrated judge route, seed, token/cost envelope, and release policy.
 
-CI also runs the deterministic scanner end to end over the six mock canary
-transcripts and rejects incomplete scans, scanner errors, duplicate transcript
-IDs, non-boolean outputs, or any unexpected positive result. LLM scanners stay
-diagnostic-only and never feed the release gate.
+CI also runs the deterministic empty-message scanner end to end over the six
+mock canary transcripts and rejects incomplete scans, scanner errors, duplicate
+transcript IDs, non-boolean outputs, or any unexpected positive result. The
+event and APE-role scanners have blocking fixture-level tests; they are not yet
+an additional Scout CLI canary. Disabled LLM diagnostics never feed the release
+gate.
 
 ## Public release gate
 
