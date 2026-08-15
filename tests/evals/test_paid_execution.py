@@ -368,9 +368,7 @@ def test_wave1a_v04_forces_an_exact_fresh_usd_one_lifetime_key() -> None:
         verify_openrouter_key_budget(
             manifest,
             environment={"OPENROUTER_API_KEY": "inference-secret"},
-            opener=key_opener(
-                {"data": valid_key_data(limit=1.01, limit_remaining=1.01)}
-            ),
+            opener=key_opener({"data": valid_key_data(limit=1.01, limit_remaining=1.01)}),
             now=NOW,
         )
 
