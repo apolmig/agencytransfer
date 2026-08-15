@@ -34,8 +34,10 @@ The encrypted raw evidence and its verified receipt remain access-controlled.
 No prompts, responses, grader traces, secrets, or reviewer mappings are exposed
 here.
 
-The successor `atb-diselect-wave1a-v0.3` preserves the two snapshots, 50-item
+Version `atb-diselect-wave1a-v0.3` preserves the two snapshots, 50-item
 inventory, routes, sampling contract, scorer, missingness rules, zero-retry
 policy, and USD 1.00 envelope. It preregisters a 4,096-token target ceiling, a
 12,000-token per-sample limit, a 1,200,000-token run envelope, and a new blind-
-review sampling seed. Both snapshots must be executed again under that version.
+review sampling seed. The current v0.4 protocol preserves that scientific design
+and additionally requires an exact provider-side USD 1.00 lifetime cap. Both
+snapshots must be executed again under v0.4.

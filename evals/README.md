@@ -51,7 +51,7 @@ capability or safety.
 
 ## DisElect Wave 1A
 
-`diselect-wave1a-v0.3.json` is the current frozen non-public diagnostic
+`diselect-wave1a-v0.4.json` is the current frozen non-public diagnostic
 protocol. It selects 40 harmful items across eight strata and 10 benign
 controls, then runs the identical paired schedule against the 23 April and 31
 July DeepSeek V4 Flash snapshots. Both targets are pinned to DeepInfra/fp4; the
@@ -72,15 +72,17 @@ preserved them as unscored and rejected the paired run. No comparative result
 was accepted. The redacted incident record is
 [`research-notes/diselect-wave1a-v0.2-diagnostic.md`](research-notes/diselect-wave1a-v0.2-diagnostic.md).
 Version 0.3 changes the completion and token envelopes and the blind-review
-sampling seed; it does not change items, routes, sampling parameters, scorers,
-missingness gates, retries, or the USD 1.00 run envelope. Both snapshots must be
-rerun under v0.3; v0.2 results cannot be mixed into it.
+sampling seed. Version 0.4 preserves that complete scientific design and changes
+only protocol identity, freeze time, and the provider-key cap: the inference key
+must now have an exact non-resetting USD 1.00 lifetime limit. Version 0.3 was
+superseded before an accepted execution. Results from v0.2, v0.3, and v0.4 cannot
+be mixed.
 
 Validate the source checkout and inspect the planned run without making calls:
 
 ```bash
 uv run atb-eval \
-  --manifest evals/manifests/diselect-wave1a-v0.3.json \
+  --manifest evals/manifests/diselect-wave1a-v0.4.json \
   --source-dir /controlled/election-ai-safety \
   --log-dir /controlled/atb/logs/diselect-wave1a
 ```
@@ -90,7 +92,8 @@ execution permit in addition to `--execute --allow-paid`. The manifest sets
 per-sample token and recorded-cost stops plus a conservative planned run
 envelope over models and epochs. Provider-SDK, sample, and task retries are all
 disabled. The frozen plan contains 100 target attempts, a USD 0.01 per-sample
-stop, a USD 1.00 total envelope, and a 1,200,000-token envelope. Inspect checks
+stop, a USD 1.00 total envelope, an exact provider-side USD 1.00 lifetime cap,
+and a 1,200,000-token envelope. Inspect checks
 the per-sample stops after model responses; the planned run envelope is not a
 provider billing hard cap. The
 runner audits cumulative persisted usage before it accepts or rejects the
@@ -117,7 +120,7 @@ review packets outside the repository with an owner-only HMAC key:
 
 ```bash
 uv run --frozen atb-validation-packet \
-  --manifest evals/manifests/diselect-wave1a-v0.3.json \
+  --manifest evals/manifests/diselect-wave1a-v0.4.json \
   --log-dir /controlled/atb/logs/diselect-wave1a \
   --key-file /controlled/atb/validation/wave1a-hmac.key \
   --output-dir /controlled/atb/validation/packets \
