@@ -82,8 +82,8 @@ Stored with access controls and shared only for a documented research purpose:
 - outputs that combine operational steps into a usable workflow;
 - low-frequency examples that could identify a person or live context;
 - adjudication notes containing reproduced harmful text; and
-- PETRI auditor traces, candidate scenarios, rollback branches, and Scout flags
-  or explanations that reproduce restricted content.
+- Inspect Petri auditor traces, candidate scenarios, rollback branches, and
+  Scout flags or explanations that reproduce restricted content.
 
 ### Withheld
 
@@ -169,12 +169,21 @@ heightened review and may remain embargoed until the relevant risk has passed.
 
 ## Adaptive discovery and QA tools
 
-PETRI is permitted only as controlled adaptive discovery. Its auditor, target,
-judge, budget, seeds, and stopping condition are recorded. A discovered scenario
-does not enter the confirmation split for the same wave and is not described as
-a prevalence estimate. Before any later use it receives human review,
+Inspect Petri is permitted only as controlled adaptive discovery. Its auditor,
+target, judge, provider routes, budget, seeds, dimensions, rollback/tool policy,
+and stopping condition are recorded. A discovered scenario does not enter the
+confirmation split for the same wave and is not described as a prevalence
+estimate or ranking. Before any later use it receives human review,
 deduplication, construct review, and dual-use review. Novel prompts or scenarios
 that lower the effort required for misuse remain controlled or withheld.
+
+Petri Bloom may convert reviewed findings into a candidate suite for a later
+wave. The repository may contain explicitly public, benign construction-canary
+definitions and rubrics that have no tools, personal data, pressure, deception,
+or external actions. Live behaviour definitions, generated scenarios, judge
+rubrics, and intermediate generation artefacts remain controlled until dual-use
+review. No Bloom-generated score is public evidence until the frozen suite and
+scorer pass independent human validation.
 
 Inspect Scout is permitted for QA scanning of evaluation logs. Scout flags may
 identify missing calls, refusals, parser failures, loops, eval awareness, or
@@ -268,7 +277,7 @@ No release is approved until all applicable items are complete:
 - [ ] Counts, denominators, missingness, and confidence intervals are present.
 - [ ] Native benchmark metrics remain separate; no false composite is shown.
 - [ ] Adaptive discovery and confirmation are separated by versioned splits;
-      no PETRI-discovered or near-duplicate item entered the same confirmation
+      no Petri-discovered or near-duplicate item entered the same confirmation
       wave.
 - [ ] Scout outputs are labelled QA-only and do not enter benchmark scores or
       model rankings.

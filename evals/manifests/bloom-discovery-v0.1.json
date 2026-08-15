@@ -1,0 +1,134 @@
+{
+  "schema_version": "atb-protocol-manifest-v0.1",
+  "protocol_id": "atb-bloom-discovery-v0.1",
+  "status": "draft",
+  "construct_definition": "Exploratory suite design for attempted displacement of a user's corrected preference in safe synthetic conversations.",
+  "explicit_non_claims": [
+    "Bloom-generated scenarios",
+    "prevalence of agency transfer",
+    "comparative model capability",
+    "political persuasion or harmful manipulation",
+    "confirmatory benchmark evidence",
+    "public aggregate eligibility"
+  ],
+  "task": {
+    "kind": "bloom_discovery",
+    "name": "bloom_audit",
+    "registry_name": "petri_bloom/bloom_audit",
+    "version": "0",
+    "package": "petri-bloom",
+    "package_version": "0.2.6",
+    "expected_metadata": {},
+    "args": {
+      "plan_only": true
+    }
+  },
+  "exploratory_lane": {
+    "lane": "exploratory",
+    "engine": "petri-bloom",
+    "execution_status": "blocked",
+    "roles": [
+      "scenarios",
+      "auditor",
+      "target",
+      "judge"
+    ],
+    "content_root": "evals/exploratory/bloom/v0.1",
+    "expected_plan_items": 2,
+    "content": [
+      {
+        "content_id": "bloom-config-v0.1",
+        "content_version": "atb-bloom-config-v0.1",
+        "kind": "config",
+        "path": "evals/exploratory/bloom/v0.1/config.json",
+        "sha256": "625a32cb160d4323ba11ab96ce6ca15df008b90feccc2ba4a3ac9b1dd38ddd7c"
+      },
+      {
+        "content_id": "agency-behavior-seed-v0.1",
+        "content_version": "atb-bloom-agency-behavior-v0.1",
+        "kind": "behavior_seed",
+        "path": "evals/exploratory/bloom/v0.1/BEHAVIOR.md",
+        "sha256": "9d40ed39f85ac37328ef2db19cd14a0178b2647dfb0b6f0f3c11cd6cfee719c7"
+      },
+      {
+        "content_id": "restaurant-preference-correction-v0.1",
+        "content_version": "atb-bloom-benign-scenario-v0.1",
+        "kind": "scenario",
+        "path": "evals/exploratory/bloom/v0.1/scenarios/seeds/restaurant_preference_correction.md",
+        "sha256": "94898ada404b9a7c992cac82fba9bd78f27090f0abb4568e2b711b7522cd2294"
+      },
+      {
+        "content_id": "document-format-correction-v0.1",
+        "content_version": "atb-bloom-benign-scenario-v0.1",
+        "kind": "scenario",
+        "path": "evals/exploratory/bloom/v0.1/scenarios/seeds/document_format_correction.md",
+        "sha256": "21e5402aef7d86b1c96f92a97cd72e4f4364d09cb6284bba267513a5503bd044"
+      },
+      {
+        "content_id": "agency-override-dimension-v0.1",
+        "content_version": "atb-bloom-agency-dimension-v0.1",
+        "kind": "dimension",
+        "path": "evals/exploratory/bloom/v0.1/scenarios/dimensions/agency_override_attempt.md",
+        "sha256": "18cb067d4a01fb08dbc63634cd8227128e604a4640c0e914cc2789de1fa872b4"
+      },
+      {
+        "content_id": "bloom-mock-canary-v0.1",
+        "content_version": "atb-bloom-mock-canary-v0.1",
+        "kind": "mock_canary",
+        "path": "evals/exploratory/bloom/v0.1/mock-canary.json",
+        "sha256": "3cf3f10ffb43e721e270cca3dd976a79b4fd719de1e8a95ea7fadc404f5d385e"
+      }
+    ]
+  },
+  "dataset": {
+    "name": "ATB Bloom safe synthetic suite-design plan",
+    "source_url": "https://github.com/apolmig/agencytransfer",
+    "source_revision": "atb-bloom-discovery-v0.1",
+    "licence": "Apache-2.0",
+    "release_tier": "public",
+    "split": "discovery",
+    "selection_method": "two human-authored benign mock fixtures; not Bloom-generated evidence",
+    "required_files": []
+  },
+  "models": [],
+  "model_roles": {},
+  "run": {
+    "seed": 42,
+    "sample_shuffle": 42,
+    "expected_samples_per_model": 2,
+    "epochs": 1,
+    "max_connections": 1,
+    "max_retries": 0,
+    "retry_on_error": 0,
+    "retry_attempts": 0,
+    "fail_on_error": true,
+    "sample_cost_limit_usd": 0,
+    "sample_token_limit": 1,
+    "planned_run_cost_envelope_usd": 0,
+    "planned_run_token_envelope": 2,
+    "provider_key_limit_usd": null,
+    "log_model_api": false
+  },
+  "validation": {
+    "human_validation_required": false,
+    "double_coded_n": 0,
+    "probability_sample_seed": null,
+    "probability_strata": [],
+    "codebook_version": null,
+    "validation_projection": null,
+    "macro_f1_min": null,
+    "critical_class": null,
+    "critical_f1_min": null,
+    "maximum_unexplained_failure_rate": 0,
+    "minimum_usable_rate_per_row": 1,
+    "cluster_key": null
+  },
+  "release": {
+    "raw_logs": "withheld",
+    "target_outputs": "withheld",
+    "judge_traces": "withheld",
+    "public_aggregate_candidate": false,
+    "public_allowlist_only": true,
+    "requires_two_person_review": true
+  }
+}

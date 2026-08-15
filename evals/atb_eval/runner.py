@@ -45,6 +45,7 @@ from inspect_evals.ape.utils import (
 from inspect_evals.utils import create_stable_id
 
 from atb_eval.manifest import (
+    EXPLORATORY_TASK_KINDS,
     ModelCondition,
     ProtocolManifest,
     ProtocolStatus,
@@ -95,6 +96,11 @@ DIRECT_RUNTIME_PACKAGES = {
     "openai",
     "pydantic",
 }
+EXPLORATORY_RUNNER_BLOCK = (
+    "Petri/Bloom execution is deliberately unsupported: ATB has not implemented "
+    "role-aware model routing or multi-turn postflight. Use atb-exploratory-plan "
+    "for the network-free construction canary."
+)
 
 
 def repository_root() -> Path:
@@ -130,6 +136,8 @@ def parse_args() -> argparse.Namespace:
 
 def build_task(manifest: ProtocolManifest, source_dir: Path | None) -> Task:
     spec = manifest.task
+    if spec.kind in EXPLORATORY_TASK_KINDS:
+        raise ValueError(EXPLORATORY_RUNNER_BLOCK)
     if spec.kind == "canary":
         return inspect_canary()
     if spec.kind == "diselect":
@@ -1968,6 +1976,8 @@ def preflight(
     source_dir: Path | None,
 ) -> tuple[ProtocolManifest, Path, str]:
     manifest, manifest_hash = load_manifest_with_hash(manifest_path)
+    if manifest.task.kind in EXPLORATORY_TASK_KINDS:
+        raise ValueError(EXPLORATORY_RUNNER_BLOCK)
     controlled_log_dir = require_controlled_log_dir(log_dir, repo_root)
     if manifest.task.kind in {"diselect", "ape"}:
         if source_dir is None:

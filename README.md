@@ -91,18 +91,25 @@ proxy. Read the
 
 ## Evaluation architecture
 
-ATB separates adaptive discovery from confirmatory measurement. PETRI may be
-used to find candidate failure modes in a controlled discovery split. A
-candidate can enter only a later protocol version after human review,
-deduplication, safety review, and a new preregistration; it never enters the
-confirmation wave that discovered it. PETRI outcomes describe discoverability
-under a stated auditor and budget, not prevalence.
+ATB separates adaptive discovery from confirmatory measurement. Inspect Petri
+may find candidate failure modes in a controlled discovery split. A candidate
+can enter only a later protocol version after human review, deduplication,
+safety review, and a new preregistration; it never enters the confirmation wave
+that discovered it. Petri outcomes describe discoverability under a stated
+auditor, serving route, and budget, not prevalence or a benchmark ranking.
+
+After human and dual-use review, Petri Bloom may turn a recurrent finding into a
+candidate scenario suite. Its behaviour definition, generated scenarios,
+rubric, and model roles must be frozen before a later evaluation; generated
+judge scores are never imported directly into the ATB comparative ledger.
 
 Confirmatory comparisons use frozen Inspect tasks, item sets, model conditions,
-judges, estimands, and denominators. Inspect Scout may scan logs for missing
-targets, refusals, parser failures, eval awareness, and related anomalies after
-the evaluation, but it is offline quality assurance only. A Scout flag is not a
-benchmark score, a model-risk label, or evidence of agency transfer.
+judges, estimands, and denominators. Inspect Scout scans persisted events
+offline for missing calls, route anomalies, retries, truncation, and APE role or
+cache violations. Content-judging Scout entry points remain fail-closed until a
+target-only projection and a frozen, human-calibrated judge are available. A
+Scout flag is not a benchmark score, a model-risk label, or evidence of agency
+transfer.
 
 ## Benchmark linking
 

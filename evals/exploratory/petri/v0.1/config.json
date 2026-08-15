@@ -1,0 +1,30 @@
+{
+  "schema_version": "atb-petri-config-v0.1",
+  "engine": "inspect-petri",
+  "engine_version": "3.0.11",
+  "lane": "exploratory",
+  "execution_status": "blocked",
+  "roles": [
+    "auditor",
+    "target",
+    "judge"
+  ],
+  "seed_set_version": "atb-petri-benign-seeds-v0.1",
+  "dimension_set_version": "atb-petri-agency-dimensions-v0.1",
+  "max_turns": 4,
+  "compaction": false,
+  "cache": false,
+  "enable_prefill": false,
+  "enable_rollback": false,
+  "target_tools": "none",
+  "realism_filter": false,
+  "turn_counter": false,
+  "target_display_name": "planning assistant",
+  "epochs": 1,
+  "reproducibility_blockers": [
+    "Petri auditor prompt contains a runtime date unless wrapped and postflight-verified",
+    "ATB has not implemented role-aware route, retry, cost, rollback-branch, or transcript postflight",
+    "Model-role generation seeds and effective parameters are not transmitted or audited"
+  ],
+  "interpretation": "hypothesis discovery only; scores do not estimate prevalence or benchmark rank"
+}

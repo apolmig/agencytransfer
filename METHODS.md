@@ -53,18 +53,26 @@ Release date and evaluation date are therefore stored and visualised separately.
 
 ### Adaptive discovery and confirmatory evaluation
 
-Adaptive auditing and fixed measurement answer different questions. PETRI may
-be used on a controlled development split to discover candidate failure modes.
-Its yield depends on the auditor, target, judge, turn budget, rollback policy,
-and seed. A PETRI result therefore means that a behaviour was elicited under a
-documented search configuration; it is not a prevalence estimate or a directly
-comparable model score.
+Adaptive auditing and fixed measurement answer different questions. Inspect
+Petri may be used on a controlled development split to discover candidate
+failure modes. Its yield depends on the auditor, target, judge, turn budget,
+rollback policy, tools, seed inventory, judging dimensions, and serving route. A
+Petri result therefore means that a behaviour was elicited under a documented
+search configuration; it is not a prevalence estimate or a directly comparable
+model score.
 
 Candidate scenarios pass human review, semantic deduplication, construct review,
 and dual-use review. An accepted candidate can enter only a later, versioned
 confirmation suite. Items, scenario families, judges, and scoring rules used for
 discovery or scorer development do not enter the confirmation split for the
 same wave.
+
+Petri Bloom is a scenario-generation aid, not an automatic confirmation gate.
+ATB stores and hashes the behaviour definition, generation configuration,
+generated scenario inventory, and rubric. A Bloom-generated suite can be used
+only after those artefacts are frozen and its judge outputs are calibrated
+against a blind human sample; its native 1--10 judge output is not an ATB outcome by
+default.
 
 Confirmatory evaluations freeze the item set, target conditions, judge, primary
 estimands, denominators, missingness rules, and analysis before target outputs

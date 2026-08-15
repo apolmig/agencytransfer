@@ -1,0 +1,118 @@
+{
+  "schema_version": "atb-protocol-manifest-v0.1",
+  "protocol_id": "atb-petri-discovery-v0.1",
+  "status": "draft",
+  "construct_definition": "Exploratory discovery of attempted displacement of a user's corrected preference in safe synthetic conversations.",
+  "explicit_non_claims": [
+    "prevalence of agency transfer",
+    "comparative model capability",
+    "political persuasion or harmful manipulation",
+    "confirmatory benchmark evidence",
+    "public aggregate eligibility"
+  ],
+  "task": {
+    "kind": "petri_discovery",
+    "name": "audit",
+    "registry_name": "inspect_petri/audit",
+    "version": "0",
+    "package": "inspect-petri",
+    "package_version": "3.0.11",
+    "expected_metadata": {},
+    "args": {
+      "plan_only": true
+    }
+  },
+  "exploratory_lane": {
+    "lane": "exploratory",
+    "engine": "inspect-petri",
+    "execution_status": "blocked",
+    "roles": [
+      "auditor",
+      "target",
+      "judge"
+    ],
+    "content_root": "evals/exploratory/petri/v0.1",
+    "expected_plan_items": 1,
+    "content": [
+      {
+        "content_id": "petri-config-v0.1",
+        "content_version": "atb-petri-config-v0.1",
+        "kind": "config",
+        "path": "evals/exploratory/petri/v0.1/config.json",
+        "sha256": "0658d4a874adb39e46c7a38d85b6aaf21aca34dab9dc3cf029025f97e677ef68"
+      },
+      {
+        "content_id": "preference-correction-v0.1",
+        "content_version": "atb-petri-benign-seed-v0.1",
+        "kind": "seed",
+        "path": "evals/exploratory/petri/v0.1/seeds/preference_correction.md",
+        "sha256": "a11a38ffd4244819e0d4accabd2af83fa3c9f4c5aab5ab6ec35d76a276703d66"
+      },
+      {
+        "content_id": "agency-override-dimension-v0.1",
+        "content_version": "atb-petri-agency-dimension-v0.1",
+        "kind": "dimension",
+        "path": "evals/exploratory/petri/v0.1/dimensions/agency_override_attempt.md",
+        "sha256": "56d52f360a10d11a462cec4f89bc598d5078f3228437194bc319e3889198b64a"
+      },
+      {
+        "content_id": "petri-mock-canary-v0.1",
+        "content_version": "atb-petri-mock-canary-v0.1",
+        "kind": "mock_canary",
+        "path": "evals/exploratory/petri/v0.1/mock-canary.json",
+        "sha256": "25c76c8d0ef0aacbf90acdb87b0394c7095a6d436b5b647047eb2afaec6e7aa9"
+      }
+    ]
+  },
+  "dataset": {
+    "name": "ATB Petri safe synthetic discovery plan",
+    "source_url": "https://github.com/apolmig/agencytransfer",
+    "source_revision": "atb-petri-discovery-v0.1",
+    "licence": "Apache-2.0",
+    "release_tier": "public",
+    "split": "discovery",
+    "selection_method": "one versioned benign fixture; content bound by exploratory_lane",
+    "required_files": []
+  },
+  "models": [],
+  "model_roles": {},
+  "run": {
+    "seed": 42,
+    "sample_shuffle": 42,
+    "expected_samples_per_model": 1,
+    "epochs": 1,
+    "max_connections": 1,
+    "max_retries": 0,
+    "retry_on_error": 0,
+    "retry_attempts": 0,
+    "fail_on_error": true,
+    "sample_cost_limit_usd": 0,
+    "sample_token_limit": 1,
+    "planned_run_cost_envelope_usd": 0,
+    "planned_run_token_envelope": 1,
+    "provider_key_limit_usd": null,
+    "log_model_api": false
+  },
+  "validation": {
+    "human_validation_required": false,
+    "double_coded_n": 0,
+    "probability_sample_seed": null,
+    "probability_strata": [],
+    "codebook_version": null,
+    "validation_projection": null,
+    "macro_f1_min": null,
+    "critical_class": null,
+    "critical_f1_min": null,
+    "maximum_unexplained_failure_rate": 0,
+    "minimum_usable_rate_per_row": 1,
+    "cluster_key": null
+  },
+  "release": {
+    "raw_logs": "withheld",
+    "target_outputs": "withheld",
+    "judge_traces": "withheld",
+    "public_aggregate_candidate": false,
+    "public_allowlist_only": true,
+    "requires_two_person_review": true
+  }
+}

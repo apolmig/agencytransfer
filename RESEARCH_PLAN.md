@@ -90,11 +90,12 @@ into the original plan after results are seen.
 
 ATB uses three distinct lanes:
 
-1. **Adaptive discovery.** PETRI may probe a small, controlled development split
-   to identify candidate behaviours, safeguard failures, and scenario gaps.
-   Auditor model, target model, judge, turn budget, rollback policy, and seed are
-   recorded. Discovery yields are evidence that a failure could be elicited
-   under that configuration, not an estimate of prevalence.
+1. **Adaptive discovery.** Inspect Petri may probe a small, controlled development
+   split to identify candidate behaviours, safeguard failures, and scenario gaps.
+   Auditor model, target model, judge, turn budget, rollback policy, tools, seed,
+   provider route, and exact seed/dimension inventories are recorded. Discovery
+   yields are evidence that a failure could be elicited under that configuration,
+   not an estimate of prevalence or a benchmark ranking.
 2. **Candidate review.** New scenarios receive human review, semantic
    deduplication, construct review, and dual-use review. Accepted candidates are
    queued for a later protocol version. They do not enter the confirmation set
@@ -102,6 +103,11 @@ ATB uses three distinct lanes:
 3. **Confirmation.** Item families, target models, serving conditions, judges,
    estimands, denominators, and analysis are frozen before target outputs are
    inspected. Scorer development stops before this split is opened.
+
+Petri Bloom may generate a candidate suite only after Petri findings pass human,
+construct, deduplication, and dual-use review. The generated scenarios and rubric
+are then frozen as a new inventory for a later wave; Bloom generation and target
+evaluation never share the confirmation split that motivated the suite.
 
 Inspect Scout may scan completed discovery and confirmation logs offline for
 missing target calls, refusals, parser failures, loops, eval awareness, and
@@ -416,7 +422,7 @@ Every wave includes:
 - a route-integrity report; and
 - a signed methodological deviation log.
 
-Adaptive PETRI material and confirmation items are checked for split and
+Adaptive Petri material and confirmation items are checked for split and
 scenario-family leakage. Scout results appear only in the QA report and never
 substitute for benchmark scoring or blind human validation.
 

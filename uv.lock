@@ -16,10 +16,13 @@ dependencies = [
     { name = "google-genai" },
     { name = "inspect-ai" },
     { name = "inspect-evals" },
+    { name = "inspect-petri" },
     { name = "inspect-scout" },
     { name = "mistralai" },
     { name = "openai" },
+    { name = "petri-bloom" },
     { name = "pydantic" },
+    { name = "pyyaml" },
 ]
 
 [package.dev-dependencies]
@@ -35,10 +38,13 @@ requires-dist = [
     { name = "google-genai", specifier = ">=1.69,<2" },
     { name = "inspect-ai", specifier = "==0.3.257" },
     { name = "inspect-evals", specifier = "==0.16.0" },
+    { name = "inspect-petri", specifier = "==3.0.11" },
     { name = "inspect-scout", specifier = "==0.4.46" },
     { name = "mistralai", specifier = ">=2.4.5,<3" },
     { name = "openai", specifier = ">=2.26,<3" },
+    { name = "petri-bloom", specifier = "==0.2.6" },
     { name = "pydantic", specifier = ">=2.13,<3" },
+    { name = "pyyaml", specifier = "==6.0.3" },
 ]
 
 [package.metadata.requires-dev]
@@ -792,6 +798,24 @@ wheels = [
 ]
 
 [[package]]
+name = "inspect-petri"
+version = "3.0.11"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "anyio" },
+    { name = "click" },
+    { name = "inspect-ai" },
+    { name = "inspect-scout" },
+    { name = "pydantic" },
+    { name = "pyyaml" },
+    { name = "shortuuid" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/4c/2e/e9cc3030f77934ec4e6a6d021eee6cd13b52533440d19defdcf03a154299/inspect_petri-3.0.11.tar.gz", hash = "sha256:11ccf591c0a041a6abac6b622e901d615f0298ffddd33a66514fd77970841ade", size = 149051, upload-time = "2026-06-08T12:19:58.949Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/5e/9e/667c48e7cfdd4fe06ed633080a57c263e9c416e4df35c4347dc8baf3f959/inspect_petri-3.0.11-py3-none-any.whl", hash = "sha256:15f512384e191fcaabddf3a4e6ca2b75b980cca23b0b530c27da1e1b27ab1ebf", size = 266377, upload-time = "2026-06-08T12:19:57.703Z" },
+]
+
+[[package]]
 name = "inspect-scout"
 version = "0.4.46"
 source = { registry = "https://pypi.org/simple" }
@@ -1279,6 +1303,29 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/d6/cb/448649d7f25d228bf0be3a04590ab7afa77f15e056f8fa976ed05ec9a78f/pathlib_abc-0.5.2.tar.gz", hash = "sha256:fcd56f147234645e2c59c7ae22808b34c364bb231f685ddd9f96885aed78a94c", size = 33342, upload-time = "2025-10-10T18:37:20.524Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/b1/29/c028a0731e202035f0e2e0bfbf1a3e46ad6c628cbb17f6f1cc9eea5d9ff1/pathlib_abc-0.5.2-py3-none-any.whl", hash = "sha256:4c9d94cf1b23af417ce7c0417b43333b06a106c01000b286c99de230d95eefbb", size = 19070, upload-time = "2025-10-10T18:37:19.437Z" },
+]
+
+[[package]]
+name = "petri-bloom"
+version = "0.2.6"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "anthropic" },
+    { name = "anyio" },
+    { name = "click" },
+    { name = "google-genai" },
+    { name = "inspect-ai" },
+    { name = "inspect-petri" },
+    { name = "nest-asyncio2" },
+    { name = "openai" },
+    { name = "pydantic" },
+    { name = "python-dotenv" },
+    { name = "pyyaml" },
+    { name = "rich" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/e6/dc/29b1d6b6d7d7ac8b0f9da4a38cb3e5bb909886dfaf97ed2de99c7f20097d/petri_bloom-0.2.6.tar.gz", hash = "sha256:56b340106ae6ea2dc96fcb43d8d7aead9e54413c0b003ad5c6c83daa68d670df", size = 247232, upload-time = "2026-06-08T12:26:53.518Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/c0/bd/ca8ab1acecc6eac32eded5c2435578ac59b2b12420a2c0fd3bb9399d18ec/petri_bloom-0.2.6-py3-none-any.whl", hash = "sha256:d10ffa764a23aef844df89cd402e3c048e2db529bcdb0b7e63ac77c97e4e7be8", size = 294773, upload-time = "2026-06-08T12:26:51.699Z" },
 ]
 
 [[package]]

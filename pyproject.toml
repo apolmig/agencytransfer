@@ -14,10 +14,13 @@ dependencies = [
   "google-genai>=1.69,<2",
   "inspect-ai==0.3.257",
   "inspect-evals==0.16.0",
+  "inspect-petri==3.0.11",
   "inspect-scout==0.4.46",
   "mistralai>=2.4.5,<3",
   "openai>=2.26,<3",
+  "petri-bloom==0.2.6",
   "pydantic>=2.13,<3",
+  "pyyaml==6.0.3",
 ]
 
 [project.scripts]
@@ -26,6 +29,7 @@ atb-ape-adjudication-packet = "atb_eval.ape_adjudication_packet:main"
 atb-ape-validation-evidence = "atb_eval.ape_validation_evidence:main"
 atb-ape-validation-packet = "atb_eval.ape_validation_packet:main"
 atb-offline-revalidate = "atb_eval.offline_revalidation:main"
+atb-exploratory-plan = "atb_eval.petri_exploratory:main"
 atb-release-gate = "atb_eval.release_gate:main"
 atb-validation-evidence = "atb_eval.validation_evidence:main"
 atb-validation-packet = "atb_eval.validation_packet:main"
