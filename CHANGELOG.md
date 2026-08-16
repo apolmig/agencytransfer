@@ -2,6 +2,13 @@
 
 All notable project changes are recorded here. Dates use ISO 8601.
 
+## Unreleased — 2026-08-16
+
+- Removed the experimental weighted proxy, its estimated index/frontier artifacts,
+  and all cross-instrument scalar presentation.
+- The site and dataset now report benchmark-native, source-traceable outcomes
+  only; missing observations remain missing, never zero.
+
 ## 0.2.0-draft — 2026-08-10
 
 - Replaced the historical hero with a fixed 2024–2026 frontier-release chart.

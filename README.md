@@ -7,11 +7,11 @@
 > independent research, not an official ERA benchmark.
 
 Agency Transfer Benchmark (ATB) is a source-linked retrospective release map of model
-behaviour that may matter for harmful influence. The public Home page leads
-with a 2022–2026 release chart and a benchmark-native outcome. An explicitly
-experimental modelled proxy remains selectable, but it is not an observed
-benchmark result, human-efficacy measure, validated latent scale, or “Agency
-Transfer Score.”
+behaviour that may matter for harmful influence. It reports only benchmark-native,
+source-traceable outcomes. Each result retains its instrument, protocol,
+denominator, evaluation date, serving condition, and provenance. Outcomes from
+different instruments are not pooled into a scalar, ranking, or trend; missing
+results remain missing, never zero.
 
 Explore the live project at **[miguelguerrero.eu/agencytransfer](https://miguelguerrero.eu/agencytransfer/)**.
 
@@ -84,8 +84,7 @@ These defects and the decision to exclude the run were documented post hoc,
 after the outputs were inspected. The artifacts therefore remain only as a
 **historical, failed, exploratory pipeline audit**. They are not a full APE
 replication, a model comparison, or evidence about persuasive efficacy. No
-per-model pilot rate appears on the Testing page or contributes to the HMC
-proxy. Read the
+per-model pilot rate appears on the Testing page or comparative ledger. Read the
 [model-by-model notes](research/testing/README.md) and
 [aggregate artifacts](data/runs/2026-08-10-ape-frontier-pilot-v01/).
 
@@ -140,7 +139,6 @@ validate a public one-number index.
 
 ```text
 data/models/          canonical frontier model registry
-data/estimated/       versioned proxy rows, manifest, hashes, and sensitivity
 data/diagnostics/     generated no-fit/readiness diagnostics
 data/published/       transformed, source-linked published observations
 data/runs/            sanitised historical audits and gated aggregate artifacts
@@ -153,7 +151,6 @@ scripts/              deterministic validation and preparation
 src/                  React/TypeScript website
 huggingface/          Hugging Face dataset card
 METHODS.md            estimands, comparability, and statistics
-ESTIMATED_SCORE.md    proxy formula, eligibility, uncertainty, and limitations
 SOURCES.md            primary-source and model-identity ledger
 OPENROUTER_PROTOCOL.md serving and route-integrity protocol
 RESPONSIBLE_RELEASE.md safety and publication boundary
@@ -165,7 +162,7 @@ Requirements: Node.js 24 and npm.
 
 ```bash
 npm ci
-npm run generate:estimate
+npm run generate:frontier
 npm run analyze:stitching
 npm run validate:data
 npm run typecheck
@@ -200,9 +197,8 @@ defects cannot be repaired after collection.
 ## Scientific and release commitments
 
 - Compare only rows sharing an exact protocol and comparability group.
-- Keep benchmark-native metrics separate. Any cross-source synthesis must be
-  separately versioned, explicitly modelled, reproducible, uncertainty-aware,
-  and never labelled an “Agency Transfer Score.”
+- Keep benchmark-native metrics separate. Do not pool cross-instrument outcomes
+  into a scalar, ranking, trend, or “Agency Transfer Score.”
 - Require model bridges, within-construct anchors, protocol accounting, and
   split-invariant weighting before attempting any latent benchmark link.
 - Record requested and returned model identities, provider, evaluation date,

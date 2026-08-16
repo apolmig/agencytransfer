@@ -13,11 +13,11 @@ tags:
 size_categories:
   - n<1K
 configs:
-  - config_name: hmc_proxy
+  - config_name: frontier_observations
     default: true
     data_files:
       - split: train
-        path: "hmc-proxy-v0.1.csv"
+        path: "frontier-observations.json"
   - config_name: frontier_models
     data_files:
       - split: train
@@ -65,8 +65,6 @@ This aggregate-and-provenance-only dataset accompanies the interactive
   whose parameter counts are undisclosed;
 - source-linked published observations from InfoOpsBench v2, SaferAI APE/MASK,
   Anthropic's helpful-only agentic evaluation, MASK, and DisElect;
-- an experimental HMC proxy ledger with weights, modelled intervals, evidence
-  grades, sensitivity checks, source IDs, input hashes, and explicit gaps;
 - a historical, failed 12-endpoint APE-derived OpenRouter pipeline audit with
   aggregate outcomes, hashes, sanitised route metadata, cost, and failure
   status; and
@@ -81,7 +79,7 @@ The 312-call pilot tested the pipeline, not the models. It used one APE
 category, 20 harmful items per requested model slug, unpinned provider routing,
 model-grouped ordering, no effective seed, incompatible harmful and benign
 denominators, and automated labels without blind human validation. The run is
-permanently excluded from the comparative ledger and HMC proxy; retrospective
+permanently excluded from the comparative ledger; retrospective
 labelling cannot repair its collection design. Aggregate artifacts remain
 available only for reproducibility and failure analysis.
 
@@ -95,10 +93,6 @@ these evaluation results form a model-training split.
 |---|---|
 | `frontier-models.json` / `frontier-models.csv` | Canonical release, access, parameter, source, and route metadata |
 | `frontier-observations.json` | Published and project-generated observations in native metrics |
-| `hmc-estimates.json` / `hmc-proxy-v0.1.csv` | Experimental proxy medians, assumption bands, coverage tiers, components, sensitivity, and source IDs |
-| `hmc-frontier.json` | Draw-wise stepwise frontier envelopes for all, open-weight, and hosted views |
-| `hmc-proxy-v0.1-manifest.json` | Fixed seed, weights, input hashes, counts, and limitations |
-| `ESTIMATED_SCORE.md` | Full proxy method and interpretation boundary |
 | `infoopsbench-2026-07-26.csv` | Frozen, transformed InfoOpsBench v2 paper snapshot |
 | `saferai-glm52-ape-mask.csv` | Transcribed APE/MASK cohort results |
 | `testing-notes.json` | Website research-note records |
@@ -111,9 +105,9 @@ these evaluation results form a model-training split.
 ## Intended use and measurement boundary
 
 Use these files to reproduce the website, audit provenance, and compare native
-rows only inside an exact protocol or `comparabilityGroup`. The separately
-versioned HMC proxy is an ATB-authored modelled synthesis, not an observed
-benchmark result or “Agency Transfer Score.” Missing results are not zeroes.
+rows only inside an exact protocol or `comparabilityGroup`. Cross-instrument
+outcomes are not pooled into a scalar, ranking, trend, or “Agency Transfer
+Score.” Missing results are not zeroes.
 
 InfoOps compliance is not human persuasion. APE detects attempted persuasion,
 not persuasive success. MASK lying is not the complement of honesty. Simulated
@@ -133,8 +127,7 @@ not interchangeable.
 
 Read [PROVENANCE.md](https://github.com/apolmig/agencytransfer/blob/main/data/PROVENANCE.md),
 [METHODS.md](https://github.com/apolmig/agencytransfer/blob/main/METHODS.md),
-[ESTIMATED_SCORE.md](https://github.com/apolmig/agencytransfer/blob/main/ESTIMATED_SCORE.md), and
-[RESPONSIBLE_RELEASE.md](https://github.com/apolmig/agencytransfer/blob/main/RESPONSIBLE_RELEASE.md).
+and [RESPONSIBLE_RELEASE.md](https://github.com/apolmig/agencytransfer/blob/main/RESPONSIBLE_RELEASE.md).
 Each reuse must cite both this project and the applicable primary source.
 
 Project-authored aggregates and metadata are CC BY 4.0, subject to upstream

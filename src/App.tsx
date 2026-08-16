@@ -14,8 +14,6 @@ import {
   loadDisElectResults,
   loadFrontierModels,
   loadFrontierObservations,
-  loadHmcEstimates,
-  loadHmcFrontier,
   loadMaskResults,
   loadModelManifest,
   loadTestingNotes,
@@ -26,8 +24,6 @@ import type {
   DisElectResult,
   FrontierModel,
   FrontierObservation,
-  HmcEstimate,
-  HmcFrontierPoint,
   MaskResult,
   TestingNote,
   WaveModel,
@@ -40,8 +36,6 @@ type PageKey = "home" | "evidence" | "testing";
 type DataKey =
   | "frontierModels"
   | "frontierObservations"
-  | "hmcEstimates"
-  | "hmcFrontier"
   | "testingNotes"
   | "diselect"
   | "agentic"
@@ -94,7 +88,7 @@ function SiteFooter() {
       </div>
       <div>
         <span>Draft · 12 August 2026</span>
-        <a href={`${REPOSITORY_URL}/blob/main/ESTIMATED_SCORE.md`} target="_blank" rel="noreferrer">Method ↗</a>
+        <a href={`${REPOSITORY_URL}/blob/main/METHODS.md`} target="_blank" rel="noreferrer">Method ↗</a>
         <a href={HUGGING_FACE_URL} target="_blank" rel="noreferrer">Data ↗</a>
         <a href={REPOSITORY_URL} target="_blank" rel="noreferrer">Source and issues ↗</a>
       </div>
@@ -105,14 +99,11 @@ function SiteFooter() {
 interface HomeProps {
   models: FrontierModel[];
   observations: FrontierObservation[];
-  estimates: HmcEstimate[];
-  frontier: HmcFrontierPoint[];
   loading: boolean;
   error: string;
 }
 
-function HomePage({ models, observations, estimates, frontier, loading, error }: HomeProps) {
-  const eligible = estimates.filter((estimate) => estimate.evidenceStatus === "estimated").length;
+function HomePage({ models, observations, loading, error }: HomeProps) {
   return (
     <main id="main-content">
       <section className="lead home-lead" id="top">
@@ -123,8 +114,8 @@ function HomePage({ models, observations, estimates, frontier, loading, error }:
         </div>
 
         {error ? <p className="inline-data-error" role="alert">Some chart data could not load: {error}</p> : null}
-        {models.length > 0 && (observations.length > 0 || estimates.length > 0) ? (
-          <FrontierTimeline models={models} observations={observations} estimates={estimates} frontier={frontier} />
+        {models.length > 0 && observations.length > 0 ? (
+          <FrontierTimeline models={models} observations={observations} />
         ) : loading ? (
           <p className="loading-message" aria-live="polite">Loading the release series…</p>
         ) : (
@@ -132,19 +123,17 @@ function HomePage({ models, observations, estimates, frontier, loading, error }:
         )}
 
         <details className="hero-method-note">
-          <summary>Why the synthesis remains experimental</summary>
+          <summary>How to read the chart</summary>
           <div>
             <p>
-              The default view preserves one benchmark-native outcome. A separate selectable proxy combines
-              operational harmful support (40%), agentic campaign execution (30%), harmful persuasion attempts
-              (20%), and deception under pressure (10%). It is a visual synthesis, not a validated latent
-              capability scale.
+              Each view shows one benchmark's native outcome. Measures with different protocols, prompts,
+              judges, denominators, or constructs are not combined into a single score.
             </p>
             <p>
-              {eligible} of {models.length} releases currently meet the proxy's minimum coverage rule. All other releases
-              remain visible as hollow marks—missing, never zero.
+              Hollow release marks mean that no comparable observation is available in the selected view—missing,
+              never zero.
             </p>
-            <a href={`${REPOSITORY_URL}/blob/main/ESTIMATED_SCORE.md`} target="_blank" rel="noreferrer">Weights, uncertainty, sensitivity, and limits ↗</a>
+            <a href={`${REPOSITORY_URL}/blob/main/METHODS.md`} target="_blank" rel="noreferrer">Methods and comparability limits ↗</a>
           </div>
         </details>
       </section>
@@ -170,8 +159,8 @@ function EvidencePage({ benchmarks, agenticResults, maskResults, diselectResults
         <h1>What each instrument can—and cannot—claim</h1>
         <p>
           No source measures harmful manipulation capability end to end. The literature separately observes
-          willingness, safeguards, task execution, persuasive effect, deception, or access. The chart is an
-          ATB-authored synthesis—not a score or conclusion reported by any cited paper.
+          willingness, safeguards, task execution, persuasive effect, deception, or access. ATB preserves those
+          native outcomes rather than collapsing them into a cross-benchmark score.
         </p>
       </section>
 
@@ -236,8 +225,6 @@ function EvidencePage({ benchmarks, agenticResults, maskResults, diselectResults
 function App() {
   const [frontierModels, setFrontierModels] = useState<FrontierModel[]>([]);
   const [frontierObservations, setFrontierObservations] = useState<FrontierObservation[]>([]);
-  const [hmcEstimates, setHmcEstimates] = useState<HmcEstimate[]>([]);
-  const [hmcFrontier, setHmcFrontier] = useState<HmcFrontierPoint[]>([]);
   const [testingNotes, setTestingNotes] = useState<TestingNote[]>([]);
   const [diselectResults, setDisElectResults] = useState<DisElectResult[]>([]);
   const [agenticResults, setAgenticResults] = useState<AgenticInfluenceResult[]>([]);
@@ -261,8 +248,6 @@ function App() {
 
     queue("frontierModels", loadFrontierModels, setFrontierModels);
     queue("frontierObservations", loadFrontierObservations, setFrontierObservations);
-    queue("hmcEstimates", loadHmcEstimates, setHmcEstimates);
-    queue("hmcFrontier", loadHmcFrontier, setHmcFrontier);
     queue("testingNotes", loadTestingNotes, setTestingNotes);
     queue("diselect", loadDisElectResults, setDisElectResults);
     queue("agentic", loadAgenticInfluenceResults, setAgenticResults);
@@ -274,7 +259,7 @@ function App() {
     return () => { cancelled = true; };
   }, []);
 
-  const frontierError = [errors.frontierModels, errors.frontierObservations, errors.hmcEstimates, errors.hmcFrontier]
+  const frontierError = [errors.frontierModels, errors.frontierObservations]
     .filter(Boolean)
     .join(" · ");
 
@@ -286,8 +271,6 @@ function App() {
         <HomePage
           models={frontierModels}
           observations={frontierObservations}
-          estimates={hmcEstimates}
-          frontier={hmcFrontier}
           loading={loading}
           error={frontierError}
         />

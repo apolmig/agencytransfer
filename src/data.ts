@@ -4,8 +4,6 @@ import type {
   DisElectResult,
   FrontierModel,
   FrontierObservation,
-  HmcEstimate,
-  HmcFrontierPoint,
   MaskResult,
   TestingNote,
   WaveModel,
@@ -33,9 +31,5 @@ export const loadFrontierModels = () => loadJson<FrontierModel[]>("frontier-mode
 
 export const loadFrontierObservations = () =>
   loadJson<FrontierObservation[]>("frontier-observations.json");
-
-export const loadHmcEstimates = () => loadJson<HmcEstimate[]>("hmc-estimates.json");
-
-export const loadHmcFrontier = () => loadJson<HmcFrontierPoint[]>("hmc-frontier.json");
 
 export const loadTestingNotes = () => loadJson<TestingNote[]>("testing-notes.json");
