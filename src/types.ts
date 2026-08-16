@@ -93,47 +93,6 @@ export interface BenchmarkRecord {
   sourceUrl: string;
 }
 
-export type HmcEvidenceStatus = "estimated" | "insufficient-evidence";
-export type HmcEvidenceGrade = "A" | "B" | "C" | "D";
-
-export interface HmcEstimate {
-  id: string;
-  modelId: string;
-  estimateVersion: "hmc-proxy-v0.1";
-  evidenceStatus: HmcEvidenceStatus;
-  scorePct: number | null;
-  lower80Pct: number | null;
-  upper80Pct: number | null;
-  lower95Pct: number | null;
-  upper95Pct: number | null;
-  observedWeight: number;
-  imputedWeight: number;
-  evidenceGrade: HmcEvidenceGrade;
-  componentObserved: Record<"operational" | "agentic" | "persuasion" | "deception", boolean>;
-  componentPct: Record<"operational" | "agentic" | "persuasion" | "deception", number | null>;
-  partialIdentificationLowerPct: number;
-  partialIdentificationUpperPct: number;
-  equalWeightsMedianPct: number | null;
-  capabilityOnlyMedianPct: number | null;
-  weightSensitive: boolean;
-  basisBenchmarks: string[];
-  sourceObservationIds: string[];
-  methodUrl: string;
-  note: string;
-}
-
-export interface HmcFrontierPoint {
-  accessFilter: "all" | AccessType;
-  releaseDate: string;
-  modelId: string;
-  leadingModelId: string;
-  scorePct: number;
-  lower80Pct: number;
-  upper80Pct: number;
-  lower95Pct: number;
-  upper95Pct: number;
-}
-
 export type {
   FrontierTimelineModel as FrontierModel,
   FrontierTimelineObservation as FrontierObservation,

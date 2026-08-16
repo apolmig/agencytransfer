@@ -106,7 +106,7 @@ The strict routing, randomisation, seed, denominator, and validation requirement
 were formalised after this run, and its exclusion was therefore a post hoc
 quality decision. The artifacts are retained for auditability, but their status
 is permanently **historical-failed and exploratory**. They do not enter the
-comparative observation ledger, Testing-page rates, the HMC proxy, or a release
+comparative observation ledger, Testing-page rates, or a release
 trajectory. Retrospective human coding could audit labels but cannot repair the
 collection design; any scientific rerun is a new protocol.
 

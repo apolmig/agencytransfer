@@ -15,7 +15,7 @@
   "scripts": {
     "dev": "vite",
     "analyze:stitching": "node scripts/analyze-stitching-readiness.mjs",
-    "generate:estimate": "node scripts/build-hmc-estimates.mjs",
+    "generate:frontier": "node scripts/build-frontier-data.mjs",
     "rebuild:historical-pilot-notes": "node scripts/publish-ape-pilot.mjs",
     "typecheck": "tsc --noEmit",
     "validate:data": "node scripts/validate-data.mjs",

@@ -24,11 +24,9 @@ ATB separates four evidence layers:
    serving restrictions.
 
 Native results from these layers are never presented as directly comparable
-observations. A separately versioned experimental proxy may combine them only
-when its weights, imputations, uncertainty, coverage tier, sensitivity, and
-source IDs are public. The current specification is
-[`HMC proxy estimate v0.1`](ESTIMATED_SCORE.md). It is not an observed benchmark
-result, human-efficacy measure, or evidence of real-world harm.
+observations. ATB does not pool cross-instrument outcomes into a scalar,
+ranking, trend, or “Agency Transfer Score.” Missing observations remain
+missing, never zero.
 
 ## Study designs
 
@@ -167,10 +165,9 @@ extraction method, and reviewer. Digitised values retain extraction uncertainty.
 | MASK | benchmark-defined lie, explicit-honest, and unresolved/evasive proportions | task accuracy, invalid judgment, provider block, and item archetype | a general truthfulness score, manipulation, intent, or human response |
 | Human-efficacy evidence | study-specific effect size in its original population and context | uncertainty, treatment, outcome timing, and study design | a universal model score or a direct substitute for capability evaluation |
 
-ATB does not present a cross-benchmark mean, z-score, rank, or radar area as an
-observed result or “Agency Transfer Score.” A separately labelled modelled proxy
-may be published under the requirements above and must preserve native views.
-A within-instrument contrast may be reported when prespecified. For example,
+ATB does not present a cross-benchmark mean, z-score, rank, radar area, or
+modelled composite. A within-instrument contrast may be reported when
+prespecified. For example,
 DisElect selectivity may be expressed as benign completion minus harmful
 compliance. Such a contrast remains a DisElect outcome.
 
@@ -187,8 +184,8 @@ The deterministic
 [`benchmark-stitching readiness gate`](research/methods/BENCHMARK_STITCHING.md)
 checks model/instrument overlap, within-construct anchors, protocol invariance,
 and split-invariant weighting. As of 12 August 2026 it blocks fitting. Native
-item-level and instrument-level results are primary; the HMC proxy is not a
-stitching model. Any later fit is exploratory until out-of-sample performance,
+item-level and instrument-level results are primary. Any later fit is
+exploratory until out-of-sample performance,
 residual structure, measurement invariance, anchor sensitivity, and
 leave-one-family/source robustness are demonstrated.
 
@@ -448,12 +445,10 @@ more favourable trend.
 
 ## Visualisation rules
 
-- The Home chart defaults to a benchmark-native result. The separately versioned
-  HMC proxy remains selectable with its modelled interval, coverage rule,
-  missing releases, and method link visible.
-- Native metrics remain selectable and never inherit the proxy's interpretation.
-- The proxy frontier is a stepwise running maximum with no smoothing and is
-  labelled monotonic by construction.
+- The Home chart shows benchmark-native results only.
+- Native metrics remain selectable and retain their own protocols, denominators,
+  dates, serving conditions, and interpretation.
+- Missing results remain missing and are never plotted as zero.
 - Points are connected only within a model family when item set, protocol,
   judge, and serving condition are comparable.
 - Major architecture or modality changes break the line and receive an

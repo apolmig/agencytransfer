@@ -4,9 +4,8 @@ This repository separates **published observations** from **contextual evidence*
 
 Row-level lineage, denominators, transformations, and known limitations for the
 published and project-generated evidence are recorded in
-[`data/PROVENANCE.md`](data/PROVENANCE.md). The experimental synthesis has its
-own versioned method in [`ESTIMATED_SCORE.md`](ESTIMATED_SCORE.md). The separate
-benchmark-linking gate is documented in
+[`data/PROVENANCE.md`](data/PROVENANCE.md). The separate benchmark-linking gate
+is documented in
 [`research/methods/BENCHMARK_STITCHING.md`](research/methods/BENCHMARK_STITCHING.md).
 
 ## Published observations used by the site
@@ -207,4 +206,4 @@ These works help define the evidence chain from model propensity to human effect
 3. Pin source repositories by full commit SHA whenever item-level results are transformed.
 4. Give each materially different prompt set, judge, sampling configuration, deployment condition, or aggregation rule a new `protocol_id`.
 5. Label values as author-reported, derived from author data, digitized, or newly evaluated. Digitized or inferred values may not be presented as author-reported.
-6. Do not present a cross-source synthesis as an observed result or an “agency transfer” score. A separately versioned experimental proxy is permitted only when its weights, imputations, uncertainty, evidence gate, sensitivity, source IDs, and limitations are published and every native measure remains accessible.
+6. Do not pool cross-source outcomes into a scalar, ranking, trend, or “Agency Transfer Score.” Preserve native units and comparability groups.

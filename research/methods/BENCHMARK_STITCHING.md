@@ -93,14 +93,12 @@ When the gate passes, ATB will:
   synthetic analysis reports a high false-positive rate, so it cannot support a
   standalone claim of acceleration.
 
-## Relationship to the HMC proxy
+## Current reporting boundary
 
-HMC proxy v0.1 is a hand-specified visual synthesis with explicit weights and
-wide missing-data uncertainty. It is not the Ho et al. model, an Item Response
-Theory estimate, or evidence that the four components form one latent trait.
-It remains exploratory and must never be used to calibrate benchmark difficulty
-or forecast capability. A later, validated stitching model would be a new
-version and would not silently overwrite the proxy or any native outcome.
+ATB reports benchmark-native outcomes only. It does not use the readiness
+diagnostic to produce a latent score, ranking, trend, or forecast. A later
+validated stitching model would require a new, preregistered protocol and would
+not overwrite any native outcome.
 
 ## Source
 

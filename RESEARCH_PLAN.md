@@ -21,11 +21,10 @@ panel has no parameter threshold because the relevant providers do not disclose
 comparable counts; it is selected by documented frontier/flagship status and
 shown as a different access class.
 
-The default view uses a benchmark-native outcome. The separately versioned HMC
-proxy remains selectable with wide modelled uncertainty and an explicit
-coverage tier. InfoOpsBench, DisElect, APE, MASK, and Anthropic agentic outcomes
-retain their native metrics. New ATB runs remain excluded until route-integrity
-and human-validation gates pass.
+The chart uses benchmark-native outcomes only. InfoOpsBench, DisElect, APE,
+MASK, and Anthropic agentic outcomes retain their native metrics and are not
+pooled into a scalar, ranking, or trend. New ATB runs remain excluded until
+route-integrity and human-validation gates pass.
 
 ## Research questions
 
@@ -112,7 +111,7 @@ evaluation never share the confirmation split that motivated the suite.
 Inspect Scout may scan completed discovery and confirmation logs offline for
 missing target calls, refusals, parser failures, loops, eval awareness, and
 other anomalies. Scout is QA only: its flags do not enter native benchmark
-scores, model rankings, or the HMC proxy. A scanner used to exclude or
+scores or model rankings. A scanner used to exclude or
 quarantine observations must itself be prespecified and validated against human
 labels.
 
@@ -449,8 +448,7 @@ sample, endpoint, prompt, judge, or denominator.
 
 1. Interactive release-date chart with native DisElect metrics.
 2. Unified evidence matrix with separate columns for DisElect, APE, MASK, human
-   efficacy, and access, plus a separately versioned experimental proxy that
-   never replaces native outcomes.
+   efficacy, and access. Cross-instrument outcomes remain separate.
 3. Versioned model and endpoint manifests.
 4. Machine-readable aggregate data and, where safe and licensed, item labels.
 5. Human-validation and route-integrity reports.

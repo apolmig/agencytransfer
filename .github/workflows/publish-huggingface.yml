@@ -8,15 +8,12 @@ on:
       - "huggingface/**"
       - "data/published/**"
       - "data/models/**"
-      - "data/estimated/**"
       - "data/runs/2026-08-10-ape-frontier-pilot-v01/**"
       - "public/data/frontier-*.json"
-      - "public/data/hmc-*.json"
       - "public/data/testing-notes.json"
       - "public/data/model-manifest.json"
       - "data/PROVENANCE.md"
       - "LICENSES/DATA.md"
-      - "ESTIMATED_SCORE.md"
 
 permissions:
   contents: read
@@ -91,16 +88,12 @@ jobs:
 
       - name: Verify generated analytical artifacts are current
         run: |
-          npm run generate:estimate
+          npm run generate:frontier
           npm run analyze:stitching
           git diff --exit-code -- \
             public/data/frontier-models.json \
             public/data/frontier-observations.json \
-            public/data/hmc-estimates.json \
-            public/data/hmc-frontier.json \
             data/models/frontier-models.csv \
-            data/estimated/hmc-proxy-v0.1.csv \
-            data/estimated/hmc-proxy-v0.1-manifest.json \
             data/diagnostics/stitching-readiness-v0.1.json
 
       - name: Type-check website
@@ -123,11 +116,6 @@ jobs:
           install -D -m 0644 public/data/frontier-models.json hf-release/frontier-models.json
           install -D -m 0644 data/models/frontier-models.csv hf-release/frontier-models.csv
           install -D -m 0644 public/data/frontier-observations.json hf-release/frontier-observations.json
-          install -D -m 0644 public/data/hmc-estimates.json hf-release/hmc-estimates.json
-          install -D -m 0644 public/data/hmc-frontier.json hf-release/hmc-frontier.json
-          install -D -m 0644 data/estimated/hmc-proxy-v0.1.csv hf-release/hmc-proxy-v0.1.csv
-          install -D -m 0644 data/estimated/hmc-proxy-v0.1-manifest.json hf-release/hmc-proxy-v0.1-manifest.json
-          install -D -m 0644 ESTIMATED_SCORE.md hf-release/ESTIMATED_SCORE.md
           install -D -m 0644 public/data/testing-notes.json hf-release/testing-notes.json
           install -D -m 0644 data/runs/2026-08-10-ape-frontier-pilot-v01/aggregate.csv hf-release/runs/2026-08-10-ape-frontier-pilot-v01/aggregate.csv
           install -D -m 0644 data/runs/2026-08-10-ape-frontier-pilot-v01/README.md hf-release/runs/2026-08-10-ape-frontier-pilot-v01/README.md
@@ -142,7 +130,6 @@ jobs:
           actual="$RUNNER_TEMP/hf-release-files.txt"
           printf '%s\n' \
             DATA_LICENSE.md \
-            ESTIMATED_SCORE.md \
             PROVENANCE.md \
             README.md \
             anthropic-agentic-influence.csv \
@@ -150,10 +137,6 @@ jobs:
             frontier-models.csv \
             frontier-models.json \
             frontier-observations.json \
-            hmc-estimates.json \
-            hmc-frontier.json \
-            hmc-proxy-v0.1-manifest.json \
-            hmc-proxy-v0.1.csv \
             infoopsbench-2026-07-26.csv \
             mask-original-results.csv \
             model-manifest.json \
@@ -232,14 +215,6 @@ jobs:
               "frontier-models.csv": [
                   "id", "model", "organisation", "family", "accessType", "releaseDate",
                   "totalParamsB", "openRouterId", "eligibilityBasis", "sourceUrl",
-              ],
-              "hmc-proxy-v0.1.csv": [
-                  "modelId", "estimateVersion", "evidenceStatus", "scorePct", "lower80Pct",
-                  "upper80Pct", "lower95Pct", "upper95Pct", "observedWeight",
-                  "imputedWeight", "evidenceGrade", "partialIdentificationLowerPct",
-                  "partialIdentificationUpperPct", "equalWeightsMedianPct",
-                  "capabilityOnlyMedianPct", "weightSensitive", "componentObserved",
-                  "componentPct", "basisBenchmarks", "sourceObservationIds", "methodUrl", "note",
               ],
               "runs/2026-08-10-ape-frontier-pilot-v01/aggregate.csv": [
                   "model", "n_harmful", "n_harmful_usable", "attempt_count",
