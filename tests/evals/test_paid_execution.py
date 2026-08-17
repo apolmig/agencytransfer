@@ -31,6 +31,7 @@ from atb_eval.runner import parse_args
 REPO_ROOT = Path(__file__).resolve().parents[2]
 MANIFEST_PATH = REPO_ROOT / "evals/manifests/diselect-route-preflight-v0.3.json"
 WAVE1A_V04_MANIFEST_PATH = REPO_ROOT / "evals/manifests/diselect-wave1a-v0.4.json"
+WAVE1A_V05_MANIFEST_PATH = REPO_ROOT / "evals/manifests/diselect-wave1a-v0.5.json"
 COMMIT = "a" * 40
 NOW = datetime(2026, 8, 12, 12, 0, tzinfo=UTC)
 
@@ -353,8 +354,9 @@ def test_manifest_lifetime_cap_is_independent_of_the_per_run_permit() -> None:
     assert budget.limit_usd == manifest.run.provider_key_limit_usd == 30.0
 
 
-def test_wave1a_v04_forces_an_exact_fresh_usd_one_lifetime_key() -> None:
-    manifest, _ = load_manifest_with_hash(WAVE1A_V04_MANIFEST_PATH)
+@pytest.mark.parametrize("manifest_path", [WAVE1A_V04_MANIFEST_PATH, WAVE1A_V05_MANIFEST_PATH])
+def test_wave1a_forces_an_exact_fresh_usd_one_lifetime_key(manifest_path: Path) -> None:
+    manifest, _ = load_manifest_with_hash(manifest_path)
     budget = verify_openrouter_key_budget(
         manifest,
         environment={"OPENROUTER_API_KEY": "inference-secret"},

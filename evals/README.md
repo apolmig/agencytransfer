@@ -51,10 +51,10 @@ capability or safety.
 
 ## DisElect Wave 1A
 
-`diselect-wave1a-v0.4.json` is the current frozen non-public diagnostic
+`diselect-wave1a-v0.5.json` is the current frozen non-public diagnostic
 protocol. It selects 40 harmful items across eight strata and 10 benign
 controls, then runs the identical paired schedule against the 23 April and 31
-July DeepSeek V4 Flash snapshots. Both targets are pinned to DeepInfra/fp4; the
+July DeepSeek V4 Flash snapshots. Both targets are pinned to DeepInfra/fp8; the
 native response-class grader is pinned to Gemini 3.6 Flash on Google Vertex.
 Every route is ZDR, fallback-disabled, price-bounded, and bound to committed
 provider inventory.
@@ -72,17 +72,25 @@ preserved them as unscored and rejected the paired run. No comparative result
 was accepted. The redacted incident record is
 [`research-notes/diselect-wave1a-v0.2-diagnostic.md`](research-notes/diselect-wave1a-v0.2-diagnostic.md).
 Version 0.3 changes the completion and token envelopes and the blind-review
-sampling seed. Version 0.4 preserves that complete scientific design and changes
-only protocol identity, freeze time, and the provider-key cap: the inference key
-must now have an exact non-resetting USD 1.00 lifetime limit. Version 0.3 was
-superseded before an accepted execution. Results from v0.2, v0.3, and v0.4 cannot
-be mixed.
+sampling seed. Version 0.4 preserves that complete scientific design and adds
+an exact non-resetting USD 1.00 inference-key lifetime limit. Its execution
+attempt failed closed during route refresh, before any model call or spend,
+after DeepInfra changed the two endpoint tags from fp4 to fp8. Version 0.5
+preserves the dataset, selection, prompts, scorer, sampling, validation, token,
+and budget contracts, but changes the actual target route and quantization from
+fp4 to fp8 and refreshes current Gemini pricing. The v0.4
+[pre-inference failure record](research-notes/diselect-wave1a-v0.4-preflight-failure.md)
+is not a model result. No earlier protocol output can be compared with or mixed
+into v0.5.
+The v0.5 evidence was captured in public workflow run `31989993557` at
+`2026-08-17T03:05:19.217842Z`; the downloaded artifact SHA-256 is
+`7dd2a0e5b5069f8c13e05bd86d528d559140abb4eb4a272ec8b42e87a27c05f9`.
 
 Validate the source checkout and inspect the planned run without making calls:
 
 ```bash
 uv run atb-eval \
-  --manifest evals/manifests/diselect-wave1a-v0.4.json \
+  --manifest evals/manifests/diselect-wave1a-v0.5.json \
   --source-dir /controlled/election-ai-safety \
   --log-dir /controlled/atb/logs/diselect-wave1a
 ```
@@ -120,7 +128,7 @@ review packets outside the repository with an owner-only HMAC key:
 
 ```bash
 uv run --frozen atb-validation-packet \
-  --manifest evals/manifests/diselect-wave1a-v0.4.json \
+  --manifest evals/manifests/diselect-wave1a-v0.5.json \
   --log-dir /controlled/atb/logs/diselect-wave1a \
   --key-file /controlled/atb/validation/wave1a-hmac.key \
   --output-dir /controlled/atb/validation/packets \
@@ -135,10 +143,11 @@ is never stored in either Git repository.
 
 ### Paid route preflight (frozen)
 
-`diselect-route-preflight-v0.3.json` is a transport canary, not a scientific
-run. It schedules one benign control against the two invocable DeepSeek V4 Flash
-IDs, binds each ID to its permanent canonical slug, pins both to DeepInfra/fp4,
-and pins the Gemini grader to the ZDR-eligible Google Vertex endpoint.
+`diselect-route-preflight-v0.3.json` is a retained historical transport canary,
+not a scientific run or a current execution target. It schedules one benign
+control against the two DeepSeek V4 Flash IDs, binds each ID to its permanent
+canonical slug, pins both to the former DeepInfra/fp4 routes, and pins the
+Gemini grader to the ZDR-eligible Google Vertex endpoint.
 It has zero harmful items, one epoch, no retries, one connection, a local
 USD 0.02 per-sample stop, and a USD 0.04 total envelope. It is ineligible for
 public aggregation and makes no safety or comparative-performance claim.
