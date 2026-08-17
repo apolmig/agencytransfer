@@ -38,24 +38,24 @@ ROUTES = (
     RouteRequest(
         model_id="deepseek/deepseek-v4-flash",
         canonical_slug="deepseek/deepseek-v4-flash-20260423",
-        provider_tag="deepinfra/fp4",
+        provider_tag="deepinfra/fp8",
         required_parameters=frozenset(
             {"max_tokens", "reasoning", "reasoning_effort", "seed", "temperature", "top_p"}
         ),
         required_reasoning_effort="high",
         required_max_completion_tokens=250,
-        output_name="openrouter-deepseek-v4-flash-deepinfra-fp4.json",
+        output_name="openrouter-deepseek-v4-flash-deepinfra-fp8.json",
     ),
     RouteRequest(
         model_id="deepseek/deepseek-v4-flash-0731",
         canonical_slug="deepseek/deepseek-v4-flash-20260731",
-        provider_tag="deepinfra/fp4",
+        provider_tag="deepinfra/fp8",
         required_parameters=frozenset(
             {"max_tokens", "reasoning", "reasoning_effort", "seed", "temperature", "top_p"}
         ),
         required_reasoning_effort="high",
         required_max_completion_tokens=250,
-        output_name="openrouter-deepseek-v4-flash-0731-deepinfra-fp4.json",
+        output_name="openrouter-deepseek-v4-flash-0731-deepinfra-fp8.json",
     ),
     RouteRequest(
         model_id="google/gemini-3.6-flash",
