@@ -38,6 +38,9 @@ Version `atb-diselect-wave1a-v0.3` preserves the two snapshots, 50-item
 inventory, routes, sampling contract, scorer, missingness rules, zero-retry
 policy, and USD 1.00 envelope. It preregisters a 4,096-token target ceiling, a
 12,000-token per-sample limit, a 1,200,000-token run envelope, and a new blind-
-review sampling seed. The current v0.4 protocol preserves that scientific design
-and additionally requires an exact provider-side USD 1.00 lifetime cap. Both
-snapshots must be executed again under v0.4.
+review sampling seed. Version 0.4 preserved that scientific design and added an
+exact provider-side USD 1.00 lifetime cap, but its attempt failed before
+inference after the frozen fp4 route evidence drifted. The current v0.5 protocol
+refreshes those routes to DeepInfra/fp8 and the grader prices without changing
+the dataset, sampling, validation, token, or budget contracts. Both snapshots
+must be executed again under v0.5.

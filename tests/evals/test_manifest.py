@@ -16,6 +16,7 @@ from atb_eval.manifest import (
     RouteSpec,
     forbidden_runtime_overrides,
     load_manifest,
+    load_manifest_with_hash,
     require_controlled_log_dir,
     require_path_outside_repo,
     sha256_file,
@@ -188,6 +189,94 @@ def test_wave1a_v04_changes_only_identity_freeze_time_and_provider_cap() -> None
     assert manifest_payload == historical_payload
 
 
+def test_wave1a_v05_changes_only_serving_condition_and_current_grader_prices() -> None:
+    historical, historical_hash = load_manifest_with_hash(
+        REPO_ROOT / "evals/manifests/diselect-wave1a-v0.4.json"
+    )
+    manifest, manifest_hash = load_manifest_with_hash(
+        REPO_ROOT / "evals/manifests/diselect-wave1a-v0.5.json"
+    )
+
+    assert historical_hash == ("697c52f44944098edc7ebf07b32f9bfd8d45d3ef846b4ab0f4bb215967321be8")
+    assert manifest_hash == ("0fc9f5f58760a60fb103ef6df70a03ff3f37dcc94f22caf2da7083b282ade0b9")
+    assert manifest.status is ProtocolStatus.FROZEN
+    assert manifest.protocol_id == "atb-diselect-wave1a-v0.5"
+    assert manifest.frozen_at > historical.frozen_at
+    assert manifest.task == historical.task
+    assert manifest.dataset == historical.dataset
+    assert manifest.run == historical.run
+    assert manifest.validation == historical.validation
+    assert manifest.release == historical.release
+    assert [condition.condition_id for condition in manifest.models] == [
+        "deepseek-v4-flash-0423-deepinfra-fp8",
+        "deepseek-v4-flash-0731-deepinfra-fp8",
+    ]
+    assert all(condition.route.provider_only == ["deepinfra/fp8"] for condition in manifest.models)
+    assert all(condition.route.quantizations == ["fp8"] for condition in manifest.models)
+    assert [condition.pricing for condition in manifest.models] == [
+        condition.pricing for condition in historical.models
+    ]
+    for condition in manifest.models:
+        assert condition.route.max_price is not None
+        assert condition.pricing is not None
+        assert condition.route.max_price.model_dump() == {
+            "prompt": condition.pricing.input,
+            "completion": condition.pricing.output,
+            "request": 0.0,
+        }
+
+    grader = manifest.model_roles["grader"]
+    assert grader.condition_id == historical.model_roles["grader"].condition_id
+    assert grader.route.provider_only == ["google-vertex/global"]
+    assert grader.route.quantizations == ["unknown"]
+    assert grader.route.max_price is not None
+    assert grader.route.max_price.model_dump() == {
+        "prompt": 0.75,
+        "completion": 3.75,
+        "request": 0.0,
+    }
+    assert grader.pricing is not None
+    assert grader.pricing.model_dump() == {
+        "input": 0.75,
+        "output": 3.75,
+        "input_cache_write": 0.0416666666666667,
+        "input_cache_read": 0.075,
+    }
+    assert grader.revision is not None
+    assert grader.revision.internal_reasoning_price_usd_per_million == 3.75
+
+    revisions = [
+        condition.revision for condition in [*manifest.models, *manifest.model_roles.values()]
+    ]
+    assert all(revision is not None for revision in revisions)
+    assert {revision.observed_at for revision in revisions if revision is not None} == {
+        "2026-08-17T03:05:19.217842Z"
+    }
+    assert all(
+        revision.evidence_path.endswith("-v05.json")
+        for revision in revisions
+        if revision is not None
+    )
+
+    historical_payload = historical.model_dump(mode="json")
+    manifest_payload = manifest.model_dump(mode="json")
+    for payload in (historical_payload, manifest_payload):
+        payload.pop("protocol_id")
+        payload.pop("frozen_at")
+        for condition in payload["models"]:
+            condition.pop("condition_id")
+            condition.pop("revision")
+            condition.pop("pricing")
+            condition["route"].pop("provider_only")
+            condition["route"].pop("quantizations")
+            condition["route"].pop("max_price")
+        for condition in payload["model_roles"].values():
+            condition.pop("revision")
+            condition.pop("pricing")
+            condition["route"].pop("max_price")
+    assert manifest_payload == historical_payload
+
+
 @pytest.mark.parametrize(
     (
         "manifest_name",
@@ -248,10 +337,15 @@ def test_diselect_route_preflight_is_bounded_and_nonpublic(
         assert evidence["zdr_eligible"] is True
 
 
+@pytest.mark.parametrize(
+    "manifest_name",
+    ["diselect-route-preflight-v0.1.json", "diselect-wave1a-v0.5.json"],
+)
 def test_model_revision_verifier_reprojects_archived_raw(
     monkeypatch: pytest.MonkeyPatch,
+    manifest_name: str,
 ) -> None:
-    manifest = load_manifest(REPO_ROOT / "evals/manifests/diselect-route-preflight-v0.1.json")
+    manifest = load_manifest(REPO_ROOT / "evals/manifests" / manifest_name)
     monkeypatch.setattr(
         manifest_module,
         "verify_committed_file",
