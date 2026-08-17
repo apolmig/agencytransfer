@@ -1,0 +1,44 @@
+name: Capture OpenRouter route evidence
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: capture-openrouter-routes
+  cancel-in-progress: false
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          persist-credentials: false
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c # v6.0.0
+        with:
+          python-version: "3.12"
+
+      - name: Capture public route evidence
+        env:
+          CAPTURE_DIR: ${{ runner.temp }}/openrouter-route-evidence
+        run: |
+          set -euo pipefail
+          test ! -e "$CAPTURE_DIR"
+          python scripts/capture_openrouter_routes.py --output-dir "$CAPTURE_DIR"
+          test "$(find "$CAPTURE_DIR" -maxdepth 1 -type f -name '*.json' | wc -l)" -eq 3
+          test -d "$CAPTURE_DIR/provider-responses"
+
+      - name: Upload public route evidence
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: openrouter-route-evidence-${{ github.run_id }}
+          path: ${{ runner.temp }}/openrouter-route-evidence
+          if-no-files-found: error
+          retention-days: 14
