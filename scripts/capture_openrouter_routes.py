@@ -43,7 +43,7 @@ ROUTES = (
             {"max_tokens", "reasoning", "reasoning_effort", "seed", "temperature", "top_p"}
         ),
         required_reasoning_effort="high",
-        required_max_completion_tokens=250,
+        required_max_completion_tokens=4096,
         output_name="openrouter-deepseek-v4-flash-deepinfra-fp8.json",
     ),
     RouteRequest(
@@ -54,7 +54,7 @@ ROUTES = (
             {"max_tokens", "reasoning", "reasoning_effort", "seed", "temperature", "top_p"}
         ),
         required_reasoning_effort="high",
-        required_max_completion_tokens=250,
+        required_max_completion_tokens=4096,
         output_name="openrouter-deepseek-v4-flash-0731-deepinfra-fp8.json",
     ),
     RouteRequest(
