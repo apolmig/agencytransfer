@@ -44,7 +44,7 @@ ROUTES = (
         ),
         required_reasoning_effort="high",
         required_max_completion_tokens=4096,
-        output_name="openrouter-deepseek-v4-flash-deepinfra-fp8.json",
+        output_name="openrouter-deepseek-v4-flash-deepinfra-fp8-v05.json",
     ),
     RouteRequest(
         model_id="deepseek/deepseek-v4-flash-0731",
@@ -55,7 +55,7 @@ ROUTES = (
         ),
         required_reasoning_effort="high",
         required_max_completion_tokens=4096,
-        output_name="openrouter-deepseek-v4-flash-0731-deepinfra-fp8.json",
+        output_name="openrouter-deepseek-v4-flash-0731-deepinfra-fp8-v05.json",
     ),
     RouteRequest(
         model_id="google/gemini-3.6-flash",
@@ -64,7 +64,7 @@ ROUTES = (
         required_parameters=frozenset({"max_tokens", "reasoning", "reasoning_effort", "seed"}),
         required_reasoning_effort="minimal",
         required_max_completion_tokens=256,
-        output_name="openrouter-gemini-3.6-flash-google-vertex-global.json",
+        output_name="openrouter-gemini-3.6-flash-google-vertex-global-v05.json",
     ),
 )
 
