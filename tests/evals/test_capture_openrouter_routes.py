@@ -37,9 +37,9 @@ def test_wave1_capture_routes_match_current_serving_conditions() -> None:
     assert routes["deepseek/deepseek-v4-flash-0731"].required_max_completion_tokens == 4096
     assert routes["google/gemini-3.6-flash"].required_max_completion_tokens == 256
     assert {route.output_name for route in routes.values()} == {
-        "openrouter-deepseek-v4-flash-deepinfra-fp8.json",
-        "openrouter-deepseek-v4-flash-0731-deepinfra-fp8.json",
-        "openrouter-gemini-3.6-flash-google-vertex-global.json",
+        "openrouter-deepseek-v4-flash-deepinfra-fp8-v05.json",
+        "openrouter-deepseek-v4-flash-0731-deepinfra-fp8-v05.json",
+        "openrouter-gemini-3.6-flash-google-vertex-global-v05.json",
     }
 
 
