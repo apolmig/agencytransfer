@@ -28,6 +28,18 @@ ROUTE = RouteRequest(
 )
 
 
+def test_wave1_capture_routes_match_current_serving_conditions() -> None:
+    routes = {route.model_id: route for route in capture_openrouter_routes.ROUTES}
+    assert routes["deepseek/deepseek-v4-flash"].provider_tag == "deepinfra/fp8"
+    assert routes["deepseek/deepseek-v4-flash-0731"].provider_tag == "deepinfra/fp8"
+    assert routes["google/gemini-3.6-flash"].provider_tag == "google-vertex/global"
+    assert {route.output_name for route in routes.values()} == {
+        "openrouter-deepseek-v4-flash-deepinfra-fp8.json",
+        "openrouter-deepseek-v4-flash-0731-deepinfra-fp8.json",
+        "openrouter-gemini-3.6-flash-google-vertex-global.json",
+    }
+
+
 def capture_payloads() -> dict[str, object]:
     model = {
         "id": ROUTE.model_id,
