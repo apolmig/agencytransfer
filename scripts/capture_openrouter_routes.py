@@ -40,7 +40,7 @@ ROUTES = (
         canonical_slug="deepseek/deepseek-v4-flash-20260423",
         provider_tag="deepinfra/fp8",
         required_parameters=frozenset(
-            {"max_tokens", "reasoning", "reasoning_effort", "seed", "temperature", "top_p"}
+            {"max_tokens", "reasoning", "reasoning_effort", "seed", "temperature", "top_k", "top_p"}
         ),
         required_reasoning_effort="high",
         required_max_completion_tokens=4096,
@@ -51,7 +51,7 @@ ROUTES = (
         canonical_slug="deepseek/deepseek-v4-flash-20260731",
         provider_tag="deepinfra/fp8",
         required_parameters=frozenset(
-            {"max_tokens", "reasoning", "reasoning_effort", "seed", "temperature", "top_p"}
+            {"max_tokens", "reasoning", "reasoning_effort", "seed", "temperature", "top_k", "top_p"}
         ),
         required_reasoning_effort="high",
         required_max_completion_tokens=4096,
