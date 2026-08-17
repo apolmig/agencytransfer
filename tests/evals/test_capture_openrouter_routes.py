@@ -21,6 +21,7 @@ ROUTE = RouteRequest(
     model_id="vendor/model",
     canonical_slug="vendor/model-20260812",
     provider_tag="provider/fp4",
+    required_quantization="fp4",
     required_parameters=frozenset({"max_tokens", "seed"}),
     required_reasoning_effort="minimal",
     required_max_completion_tokens=256,
@@ -33,10 +34,18 @@ def test_wave1_capture_routes_match_current_serving_conditions() -> None:
     assert routes["deepseek/deepseek-v4-flash"].provider_tag == "deepinfra/fp8"
     assert routes["deepseek/deepseek-v4-flash-0731"].provider_tag == "deepinfra/fp8"
     assert routes["google/gemini-3.6-flash"].provider_tag == "google-vertex/global"
+    assert routes["deepseek/deepseek-v4-flash"].required_quantization == "fp8"
+    assert routes["deepseek/deepseek-v4-flash-0731"].required_quantization == "fp8"
+    assert routes["google/gemini-3.6-flash"].required_quantization == "unknown"
+    assert routes["deepseek/deepseek-v4-flash"].required_max_completion_tokens == 4096
+    assert routes["deepseek/deepseek-v4-flash-0731"].required_max_completion_tokens == 4096
+    assert "top_k" in routes["deepseek/deepseek-v4-flash"].required_parameters
+    assert "top_k" in routes["deepseek/deepseek-v4-flash-0731"].required_parameters
+    assert routes["google/gemini-3.6-flash"].required_max_completion_tokens == 256
     assert {route.output_name for route in routes.values()} == {
-        "openrouter-deepseek-v4-flash-deepinfra-fp8.json",
-        "openrouter-deepseek-v4-flash-0731-deepinfra-fp8.json",
-        "openrouter-gemini-3.6-flash-google-vertex-global.json",
+        "openrouter-deepseek-v4-flash-deepinfra-fp8-v05.json",
+        "openrouter-deepseek-v4-flash-0731-deepinfra-fp8-v05.json",
+        "openrouter-gemini-3.6-flash-google-vertex-global-v05.json",
     }
 
 
@@ -170,11 +179,19 @@ def test_capture_preserves_internal_reasoning_price() -> None:
     assert evidence["internal_reasoning_price_usd_per_million"] == 1.5
 
 
-def test_capture_preserves_fixed_request_price() -> None:
+def test_capture_rejects_non_zero_fixed_request_price() -> None:
     payloads = capture_payloads()
     payloads["endpoints"]["data"]["endpoints"][0]["pricing"]["request"] = "0.05"
-    evidence = build_from(payloads)
-    assert evidence["request_price_usd"] == 0.05
+    with pytest.raises(ValueError, match="non-zero request price"):
+        build_from(payloads)
+
+
+def test_capture_rejects_quantization_drift() -> None:
+    payloads = capture_payloads()
+    payloads["endpoints"]["data"]["endpoints"][0]["quantization"] = "fp8"
+    payloads["zdr"]["data"][0]["quantization"] = "fp8"
+    with pytest.raises(ValueError, match="quantization drifted"):
+        build_from(payloads)
 
 
 def test_capture_rejects_reasoning_effort_domain_drift() -> None:

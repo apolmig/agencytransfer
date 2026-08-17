@@ -28,6 +28,7 @@ class RouteRequest:
     model_id: str
     canonical_slug: str
     provider_tag: str
+    required_quantization: str
     required_parameters: frozenset[str]
     required_reasoning_effort: str
     required_max_completion_tokens: int
@@ -39,32 +40,51 @@ ROUTES = (
         model_id="deepseek/deepseek-v4-flash",
         canonical_slug="deepseek/deepseek-v4-flash-20260423",
         provider_tag="deepinfra/fp8",
+        required_quantization="fp8",
         required_parameters=frozenset(
-            {"max_tokens", "reasoning", "reasoning_effort", "seed", "temperature", "top_p"}
+            {
+                "max_tokens",
+                "reasoning",
+                "reasoning_effort",
+                "seed",
+                "temperature",
+                "top_k",
+                "top_p",
+            }
         ),
         required_reasoning_effort="high",
-        required_max_completion_tokens=250,
-        output_name="openrouter-deepseek-v4-flash-deepinfra-fp8.json",
+        required_max_completion_tokens=4096,
+        output_name="openrouter-deepseek-v4-flash-deepinfra-fp8-v05.json",
     ),
     RouteRequest(
         model_id="deepseek/deepseek-v4-flash-0731",
         canonical_slug="deepseek/deepseek-v4-flash-20260731",
         provider_tag="deepinfra/fp8",
+        required_quantization="fp8",
         required_parameters=frozenset(
-            {"max_tokens", "reasoning", "reasoning_effort", "seed", "temperature", "top_p"}
+            {
+                "max_tokens",
+                "reasoning",
+                "reasoning_effort",
+                "seed",
+                "temperature",
+                "top_k",
+                "top_p",
+            }
         ),
         required_reasoning_effort="high",
-        required_max_completion_tokens=250,
-        output_name="openrouter-deepseek-v4-flash-0731-deepinfra-fp8.json",
+        required_max_completion_tokens=4096,
+        output_name="openrouter-deepseek-v4-flash-0731-deepinfra-fp8-v05.json",
     ),
     RouteRequest(
         model_id="google/gemini-3.6-flash",
         canonical_slug="google/gemini-3.6-flash-20260721",
         provider_tag="google-vertex/global",
+        required_quantization="unknown",
         required_parameters=frozenset({"max_tokens", "reasoning", "reasoning_effort", "seed"}),
         required_reasoning_effort="minimal",
         required_max_completion_tokens=256,
-        output_name="openrouter-gemini-3.6-flash-google-vertex-global.json",
+        output_name="openrouter-gemini-3.6-flash-google-vertex-global-v05.json",
     ),
 )
 
@@ -207,6 +227,8 @@ def build_evidence(
     identity_fields = ("name", "model_id", "provider_name", "tag", "quantization")
     if any(endpoint.get(field) != zdr_endpoint.get(field) for field in identity_fields):
         raise ValueError(f"endpoint and ZDR inventories disagree for {route.model_id}")
+    if endpoint.get("quantization") != route.required_quantization:
+        raise ValueError(f"selected endpoint quantization drifted for {route.model_id}")
     if endpoint.get("status") != 0 or zdr_endpoint.get("status") != 0:
         raise ValueError(f"selected endpoint is not operational for {route.model_id}")
     supported = sorted(set(endpoint.get("supported_parameters", [])))
@@ -249,6 +271,8 @@ def build_evidence(
         "input_cache_read": _per_million(pricing, "input_cache_read"),
     }
     request_price_usd = _price(pricing, "request")
+    if request_price_usd != 0:
+        raise ValueError(f"selected endpoint has a non-zero request price for {route.model_id}")
     return {
         "schema_version": "atb-model-revision-evidence-v0.1",
         "requested_model": route.model_id,
