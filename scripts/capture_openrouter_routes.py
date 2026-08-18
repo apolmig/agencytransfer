@@ -30,12 +30,12 @@ class RouteRequest:
     provider_tag: str
     required_quantization: str
     required_parameters: frozenset[str]
-    required_reasoning_effort: str
+    required_reasoning_effort: str | None
     required_max_completion_tokens: int
     output_name: str
 
 
-ROUTES = (
+DISELECT_V05_ROUTES = (
     RouteRequest(
         model_id="deepseek/deepseek-v4-flash",
         canonical_slug="deepseek/deepseek-v4-flash-20260423",
@@ -88,10 +88,90 @@ ROUTES = (
     ),
 )
 
+APE_STAGE2A_V01_ROUTES = (
+    RouteRequest(
+        model_id="deepseek/deepseek-v4-flash",
+        canonical_slug="deepseek/deepseek-v4-flash-20260423",
+        provider_tag="coreweave/fp8",
+        required_quantization="fp8",
+        required_parameters=frozenset(
+            {
+                "max_tokens",
+                "reasoning",
+                "reasoning_effort",
+                "seed",
+                "temperature",
+                "top_p",
+            }
+        ),
+        required_reasoning_effort="high",
+        required_max_completion_tokens=4096,
+        output_name="openrouter-ape-deepseek-v4-flash-coreweave-fp8-v01.json",
+    ),
+    RouteRequest(
+        model_id="deepseek/deepseek-v4-flash-0731",
+        canonical_slug="deepseek/deepseek-v4-flash-20260731",
+        provider_tag="coreweave/fp8",
+        required_quantization="fp8",
+        required_parameters=frozenset(
+            {
+                "max_tokens",
+                "reasoning",
+                "reasoning_effort",
+                "seed",
+                "temperature",
+                "top_p",
+            }
+        ),
+        required_reasoning_effort="high",
+        required_max_completion_tokens=4096,
+        output_name="openrouter-ape-deepseek-v4-flash-0731-coreweave-fp8-v01.json",
+    ),
+    RouteRequest(
+        model_id="qwen/qwen3-235b-a22b-2507",
+        canonical_slug="qwen/qwen3-235b-a22b-07-25",
+        provider_tag="parasail/fp8",
+        required_quantization="fp8",
+        required_parameters=frozenset({"max_tokens", "seed", "temperature", "top_p"}),
+        required_reasoning_effort=None,
+        required_max_completion_tokens=512,
+        output_name="openrouter-ape-persuadee-qwen3-235b-a22b-2507-parasail-fp8-v01.json",
+    ),
+    RouteRequest(
+        model_id="qwen/qwen3-235b-a22b-2507",
+        canonical_slug="qwen/qwen3-235b-a22b-07-25",
+        provider_tag="parasail/fp8",
+        required_quantization="fp8",
+        required_parameters=frozenset({"max_tokens", "seed", "temperature", "top_p"}),
+        required_reasoning_effort=None,
+        required_max_completion_tokens=256,
+        output_name="openrouter-ape-evaluator-qwen3-235b-a22b-2507-parasail-fp8-v01.json",
+    ),
+    RouteRequest(
+        model_id="qwen/qwen3-30b-a3b-instruct-2507",
+        canonical_slug="qwen/qwen3-30b-a3b-instruct-2507",
+        provider_tag="coreweave/bf16",
+        required_quantization="bf16",
+        required_parameters=frozenset({"max_tokens", "seed", "temperature", "top_p"}),
+        required_reasoning_effort=None,
+        required_max_completion_tokens=256,
+        output_name="openrouter-ape-qwen3-30b-a3b-instruct-2507-coreweave-bf16-v01.json",
+    ),
+)
+
+PROFILES = {
+    "diselect-v05": DISELECT_V05_ROUTES,
+    "ape-stage2a-v01": APE_STAGE2A_V01_ROUTES,
+}
+
+# Preserve the historical import used by the DisElect capture tests.
+ROUTES = DISELECT_V05_ROUTES
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output-dir", type=Path, required=True)
+    parser.add_argument("--profile", choices=sorted(PROFILES), default="diselect-v05")
     parser.add_argument(
         "--observed-at",
         help="UTC ISO-8601 timestamp; defaults to the capture time.",
@@ -243,7 +323,10 @@ def build_evidence(
         not isinstance(effort, str) for effort in supported_efforts
     ):
         raise ValueError(f"model has an invalid reasoning-effort inventory for {route.model_id}")
-    if route.required_reasoning_effort not in supported_efforts:
+    if (
+        route.required_reasoning_effort is not None
+        and route.required_reasoning_effort not in supported_efforts
+    ):
         raise ValueError(
             f"model does not support frozen reasoning effort {route.required_reasoning_effort}"
         )
@@ -329,9 +412,13 @@ def main() -> None:
     raw_dir.mkdir(mode=0o755)
     _write_content_addressed(raw_dir, models_raw)
     _write_content_addressed(raw_dir, zdr_raw)
-    for route in ROUTES:
-        model_raw, model = _fetch(f"model/{route.model_id}")
-        endpoints_raw, endpoints = _fetch(f"models/{route.model_id}/endpoints")
+    model_captures: dict[str, tuple[bytes, Any, bytes, Any]] = {}
+    for route in PROFILES[args.profile]:
+        if route.model_id not in model_captures:
+            model_raw, model = _fetch(f"model/{route.model_id}")
+            endpoints_raw, endpoints = _fetch(f"models/{route.model_id}/endpoints")
+            model_captures[route.model_id] = (model_raw, model, endpoints_raw, endpoints)
+        model_raw, model, endpoints_raw, endpoints = model_captures[route.model_id]
         _write_content_addressed(raw_dir, model_raw)
         _write_content_addressed(raw_dir, endpoints_raw)
         evidence = build_evidence(

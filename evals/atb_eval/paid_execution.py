@@ -584,6 +584,14 @@ def verify_fresh_openrouter_route_capture(
 
     _valid_route_observed_at(observed_at)
     expected_conditions = _expected_openrouter_route_conditions(manifest)
+    capture_profiles = {
+        "diselect": "diselect-v05",
+        "ape": "ape-stage2a-v01",
+    }
+    try:
+        capture_profile = capture_profiles[manifest.task.kind]
+    except KeyError as exc:
+        raise ValueError("no public OpenRouter route-capture profile exists for this task") from exc
     script = repo_root / "scripts/capture_openrouter_routes.py"
     with TemporaryDirectory(prefix="atb-openrouter-preflight-") as temp_dir:
         output_dir = Path(temp_dir) / "capture"
@@ -592,6 +600,8 @@ def verify_fresh_openrouter_route_capture(
                 [
                     sys.executable,
                     str(script),
+                    "--profile",
+                    capture_profile,
                     "--output-dir",
                     str(output_dir),
                     "--observed-at",
