@@ -41,7 +41,7 @@ jobs:
 
       - name: Lint evaluation code
         run: |
-          uv run --frozen ruff format --check --diff evals/atb_eval scripts/capture_openrouter_routes.py scripts/prepare_diselect.py scripts/verify_scout_canary.py tests/evals
+          uv run --frozen ruff format --check evals/atb_eval scripts/capture_openrouter_routes.py scripts/prepare_diselect.py scripts/verify_scout_canary.py tests/evals
           uv run --frozen ruff check evals/atb_eval scripts/capture_openrouter_routes.py scripts/prepare_diselect.py scripts/verify_scout_canary.py tests/evals
 
       - name: Run evaluation tests
