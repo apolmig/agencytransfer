@@ -371,6 +371,12 @@ only acceptance purpose is to verify live route binding, role events, the
 single-write paired-interlocutor cache, missingness, and billed-cost accounting
 before any 120-topic calibration is authorized.
 
+Its first controlled attempt failed before model generation because one frozen
+model id was absent from Inspect's local cost database. The redacted
+[failure record](research-notes/ape-live-canary-v0.1-pre-inference-failure.md)
+documents the evidence and the bounded corrective change; it contains no model
+output and supports no scientific claim.
+
 ## Native MASK status
 
 `inspect_evals.mask` is installed but is not yet an ATB task. Its 1,000-item

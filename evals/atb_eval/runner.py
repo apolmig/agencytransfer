@@ -23,7 +23,15 @@ from typing import Any
 
 from inspect_ai import Task, eval_set
 from inspect_ai.log import read_eval_log
-from inspect_ai.model import GenerateConfig, Model, ModelCost, get_model
+from inspect_ai.model import (
+    GenerateConfig,
+    Model,
+    ModelCost,
+    ModelInfo,
+    get_model,
+    get_model_info,
+    set_model_info,
+)
 from inspect_evals.ape.prompts import (
     ENDORSE_EVAL_STRING,
     ENDORSE_EVAL_STRING2,
@@ -260,6 +268,14 @@ def model_cost_config(manifest: ProtocolManifest) -> dict[str, ModelCost] | None
         if previous != cost:
             raise ValueError(f"conflicting Inspect pricing for {condition.model}")
     return costs or None
+
+
+def register_missing_inspect_model_costs(costs: dict[str, ModelCost] | None) -> None:
+    """Register explicit costs for frozen models absent from Inspect's process-local database."""
+
+    for model, cost in (costs or {}).items():
+        if get_model_info(model) is None:
+            set_model_info(model, ModelInfo(cost=cost))
 
 
 def expected_served_model(condition: ModelCondition) -> str:
@@ -2238,6 +2254,8 @@ def execute(
         build_model(condition, manifest.run.max_connections, manifest.run.max_retries)
         for condition in ordered_conditions
     ]
+    cost_config = model_cost_config(manifest)
+    register_missing_inspect_model_costs(cost_config)
     paired_ape_cache = bool(
         manifest.task.kind == "ape" and manifest.task.args.get("paired_interlocutor_cache") is True
     )
@@ -2274,7 +2292,7 @@ def execute(
                 fail_on_error=manifest.run.fail_on_error,
                 token_limit=manifest.run.sample_token_limit,
                 cost_limit=manifest.run.sample_cost_limit_usd or None,
-                model_cost_config=model_cost_config(manifest),
+                model_cost_config=cost_config,
                 max_samples=1,
                 max_tasks=1 if paired_ape_cache else len(models),
                 seed=manifest.run.seed,
