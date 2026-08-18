@@ -346,6 +346,13 @@ def _plain_text_request(value: Any) -> str:
     return result
 
 
+def _persisted_route_capture_dir(eval_paths: Sequence[Path]) -> Path:
+    execution_dirs = {path.parent for path in eval_paths}
+    if len(execution_dirs) != 1:
+        raise ValueError("persisted Inspect logs must share one execution directory")
+    return next(iter(execution_dirs)) / "openrouter-route-capture"
+
+
 def _validated_frame(manifest_path: Path, log_dir: Path) -> ExecutionFrame:
     repo_root = runner.repository_root()
     verify_committed_file(manifest_path, repo_root, "protocol manifest")
@@ -377,7 +384,7 @@ def _validated_frame(manifest_path: Path, log_dir: Path) -> ExecutionFrame:
     if route_receipt_sha256 is not None:
         verify_persisted_openrouter_route_capture(
             manifest,
-            log_dir / "openrouter-route-capture",
+            _persisted_route_capture_dir(eval_paths),
             manifest_sha256=manifest_sha256,
             expected_receipt_sha256=route_receipt_sha256,
         )
