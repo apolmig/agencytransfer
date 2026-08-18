@@ -223,7 +223,9 @@ def test_validated_frame_reads_route_capture_beside_nested_eval_logs(
     monkeypatch.setattr(
         packet,
         "verify_persisted_openrouter_route_capture",
-        lambda unused_manifest, route_dir, **unused: captured_route_dirs.append(route_dir),
+        lambda unused_manifest, route_dir, **unused: captured_route_dirs.append(
+            route_dir
+        ),
     )
     monkeypatch.setattr(
         packet.runner, "validate_persisted_execution", lambda *unused, **kwargs: True
@@ -231,7 +233,9 @@ def test_validated_frame_reads_route_capture_beside_nested_eval_logs(
     monkeypatch.setattr(
         packet.runner,
         "log_matches_condition",
-        lambda log, condition, unused_manifest: log.condition_id == condition.condition_id,
+        lambda log, condition, unused_manifest: (
+            log.condition_id == condition.condition_id
+        ),
     )
 
     with pytest.raises(ValueError, match="eligible validation frame"):
