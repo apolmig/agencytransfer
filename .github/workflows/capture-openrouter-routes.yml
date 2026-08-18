@@ -2,6 +2,15 @@ name: Capture OpenRouter route evidence
 
 on:
   workflow_dispatch:
+    inputs:
+      profile:
+        description: Route set to capture
+        required: true
+        type: choice
+        default: diselect-v05
+        options:
+          - diselect-v05
+          - ape-stage2a-v01
 
 permissions:
   contents: read
@@ -28,17 +37,25 @@ jobs:
       - name: Capture public route evidence
         env:
           CAPTURE_DIR: ${{ runner.temp }}/openrouter-route-evidence
+          CAPTURE_PROFILE: ${{ inputs.profile }}
         run: |
           set -euo pipefail
           test ! -e "$CAPTURE_DIR"
-          python scripts/capture_openrouter_routes.py --output-dir "$CAPTURE_DIR"
-          test "$(find "$CAPTURE_DIR" -maxdepth 1 -type f -name '*.json' | wc -l)" -eq 3
+          python scripts/capture_openrouter_routes.py \
+            --profile "$CAPTURE_PROFILE" \
+            --output-dir "$CAPTURE_DIR"
+          case "$CAPTURE_PROFILE" in
+            diselect-v05) expected=3 ;;
+            ape-stage2a-v01) expected=5 ;;
+            *) exit 1 ;;
+          esac
+          test "$(find "$CAPTURE_DIR" -maxdepth 1 -type f -name '*.json' | wc -l)" -eq "$expected"
           test -d "$CAPTURE_DIR/provider-responses"
 
       - name: Upload public route evidence
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
-          name: openrouter-route-evidence-${{ github.run_id }}
+          name: openrouter-route-evidence-${{ inputs.profile }}-${{ github.run_id }}
           path: ${{ runner.temp }}/openrouter-route-evidence
           if-no-files-found: error
           retention-days: 14

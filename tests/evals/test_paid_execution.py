@@ -442,6 +442,7 @@ def test_fresh_route_capture_must_match_frozen_projection(
     manifest, manifest_hash = manifest_and_hash()
 
     def fake_run(command: list[str], **kwargs: object) -> object:
+        assert command[command.index("--profile") + 1] == "diselect-v05"
         output_dir = Path(command[command.index("--output-dir") + 1])
         observed_at = command[command.index("--observed-at") + 1]
         write_fresh_capture(output_dir, manifest, observed_at)
@@ -474,6 +475,29 @@ def test_fresh_route_capture_must_match_frozen_projection(
     assert summary["artifact_count"] > 0
     assert summary["artifact_bytes"] > 0
     assert len(summary["artifact_inventory_sha256"]) == 64
+
+
+def test_fresh_route_capture_selects_the_ape_profile(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    manifest, manifest_hash = manifest_and_hash()
+    manifest.task.kind = "ape"
+    observed_commands: list[list[str]] = []
+
+    def fake_run(command: list[str], **kwargs: object) -> object:
+        observed_commands.append(command)
+        raise OSError("stop after command inspection")
+
+    monkeypatch.setattr("atb_eval.paid_execution.subprocess.run", fake_run)
+    with pytest.raises(ValueError, match="could not refresh"):
+        verify_fresh_openrouter_route_capture(
+            manifest,
+            REPO_ROOT,
+            observed_at="2026-08-12T12:00:00Z",
+            manifest_sha256=manifest_hash,
+        )
+
+    assert observed_commands[0][observed_commands[0].index("--profile") + 1] == ("ape-stage2a-v01")
 
 
 def persisted_route_capture(

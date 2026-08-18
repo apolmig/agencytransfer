@@ -49,6 +49,51 @@ def test_wave1_capture_routes_match_current_serving_conditions() -> None:
     }
 
 
+def test_ape_capture_profile_is_role_complete_and_versioned() -> None:
+    routes = capture_openrouter_routes.PROFILES["ape-stage2a-v01"]
+    assert len(routes) == 5
+    assert {route.model_id for route in routes} == {
+        "deepseek/deepseek-v4-flash",
+        "deepseek/deepseek-v4-flash-0731",
+        "qwen/qwen3-235b-a22b-2507",
+        "qwen/qwen3-30b-a3b-instruct-2507",
+    }
+    assert {route.provider_tag for route in routes} == {
+        "coreweave/fp8",
+        "parasail/fp8",
+        "coreweave/bf16",
+    }
+    assert all(route.output_name.startswith("openrouter-ape-") for route in routes)
+    assert all(route.output_name.endswith("-v01.json") for route in routes)
+    assert len({route.output_name for route in routes}) == len(routes)
+    assert all("temperature" in route.required_parameters for route in routes)
+
+
+def test_non_reasoning_route_does_not_require_an_effort() -> None:
+    payloads = capture_payloads()
+    payloads["models"]["data"][0]["reasoning"] = None
+    payloads["model"]["data"]["reasoning"] = None
+    route = RouteRequest(
+        **{
+            **ROUTE.__dict__,
+            "required_reasoning_effort": None,
+        }
+    )
+    evidence = build_evidence(
+        route,
+        observed_at="2026-08-12T12:00:00Z",
+        models_raw=b"models",
+        models=payloads["models"],
+        model_raw=b"model",
+        model=payloads["model"],
+        endpoints_raw=b"endpoints",
+        endpoints=payloads["endpoints"],
+        zdr_raw=b"zdr",
+        zdr=payloads["zdr"],
+    )
+    assert evidence["supported_reasoning_efforts"] == []
+
+
 def capture_payloads() -> dict[str, object]:
     model = {
         "id": ROUTE.model_id,
