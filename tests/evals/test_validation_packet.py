@@ -200,15 +200,11 @@ def test_validated_frame_reads_route_capture_beside_nested_eval_logs(
     monkeypatch.setattr(
         packet, "load_manifest_with_hash", lambda unused: (manifest, "a" * 64)
     )
-    monkeypatch.setattr(
-        packet, "_evidence_inventory", lambda unused: ((), "c" * 64)
-    )
+    monkeypatch.setattr(packet, "_evidence_inventory", lambda unused: ((), "c" * 64))
     monkeypatch.setattr(
         packet.runner, "read_postflight_log", lambda path: fake_logs[path]
     )
-    monkeypatch.setattr(
-        packet, "_consistent_log_metadata", lambda *unused: "b" * 40
-    )
+    monkeypatch.setattr(packet, "_consistent_log_metadata", lambda *unused: "b" * 40)
     monkeypatch.setattr(
         packet,
         "execution_context_from_logs",
