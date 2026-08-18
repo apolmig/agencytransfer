@@ -197,13 +197,9 @@ def test_validated_frame_reads_route_capture_beside_nested_eval_logs(
     captured_route_dirs: list[Path] = []
 
     monkeypatch.setattr(packet, "verify_committed_file", lambda *unused: None)
-    monkeypatch.setattr(
-        packet, "load_manifest_with_hash", lambda unused: (manifest, "a" * 64)
-    )
+    monkeypatch.setattr(packet, "load_manifest_with_hash", lambda unused: (manifest, "a" * 64))
     monkeypatch.setattr(packet, "_evidence_inventory", lambda unused: ((), "c" * 64))
-    monkeypatch.setattr(
-        packet.runner, "read_postflight_log", lambda path: fake_logs[path]
-    )
+    monkeypatch.setattr(packet.runner, "read_postflight_log", lambda path: fake_logs[path])
     monkeypatch.setattr(packet, "_consistent_log_metadata", lambda *unused: "b" * 40)
     monkeypatch.setattr(
         packet,
@@ -219,9 +215,7 @@ def test_validated_frame_reads_route_capture_beside_nested_eval_logs(
     monkeypatch.setattr(
         packet,
         "verify_persisted_openrouter_route_capture",
-        lambda unused_manifest, route_dir, **unused: captured_route_dirs.append(
-            route_dir
-        ),
+        lambda unused_manifest, route_dir, **unused: captured_route_dirs.append(route_dir),
     )
     monkeypatch.setattr(
         packet.runner, "validate_persisted_execution", lambda *unused, **kwargs: True
@@ -229,14 +223,10 @@ def test_validated_frame_reads_route_capture_beside_nested_eval_logs(
     monkeypatch.setattr(
         packet.runner,
         "log_matches_condition",
-        lambda log, condition, unused_manifest: (
-            log.condition_id == condition.condition_id
-        ),
+        lambda log, condition, unused_manifest: log.condition_id == condition.condition_id,
     )
 
     with pytest.raises(ValueError, match="eligible validation frame"):
-        packet._validated_frame(
-            REPO_ROOT / "evals/manifests/diselect-wave1a-v0.3.json", log_root
-        )
+        packet._validated_frame(REPO_ROOT / "evals/manifests/diselect-wave1a-v0.3.json", log_root)
 
     assert captured_route_dirs == [execution_dir / "openrouter-route-capture"]
