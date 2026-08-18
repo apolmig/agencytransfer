@@ -147,3 +147,22 @@ def test_packet_cli_failure_does_not_render_sensitive_exception(
     assert captured.out == ""
     assert captured.err == "validation packet generation failed safely\n"
     assert "sensitive" not in captured.err
+
+def test_persisted_route_capture_follows_the_eval_execution_directory(tmp_path: Path) -> None:
+    log_root = tmp_path / "logs"
+    execution_dir = log_root / "execution-123"
+    eval_paths = [execution_dir / "first.eval", execution_dir / "second.eval"]
+
+    assert packet._persisted_route_capture_dir(eval_paths) == (
+        execution_dir / "openrouter-route-capture"
+    )
+
+
+def test_persisted_route_capture_rejects_mixed_execution_directories(tmp_path: Path) -> None:
+    with pytest.raises(ValueError, match="share one execution directory"):
+        packet._persisted_route_capture_dir(
+            [
+                tmp_path / "run-a" / "first.eval",
+                tmp_path / "run-b" / "second.eval",
+            ]
+        )
