@@ -3,6 +3,8 @@ from __future__ import annotations
 import asyncio
 import json
 import os
+import subprocess
+import sys
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -39,6 +41,7 @@ from atb_eval.runner import (
     read_postflight_log,
     recorded_execution_usage_within_envelope,
     recorded_openrouter_billed_costs,
+    register_missing_inspect_model_costs,
     repository_root,
     request_parameters_match,
     run_fingerprint,
@@ -57,6 +60,7 @@ from inspect_ai.model import (
     ContentReasoning,
     ContentText,
     GenerateConfig,
+    ModelCost,
     ModelOutput,
     get_model,
 )
@@ -1567,18 +1571,32 @@ def test_ape_execute_scopes_restores_and_cleans_interlocutor_cache(
     monkeypatch.setenv("INSPECT_CACHE_DIR", old_cache)
     monkeypatch.setenv("ATB_APE_INTERLOCUTOR_CACHE_SCOPE", old_scope)
     observed_cache: Path | None = None
+    cost_config = {
+        "openrouter/fixture/model": ModelCost(
+            input=1.0,
+            output=2.0,
+            input_cache_write=0.0,
+            input_cache_read=0.0,
+        )
+    }
+    registered_costs: list[dict[str, ModelCost] | None] = []
 
     def fake_eval_set(**kwargs: object) -> tuple[bool, list[object]]:
         nonlocal observed_cache
         observed_cache = Path(str(os.environ["INSPECT_CACHE_DIR"]))
         assert os.environ["ATB_APE_INTERLOCUTOR_CACHE_SCOPE"] == "1" * 32
         assert kwargs["max_tasks"] == 1
+        assert kwargs["model_cost_config"] == cost_config
         assert kwargs["metadata"]["atb_schedule"] == APE_PAIRED_SCHEDULE  # type: ignore[index]
         return False, []
 
     monkeypatch.setattr("atb_eval.runner.build_model", lambda *_args: object())
     monkeypatch.setattr("atb_eval.runner.runtime_package_versions", lambda *_args: {})
-    monkeypatch.setattr("atb_eval.runner.model_cost_config", lambda *_args: None)
+    monkeypatch.setattr("atb_eval.runner.model_cost_config", lambda *_args: cost_config)
+    monkeypatch.setattr(
+        "atb_eval.runner.register_missing_inspect_model_costs",
+        lambda costs: registered_costs.append(costs),
+    )
     monkeypatch.setattr("atb_eval.runner.eval_set", fake_eval_set)
     monkeypatch.setattr(
         "atb_eval.runner.recorded_execution_usage_within_envelope",
@@ -1597,6 +1615,7 @@ def test_ape_execute_scopes_restores_and_cleans_interlocutor_cache(
         execution_id="1" * 32,
     )
     assert result is False
+    assert registered_costs == [cost_config]
     assert observed_cache is not None and not observed_cache.exists()
     assert os.environ["INSPECT_CACHE_DIR"] == old_cache
     assert os.environ["ATB_APE_INTERLOCUTOR_CACHE_SCOPE"] == old_scope
@@ -1809,6 +1828,95 @@ def test_model_cost_config_is_explicit_and_consistent() -> None:
     payload["model_roles"]["grader"]["pricing"]["output"] = 9.0
     with pytest.raises(ValidationError, match="identical Inspect pricing"):
         ProtocolManifest.model_validate(payload)
+
+
+def test_missing_inspect_model_costs_are_registered_without_overwriting_known_models(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    known_cost = ModelCost(input=1.0, output=2.0, input_cache_write=0.0, input_cache_read=0.0)
+    missing_cost = ModelCost(input=3.0, output=4.0, input_cache_write=0.0, input_cache_read=0.5)
+    registered: list[tuple[str, object]] = []
+
+    monkeypatch.setattr(
+        "atb_eval.runner.get_model_info",
+        lambda model: object() if model == "openrouter/known/model" else None,
+    )
+    monkeypatch.setattr(
+        "atb_eval.runner.set_model_info",
+        lambda model, info: registered.append((model, info)),
+    )
+
+    register_missing_inspect_model_costs(
+        {
+            "openrouter/known/model": known_cost,
+            "openrouter/missing/model": missing_cost,
+        }
+    )
+
+    assert len(registered) == 1
+    assert registered[0][0] == "openrouter/missing/model"
+    assert registered[0][1].cost == missing_cost
+
+
+def test_ape_live_canary_costs_load_in_a_fresh_inspect_process(tmp_path: Path) -> None:
+    script = """
+from pathlib import Path
+import sys
+
+from atb_eval.manifest import load_manifest
+from atb_eval.runner import build_model, model_cost_config, register_missing_inspect_model_costs
+from inspect_ai.model import get_model_info, set_model_cost
+
+manifest = load_manifest(Path(sys.argv[1]))
+costs = model_cost_config(manifest)
+assert costs is not None
+conditions = [*manifest.models, *manifest.model_roles.values()]
+models = [
+    build_model(condition, manifest.run.max_connections, manifest.run.max_retries)
+    for condition in conditions
+]
+missing = {model for model in costs if get_model_info(model) is None}
+assert "openrouter/qwen/qwen3-235b-a22b-2507" in missing
+register_missing_inspect_model_costs(costs)
+for model, cost in costs.items():
+    set_model_cost(model, cost)
+    info = get_model_info(model)
+    assert info is not None and info.cost == cost
+for condition, model in zip(conditions, models, strict=True):
+    info = get_model_info(model)
+    assert info is not None and info.cost == costs[condition.model]
+"""
+    env = os.environ.copy()
+    env["PYTHONPATH"] = str(REPO_ROOT / "evals")
+    env["OPENROUTER_API_KEY"] = "offline-test-only"
+    env["XDG_CACHE_HOME"] = str(tmp_path / "cache")
+    env["XDG_CONFIG_HOME"] = str(tmp_path / "config")
+    env["XDG_DATA_HOME"] = str(tmp_path / "data")
+    proxy_variables = (
+        "ALL_PROXY",
+        "HTTPS_PROXY",
+        "HTTP_PROXY",
+        "all_proxy",
+        "https_proxy",
+        "http_proxy",
+    )
+    for name in proxy_variables:
+        env.pop(name, None)
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-c",
+            script,
+            str(REPO_ROOT / "evals/manifests/ape-live-canary-v0.1.json"),
+        ],
+        cwd=REPO_ROOT,
+        env=env,
+        capture_output=True,
+        text=True,
+        check=False,
+        timeout=30,
+    )
+    assert result.returncode == 0, result.stderr
 
 
 def _score_contract_sample(
