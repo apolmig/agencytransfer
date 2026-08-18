@@ -166,3 +166,71 @@ def test_persisted_route_capture_rejects_mixed_execution_directories(tmp_path: P
                 tmp_path / "run-b" / "second.eval",
             ]
         )
+
+def test_validated_frame_reads_route_capture_beside_nested_eval_logs(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    manifest = _frame().manifest
+    log_root = tmp_path / "logs"
+    execution_dir = log_root / "execution-123"
+    execution_dir.mkdir(parents=True)
+    eval_paths = [execution_dir / "first.eval", execution_dir / "second.eval"]
+    for path in eval_paths:
+        path.write_bytes(b"persisted-eval")
+
+    class FakeLog:
+        def __init__(self, condition_id: str) -> None:
+            self.condition_id = condition_id
+            self.samples: list[object] = []
+
+    condition_ids = [condition.condition_id for condition in manifest.models]
+    fake_logs = {
+        eval_paths[0]: FakeLog(condition_ids[0]),
+        eval_paths[1]: FakeLog(condition_ids[1]),
+    }
+    captured_route_dirs: list[Path] = []
+
+    monkeypatch.setattr(packet, "verify_committed_file", lambda *unused: None)
+    monkeypatch.setattr(
+        packet, "load_manifest_with_hash", lambda unused: (manifest, "a" * 64)
+    )
+    monkeypatch.setattr(
+        packet, "_evidence_inventory", lambda unused: ((), "c" * 64)
+    )
+    monkeypatch.setattr(
+        packet.runner, "read_postflight_log", lambda path: fake_logs[path]
+    )
+    monkeypatch.setattr(
+        packet, "_consistent_log_metadata", lambda *unused: "b" * 40
+    )
+    monkeypatch.setattr(
+        packet,
+        "execution_context_from_logs",
+        lambda *unused: {
+            "openrouter_route_receipt_sha256": "d" * 64,
+            "code_commit": "b" * 40,
+            "code_dirty": False,
+            "environment_lock_sha256": "e" * 64,
+            "execution_id": "1" * 32,
+        },
+    )
+    monkeypatch.setattr(
+        packet,
+        "verify_persisted_openrouter_route_capture",
+        lambda unused_manifest, route_dir, **unused: captured_route_dirs.append(route_dir),
+    )
+    monkeypatch.setattr(
+        packet.runner, "validate_persisted_execution", lambda *unused, **kwargs: True
+    )
+    monkeypatch.setattr(
+        packet.runner,
+        "log_matches_condition",
+        lambda log, condition, unused_manifest: log.condition_id == condition.condition_id,
+    )
+
+    with pytest.raises(ValueError, match="eligible validation frame"):
+        packet._validated_frame(
+            REPO_ROOT / "evals/manifests/diselect-wave1a-v0.3.json", log_root
+        )
+
+    assert captured_route_dirs == [execution_dir / "openrouter-route-capture"]
