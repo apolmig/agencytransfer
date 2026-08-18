@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import json
 import sys
 from importlib.util import module_from_spec, spec_from_file_location
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
@@ -92,6 +94,71 @@ def test_non_reasoning_route_does_not_require_an_effort() -> None:
         zdr=payloads["zdr"],
     )
     assert evidence["supported_reasoning_efforts"] == []
+
+
+def test_ape_profile_fetches_four_unique_models_and_writes_five_conditions(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    routes = capture_openrouter_routes.PROFILES["ape-stage2a-v01"]
+    unique_routes = {route.model_id: route for route in routes}
+    models: dict[str, dict[str, object]] = {}
+    endpoints: dict[str, dict[str, object]] = {}
+    for route in unique_routes.values():
+        efforts = (
+            [] if route.required_reasoning_effort is None else [route.required_reasoning_effort]
+        )
+        models[route.model_id] = {
+            "id": route.model_id,
+            "canonical_slug": route.canonical_slug,
+            "reasoning": None if not efforts else {"supported_efforts": efforts},
+        }
+        endpoints[route.model_id] = {
+            "name": f"Provider | {route.canonical_slug}",
+            "model_id": route.model_id,
+            "provider_name": "Provider",
+            "tag": route.provider_tag,
+            "quantization": route.required_quantization,
+            "status": 0,
+            "supported_parameters": sorted(route.required_parameters),
+            "pricing": {"prompt": "0.000001", "completion": "0.000002"},
+            "context_length": 131072,
+            "max_completion_tokens": 131072,
+        }
+
+    requested_paths: list[str] = []
+
+    def fake_fetch(path: str) -> tuple[bytes, dict[str, object]]:
+        requested_paths.append(path)
+        if path == "models":
+            payload: dict[str, object] = {"data": list(models.values())}
+        elif path == "endpoints/zdr":
+            payload = {"data": list(endpoints.values())}
+        elif path.startswith("model/"):
+            payload = {"data": models[path.removeprefix("model/")]}
+        else:
+            model_id = path.removeprefix("models/").removesuffix("/endpoints")
+            payload = {"data": {"id": model_id, "endpoints": [endpoints[model_id]]}}
+        return json.dumps(payload).encode(), payload
+
+    output_dir = tmp_path / "capture"
+    monkeypatch.setattr(
+        capture_openrouter_routes,
+        "parse_args",
+        lambda: SimpleNamespace(
+            output_dir=output_dir,
+            observed_at="2026-08-18T00:00:00Z",
+            profile="ape-stage2a-v01",
+        ),
+    )
+    monkeypatch.setattr(capture_openrouter_routes, "_fetch", fake_fetch)
+
+    capture_openrouter_routes.main()
+
+    assert requested_paths.count("models") == 1
+    assert requested_paths.count("endpoints/zdr") == 1
+    assert len([path for path in requested_paths if path.startswith("model/")]) == 4
+    assert len([path for path in requested_paths if path.endswith("/endpoints")]) == 4
+    assert len(list(output_dir.glob("openrouter-ape-*.json"))) == 5
 
 
 def capture_payloads() -> dict[str, object]:

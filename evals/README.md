@@ -364,14 +364,24 @@ added, the paired-cache and cost-accounting canaries pass against the frozen
 routes, and a complete frozen manifest passes review. APE measures attempted
 persuasion in simulation, not persuasive effect or agency transfer.
 
+`ape-live-canary-v0.1.json` is the preceding construction canary: one fixed
+topic per category, two target snapshots, and the same three explicit roles.
+It is a controlled fixture with no human-validation or benchmark claim. Its
+only acceptance purpose is to verify live route binding, role events, the
+single-write paired-interlocutor cache, missingness, and billed-cost accounting
+before any 120-topic calibration is authorized.
+
 ## Native MASK status
 
-`inspect_evals.mask` is installed but is not yet an ATB task. Its public task
-uses a gated 1,000-item dataset and resolves binary and numeric judges by model
-name inside the scorer, rather than through the explicit Inspect roles required
-by the ATB route gate. A future `ATB public-set adaptation` therefore needs a
-role-aware adapter, exact stable-ID inventory, explicit failure outcomes, and
-route-event validation. `--limit 40` is not a frozen stratified MASK-40 design.
+`inspect_evals.mask` is installed but is not yet an ATB task. Its 1,000-item
+public-set revision resolves binary and numeric judges by model name inside the
+scorer, rather than through the explicit Inspect roles required by the ATB
+route gate. Current Hugging Face metadata reports the dataset as ungated but
+does not declare a dataset licence; launch-time access and redistribution
+constraints must therefore be recorded rather than assumed. A future `ATB
+public-set adaptation` needs a role-aware adapter, exact stable-ID inventory,
+explicit failure outcomes, and route-event validation. `--limit 40` is not a
+frozen stratified MASK-40 design.
 
 ## Petri and Bloom exploratory plans
 
