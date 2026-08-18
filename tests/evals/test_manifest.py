@@ -1357,6 +1357,26 @@ def _frozen_diselect_payload() -> dict:
     return payload
 
 
+def test_openrouter_snapshot_id_remains_immutable_with_provider_canonical_format() -> None:
+    condition = _openrouter_condition("qwen-snapshot", max_tokens=256)
+    model_id = "qwen/qwen3-235b-a22b-2507"
+    condition["model"] = f"openrouter/{model_id}"
+    condition["revision"].update(
+        {
+            "resolved_model": model_id,
+            "canonical_slug": "qwen/qwen3-235b-a22b-07-25",
+            "inventory_model_id": model_id,
+            "endpoint_model_id": model_id,
+            "source_url": f"https://openrouter.ai/api/v1/models/{model_id}/endpoints",
+            "model_source_url": f"https://openrouter.ai/api/v1/model/{model_id}",
+        }
+    )
+
+    parsed = ModelCondition.model_validate(condition)
+    assert parsed.revision is not None
+    assert parsed.revision.canonical_slug == "qwen/qwen3-235b-a22b-07-25"
+
+
 def test_same_model_sensitivity_conditions_keep_distinct_identities() -> None:
     payload = json.loads(
         (REPO_ROOT / "evals/manifests/diselect-wave1a-v0.1.json").read_text(encoding="utf-8")
@@ -1445,6 +1465,68 @@ def test_ape_frozen_validation_contract_is_binary_paired_and_nonpublic() -> None
     assert manifest.validation.validation_projection == "attempt_vs_rest"
     assert manifest.validation.cluster_key == "sample_id"
     assert manifest.release.public_aggregate_candidate is False
+
+
+def test_ape_fixture_canary_is_nonpublic_and_makes_no_human_validation_claim() -> None:
+    payload = _frozen_ape_payload()
+    payload["dataset"]["split"] = "fixture"
+    payload["task"]["args"]["samples_per_category"] = 1
+    payload["run"]["expected_samples_per_model"] = len(payload["task"]["args"]["categories"])
+    payload["validation"] = {
+        "human_validation_required": False,
+        "double_coded_n": 0,
+        "probability_sample_seed": None,
+        "probability_strata": [],
+        "codebook_version": None,
+        "validation_projection": None,
+        "macro_f1_min": None,
+        "critical_class": None,
+        "critical_f1_min": None,
+        "maximum_unexplained_failure_rate": 0.05,
+        "minimum_usable_rate_per_row": 0.95,
+        "cluster_key": None,
+    }
+
+    manifest = ProtocolManifest.model_validate(payload)
+    assert manifest.dataset.split == "fixture"
+    assert manifest.validation.human_validation_required is False
+    assert manifest.release.public_aggregate_candidate is False
+
+
+def test_ape_fixture_canary_rejects_a_validation_or_sampling_claim() -> None:
+    payload = _frozen_ape_payload()
+    payload["dataset"]["split"] = "fixture"
+    payload["task"]["args"]["samples_per_category"] = 1
+    payload["run"]["expected_samples_per_model"] = len(payload["task"]["args"]["categories"])
+    payload["validation"]["human_validation_required"] = False
+    payload["validation"]["double_coded_n"] = 0
+    payload["validation"]["probability_sample_seed"] = None
+    payload["validation"]["probability_strata"] = []
+    payload["validation"]["codebook_version"] = None
+    payload["validation"]["validation_projection"] = None
+    payload["validation"]["macro_f1_min"] = None
+    payload["validation"]["critical_class"] = None
+    payload["validation"]["critical_f1_min"] = None
+    payload["validation"]["cluster_key"] = None
+    payload["release"]["public_aggregate_candidate"] = True
+
+    with pytest.raises(ValidationError, match="fixture canaries"):
+        ProtocolManifest.model_validate(payload)
+
+
+def test_ape_live_canary_manifest_is_a_six_topic_controlled_fixture() -> None:
+    manifest = load_manifest(REPO_ROOT / "evals/manifests/ape-live-canary-v0.1.json")
+    conditions = [*manifest.models, *manifest.model_roles.values()]
+
+    assert manifest.status is ProtocolStatus.FROZEN
+    assert manifest.dataset.split == "fixture"
+    assert manifest.run.expected_samples_per_model == 6
+    assert manifest.run.planned_run_cost_envelope_usd == 0.10
+    assert manifest.run.provider_key_limit_usd == 1.0
+    assert manifest.validation.human_validation_required is False
+    assert manifest.release.public_aggregate_candidate is False
+    assert len(conditions) == 5
+    assert len({condition.revision.evidence_path for condition in conditions}) == 5
 
 
 @pytest.mark.parametrize(

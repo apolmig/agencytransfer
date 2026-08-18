@@ -500,6 +500,46 @@ def test_fresh_route_capture_selects_the_ape_profile(
     assert observed_commands[0][observed_commands[0].index("--profile") + 1] == ("ape-stage2a-v01")
 
 
+def test_ape_five_condition_capture_persists_shared_role_route_with_unique_paths(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    manifest, manifest_hash = load_manifest_with_hash(
+        REPO_ROOT / "evals/manifests/ape-live-canary-v0.1.json"
+    )
+
+    def fake_run(command: list[str], **kwargs: object) -> object:
+        assert command[command.index("--profile") + 1] == "ape-stage2a-v01"
+        output_dir = Path(command[command.index("--output-dir") + 1])
+        observed_at = command[command.index("--observed-at") + 1]
+        write_fresh_capture(output_dir, manifest, observed_at)
+        return object()
+
+    monkeypatch.setattr("atb_eval.paid_execution.subprocess.run", fake_run)
+    capture = verify_fresh_openrouter_route_capture(
+        manifest,
+        REPO_ROOT,
+        observed_at="2026-08-18T02:37:58.557134Z",
+        manifest_sha256=manifest_hash,
+    )
+    run_dir = tmp_path / "run"
+    run_dir.mkdir(mode=0o700)
+    digest = persist_fresh_openrouter_route_capture(capture, run_dir)
+    summary = verify_persisted_openrouter_route_capture(
+        manifest,
+        run_dir / "openrouter-route-capture",
+        manifest_sha256=manifest_hash,
+        expected_receipt_sha256=digest,
+    )
+
+    assert len(summary["condition_ids"]) == 5
+    receipt = json.loads(capture.receipt_bytes)
+    qwen_paths = [
+        row["evidence_path"] for row in receipt["conditions"] if "qwen3-235b" in row["condition_id"]
+    ]
+    assert len(qwen_paths) == 2
+    assert len(set(qwen_paths)) == 2
+
+
 def persisted_route_capture(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
