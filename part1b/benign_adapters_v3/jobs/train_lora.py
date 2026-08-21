@@ -62,7 +62,7 @@ AUTHORIZATION_PUBLIC_KEY_SPKI_DER_B64 = (
 AUTHORIZATION_PUBLIC_KEY_SPKI_DER_SHA256 = (
     "09f6fe3693f80663d6cb603eb8acf6d74a18a52cf2f157775217a131a5ae0ecb"
 )
-EXPECTED_PROTOCOL_SHA256 = "3df48345bdabd3bed9d4d85c8c78e5333d27af3343063877e4de5d9551ebb488"
+EXPECTED_PROTOCOL_SHA256 = "f0d11fffa0b170c54315a7f713d683fb7e62d76f170aa104e76abac713a450e8"
 EXPECTED_RUNTIME_VERSIONS = {
     "accelerate": "1.14.0",
     "bitsandbytes": "0.49.2",
@@ -109,6 +109,14 @@ MODEL_ARTIFACT_MAX_BYTES = {
 }
 MAX_EVIDENCE_FILE_BYTES = 64 * 1024 * 1024
 MAX_ARTIFACT_UPLOAD_BYTES = 320 * 1024 * 1024
+MAX_SAFETENSORS_HEADER_BYTES = 2 * 1024 * 1024
+QWEN3_HIDDEN_SIZE = 4096
+QWEN3_KV_SIZE = 1024
+QWEN3_INTERMEDIATE_SIZE = 12288
+QWEN3_NUM_HIDDEN_LAYERS = 36
+LORA_RANK = 16
+EXPECTED_LORA_TENSOR_COUNT = QWEN3_NUM_HIDDEN_LAYERS * 7 * 2
+EXPECTED_LORA_DATA_BYTES = 174_587_904
 FORBIDDEN_SERIALIZED_ARTIFACT_SUFFIXES = (
     ".bin",
     ".ckpt",
@@ -899,11 +907,131 @@ def inventory(root: Path, excluded: set[str] | None = None) -> dict[str, dict[st
     return result
 
 
+def expected_qwen3_lora_tensor_specs() -> dict[str, tuple[str, tuple[int, ...]]]:
+    module_dimensions = {
+        "self_attn.q_proj": (QWEN3_HIDDEN_SIZE, QWEN3_HIDDEN_SIZE),
+        "self_attn.k_proj": (QWEN3_HIDDEN_SIZE, QWEN3_KV_SIZE),
+        "self_attn.v_proj": (QWEN3_HIDDEN_SIZE, QWEN3_KV_SIZE),
+        "self_attn.o_proj": (QWEN3_HIDDEN_SIZE, QWEN3_HIDDEN_SIZE),
+        "mlp.gate_proj": (QWEN3_HIDDEN_SIZE, QWEN3_INTERMEDIATE_SIZE),
+        "mlp.up_proj": (QWEN3_HIDDEN_SIZE, QWEN3_INTERMEDIATE_SIZE),
+        "mlp.down_proj": (QWEN3_INTERMEDIATE_SIZE, QWEN3_HIDDEN_SIZE),
+    }
+    specs: dict[str, tuple[str, tuple[int, ...]]] = {}
+    for layer in range(QWEN3_NUM_HIDDEN_LAYERS):
+        for module, (input_size, output_size) in module_dimensions.items():
+            prefix = f"base_model.model.model.layers.{layer}.{module}"
+            specs[f"{prefix}.lora_A.weight"] = ("F32", (LORA_RANK, input_size))
+            specs[f"{prefix}.lora_B.weight"] = ("F32", (output_size, LORA_RANK))
+    return specs
+
+
+def _strict_json_object(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+    result: dict[str, Any] = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError(f"duplicate JSON key: {key}")
+        result[key] = value
+    return result
+
+
+def validate_lora_safetensors_manifest(
+    path: Path,
+    *,
+    expected_specs: dict[str, tuple[str, tuple[int, ...]]] | None = None,
+) -> dict[str, int | str]:
+    """Validate the safetensors header without allocating or loading tensor data."""
+
+    production_contract = expected_specs is None
+    expected_specs = expected_specs or expected_qwen3_lora_tensor_specs()
+    try:
+        file_size = path.stat().st_size
+        with path.open("rb") as handle:
+            length_bytes = handle.read(8)
+            if len(length_bytes) != 8:
+                raise RuntimeError("adapter safetensors header length is missing")
+            header_length = int.from_bytes(length_bytes, "little", signed=False)
+            if not 2 <= header_length <= MAX_SAFETENSORS_HEADER_BYTES:
+                raise RuntimeError("adapter safetensors header length is invalid")
+            header_bytes = handle.read(header_length)
+            if len(header_bytes) != header_length:
+                raise RuntimeError("adapter safetensors header is truncated")
+    except OSError as error:
+        raise RuntimeError("adapter safetensors could not be read") from error
+
+    try:
+        manifest = json.loads(
+            header_bytes.decode("utf-8"),
+            object_pairs_hook=_strict_json_object,
+            parse_constant=lambda value: (_ for _ in ()).throw(
+                ValueError(f"non-finite JSON constant: {value}")
+            ),
+        )
+    except (UnicodeDecodeError, json.JSONDecodeError, ValueError) as error:
+        raise RuntimeError("adapter safetensors header is not strict JSON") from error
+    if not isinstance(manifest, dict):
+        raise RuntimeError("adapter safetensors header must be an object")
+    metadata = manifest.pop("__metadata__", None)
+    if metadata != {"format": "pt"}:
+        raise RuntimeError("adapter safetensors metadata mismatch")
+    if set(manifest) != set(expected_specs):
+        raise RuntimeError("adapter safetensors tensor-key manifest mismatch")
+
+    spans: list[tuple[int, int, str]] = []
+    dtype_widths = {"F32": 4}
+    for name, (expected_dtype, expected_shape) in expected_specs.items():
+        descriptor = manifest[name]
+        if not isinstance(descriptor, dict) or set(descriptor) != {
+            "dtype",
+            "shape",
+            "data_offsets",
+        }:
+            raise RuntimeError(f"adapter tensor descriptor mismatch: {name}")
+        dtype = descriptor["dtype"]
+        shape = descriptor["shape"]
+        offsets = descriptor["data_offsets"]
+        if dtype != expected_dtype or dtype not in dtype_widths:
+            raise RuntimeError(f"adapter tensor dtype mismatch: {name}")
+        if shape != list(expected_shape):
+            raise RuntimeError(f"adapter tensor shape mismatch: {name}")
+        if (
+            not isinstance(offsets, list)
+            or len(offsets) != 2
+            or any(isinstance(value, bool) or not isinstance(value, int) for value in offsets)
+            or offsets[0] < 0
+            or offsets[1] <= offsets[0]
+        ):
+            raise RuntimeError(f"adapter tensor offsets invalid: {name}")
+        elements = math.prod(expected_shape)
+        if offsets[1] - offsets[0] != elements * dtype_widths[dtype]:
+            raise RuntimeError(f"adapter tensor byte length mismatch: {name}")
+        spans.append((offsets[0], offsets[1], name))
+
+    cursor = 0
+    for start, end, name in sorted(spans):
+        if start != cursor:
+            raise RuntimeError(f"adapter tensor offsets are not contiguous: {name}")
+        cursor = end
+    if file_size != 8 + header_length + cursor:
+        raise RuntimeError("adapter safetensors file length mismatch")
+    if production_contract:
+        if len(expected_specs) != EXPECTED_LORA_TENSOR_COUNT:
+            raise RuntimeError("internal LoRA tensor-count contract mismatch")
+        if cursor != EXPECTED_LORA_DATA_BYTES:
+            raise RuntimeError("internal LoRA data-size contract mismatch")
+    return {
+        "tensor_count": len(expected_specs),
+        "data_bytes": cursor,
+        "dtype": "F32",
+    }
+
+
 def validate_lora_only_artifacts(
     artifact_root: Path,
     evidence_root: Path,
     *,
     expected_base_model_id: str,
+    expected_base_model_revision: str,
 ) -> dict[str, dict[str, Any]]:
     """Require an exact, bounded, safe-serialization LoRA model payload.
 
@@ -981,6 +1109,8 @@ def validate_lora_only_artifacts(
     }
     if adapter_config.get("base_model_name_or_path") != expected_base_model_id:
         raise RuntimeError("adapter config base-model mismatch")
+    if adapter_config.get("revision") != expected_base_model_revision:
+        raise RuntimeError("adapter config base-model revision mismatch")
     if adapter_config.get("peft_type") != "LORA":
         raise RuntimeError("adapter config PEFT type mismatch")
     if adapter_config.get("task_type") != "CAUSAL_LM":
@@ -989,9 +1119,36 @@ def validate_lora_only_artifacts(
         raise RuntimeError("adapter config LoRA rank/alpha mismatch")
     if adapter_config.get("bias") != "none":
         raise RuntimeError("adapter config bias mismatch")
+    required_config_values = {
+        "inference_mode": True,
+        "init_lora_weights": True,
+        "lora_dropout": 0.05,
+        "fan_in_fan_out": False,
+        "use_rslora": False,
+        "use_dora": False,
+        "use_qalora": False,
+        "lora_bias": False,
+    }
+    for field, expected_value in required_config_values.items():
+        if adapter_config.get(field) != expected_value:
+            raise RuntimeError(f"adapter config field mismatch: {field}")
+    for field in (
+        "modules_to_save",
+        "trainable_token_indices",
+        "target_parameters",
+        "layers_to_transform",
+        "layer_replication",
+        "exclude_modules",
+    ):
+        if adapter_config.get(field) is not None:
+            raise RuntimeError(f"adapter config unsupported field is set: {field}")
+    for field in ("rank_pattern", "alpha_pattern", "loftq_config"):
+        if adapter_config.get(field) != {}:
+            raise RuntimeError(f"adapter config pattern field is not empty: {field}")
     target_modules = adapter_config.get("target_modules")
     if not isinstance(target_modules, list) or set(target_modules) != expected_target_modules:
         raise RuntimeError("adapter config target-module mismatch")
+    validate_lora_safetensors_manifest(artifact_root / "adapter_model.safetensors")
     return observed
 
 
@@ -1083,6 +1240,8 @@ tags:
 # ERA Part 1B {adapter}
 
 Run `{run_id}` is a `{phase}` QLoRA adapter for {purpose}.
+It requires base model and tokenizer `{model['id']}` at immutable revision
+`{model['revision']}`.
 
 It is not trained for political persuasion, targeting, live surveillance, private-person
 research, or refusal removal. A completed training receipt is technical evidence only;
@@ -1882,6 +2041,7 @@ def run_training(args: argparse.Namespace) -> int:
         lora_dropout=0.05,
         bias="none",
         task_type="CAUSAL_LM",
+        revision=model_contract["revision"],
         target_modules=[
             "q_proj",
             "k_proj",
@@ -1953,6 +2113,7 @@ def run_training(args: argparse.Namespace) -> int:
         artifact_root,
         evidence_root,
         expected_base_model_id=model_contract["id"],
+        expected_base_model_revision=model_contract["revision"],
     )
 
     canary_prompt = (
@@ -2005,6 +2166,7 @@ def run_training(args: argparse.Namespace) -> int:
         artifact_root,
         evidence_root,
         expected_base_model_id=model_contract["id"],
+        expected_base_model_revision=model_contract["revision"],
     )
     pre_receipt_inventory = inventory(
         artifact_root, excluded={receipt_relative, terminal_relative}

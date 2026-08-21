@@ -7,6 +7,7 @@ import datetime as dt
 import hashlib
 import importlib.util
 import json
+import math
 import os
 import sys
 import tempfile
@@ -515,6 +516,28 @@ class PersistenceAndMLContractTest(unittest.TestCase):
             MODULE.MODEL_ARTIFACT_MAX_BYTES["adapter_model.safetensors"],
         )
         self.assertEqual(
+            protocol["private_hub_persistence"][
+                "adapter_safetensors_expected_tensor_count"
+            ],
+            MODULE.EXPECTED_LORA_TENSOR_COUNT,
+        )
+        self.assertEqual(
+            protocol["private_hub_persistence"][
+                "adapter_safetensors_expected_dtype"
+            ],
+            "F32",
+        )
+        self.assertTrue(
+            protocol["private_hub_persistence"][
+                "adapter_safetensors_exact_qwen3_lora_manifest"
+            ]
+        )
+        self.assertTrue(
+            protocol["private_hub_persistence"][
+                "adapter_config_requires_base_model_revision"
+            ]
+        )
+        self.assertEqual(
             protocol["private_hub_persistence"]["total_artifact_upload_max_bytes"],
             MODULE.MAX_ARTIFACT_UPLOAD_BYTES,
         )
@@ -600,11 +623,29 @@ class PersistenceAndMLContractTest(unittest.TestCase):
     def test_lora_artifact_allowlist_rejects_pickles_full_weights_and_oversize(self) -> None:
         adapter_config = {
             "base_model_name_or_path": MODULE.MODELS["production"]["id"],
+            "revision": MODULE.MODELS["production"]["revision"],
             "peft_type": "LORA",
             "task_type": "CAUSAL_LM",
             "r": 16,
             "lora_alpha": 32,
+            "lora_dropout": 0.05,
             "bias": "none",
+            "inference_mode": True,
+            "init_lora_weights": True,
+            "fan_in_fan_out": False,
+            "use_rslora": False,
+            "use_dora": False,
+            "use_qalora": False,
+            "lora_bias": False,
+            "modules_to_save": None,
+            "trainable_token_indices": None,
+            "target_parameters": None,
+            "layers_to_transform": None,
+            "layer_replication": None,
+            "exclude_modules": None,
+            "rank_pattern": {},
+            "alpha_pattern": {},
+            "loftq_config": {},
             "target_modules": [
                 "q_proj",
                 "k_proj",
@@ -627,6 +668,13 @@ class PersistenceAndMLContractTest(unittest.TestCase):
             (root / "adapter_model.safetensors").write_bytes(b"safe-adapter")
             return evidence
 
+        manifest_patch = mock.patch.object(
+            MODULE,
+            "validate_lora_safetensors_manifest",
+            return_value={"tensor_count": 504, "data_bytes": 174_587_904, "dtype": "F32"},
+        )
+        manifest_patch.start()
+        self.addCleanup(manifest_patch.stop)
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             evidence = valid_tree(root)
@@ -634,6 +682,7 @@ class PersistenceAndMLContractTest(unittest.TestCase):
                 root,
                 evidence,
                 expected_base_model_id=MODULE.MODELS["production"]["id"],
+                expected_base_model_revision=MODULE.MODELS["production"]["revision"],
             )
             self.assertEqual(set(observed), MODULE.EXPECTED_MODEL_ARTIFACT_FILES)
 
@@ -642,6 +691,8 @@ class PersistenceAndMLContractTest(unittest.TestCase):
                 "optimizer.pt",
                 "model.safetensors",
                 "pytorch_model-00001-of-00002.bin",
+                "tokenizer.json",
+                "chat_template.jinja",
             ):
                 path = root / forbidden
                 path.write_bytes(b"forbidden")
@@ -652,8 +703,44 @@ class PersistenceAndMLContractTest(unittest.TestCase):
                         root,
                         evidence,
                         expected_base_model_id=MODULE.MODELS["production"]["id"],
+                        expected_base_model_revision=MODULE.MODELS["production"][
+                            "revision"
+                        ],
                     )
                 path.unlink()
+
+            checkpoint = root / "checkpoint-1" / "trainer_state.json"
+            checkpoint.parent.mkdir()
+            checkpoint.write_text("{}\n", encoding="utf-8")
+            with self.assertRaisesRegex(RuntimeError, "unexpected model artifact"):
+                MODULE.validate_lora_only_artifacts(
+                    root,
+                    evidence,
+                    expected_base_model_id=MODULE.MODELS["production"]["id"],
+                    expected_base_model_revision=MODULE.MODELS["production"]["revision"],
+                )
+            checkpoint.unlink()
+
+            config_path = root / "adapter_config.json"
+            for field, drift_value, message in (
+                ("revision", "main", "base-model revision"),
+                ("inference_mode", False, "inference_mode"),
+                ("modules_to_save", ["lm_head"], "modules_to_save"),
+                ("rank_pattern", {"q_proj": 8}, "rank_pattern"),
+            ):
+                drifted = dict(adapter_config)
+                drifted[field] = drift_value
+                config_path.write_text(json.dumps(drifted), encoding="utf-8")
+                with self.assertRaisesRegex(RuntimeError, message):
+                    MODULE.validate_lora_only_artifacts(
+                        root,
+                        evidence,
+                        expected_base_model_id=MODULE.MODELS["production"]["id"],
+                        expected_base_model_revision=MODULE.MODELS["production"][
+                            "revision"
+                        ],
+                    )
+            config_path.write_text(json.dumps(adapter_config), encoding="utf-8")
 
             evidence_pickle = evidence / "trackio" / "state.pkl"
             evidence_pickle.parent.mkdir()
@@ -663,6 +750,7 @@ class PersistenceAndMLContractTest(unittest.TestCase):
                     root,
                     evidence,
                     expected_base_model_id=MODULE.MODELS["production"]["id"],
+                    expected_base_model_revision=MODULE.MODELS["production"]["revision"],
                 )
             evidence_pickle.unlink()
 
@@ -675,6 +763,105 @@ class PersistenceAndMLContractTest(unittest.TestCase):
                         root,
                         evidence,
                         expected_base_model_id=MODULE.MODELS["production"]["id"],
+                        expected_base_model_revision=MODULE.MODELS["production"][
+                            "revision"
+                        ],
+                    )
+
+    def test_qwen3_lora_safetensors_contract_is_exact(self) -> None:
+        specs = MODULE.expected_qwen3_lora_tensor_specs()
+        self.assertEqual(len(specs), MODULE.EXPECTED_LORA_TENSOR_COUNT)
+        self.assertEqual(
+            sum(math.prod(shape) * 4 for dtype, shape in specs.values()),
+            MODULE.EXPECTED_LORA_DATA_BYTES,
+        )
+        self.assertEqual(
+            specs[
+                "base_model.model.model.layers.0.self_attn.k_proj.lora_B.weight"
+            ],
+            ("F32", (1024, 16)),
+        )
+        self.assertEqual(
+            specs["base_model.model.model.layers.35.mlp.down_proj.lora_A.weight"],
+            ("F32", (16, 12288)),
+        )
+
+    def test_safetensors_header_rejects_manifest_shape_dtype_and_metadata_drift(self) -> None:
+        expected = {
+            "adapter.layer.lora_A.weight": ("F32", (2, 3)),
+            "adapter.layer.lora_B.weight": ("F32", (4, 2)),
+        }
+
+        def write_fixture(
+            path: Path,
+            specs: dict[str, tuple[str, tuple[int, ...]]],
+            *,
+            metadata: dict[str, str] | None = None,
+        ) -> None:
+            widths = {"F32": 4, "F16": 2}
+            cursor = 0
+            header: dict[str, object] = {"__metadata__": metadata or {"format": "pt"}}
+            for name, (dtype, shape) in sorted(specs.items()):
+                size = math.prod(shape) * widths[dtype]
+                header[name] = {
+                    "dtype": dtype,
+                    "shape": list(shape),
+                    "data_offsets": [cursor, cursor + size],
+                }
+                cursor += size
+            header_bytes = json.dumps(
+                header, sort_keys=True, separators=(",", ":")
+            ).encode("utf-8")
+            header_bytes += b" " * (-len(header_bytes) % 8)
+            path.write_bytes(
+                len(header_bytes).to_bytes(8, "little")
+                + header_bytes
+                + b"\0" * cursor
+            )
+
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "adapter_model.safetensors"
+            write_fixture(path, expected)
+            summary = MODULE.validate_lora_safetensors_manifest(
+                path, expected_specs=expected
+            )
+            self.assertEqual(summary["tensor_count"], 2)
+            self.assertEqual(summary["data_bytes"], 56)
+
+            drift_cases = (
+                (
+                    {**expected, "base_model.weight": ("F32", (1, 1))},
+                    {"format": "pt"},
+                    "tensor-key manifest",
+                ),
+                (
+                    {"adapter.layer.lora_A.weight": ("F32", (2, 3))},
+                    {"format": "pt"},
+                    "tensor-key manifest",
+                ),
+                (
+                    {
+                        "adapter.layer.lora_A.weight": ("F16", (2, 3)),
+                        "adapter.layer.lora_B.weight": ("F32", (4, 2)),
+                    },
+                    {"format": "pt"},
+                    "dtype mismatch",
+                ),
+                (
+                    {
+                        "adapter.layer.lora_A.weight": ("F32", (3, 2)),
+                        "adapter.layer.lora_B.weight": ("F32", (4, 2)),
+                    },
+                    {"format": "pt"},
+                    "shape mismatch",
+                ),
+                (expected, {"format": "numpy"}, "metadata mismatch"),
+            )
+            for written_specs, metadata, message in drift_cases:
+                write_fixture(path, written_specs, metadata=metadata)
+                with self.assertRaisesRegex(RuntimeError, message):
+                    MODULE.validate_lora_safetensors_manifest(
+                        path, expected_specs=expected
                     )
 
     def test_training_uses_direct_peft_safe_save_and_pinned_base_tokenizer(self) -> None:
@@ -688,6 +875,11 @@ class PersistenceAndMLContractTest(unittest.TestCase):
         )
         self.assertGreaterEqual(run_training.count("validate_lora_only_artifacts("), 2)
         self.assertIn('model_contract["revision"], use_fast=True', run_training)
+        self.assertIn('revision=model_contract["revision"]', run_training)
+        card = MODULE.adapter_card(
+            "public_osint", "production", MODULE.MODELS["production"], RUN_ID
+        )
+        self.assertIn(MODULE.MODELS["production"]["revision"], card)
 
     def test_exact_commit_sequence_helper_uses_real_hub124_surface_and_rejects_sequence_drift(self) -> None:
         from huggingface_hub.hf_api import GitCommitInfo

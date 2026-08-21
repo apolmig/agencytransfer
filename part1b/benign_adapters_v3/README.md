@@ -72,7 +72,11 @@ as an independent proof of Git graph linearity.
 The artifact commit is one explicit `create_commit` containing every sorted
 path. The model payload is exactly `adapter_model.safetensors`,
 `adapter_config.json`, and `README.md`; Trainer state, pickles, tokenizer
-copies, checkpoints, and full base-model weights are rejected. The runner then
+copies, checkpoints, and full base-model weights are rejected. The safetensors
+header must contain exactly the 504 FP32 LoRA A/B tensors implied by the pinned
+36-layer Qwen3-8B architecture, with exact names, shapes, offsets, and no base
+weights. The adapter config and model card both bind the immutable base-model
+revision. The runner then
 reads every uploaded file by exact revision, verifies the lineage hashes,
 discards the in-memory trained model, reloads the LoRA from the private Hub over
 the pinned base checkpoint, and repeats a deterministic canary. The terminal
