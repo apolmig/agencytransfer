@@ -467,7 +467,7 @@ class PersistenceAndMLContractTest(unittest.TestCase):
             "initial_info.private",
             "initial_info.sha != expected_parent_revision",
             "initial_files != authorization_evidence",
-            "require_linear_hub_history(",
+            "require_exact_hub_commit_sequence(",
             "verify_remote_hashes(",
             "require_private_hub_head(",
             "PeftModel.from_pretrained(",
@@ -506,6 +506,26 @@ class PersistenceAndMLContractTest(unittest.TestCase):
         protocol = json.loads((ROOT / "protocol.json").read_text(encoding="utf-8"))
         self.assertTrue(protocol["private_hub_persistence"]["one_adapter_per_repo"])
         self.assertFalse(protocol["private_hub_persistence"]["combined_adapter"])
+        self.assertEqual(
+            set(protocol["private_hub_persistence"]["model_payload_exact_allowlist"]),
+            MODULE.EXPECTED_MODEL_ARTIFACT_FILES,
+        )
+        self.assertEqual(
+            protocol["private_hub_persistence"]["adapter_model_max_bytes"],
+            MODULE.MODEL_ARTIFACT_MAX_BYTES["adapter_model.safetensors"],
+        )
+        self.assertEqual(
+            protocol["private_hub_persistence"]["total_artifact_upload_max_bytes"],
+            MODULE.MAX_ARTIFACT_UPLOAD_BYTES,
+        )
+        self.assertTrue(
+            protocol["private_hub_persistence"]["unsafe_serialized_artifacts_forbidden"]
+        )
+        self.assertTrue(
+            protocol["private_hub_persistence"][
+                "tokenizer_reloaded_from_pinned_base_revision"
+            ]
+        )
         self.assertEqual(
             protocol["refusal_direction_arm"]["status"],
             "DIAGNOSTIC_NO_GO_FOR_DEPLOYMENT",
@@ -577,7 +597,99 @@ class PersistenceAndMLContractTest(unittest.TestCase):
         self.assertIn("HfApi.create_commit", source)
         self.assertIn('"writes_performed": False', source)
 
-    def test_linear_history_helper_uses_real_hub124_surface_and_rejects_sequence_drift(self) -> None:
+    def test_lora_artifact_allowlist_rejects_pickles_full_weights_and_oversize(self) -> None:
+        adapter_config = {
+            "base_model_name_or_path": MODULE.MODELS["production"]["id"],
+            "peft_type": "LORA",
+            "task_type": "CAUSAL_LM",
+            "r": 16,
+            "lora_alpha": 32,
+            "bias": "none",
+            "target_modules": [
+                "q_proj",
+                "k_proj",
+                "v_proj",
+                "o_proj",
+                "gate_proj",
+                "up_proj",
+                "down_proj",
+            ],
+        }
+
+        def valid_tree(root: Path) -> Path:
+            evidence = root / "runs" / RUN_ID / "transparent_persuasion" / "seed-17"
+            evidence.mkdir(parents=True)
+            (evidence / "receipt.json").write_text("{}\n", encoding="utf-8")
+            (root / "README.md").write_text("adapter card\n", encoding="utf-8")
+            (root / "adapter_config.json").write_text(
+                json.dumps(adapter_config), encoding="utf-8"
+            )
+            (root / "adapter_model.safetensors").write_bytes(b"safe-adapter")
+            return evidence
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            evidence = valid_tree(root)
+            observed = MODULE.validate_lora_only_artifacts(
+                root,
+                evidence,
+                expected_base_model_id=MODULE.MODELS["production"]["id"],
+            )
+            self.assertEqual(set(observed), MODULE.EXPECTED_MODEL_ARTIFACT_FILES)
+
+            for forbidden in (
+                "training_args.bin",
+                "optimizer.pt",
+                "model.safetensors",
+                "pytorch_model-00001-of-00002.bin",
+            ):
+                path = root / forbidden
+                path.write_bytes(b"forbidden")
+                with self.assertRaisesRegex(
+                    RuntimeError, "forbidden|unexpected model artifact"
+                ):
+                    MODULE.validate_lora_only_artifacts(
+                        root,
+                        evidence,
+                        expected_base_model_id=MODULE.MODELS["production"]["id"],
+                    )
+                path.unlink()
+
+            evidence_pickle = evidence / "trackio" / "state.pkl"
+            evidence_pickle.parent.mkdir()
+            evidence_pickle.write_bytes(b"forbidden")
+            with self.assertRaisesRegex(RuntimeError, "unsafe serialized artifact"):
+                MODULE.validate_lora_only_artifacts(
+                    root,
+                    evidence,
+                    expected_base_model_id=MODULE.MODELS["production"]["id"],
+                )
+            evidence_pickle.unlink()
+
+            with mock.patch.dict(
+                MODULE.MODEL_ARTIFACT_MAX_BYTES,
+                {"adapter_model.safetensors": 4},
+            ):
+                with self.assertRaisesRegex(RuntimeError, "exceeds byte limit"):
+                    MODULE.validate_lora_only_artifacts(
+                        root,
+                        evidence,
+                        expected_base_model_id=MODULE.MODELS["production"]["id"],
+                    )
+
+    def test_training_uses_direct_peft_safe_save_and_pinned_base_tokenizer(self) -> None:
+        source = SCRIPT.read_text(encoding="utf-8")
+        run_training = source[source.index("def run_training") :]
+        self.assertNotIn("trainer.save_model(", run_training)
+        self.assertNotIn("tokenizer.save_pretrained(", run_training)
+        self.assertIn(
+            "trainer.model.save_pretrained(str(artifact_root), safe_serialization=True)",
+            run_training,
+        )
+        self.assertGreaterEqual(run_training.count("validate_lora_only_artifacts("), 2)
+        self.assertIn('model_contract["revision"], use_fast=True', run_training)
+
+    def test_exact_commit_sequence_helper_uses_real_hub124_surface_and_rejects_sequence_drift(self) -> None:
         from huggingface_hub.hf_api import GitCommitInfo
 
         class FakeApi:
@@ -599,7 +711,7 @@ class PersistenceAndMLContractTest(unittest.TestCase):
             )
 
         good = [commit("a" * 40), commit("b" * 40)]
-        MODULE.require_linear_hub_history(
+        MODULE.require_exact_hub_commit_sequence(
             FakeApi(good),
             repo_id=PERSUASION_REPO,
             revision="a" * 40,
@@ -608,7 +720,7 @@ class PersistenceAndMLContractTest(unittest.TestCase):
         )
         bad = good + [commit("c" * 40)]
         with self.assertRaisesRegex(RuntimeError, "commit count"):
-            MODULE.require_linear_hub_history(
+            MODULE.require_exact_hub_commit_sequence(
                 FakeApi(bad),
                 repo_id=PERSUASION_REPO,
                 revision="a" * 40,
@@ -616,7 +728,7 @@ class PersistenceAndMLContractTest(unittest.TestCase):
                 token="not-a-real-token",
             )
         with self.assertRaisesRegex(RuntimeError, "missing commit_id"):
-            MODULE.require_linear_hub_history(
+            MODULE.require_exact_hub_commit_sequence(
                 FakeApi([object(), commit("b" * 40)]),
                 repo_id=PERSUASION_REPO,
                 revision="a" * 40,
@@ -624,7 +736,7 @@ class PersistenceAndMLContractTest(unittest.TestCase):
                 token="not-a-real-token",
             )
         with self.assertRaisesRegex(RuntimeError, "sequence"):
-            MODULE.require_linear_hub_history(
+            MODULE.require_exact_hub_commit_sequence(
                 FakeApi(list(reversed(good))),
                 repo_id=PERSUASION_REPO,
                 revision="a" * 40,

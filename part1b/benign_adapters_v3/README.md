@@ -60,16 +60,23 @@ commits `reservations/<slot_id>.json` with the authorized genesis as
 GPU training time. A reserved slot is deliberately no-retry: a later failure
 burns the slot and requires a new operation and repository.
 
-The successful linear history is:
+The required successful CAS-bound commit sequence is:
 
 `authorized genesis → Job reservation → adapter + receipt → terminal seal`
 
+The runner verifies that exact newest-to-oldest commit-ID sequence, the exact
+HEAD, and a successful `parent_commit` compare-and-swap at every write. Hub
+1.24 does not expose parent edges in `GitCommitInfo`, so this is not presented
+as an independent proof of Git graph linearity.
+
 The artifact commit is one explicit `create_commit` containing every sorted
-path. The runner then reads every uploaded file by exact revision, verifies
-the lineage hashes, discards the in-memory trained model, reloads the LoRA from
-the private Hub over the pinned base checkpoint, and repeats a deterministic
-canary. The terminal seal is a final exact-parent commit and must be repository
-HEAD.
+path. The model payload is exactly `adapter_model.safetensors`,
+`adapter_config.json`, and `README.md`; Trainer state, pickles, tokenizer
+copies, checkpoints, and full base-model weights are rejected. The runner then
+reads every uploaded file by exact revision, verifies the lineage hashes,
+discards the in-memory trained model, reloads the LoRA from the private Hub over
+the pinned base checkpoint, and repeats a deterministic canary. The terminal
+seal is a final exact-parent commit and must be repository HEAD.
 
 Only an encrypted Job secret named `HF_TOKEN` is passed to a training Job. Its
 value must be the explicit, isolated, least-privilege fine-grained token

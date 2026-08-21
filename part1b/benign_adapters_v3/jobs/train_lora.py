@@ -62,7 +62,7 @@ AUTHORIZATION_PUBLIC_KEY_SPKI_DER_B64 = (
 AUTHORIZATION_PUBLIC_KEY_SPKI_DER_SHA256 = (
     "09f6fe3693f80663d6cb603eb8acf6d74a18a52cf2f157775217a131a5ae0ecb"
 )
-EXPECTED_PROTOCOL_SHA256 = "c5a082aba7b8da0f82a1fecb04e2e0bd0eb85e690b405fb4b5dda08cafad5454"
+EXPECTED_PROTOCOL_SHA256 = "3df48345bdabd3bed9d4d85c8c78e5333d27af3343063877e4de5d9551ebb488"
 EXPECTED_RUNTIME_VERSIONS = {
     "accelerate": "1.14.0",
     "bitsandbytes": "0.49.2",
@@ -97,6 +97,26 @@ EXPECTED_COUNTS = {"train": 1200, "validation": 150, "heldout": 300}
 EXPECTED_FAMILY_COUNTS = {"train": 120, "validation": 15, "heldout": 30}
 EXPECTED_VARIANTS_PER_FAMILY = 10
 TOTAL_FAMILIES = sum(EXPECTED_FAMILY_COUNTS.values())
+EXPECTED_MODEL_ARTIFACT_FILES = {
+    "README.md",
+    "adapter_config.json",
+    "adapter_model.safetensors",
+}
+MODEL_ARTIFACT_MAX_BYTES = {
+    "README.md": 64 * 1024,
+    "adapter_config.json": 256 * 1024,
+    "adapter_model.safetensors": 256 * 1024 * 1024,
+}
+MAX_EVIDENCE_FILE_BYTES = 64 * 1024 * 1024
+MAX_ARTIFACT_UPLOAD_BYTES = 320 * 1024 * 1024
+FORBIDDEN_SERIALIZED_ARTIFACT_SUFFIXES = (
+    ".bin",
+    ".ckpt",
+    ".pickle",
+    ".pkl",
+    ".pt",
+    ".pth",
+)
 
 FORBIDDEN_PATTERNS = (
     re.compile(
@@ -879,7 +899,103 @@ def inventory(root: Path, excluded: set[str] | None = None) -> dict[str, dict[st
     return result
 
 
-def require_linear_hub_history(
+def validate_lora_only_artifacts(
+    artifact_root: Path,
+    evidence_root: Path,
+    *,
+    expected_base_model_id: str,
+) -> dict[str, dict[str, Any]]:
+    """Require an exact, bounded, safe-serialization LoRA model payload.
+
+    Evidence and Trackio files live below ``evidence_root`` and are validated by
+    the receipt/terminal inventory chain. Everything else in ``artifact_root``
+    must be one of the three expected PEFT adapter files. This prevents Trainer
+    state pickles, optimizer checkpoints, tokenizer copies, or full base-model
+    weights from entering the private model repository.
+    """
+
+    try:
+        evidence_relative = evidence_root.relative_to(artifact_root).as_posix()
+    except ValueError as error:
+        raise RuntimeError("evidence root must be contained by artifact root") from error
+
+    observed: dict[str, dict[str, Any]] = {}
+    total_upload_bytes = 0
+    for path in sorted(artifact_root.rglob("*")):
+        relative = path.relative_to(artifact_root).as_posix()
+        if path.is_symlink():
+            raise RuntimeError(f"symlink forbidden in output: {relative}")
+        if not path.is_file():
+            continue
+        lower = relative.lower()
+        if lower.endswith(FORBIDDEN_SERIALIZED_ARTIFACT_SUFFIXES):
+            raise RuntimeError(f"unsafe serialized artifact forbidden: {relative}")
+        if lower.endswith(".safetensors") and relative != "adapter_model.safetensors":
+            raise RuntimeError(f"non-adapter safetensors forbidden: {relative}")
+        size = path.stat().st_size
+        total_upload_bytes += size
+        if relative == evidence_relative or relative.startswith(f"{evidence_relative}/"):
+            if size > MAX_EVIDENCE_FILE_BYTES:
+                raise RuntimeError(
+                    f"evidence artifact exceeds byte limit: {relative}: "
+                    f"{size} > {MAX_EVIDENCE_FILE_BYTES}"
+                )
+            continue
+        if relative not in EXPECTED_MODEL_ARTIFACT_FILES:
+            raise RuntimeError(f"unexpected model artifact: {relative}")
+        if size <= 0:
+            raise RuntimeError(f"empty model artifact: {relative}")
+        if size > MODEL_ARTIFACT_MAX_BYTES[relative]:
+            raise RuntimeError(
+                f"model artifact exceeds byte limit: {relative}: "
+                f"{size} > {MODEL_ARTIFACT_MAX_BYTES[relative]}"
+            )
+        observed[relative] = {"bytes": size, "sha256": sha256_file(path)}
+
+    if set(observed) != EXPECTED_MODEL_ARTIFACT_FILES:
+        raise RuntimeError(
+            "LoRA model artifact allowlist mismatch: "
+            f"{sorted(observed)} != {sorted(EXPECTED_MODEL_ARTIFACT_FILES)}"
+        )
+
+    if total_upload_bytes > MAX_ARTIFACT_UPLOAD_BYTES:
+        raise RuntimeError(
+            "artifact upload exceeds total byte limit: "
+            f"{total_upload_bytes} > {MAX_ARTIFACT_UPLOAD_BYTES}"
+        )
+
+    try:
+        adapter_config = json.loads(
+            (artifact_root / "adapter_config.json").read_text(encoding="utf-8")
+        )
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as error:
+        raise RuntimeError("adapter_config.json is not valid UTF-8 JSON") from error
+    expected_target_modules = {
+        "q_proj",
+        "k_proj",
+        "v_proj",
+        "o_proj",
+        "gate_proj",
+        "up_proj",
+        "down_proj",
+    }
+    if adapter_config.get("base_model_name_or_path") != expected_base_model_id:
+        raise RuntimeError("adapter config base-model mismatch")
+    if adapter_config.get("peft_type") != "LORA":
+        raise RuntimeError("adapter config PEFT type mismatch")
+    if adapter_config.get("task_type") != "CAUSAL_LM":
+        raise RuntimeError("adapter config task type mismatch")
+    if adapter_config.get("r") != 16 or adapter_config.get("lora_alpha") != 32:
+        raise RuntimeError("adapter config LoRA rank/alpha mismatch")
+    if adapter_config.get("bias") != "none":
+        raise RuntimeError("adapter config bias mismatch")
+    target_modules = adapter_config.get("target_modules")
+    if not isinstance(target_modules, list) or set(target_modules) != expected_target_modules:
+        raise RuntimeError("adapter config target-module mismatch")
+    return observed
+
+
+def require_exact_hub_commit_sequence(
     api: Any,
     *,
     repo_id: str,
@@ -1640,7 +1756,7 @@ def run_training(args: argparse.Namespace) -> int:
     )
     if Path(persisted_reservation_path).read_bytes() != reservation_bytes:
         raise RuntimeError("slot reservation read-back mismatch")
-    require_linear_hub_history(
+    require_exact_hub_commit_sequence(
         api,
         repo_id=args.hub_repo_id,
         revision=reservation_revision,
@@ -1828,11 +1944,15 @@ def run_training(args: argparse.Namespace) -> int:
     train_metrics = finite_metrics(train_result.metrics)
     eval_metrics = finite_metrics(trainer.evaluate())
 
-    trainer.save_model(str(artifact_root))
-    tokenizer.save_pretrained(str(artifact_root))
+    trainer.model.save_pretrained(str(artifact_root), safe_serialization=True)
     atomic_write(
         artifact_root / "README.md",
         adapter_card(args.adapter, args.phase, model_contract, args.run_id).encode("utf-8"),
+    )
+    validate_lora_only_artifacts(
+        artifact_root,
+        evidence_root,
+        expected_base_model_id=model_contract["id"],
     )
 
     canary_prompt = (
@@ -1881,6 +2001,11 @@ def run_training(args: argparse.Namespace) -> int:
     evidence_relative = evidence_root.relative_to(artifact_root).as_posix()
     receipt_relative = f"{evidence_relative}/receipt.json"
     terminal_relative = f"{evidence_relative}/terminal.json"
+    validate_lora_only_artifacts(
+        artifact_root,
+        evidence_root,
+        expected_base_model_id=model_contract["id"],
+    )
     pre_receipt_inventory = inventory(
         artifact_root, excluded={receipt_relative, terminal_relative}
     )
@@ -1889,7 +2014,7 @@ def run_training(args: argparse.Namespace) -> int:
         for path in pre_receipt_inventory
     ):
         raise RuntimeError("Trackio did not persist under the Hub artifact prefix")
-    if not any(path.endswith(".safetensors") for path in pre_receipt_inventory):
+    if "adapter_model.safetensors" not in pre_receipt_inventory:
         raise RuntimeError("adapter safetensors missing")
 
     receipt = {
@@ -2004,7 +2129,7 @@ def run_training(args: argparse.Namespace) -> int:
     )
     if remote_artifact_files != expected_artifact_files:
         raise RuntimeError("artifact commit file tree mismatch")
-    require_linear_hub_history(
+    require_exact_hub_commit_sequence(
         api,
         repo_id=args.hub_repo_id,
         revision=artifact_revision,
@@ -2047,10 +2172,7 @@ def run_training(args: argparse.Namespace) -> int:
     if remote_peft.base_model_name_or_path != model_contract["id"]:
         raise RuntimeError("remote adapter config base-model mismatch")
     remote_tokenizer = AutoTokenizer.from_pretrained(
-        args.hub_repo_id,
-        revision=artifact_revision,
-        token=token,
-        use_fast=True,
+        model_contract["id"], revision=model_contract["revision"], use_fast=True
     )
     if remote_tokenizer.pad_token is None:
         remote_tokenizer.pad_token = remote_tokenizer.eos_token
@@ -2165,7 +2287,7 @@ def run_training(args: argparse.Namespace) -> int:
     )
     if final_files != expected_final_files:
         raise RuntimeError("sealed repository file tree mismatch")
-    require_linear_hub_history(
+    require_exact_hub_commit_sequence(
         api,
         repo_id=args.hub_repo_id,
         revision=terminal_revision,
