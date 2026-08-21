@@ -895,7 +895,15 @@ def require_linear_hub_history(
     )
     if len(commits) != len(expected_newest_to_oldest):
         raise RuntimeError("target repository contains an unexpected commit count")
-    observed = [getattr(commit, "commit_id", None) for commit in commits]
+    observed: list[str] = []
+    for commit in commits:
+        try:
+            commit_id = commit.commit_id
+        except AttributeError as error:
+            raise RuntimeError("Hub commit object is missing commit_id") from error
+        if not isinstance(commit_id, str):
+            raise RuntimeError("Hub commit object has an invalid commit_id")
+        observed.append(commit_id)
     if observed != expected_newest_to_oldest:
         raise RuntimeError("target repository commit sequence mismatch")
 
@@ -1473,11 +1481,20 @@ def run_training(args: argparse.Namespace) -> int:
         revision=args.authorization_revision,
         token=token,
     )
-    if (
-        len(evidence_commits) < 3
-        or [getattr(commit, "commit_id", None) for commit in evidence_commits[:3]]
-        != [args.authorization_revision, identity_revision, canary_revision]
-    ):
+    evidence_commit_ids: list[str] = []
+    for commit in evidence_commits[:3]:
+        try:
+            commit_id = commit.commit_id
+        except AttributeError as error:
+            raise RuntimeError("Hub evidence commit object is missing commit_id") from error
+        if not isinstance(commit_id, str):
+            raise RuntimeError("Hub evidence commit object has an invalid commit_id")
+        evidence_commit_ids.append(commit_id)
+    if len(evidence_commits) < 3 or evidence_commit_ids != [
+        args.authorization_revision,
+        identity_revision,
+        canary_revision,
+    ]:
         raise RuntimeError("authorization evidence commit lineage mismatch")
     identity_files = set(
         api.list_repo_files(
