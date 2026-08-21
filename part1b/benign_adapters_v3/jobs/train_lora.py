@@ -62,7 +62,7 @@ AUTHORIZATION_PUBLIC_KEY_SPKI_DER_B64 = (
 AUTHORIZATION_PUBLIC_KEY_SPKI_DER_SHA256 = (
     "09f6fe3693f80663d6cb603eb8acf6d74a18a52cf2f157775217a131a5ae0ecb"
 )
-EXPECTED_PROTOCOL_SHA256 = "c5a082aba7b8da0f82a1fecb04e2e0bd0eb85e690b405fb4b5dda08cafad5454"
+EXPECTED_PROTOCOL_SHA256 = "f0d11fffa0b170c54315a7f713d683fb7e62d76f170aa104e76abac713a450e8"
 EXPECTED_RUNTIME_VERSIONS = {
     "accelerate": "1.14.0",
     "bitsandbytes": "0.49.2",
@@ -97,6 +97,34 @@ EXPECTED_COUNTS = {"train": 1200, "validation": 150, "heldout": 300}
 EXPECTED_FAMILY_COUNTS = {"train": 120, "validation": 15, "heldout": 30}
 EXPECTED_VARIANTS_PER_FAMILY = 10
 TOTAL_FAMILIES = sum(EXPECTED_FAMILY_COUNTS.values())
+EXPECTED_MODEL_ARTIFACT_FILES = {
+    "README.md",
+    "adapter_config.json",
+    "adapter_model.safetensors",
+}
+MODEL_ARTIFACT_MAX_BYTES = {
+    "README.md": 64 * 1024,
+    "adapter_config.json": 256 * 1024,
+    "adapter_model.safetensors": 256 * 1024 * 1024,
+}
+MAX_EVIDENCE_FILE_BYTES = 64 * 1024 * 1024
+MAX_ARTIFACT_UPLOAD_BYTES = 320 * 1024 * 1024
+MAX_SAFETENSORS_HEADER_BYTES = 2 * 1024 * 1024
+QWEN3_HIDDEN_SIZE = 4096
+QWEN3_KV_SIZE = 1024
+QWEN3_INTERMEDIATE_SIZE = 12288
+QWEN3_NUM_HIDDEN_LAYERS = 36
+LORA_RANK = 16
+EXPECTED_LORA_TENSOR_COUNT = QWEN3_NUM_HIDDEN_LAYERS * 7 * 2
+EXPECTED_LORA_DATA_BYTES = 174_587_904
+FORBIDDEN_SERIALIZED_ARTIFACT_SUFFIXES = (
+    ".bin",
+    ".ckpt",
+    ".pickle",
+    ".pkl",
+    ".pt",
+    ".pth",
+)
 
 FORBIDDEN_PATTERNS = (
     re.compile(
@@ -879,7 +907,252 @@ def inventory(root: Path, excluded: set[str] | None = None) -> dict[str, dict[st
     return result
 
 
-def require_linear_hub_history(
+def expected_qwen3_lora_tensor_specs() -> dict[str, tuple[str, tuple[int, ...]]]:
+    module_dimensions = {
+        "self_attn.q_proj": (QWEN3_HIDDEN_SIZE, QWEN3_HIDDEN_SIZE),
+        "self_attn.k_proj": (QWEN3_HIDDEN_SIZE, QWEN3_KV_SIZE),
+        "self_attn.v_proj": (QWEN3_HIDDEN_SIZE, QWEN3_KV_SIZE),
+        "self_attn.o_proj": (QWEN3_HIDDEN_SIZE, QWEN3_HIDDEN_SIZE),
+        "mlp.gate_proj": (QWEN3_HIDDEN_SIZE, QWEN3_INTERMEDIATE_SIZE),
+        "mlp.up_proj": (QWEN3_HIDDEN_SIZE, QWEN3_INTERMEDIATE_SIZE),
+        "mlp.down_proj": (QWEN3_INTERMEDIATE_SIZE, QWEN3_HIDDEN_SIZE),
+    }
+    specs: dict[str, tuple[str, tuple[int, ...]]] = {}
+    for layer in range(QWEN3_NUM_HIDDEN_LAYERS):
+        for module, (input_size, output_size) in module_dimensions.items():
+            prefix = f"base_model.model.model.layers.{layer}.{module}"
+            specs[f"{prefix}.lora_A.weight"] = ("F32", (LORA_RANK, input_size))
+            specs[f"{prefix}.lora_B.weight"] = ("F32", (output_size, LORA_RANK))
+    return specs
+
+
+def _strict_json_object(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+    result: dict[str, Any] = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError(f"duplicate JSON key: {key}")
+        result[key] = value
+    return result
+
+
+def validate_lora_safetensors_manifest(
+    path: Path,
+    *,
+    expected_specs: dict[str, tuple[str, tuple[int, ...]]] | None = None,
+) -> dict[str, int | str]:
+    """Validate the safetensors header without allocating or loading tensor data."""
+
+    production_contract = expected_specs is None
+    expected_specs = expected_specs or expected_qwen3_lora_tensor_specs()
+    try:
+        file_size = path.stat().st_size
+        with path.open("rb") as handle:
+            length_bytes = handle.read(8)
+            if len(length_bytes) != 8:
+                raise RuntimeError("adapter safetensors header length is missing")
+            header_length = int.from_bytes(length_bytes, "little", signed=False)
+            if not 2 <= header_length <= MAX_SAFETENSORS_HEADER_BYTES:
+                raise RuntimeError("adapter safetensors header length is invalid")
+            header_bytes = handle.read(header_length)
+            if len(header_bytes) != header_length:
+                raise RuntimeError("adapter safetensors header is truncated")
+    except OSError as error:
+        raise RuntimeError("adapter safetensors could not be read") from error
+
+    try:
+        manifest = json.loads(
+            header_bytes.decode("utf-8"),
+            object_pairs_hook=_strict_json_object,
+            parse_constant=lambda value: (_ for _ in ()).throw(
+                ValueError(f"non-finite JSON constant: {value}")
+            ),
+        )
+    except (UnicodeDecodeError, json.JSONDecodeError, ValueError) as error:
+        raise RuntimeError("adapter safetensors header is not strict JSON") from error
+    if not isinstance(manifest, dict):
+        raise RuntimeError("adapter safetensors header must be an object")
+    metadata = manifest.pop("__metadata__", None)
+    if metadata != {"format": "pt"}:
+        raise RuntimeError("adapter safetensors metadata mismatch")
+    if set(manifest) != set(expected_specs):
+        raise RuntimeError("adapter safetensors tensor-key manifest mismatch")
+
+    spans: list[tuple[int, int, str]] = []
+    dtype_widths = {"F32": 4}
+    for name, (expected_dtype, expected_shape) in expected_specs.items():
+        descriptor = manifest[name]
+        if not isinstance(descriptor, dict) or set(descriptor) != {
+            "dtype",
+            "shape",
+            "data_offsets",
+        }:
+            raise RuntimeError(f"adapter tensor descriptor mismatch: {name}")
+        dtype = descriptor["dtype"]
+        shape = descriptor["shape"]
+        offsets = descriptor["data_offsets"]
+        if dtype != expected_dtype or dtype not in dtype_widths:
+            raise RuntimeError(f"adapter tensor dtype mismatch: {name}")
+        if shape != list(expected_shape):
+            raise RuntimeError(f"adapter tensor shape mismatch: {name}")
+        if (
+            not isinstance(offsets, list)
+            or len(offsets) != 2
+            or any(isinstance(value, bool) or not isinstance(value, int) for value in offsets)
+            or offsets[0] < 0
+            or offsets[1] <= offsets[0]
+        ):
+            raise RuntimeError(f"adapter tensor offsets invalid: {name}")
+        elements = math.prod(expected_shape)
+        if offsets[1] - offsets[0] != elements * dtype_widths[dtype]:
+            raise RuntimeError(f"adapter tensor byte length mismatch: {name}")
+        spans.append((offsets[0], offsets[1], name))
+
+    cursor = 0
+    for start, end, name in sorted(spans):
+        if start != cursor:
+            raise RuntimeError(f"adapter tensor offsets are not contiguous: {name}")
+        cursor = end
+    if file_size != 8 + header_length + cursor:
+        raise RuntimeError("adapter safetensors file length mismatch")
+    if production_contract:
+        if len(expected_specs) != EXPECTED_LORA_TENSOR_COUNT:
+            raise RuntimeError("internal LoRA tensor-count contract mismatch")
+        if cursor != EXPECTED_LORA_DATA_BYTES:
+            raise RuntimeError("internal LoRA data-size contract mismatch")
+    return {
+        "tensor_count": len(expected_specs),
+        "data_bytes": cursor,
+        "dtype": "F32",
+    }
+
+
+def validate_lora_only_artifacts(
+    artifact_root: Path,
+    evidence_root: Path,
+    *,
+    expected_base_model_id: str,
+    expected_base_model_revision: str,
+) -> dict[str, dict[str, Any]]:
+    """Require an exact, bounded, safe-serialization LoRA model payload.
+
+    Evidence and Trackio files live below ``evidence_root`` and are validated by
+    the receipt/terminal inventory chain. Everything else in ``artifact_root``
+    must be one of the three expected PEFT adapter files. This prevents Trainer
+    state pickles, optimizer checkpoints, tokenizer copies, or full base-model
+    weights from entering the private model repository.
+    """
+
+    try:
+        evidence_relative = evidence_root.relative_to(artifact_root).as_posix()
+    except ValueError as error:
+        raise RuntimeError("evidence root must be contained by artifact root") from error
+
+    observed: dict[str, dict[str, Any]] = {}
+    total_upload_bytes = 0
+    for path in sorted(artifact_root.rglob("*")):
+        relative = path.relative_to(artifact_root).as_posix()
+        if path.is_symlink():
+            raise RuntimeError(f"symlink forbidden in output: {relative}")
+        if not path.is_file():
+            continue
+        lower = relative.lower()
+        if lower.endswith(FORBIDDEN_SERIALIZED_ARTIFACT_SUFFIXES):
+            raise RuntimeError(f"unsafe serialized artifact forbidden: {relative}")
+        if lower.endswith(".safetensors") and relative != "adapter_model.safetensors":
+            raise RuntimeError(f"non-adapter safetensors forbidden: {relative}")
+        size = path.stat().st_size
+        total_upload_bytes += size
+        if relative == evidence_relative or relative.startswith(f"{evidence_relative}/"):
+            if size > MAX_EVIDENCE_FILE_BYTES:
+                raise RuntimeError(
+                    f"evidence artifact exceeds byte limit: {relative}: "
+                    f"{size} > {MAX_EVIDENCE_FILE_BYTES}"
+                )
+            continue
+        if relative not in EXPECTED_MODEL_ARTIFACT_FILES:
+            raise RuntimeError(f"unexpected model artifact: {relative}")
+        if size <= 0:
+            raise RuntimeError(f"empty model artifact: {relative}")
+        if size > MODEL_ARTIFACT_MAX_BYTES[relative]:
+            raise RuntimeError(
+                f"model artifact exceeds byte limit: {relative}: "
+                f"{size} > {MODEL_ARTIFACT_MAX_BYTES[relative]}"
+            )
+        observed[relative] = {"bytes": size, "sha256": sha256_file(path)}
+
+    if set(observed) != EXPECTED_MODEL_ARTIFACT_FILES:
+        raise RuntimeError(
+            "LoRA model artifact allowlist mismatch: "
+            f"{sorted(observed)} != {sorted(EXPECTED_MODEL_ARTIFACT_FILES)}"
+        )
+
+    if total_upload_bytes > MAX_ARTIFACT_UPLOAD_BYTES:
+        raise RuntimeError(
+            "artifact upload exceeds total byte limit: "
+            f"{total_upload_bytes} > {MAX_ARTIFACT_UPLOAD_BYTES}"
+        )
+
+    try:
+        adapter_config = json.loads(
+            (artifact_root / "adapter_config.json").read_text(encoding="utf-8")
+        )
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as error:
+        raise RuntimeError("adapter_config.json is not valid UTF-8 JSON") from error
+    expected_target_modules = {
+        "q_proj",
+        "k_proj",
+        "v_proj",
+        "o_proj",
+        "gate_proj",
+        "up_proj",
+        "down_proj",
+    }
+    if adapter_config.get("base_model_name_or_path") != expected_base_model_id:
+        raise RuntimeError("adapter config base-model mismatch")
+    if adapter_config.get("revision") != expected_base_model_revision:
+        raise RuntimeError("adapter config base-model revision mismatch")
+    if adapter_config.get("peft_type") != "LORA":
+        raise RuntimeError("adapter config PEFT type mismatch")
+    if adapter_config.get("task_type") != "CAUSAL_LM":
+        raise RuntimeError("adapter config task type mismatch")
+    if adapter_config.get("r") != 16 or adapter_config.get("lora_alpha") != 32:
+        raise RuntimeError("adapter config LoRA rank/alpha mismatch")
+    if adapter_config.get("bias") != "none":
+        raise RuntimeError("adapter config bias mismatch")
+    required_config_values = {
+        "inference_mode": True,
+        "init_lora_weights": True,
+        "lora_dropout": 0.05,
+        "fan_in_fan_out": False,
+        "use_rslora": False,
+        "use_dora": False,
+        "use_qalora": False,
+        "lora_bias": False,
+    }
+    for field, expected_value in required_config_values.items():
+        if adapter_config.get(field) != expected_value:
+            raise RuntimeError(f"adapter config field mismatch: {field}")
+    for field in (
+        "modules_to_save",
+        "trainable_token_indices",
+        "target_parameters",
+        "layers_to_transform",
+        "layer_replication",
+        "exclude_modules",
+    ):
+        if adapter_config.get(field) is not None:
+            raise RuntimeError(f"adapter config unsupported field is set: {field}")
+    for field in ("rank_pattern", "alpha_pattern", "loftq_config"):
+        if adapter_config.get(field) != {}:
+            raise RuntimeError(f"adapter config pattern field is not empty: {field}")
+    target_modules = adapter_config.get("target_modules")
+    if not isinstance(target_modules, list) or set(target_modules) != expected_target_modules:
+        raise RuntimeError("adapter config target-module mismatch")
+    validate_lora_safetensors_manifest(artifact_root / "adapter_model.safetensors")
+    return observed
+
+
+def require_exact_hub_commit_sequence(
     api: Any,
     *,
     repo_id: str,
@@ -967,6 +1240,8 @@ tags:
 # ERA Part 1B {adapter}
 
 Run `{run_id}` is a `{phase}` QLoRA adapter for {purpose}.
+It requires base model and tokenizer `{model['id']}` at immutable revision
+`{model['revision']}`.
 
 It is not trained for political persuasion, targeting, live surveillance, private-person
 research, or refusal removal. A completed training receipt is technical evidence only;
@@ -1640,7 +1915,7 @@ def run_training(args: argparse.Namespace) -> int:
     )
     if Path(persisted_reservation_path).read_bytes() != reservation_bytes:
         raise RuntimeError("slot reservation read-back mismatch")
-    require_linear_hub_history(
+    require_exact_hub_commit_sequence(
         api,
         repo_id=args.hub_repo_id,
         revision=reservation_revision,
@@ -1766,6 +2041,7 @@ def run_training(args: argparse.Namespace) -> int:
         lora_dropout=0.05,
         bias="none",
         task_type="CAUSAL_LM",
+        revision=model_contract["revision"],
         target_modules=[
             "q_proj",
             "k_proj",
@@ -1828,11 +2104,16 @@ def run_training(args: argparse.Namespace) -> int:
     train_metrics = finite_metrics(train_result.metrics)
     eval_metrics = finite_metrics(trainer.evaluate())
 
-    trainer.save_model(str(artifact_root))
-    tokenizer.save_pretrained(str(artifact_root))
+    trainer.model.save_pretrained(str(artifact_root), safe_serialization=True)
     atomic_write(
         artifact_root / "README.md",
         adapter_card(args.adapter, args.phase, model_contract, args.run_id).encode("utf-8"),
+    )
+    validate_lora_only_artifacts(
+        artifact_root,
+        evidence_root,
+        expected_base_model_id=model_contract["id"],
+        expected_base_model_revision=model_contract["revision"],
     )
 
     canary_prompt = (
@@ -1881,6 +2162,12 @@ def run_training(args: argparse.Namespace) -> int:
     evidence_relative = evidence_root.relative_to(artifact_root).as_posix()
     receipt_relative = f"{evidence_relative}/receipt.json"
     terminal_relative = f"{evidence_relative}/terminal.json"
+    validate_lora_only_artifacts(
+        artifact_root,
+        evidence_root,
+        expected_base_model_id=model_contract["id"],
+        expected_base_model_revision=model_contract["revision"],
+    )
     pre_receipt_inventory = inventory(
         artifact_root, excluded={receipt_relative, terminal_relative}
     )
@@ -1889,7 +2176,7 @@ def run_training(args: argparse.Namespace) -> int:
         for path in pre_receipt_inventory
     ):
         raise RuntimeError("Trackio did not persist under the Hub artifact prefix")
-    if not any(path.endswith(".safetensors") for path in pre_receipt_inventory):
+    if "adapter_model.safetensors" not in pre_receipt_inventory:
         raise RuntimeError("adapter safetensors missing")
 
     receipt = {
@@ -2004,7 +2291,7 @@ def run_training(args: argparse.Namespace) -> int:
     )
     if remote_artifact_files != expected_artifact_files:
         raise RuntimeError("artifact commit file tree mismatch")
-    require_linear_hub_history(
+    require_exact_hub_commit_sequence(
         api,
         repo_id=args.hub_repo_id,
         revision=artifact_revision,
@@ -2047,10 +2334,7 @@ def run_training(args: argparse.Namespace) -> int:
     if remote_peft.base_model_name_or_path != model_contract["id"]:
         raise RuntimeError("remote adapter config base-model mismatch")
     remote_tokenizer = AutoTokenizer.from_pretrained(
-        args.hub_repo_id,
-        revision=artifact_revision,
-        token=token,
-        use_fast=True,
+        model_contract["id"], revision=model_contract["revision"], use_fast=True
     )
     if remote_tokenizer.pad_token is None:
         remote_tokenizer.pad_token = remote_tokenizer.eos_token
@@ -2165,7 +2449,7 @@ def run_training(args: argparse.Namespace) -> int:
     )
     if final_files != expected_final_files:
         raise RuntimeError("sealed repository file tree mismatch")
-    require_linear_hub_history(
+    require_exact_hub_commit_sequence(
         api,
         repo_id=args.hub_repo_id,
         revision=terminal_revision,
