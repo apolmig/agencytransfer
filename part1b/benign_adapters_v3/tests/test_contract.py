@@ -599,7 +599,6 @@ class PersistenceAndMLContractTest(unittest.TestCase):
             )
 
         good = [commit("a" * 40), commit("b" * 40)]
-        self.assertFalse(hasattr(good[0], "parents"))
         MODULE.require_linear_hub_history(
             FakeApi(good),
             repo_id=PERSUASION_REPO,
@@ -611,6 +610,14 @@ class PersistenceAndMLContractTest(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, "commit count"):
             MODULE.require_linear_hub_history(
                 FakeApi(bad),
+                repo_id=PERSUASION_REPO,
+                revision="a" * 40,
+                expected_newest_to_oldest=["a" * 40, "b" * 40],
+                token="not-a-real-token",
+            )
+        with self.assertRaisesRegex(RuntimeError, "missing commit_id"):
+            MODULE.require_linear_hub_history(
+                FakeApi([object(), commit("b" * 40)]),
                 repo_id=PERSUASION_REPO,
                 revision="a" * 40,
                 expected_newest_to_oldest=["a" * 40, "b" * 40],
