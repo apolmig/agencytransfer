@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/apolmig/agencytransfer/policy-atlas/schemas/atlas.schema.json",
+  "title": "Policy Atlas public denormalized row",
+  "type": "object",
+  "required": [
+    "implementation_id",
+    "control_family_id",
+    "intervention",
+    "publication_claim_class",
+    "publication_decision_posture",
+    "publication_status",
+    "effect_claim_checked",
+    "legal_claim_checked",
+    "mechanism_claim_checked",
+    "verification_wave",
+    "stable_core_selection_status",
+    "rank_eligibility",
+    "stable_core_ready",
+    "ranking_ready"
+  ],
+  "properties": {
+    "implementation_id": {"type": "string", "pattern": "^I-[0-9]{3}$"},
+    "control_family_id": {"type": "string", "pattern": "^CF-[0-9]{3}$"},
+    "intervention": {"type": "string", "minLength": 1},
+    "publication_claim_class": {"type": "string", "minLength": 1},
+    "publication_decision_posture": {"const": "not_assessed"},
+    "publication_status": {"const": "research_preview"},
+    "effect_claim_checked": {"enum": ["true", "false", true, false]},
+    "legal_claim_checked": {"enum": ["true", "false", true, false]},
+    "mechanism_claim_checked": {"enum": ["true", "false", true, false]},
+    "verification_wave": {
+      "enum": ["proposed_stable_core_v0.1", "candidate_registry"]
+    },
+    "stable_core_selection_status": {
+      "enum": ["proposed_core_candidate", "candidate_registry"]
+    },
+    "rank_eligibility": {
+      "type": "string",
+      "pattern": "^(not_eligible_now__|not_assessed_outside_core_wave)"
+    },
+    "stable_core_ready": {"enum": ["false", false]},
+    "ranking_ready": {"enum": ["false", false]}
+  },
+  "not": {
+    "anyOf": [
+      {"required": ["decision_tier"]},
+      {"required": ["working_register_decision_tier"]}
+    ]
+  },
+  "additionalProperties": true
+}

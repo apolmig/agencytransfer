@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/apolmig/agencytransfer/policy-atlas/schemas/public-implementation.schema.json",
+  "title": "Policy Atlas public implementation",
+  "type": "object",
+  "required": [
+    "implementation_id",
+    "control_family_id",
+    "intervention",
+    "instrument_class",
+    "implementer",
+    "jurisdiction",
+    "legal_force",
+    "legal_status",
+    "operational_maturity",
+    "causal_chain_point",
+    "expected_effect",
+    "main_failure_evasion",
+    "rights_trade_offs",
+    "metric",
+    "working_register_decision_tier",
+    "publication_decision_posture"
+  ],
+  "properties": {
+    "implementation_id": {"type": "string", "pattern": "^I-[0-9]{3}$"},
+    "control_family_id": {"type": "string", "pattern": "^CF-[0-9]{3}$"},
+    "intervention": {"type": "string", "minLength": 1},
+    "instrument_class": {"type": "string", "minLength": 1},
+    "implementer": {"type": "string", "minLength": 1},
+    "jurisdiction": {"type": "string", "minLength": 1},
+    "legal_force": {
+      "enum": ["Binding", "Binding — limited scope", "Binding — phased", "Mandatory administrative policy — limited scope", "Mixed", "Non-binding official guidance", "Voluntary / private", "Planned / no legal force", "Proposed", "Research"]
+    },
+    "legal_status": {"type": "string", "minLength": 1},
+    "operational_maturity": {
+      "enum": ["Operational", "Partial / uneven", "Pilot", "Design-ready", "Research", "Not applicable yet"]
+    },
+    "mechanism_evidence_tier": {
+      "enum": ["Project-C", "Project-X", "E0", "E1", "E2", "E3", "None"]
+    },
+    "causal_chain_point": {"type": "string", "minLength": 1},
+    "expected_effect": {"type": "string", "minLength": 1},
+    "main_failure_evasion": {"type": "string", "minLength": 1},
+    "rights_trade_offs": {"type": "string", "minLength": 1},
+    "metric": {"type": "string", "minLength": 1},
+    "working_register_decision_tier": {
+      "enum": ["Enforce now", "Implement now", "Prepare", "Pilot", "Research / hold", "Monitor / shape"]
+    },
+    "publication_decision_posture": {"const": "not_assessed"}
+  },
+  "not": {"required": ["decision_tier"]},
+  "additionalProperties": true
+}

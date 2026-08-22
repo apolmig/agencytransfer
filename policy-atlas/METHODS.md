@@ -81,7 +81,42 @@ publishes the gate definitions but not implementation-by-gate assessments, so
 the working decision tiers must not be read as reproduced pass/fail results.
 They reflect current legal authority, operational maturity, causal
 plausibility, reversibility, evaluability, and evidence without numeric
-aggregation.
+aggregation. Because their imperative labels could be mistaken for public
+recommendations, the normalized implementation and package tables preserve
+them only as explicitly named `working_register_decision_tier` provenance;
+families use `working_register_decision_posture`. The default atlas omits the
+source tier. `publication_decision_posture=not_assessed` is authoritative for
+every implementation, family, and package.
+
+## Proposed stable-core selection
+
+The v0.2 foundation records a retrospective editorial selection of 30
+implementations for intensive verification. It was not preregistered. The
+recorded process used electoral decision relevance, causal-chain coverage,
+jurisdiction and actor coverage, auditability, and non-duplication, and states
+that apparent effect direction was not a selection criterion. Because there
+is no row-specific screening ledger for all 118 candidates, that statement is
+not independently reproducible. The remaining 88 rows stay in the candidate
+registry; non-selection does not imply ineffectiveness or rejection. Full
+rules and the included-row rationale are in
+`protocol/STABLE_CORE_SELECTION.md` and
+`data/curation-v0.5/stable_core_selection.csv`.
+
+These 30 rows are proposed candidates only. Admission to a future stable core
+requires complete claim disposition, current legal review, implementation-level
+gate assessments, independent review, and the other machine-readable stable
+release gates.
+
+## Prospective ranking
+
+No ranking has been run. `protocol/RANKING_PROTOCOL.md` is a draft,
+non-preregistered design and `data/ranking-v0.1/` contains placeholder
+templates only. A future comparison must freeze a homogeneous scenario across
+jurisdiction, threat, population, vector, implementer, comparator, endpoint,
+and horizon; pass every applicable non-compensable gate; and treat missing
+required evidence as unrankable. Legal status, observed effect, and evidence
+certainty remain separate ledgers. Rank results are prohibited before
+prospective registration and independent review.
 
 ## Limitations
 

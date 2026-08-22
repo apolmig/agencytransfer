@@ -5,11 +5,17 @@ on:
     paths:
       - "policy-atlas/**"
       - ".github/workflows/policy-atlas-ci.yml"
+      - ".github/workflows/policy-atlas-publish-hf.yml"
+      - "pyproject.toml"
+      - "uv.lock"
   push:
     branches: [main]
     paths:
       - "policy-atlas/**"
       - ".github/workflows/policy-atlas-ci.yml"
+      - ".github/workflows/policy-atlas-publish-hf.yml"
+      - "pyproject.toml"
+      - "uv.lock"
 
 permissions:
   contents: read
@@ -18,19 +24,47 @@ jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: "3.12"
-      - uses: actions/setup-node@v4
+      - name: Set up locked uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.11.33"
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: "22"
           cache: npm
           cache-dependency-path: policy-atlas/package-lock.json
+      - run: uv lock --check
+      - run: uv sync --frozen --group dev
+      - run: uv run --frozen ruff check policy-atlas/scripts policy-atlas/tests
+      - run: uv run --frozen ruff format --check policy-atlas/scripts policy-atlas/tests
       - run: npm ci --prefix policy-atlas
-      - run: python policy-atlas/scripts/build_release.py
-      - run: python policy-atlas/scripts/validate_release.py
+      - run: uv run --frozen python policy-atlas/scripts/build_release.py
+      - run: uv run --frozen python policy-atlas/scripts/validate_release.py
       - run: npm --prefix policy-atlas run build:parquet
-      - run: python policy-atlas/scripts/validate_release.py
-      - run: python -m unittest discover -s policy-atlas/tests -p 'test_*.py'
-      - run: python policy-atlas/scripts/prepare_hf_release.py
+      - run: uv run --frozen python policy-atlas/scripts/validate_release.py
+      - name: Verify committed release bytes are current
+        run: |
+          git status --porcelain=v1 --untracked-files=all -- policy-atlas/release > /tmp/policy-atlas-release-status
+          if [ -s /tmp/policy-atlas-release-status ]; then
+            cat /tmp/policy-atlas-release-status
+            echo "Generated release differs from committed release inventory"
+            exit 1
+          fi
+      - run: uv run --frozen python -m unittest discover -s policy-atlas/tests -p 'test_*.py'
+      - name: Recheck committed release after tests
+        run: |
+          git status --porcelain=v1 --untracked-files=all -- policy-atlas/release > /tmp/policy-atlas-release-status
+          if [ -s /tmp/policy-atlas-release-status ]; then
+            cat /tmp/policy-atlas-release-status
+            echo "Tests left release bytes different from the committed inventory"
+            exit 1
+          fi
+      - run: uv run --frozen python policy-atlas/scripts/prepare_hf_release.py

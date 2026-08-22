@@ -1,0 +1,13 @@
+/.github/workflows/policy-atlas-publish-hf.yml @apolmig
+/policy-atlas/scripts/publish_hf.py @apolmig
+/policy-atlas/scripts/prepare_hf_release.py @apolmig
+/policy-atlas/scripts/prepare_zenodo_bundle.py @apolmig
+/policy-atlas/scripts/build_release.py @apolmig
+/policy-atlas/scripts/public_contract.py @apolmig
+/policy-atlas/scripts/release_config.py @apolmig
+/policy-atlas/scripts/validate_release.py @apolmig
+/policy-atlas/schemas/public-table-columns.json @apolmig
+/policy-atlas/protocol/ @apolmig
+/policy-atlas/review/stable_release_gates.csv @apolmig
+/pyproject.toml @apolmig
+/uv.lock @apolmig
