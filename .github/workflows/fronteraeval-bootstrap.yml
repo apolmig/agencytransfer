@@ -1,4 +1,4 @@
-name: FronteraEval build and deploy
+name: FronteraEval validation
 
 on:
   push:
@@ -13,13 +13,13 @@ permissions:
   contents: read
 
 concurrency:
-  group: fronteraeval-production
+  group: fronteraeval-validation
   cancel-in-progress: true
 
 jobs:
-  validate-and-deploy:
+  validate:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 15
     defaults:
       run:
         working-directory: fronteraeval
@@ -34,5 +34,3 @@ jobs:
         run: npm install --no-audit --no-fund
       - name: Generate and validate catalogue
         run: npm run build && npm run check
-      - name: Deploy verified source to Netlify
-        run: npx -y @netlify/mcp@latest --site-id 3aef8c2b-afef-416f-a436-446eb4f81f3d --proxy-path "https://netlify-mcp.netlify.app/proxy/eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..ghSpMqdlezr2mGU3.03tYJU1mNGN9fMkIQAa1H_V8132N75kTwSQ3Q89_VAtZQa4SGO6PPhvcZPmJjPHjGsG1Zf4rk0w7fyJMXF2M9YFPy9BH9Kpbr0Lt2be60bcRMSC9pPHRsSYBF33-Twk4YHS9VnaE1SLQul9FAdP6E54wWjD-vSIiNB64v1bdgC7UMDYda4Ar-9NgM9TJI_hB3BRexr8kn7N-ByBWNCLO-5a4OhMFInJc_eI6Ec7J8S31MfzSLG8VY9lRGAqyqZ74vU66zGOy7D1PCzWz3_jRNbjzSuGl6WVU9Y_yMSwlfbxbhtMhgEDQdgSbuXKjZywShtNTSBNw694wLWxNzJD2E6psQ-JupCmBrdaC6SlZg_IG5LuUCA3-VjUQfz4Ih3-4MqlzlS_7.dl1_5-78uN9gBslbp-aUZg"
