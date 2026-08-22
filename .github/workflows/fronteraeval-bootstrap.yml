@@ -3,7 +3,7 @@ name: FronteraEval validation
 on:
   push:
     branches:
-      - agent/fronteraeval-v0
+      - "agent/fronteraeval-*"
     paths:
       - "fronteraeval/**"
       - ".github/workflows/fronteraeval-bootstrap.yml"
@@ -13,7 +13,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: fronteraeval-validation
+  group: fronteraeval-validation-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
