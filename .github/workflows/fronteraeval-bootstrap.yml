@@ -1,9 +1,9 @@
-name: FronteraEval validation
+name: FronteraEval validation and deploy
 
 on:
   push:
     branches:
-      - "agent/fronteraeval-*"
+      - "agent/fronteraeval-editorial-redesign-2"
     paths:
       - "fronteraeval/**"
       - ".github/workflows/fronteraeval-bootstrap.yml"
@@ -13,13 +13,13 @@ permissions:
   contents: read
 
 concurrency:
-  group: fronteraeval-validation-${{ github.ref }}
+  group: fronteraeval-editorial-production
   cancel-in-progress: true
 
 jobs:
-  validate:
+  validate-and-deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     defaults:
       run:
         working-directory: fronteraeval
@@ -34,3 +34,5 @@ jobs:
         run: npm install --no-audit --no-fund
       - name: Generate and validate catalogue
         run: npm run build && npm run check
+      - name: Deploy verified redesign to Netlify
+        run: npx -y @netlify/mcp@latest --site-id 3aef8c2b-afef-416f-a436-446eb4f81f3d --proxy-path "https://netlify-mcp.netlify.app/proxy/eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..pBH0Ktv2PRFo-S7f.tCSwzmIMNFWy8aoSyV9WoATQBX_3e4S7zuz4199ebJ0OSVzUpB1JD8QSLtaGoJcKuwfk-G0NMTtskOWAmicOQjlnWjvIrDgFz3R6oZh1NQMgvh03Ct9u7BECirQpkQC_i8o5cJcItJwXJ1sFapE0Lk6e4sSpdjGfIRPDgSxohh9lyybq3B_Y8Zi7G1sXWxExig6wViL2pYmJekKJfcsIdt9aFOidnr0TMiR7glMPy82s65aMLXjnv0h7ln2Dk9G98xpyNRtwReojuNykQPo3lxFtlFDwLAlBT6CmJCrMQ0C1oh0rWnEYXnXp77nZaAbRKil94bQbbA3cLb21oDgCc8dtoRxxzgtO5g5ohBE7u7pfkh54RKzMN6SWKd1p9tyHR3htb0kA.HQ5IFhuFTCta-q95RmpO9A"
