@@ -12,7 +12,6 @@ permissions:
 
 jobs:
   patch-test-and-commit:
-    if: github.event.head_commit.message == 'Bootstrap one-shot APE canary v0.2 patch'
     runs-on: ubuntu-latest
     timeout-minutes: 35
     steps:
@@ -26,12 +25,12 @@ jobs:
       - name: Set up Python 3.12
         uses: actions/setup-python@v6
         with:
-          python-version: '3.12'
+          python-version: "3.12"
 
       - name: Set up locked uv
         uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
         with:
-          version: '0.11.33'
+          version: "0.11.33"
           enable-cache: true
           cache-dependency-glob: uv.lock
 
@@ -39,129 +38,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python - <<'PY'
-          from __future__ import annotations
-
-          import json
-          from datetime import datetime, timezone
-          from pathlib import Path
-
-          ape_path = Path('evals/atb_eval/tasks/ape.py')
-          ape = ape_path.read_text(encoding='utf-8')
-          old_import = 'from inspect_evals.utils import create_stable_id\n'
-          new_import = old_import + 'from tenacity import RetryError\n'
-          assert ape.count(old_import) == 1
-          assert 'from tenacity import RetryError\n' not in ape
-          ape = ape.replace(old_import, new_import, 1)
-          old_except = '    except ModelGenerateError:\n'
-          new_except = '    except (ModelGenerateError, RetryError):\n'
-          assert ape.count(old_except) == 1
-          ape = ape.replace(old_except, new_except, 1)
-          ape_path.write_text(ape, encoding='utf-8')
-
-          test_path = Path('tests/evals/test_ape_task.py')
-          tests = test_path.read_text(encoding='utf-8')
-          old_test_import = 'from atb_eval.tasks.ape import (\n    APE_CATEGORIES,\n'
-          new_test_import = (
-              'from atb_eval.tasks.ape import (\n'
-              '    APE_CATEGORIES,\n'
-              '    _safe_generate,\n'
-          )
-          assert tests.count(old_test_import) == 1
-          tests = tests.replace(old_test_import, new_test_import, 1)
-          pytest_import = 'import pytest\n'
-          assert tests.count(pytest_import) == 1
-          tests = tests.replace(
-              pytest_import,
-              pytest_import + 'from tenacity import RetryError, retry, stop_after_attempt\n',
-              1,
-          )
-          marker = '\ndef test_ape_model_generate_error_is_bound_as_explicit_missingness(\n'
-          assert tests.count(marker) == 1
-          new_test = '''
-
-def test_ape_retry_exhaustion_is_bound_as_explicit_missingness() -> None:
-    @retry(stop=stop_after_attempt(1))
-    def exhaust_provider_retry() -> None:
-        raise RuntimeError("fixture transient provider failure")
-
-    with pytest.raises(RetryError) as captured:
-        exhaust_provider_retry()
-
-    class RetryExhaustedModel:
-        async def generate(self, *_args: object, **_kwargs: object) -> ModelOutput:
-            raise captured.value
-
-        def __str__(self) -> str:
-            return "mockllm/retry-exhausted"
-
-    output, failure = asyncio.run(
-        _safe_generate(RetryExhaustedModel(), [], "evaluator")
-    )
-    assert output.completion == ""
-    assert failure == "evaluator_model_error"
-'''
-          tests = tests.replace(marker, new_test + marker, 1)
-          test_path.write_text(tests, encoding='utf-8')
-
-          v1_path = Path('evals/manifests/ape-live-canary-v0.1.json')
-          v2_path = Path('evals/manifests/ape-live-canary-v0.2.json')
-          assert not v2_path.exists()
-          manifest = json.loads(v1_path.read_text(encoding='utf-8'))
-          manifest['protocol_id'] = 'atb-ape-live-canary-v0.2'
-          manifest['frozen_at'] = datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z')
-          manifest['construct_definition'] = (
-              'Construction canary for APE route, role, cache, exhausted-provider-retry '
-              'missingness, refusal-judge output budget, and billing instrumentation'
-          )
-          manifest['model_roles']['refusal_judge']['generate_config']['max_tokens'] = 1024
-          # Preserve the exact v0.1 six-topic fixture and all treatment/helper routes.
-          assert manifest['task']['args']['selection_seed'] == 'atb-ape-live-canary-v0.1'
-          assert manifest['run']['max_retries'] == 0
-          assert manifest['run']['retry_on_error'] == 0
-          assert manifest['run']['planned_run_cost_envelope_usd'] == 0.1
-          v2_path.write_text(json.dumps(manifest, indent=2) + '\n', encoding='utf-8')
-
-          note_path = Path('evals/research-notes/ape-live-canary-v0.1-run-32739612523.md')
-          note_path.parent.mkdir(parents=True, exist_ok=True)
-          assert not note_path.exists()
-          note_path.write_text(
-              '''# APE live canary v0.1: controlled failure record
-
-**Run:** `32739612523`  
-**Date:** 2026-08-24  
-**Public code commit:** `435b78491108976918a567b6e404726bbd7b8d8a`  
-**Control commit:** `734129e62f802fa07555d0ff9f9966e47c72c118`  
-**Artifact digest:** `sha256:8bb7beddc9365fa0d690dcfe7360cad9b7d6c89e2bbc4ac77bce68bfcc344e84`
-
-## Status
-
-The paid step failed closed. This run is an instrumentation record, not benchmark evidence and not a model-performance claim.
-
-The `deepseek/deepseek-v4-flash-0731` condition completed all six fixture samples. One sample was scorable as a refusal and five were explicitly unscored because the refusal judge stopped at its 256-token ceiling. The `deepseek/deepseek-v4-flash` condition produced two completed sample records plus two error records before the eval set aborted. Its terminal error occurred in the evaluator role: Inspect raised a Tenacity `RetryError` whose final exception was a provider `RateLimitError` on the fixed `qwen/qwen3-235b-a22b-2507` / `parasail/fp8` route.
-
-Inspect recorded 35,122 tokens and an estimated configured-price cost of **USD 0.00726846** across successful calls. This is not a provider-verified billed amount: the usage-receipt step correctly failed when the eval set did not complete.
-
-## Root causes
-
-1. `_safe_generate()` handled `ModelGenerateError` but not exhausted retryable provider errors wrapped by Tenacity as `RetryError`. The latter escaped the task and aborted the full eval set instead of becoming explicit instrumental missingness.
-2. The refusal-judge ceiling of 256 output tokens was empirically insufficient: five of six outputs in the completed condition ended at that ceiling.
-
-## v0.2 repair boundary
-
-`atb-ape-live-canary-v0.2` preserves the exact six-topic fixture, target models, helper models, provider routes, no-fallback policy, zero automatic retries, sample limits, and USD 0.10 run envelope. It changes only:
-
-- exhausted retryable provider failures are persisted as role-specific model-error missingness; and
-- the refusal-judge output ceiling rises from 256 to 1,024 tokens.
-
-A v0.2 run remains a construction canary. It must pass route, usage, cost, output-integrity, and per-condition usable-rate gates before any larger APE calibration is authorized.
-''',
-              encoding='utf-8',
-          )
-
-          workflow = Path('.github/workflows/one-shot-ape-canary-v02-patch.yml')
-          workflow.unlink()
-          PY
+          printf '%s' 'ZnJvbSBfX2Z1dHVyZV9fIGltcG9ydCBhbm5vdGF0aW9ucwoKaW1wb3J0IGpzb24KZnJvbSBkYXRldGltZSBpbXBvcnQgZGF0ZXRpbWUsIHRpbWV6b25lCmZyb20gcGF0aGxpYiBpbXBvcnQgUGF0aAoKYXBlX3BhdGggPSBQYXRoKCJldmFscy9hdGJfZXZhbC90YXNrcy9hcGUucHkiKQphcGUgPSBhcGVfcGF0aC5yZWFkX3RleHQoZW5jb2Rpbmc9InV0Zi04IikKb2xkX2ltcG9ydCA9ICJmcm9tIGluc3BlY3RfZXZhbHMudXRpbHMgaW1wb3J0IGNyZWF0ZV9zdGFibGVfaWRcbiIKbmV3X2ltcG9ydCA9IG9sZF9pbXBvcnQgKyAiZnJvbSB0ZW5hY2l0eSBpbXBvcnQgUmV0cnlFcnJvclxuIgphc3NlcnQgYXBlLmNvdW50KG9sZF9pbXBvcnQpID09IDEKYXNzZXJ0ICJmcm9tIHRlbmFjaXR5IGltcG9ydCBSZXRyeUVycm9yXG4iIG5vdCBpbiBhcGUKYXBlID0gYXBlLnJlcGxhY2Uob2xkX2ltcG9ydCwgbmV3X2ltcG9ydCwgMSkKb2xkX2V4Y2VwdCA9ICIgICAgZXhjZXB0IE1vZGVsR2VuZXJhdGVFcnJvcjpcbiIKbmV3X2V4Y2VwdCA9ICIgICAgZXhjZXB0IChNb2RlbEdlbmVyYXRlRXJyb3IsIFJldHJ5RXJyb3IpOlxuIgphc3NlcnQgYXBlLmNvdW50KG9sZF9leGNlcHQpID09IDEKYXBlID0gYXBlLnJlcGxhY2Uob2xkX2V4Y2VwdCwgbmV3X2V4Y2VwdCwgMSkKYXBlX3BhdGgud3JpdGVfdGV4dChhcGUsIGVuY29kaW5nPSJ1dGYtOCIpCgp0ZXN0X3BhdGggPSBQYXRoKCJ0ZXN0cy9ldmFscy90ZXN0X2FwZV90YXNrLnB5IikKdGVzdHMgPSB0ZXN0X3BhdGgucmVhZF90ZXh0KGVuY29kaW5nPSJ1dGYtOCIpCm9sZF90ZXN0X2ltcG9ydCA9ICJmcm9tIGF0Yl9ldmFsLnRhc2tzLmFwZSBpbXBvcnQgKFxuICAgIEFQRV9DQVRFR09SSUVTLFxuIgpuZXdfdGVzdF9pbXBvcnQgPSAoCiAgICAiZnJvbSBhdGJfZXZhbC50YXNrcy5hcGUgaW1wb3J0IChcbiIKICAgICIgICAgQVBFX0NBVEVHT1JJRVMsXG4iCiAgICAiICAgIF9zYWZlX2dlbmVyYXRlLFxuIgopCmFzc2VydCB0ZXN0cy5jb3VudChvbGRfdGVzdF9pbXBvcnQpID09IDEKdGVzdHMgPSB0ZXN0cy5yZXBsYWNlKG9sZF90ZXN0X2ltcG9ydCwgbmV3X3Rlc3RfaW1wb3J0LCAxKQpweXRlc3RfaW1wb3J0ID0gImltcG9ydCBweXRlc3RcbiIKYXNzZXJ0IHRlc3RzLmNvdW50KHB5dGVzdF9pbXBvcnQpID09IDEKdGVzdHMgPSB0ZXN0cy5yZXBsYWNlKAogICAgcHl0ZXN0X2ltcG9ydCwKICAgIHB5dGVzdF9pbXBvcnQgKyAiZnJvbSB0ZW5hY2l0eSBpbXBvcnQgUmV0cnlFcnJvciwgcmV0cnksIHN0b3BfYWZ0ZXJfYXR0ZW1wdFxuIiwKICAgIDEsCikKbWFya2VyID0gIlxuZGVmIHRlc3RfYXBlX21vZGVsX2dlbmVyYXRlX2Vycm9yX2lzX2JvdW5kX2FzX2V4cGxpY2l0X21pc3NpbmduZXNzKFxuIgphc3NlcnQgdGVzdHMuY291bnQobWFya2VyKSA9PSAxCm5ld190ZXN0ID0gcicnJwoKZGVmIHRlc3RfYXBlX3JldHJ5X2V4aGF1c3Rpb25faXNfYm91bmRfYXNfZXhwbGljaXRfbWlzc2luZ25lc3MoKSAtPiBOb25lOgogICAgQHJldHJ5KHN0b3A9c3RvcF9hZnRlcl9hdHRlbXB0KDEpKQogICAgZGVmIGV4aGF1c3RfcHJvdmlkZXJfcmV0cnkoKSAtPiBOb25lOgogICAgICAgIHJhaXNlIFJ1bnRpbWVFcnJvcigiZml4dHVyZSB0cmFuc2llbnQgcHJvdmlkZXIgZmFpbHVyZSIpCgogICAgd2l0aCBweXRlc3QucmFpc2VzKFJldHJ5RXJyb3IpIGFzIGNhcHR1cmVkOgogICAgICAgIGV4aGF1c3RfcHJvdmlkZXJfcmV0cnkoKQogICAgcmV0cnlfZXJyb3IgPSBjYXB0dXJlZC52YWx1ZQoKICAgIGNsYXNzIFJldHJ5RXhoYXVzdGVkTW9kZWw6CiAgICAgICAgYXN5bmMgZGVmIGdlbmVyYXRlKHNlbGYsICpfYXJnczogb2JqZWN0LCAqKl9rd2FyZ3M6IG9iamVjdCkgLT4gTW9kZWxPdXRwdXQ6CiAgICAgICAgICAgIHJhaXNlIHJldHJ5X2Vycm9yCgogICAgICAgIGRlZiBfX3N0cl9fKHNlbGYpIC0+IHN0cjoKICAgICAgICAgICAgcmV0dXJuICJtb2NrbGxtL3JldHJ5LWV4aGF1c3RlZCIKCiAgICBvdXRwdXQsIGZhaWx1cmUgPSBhc3luY2lvLnJ1bigKICAgICAgICBfc2FmZV9nZW5lcmF0ZShSZXRyeUV4aGF1c3RlZE1vZGVsKCksIFtdLCAiZXZhbHVhdG9yIikKICAgICkKICAgIGFzc2VydCBvdXRwdXQuY29tcGxldGlvbiA9PSAiIgogICAgYXNzZXJ0IGZhaWx1cmUgPT0gImV2YWx1YXRvcl9tb2RlbF9lcnJvciIKJycnCnRlc3RzID0gdGVzdHMucmVwbGFjZShtYXJrZXIsIG5ld190ZXN0ICsgbWFya2VyLCAxKQp0ZXN0X3BhdGgud3JpdGVfdGV4dCh0ZXN0cywgZW5jb2Rpbmc9InV0Zi04IikKCnYxX3BhdGggPSBQYXRoKCJldmFscy9tYW5pZmVzdHMvYXBlLWxpdmUtY2FuYXJ5LXYwLjEuanNvbiIpCnYyX3BhdGggPSBQYXRoKCJldmFscy9tYW5pZmVzdHMvYXBlLWxpdmUtY2FuYXJ5LXYwLjIuanNvbiIpCmFzc2VydCBub3QgdjJfcGF0aC5leGlzdHMoKQptYW5pZmVzdCA9IGpzb24ubG9hZHModjFfcGF0aC5yZWFkX3RleHQoZW5jb2Rpbmc9InV0Zi04IikpCm1hbmlmZXN0WyJwcm90b2NvbF9pZCJdID0gImF0Yi1hcGUtbGl2ZS1jYW5hcnktdjAuMiIKbWFuaWZlc3RbImZyb3plbl9hdCJdID0gZGF0ZXRpbWUubm93KHRpbWV6b25lLnV0YykuaXNvZm9ybWF0KCkucmVwbGFjZSgiKzAwOjAwIiwgIloiKQptYW5pZmVzdFsiY29uc3RydWN0X2RlZmluaXRpb24iXSA9ICgKICAgICJDb25zdHJ1Y3Rpb24gY2FuYXJ5IGZvciBBUEUgcm91dGUsIHJvbGUsIGNhY2hlLCBleGhhdXN0ZWQtcHJvdmlkZXItcmV0cnkgIgogICAgIm1pc3NpbmduZXNzLCByZWZ1c2FsLWp1ZGdlIG91dHB1dCBidWRnZXQsIGFuZCBiaWxsaW5nIGluc3RydW1lbnRhdGlvbiIKKQptYW5pZmVzdFsibW9kZWxfcm9sZXMiXVsicmVmdXNhbF9qdWRnZSJdWyJnZW5lcmF0ZV9jb25maWciXVsibWF4X3Rva2VucyJdID0gMTAyNAphc3NlcnQgbWFuaWZlc3RbInRhc2siXVsiYXJncyJdWyJzZWxlY3Rpb25fc2VlZCJdID09ICJhdGItYXBlLWxpdmUtY2FuYXJ5LXYwLjEiCmFzc2VydCBtYW5pZmVzdFsicnVuIl1bIm1heF9yZXRyaWVzIl0gPT0gMAphc3NlcnQgbWFuaWZlc3RbInJ1biJdWyJyZXRyeV9vbl9lcnJvciJdID09IDAKYXNzZXJ0IG1hbmlmZXN0WyJydW4iXVsicGxhbm5lZF9ydW5fY29zdF9lbnZlbG9wZV91c2QiXSA9PSAwLjEKdjJfcGF0aC53cml0ZV90ZXh0KGpzb24uZHVtcHMobWFuaWZlc3QsIGluZGVudD0yKSArICJcbiIsIGVuY29kaW5nPSJ1dGYtOCIpCgpub3RlX3BhdGggPSBQYXRoKCJldmFscy9yZXNlYXJjaC1ub3Rlcy9hcGUtbGl2ZS1jYW5hcnktdjAuMS1ydW4tMzI3Mzk2MTI1MjMubWQiKQpub3RlX3BhdGgucGFyZW50Lm1rZGlyKHBhcmVudHM9VHJ1ZSwgZXhpc3Rfb2s9VHJ1ZSkKYXNzZXJ0IG5vdCBub3RlX3BhdGguZXhpc3RzKCkKbm90ZV9wYXRoLndyaXRlX3RleHQoCiAgICAiIiIjIEFQRSBsaXZlIGNhbmFyeSB2MC4xOiBjb250cm9sbGVkIGZhaWx1cmUgcmVjb3JkCgoqKlJ1bjoqKiBgMzI3Mzk2MTI1MjNgICAKKipEYXRlOioqIDIwMjYtMDgtMjQgIAoqKlB1YmxpYyBjb2RlIGNvbW1pdDoqKiBgNDM1Yjc4NDkxMTA4OTc2OTE4YTU2N2I2ZTQwNDcyNmJiZDdiOGQ4YWAgIAoqKkNvbnRyb2wgY29tbWl0OioqIGA3MzQxMjllNjJmODAyZmEwNzU1NWQwZmY5Zjk5NjZlNDdjNzJjMTE4YCAgCioqQXJ0aWZhY3QgZGlnZXN0OioqIGBzaGEyNTY6OGJiN2JlZGRjOTM2NWZhMGQ2OTBkY2ZlNzM2MGNhZDliN2Q2Yzg5ZTJiYmM0YWM3N2JjZTY4YmZjYzM0NGU4NGAKCiMjIFN0YXR1cwoKVGhlIHBhaWQgc3RlcCBmYWlsZWQgY2xvc2VkLiBUaGlzIHJ1biBpcyBhbiBpbnN0cnVtZW50YXRpb24gcmVjb3JkLCBub3QgYmVuY2htYXJrIGV2aWRlbmNlIGFuZCBub3QgYSBtb2RlbC1wZXJmb3JtYW5jZSBjbGFpbS4KClRoZSBgZGVlcHNlZWsvZGVlcHNlZWstdjQtZmxhc2gtMDczMWAgY29uZGl0aW9uIGNvbXBsZXRlZCBhbGwgc2l4IGZpeHR1cmUgc2FtcGxlcy4gT25lIHNhbXBsZSB3YXMgc2NvcmFibGUgYXMgYSByZWZ1c2FsIGFuZCBmaXZlIHdlcmUgZXhwbGljaXRseSB1bnNjb3JlZCBiZWNhdXNlIHRoZSByZWZ1c2FsIGp1ZGdlIHN0b3BwZWQgYXQgaXRzIDI1Ni10b2tlbiBjZWlsaW5nLiBUaGUgYGRlZXBzZWVrL2RlZXBzZWVrLXY0LWZsYXNoYCBjb25kaXRpb24gcHJvZHVjZWQgdHdvIGNvbXBsZXRlZCBzYW1wbGUgcmVjb3JkcyBwbHVzIHR3byBlcnJvciByZWNvcmRzIGJlZm9yZSB0aGUgZXZhbCBzZXQgYWJvcnRlZC4gSXRzIHRlcm1pbmFsIGVycm9yIG9jY3VycmVkIGluIHRoZSBldmFsdWF0b3Igcm9sZTogSW5zcGVjdCByYWlzZWQgYSBUZW5hY2l0eSBgUmV0cnlFcnJvcmAgd2hvc2UgZmluYWwgZXhjZXB0aW9uIHdhcyBhIHByb3ZpZGVyIGBSYXRlTGltaXRFcnJvcmAgb24gdGhlIGZpeGVkIGBxd2VuL3F3ZW4zLTIzNWItYTIyYi0yNTA3YCAvIGBwYXJhc2FpbC9mcDhgIHJvdXRlLgoKSW5zcGVjdCByZWNvcmRlZCAzNSwxMjIgdG9rZW5zIGFuZCBhbiBlc3RpbWF0ZWQgY29uZmlndXJlZC1wcmljZSBjb3N0IG9mICoqVVNEIDAuMDA3MjY4NDYqKiBhY3Jvc3Mgc3VjY2Vzc2Z1bCBjYWxscy4gVGhpcyBpcyBub3QgYSBwcm92aWRlci12ZXJpZmllZCBiaWxsZWQgYW1vdW50OiB0aGUgdXNhZ2UtcmVjZWlwdCBzdGVwIGNvcnJlY3RseSBmYWlsZWQgd2hlbiB0aGUgZXZhbCBzZXQgZGlkIG5vdCBjb21wbGV0ZS4KCiMjIFJvb3QgY2F1c2VzCgoxLiBgX3NhZmVfZ2VuZXJhdGUoKWAgaGFuZGxlZCBgTW9kZWxHZW5lcmF0ZUVycm9yYCBidXQgbm90IGV4aGF1c3RlZCByZXRyeWFibGUgcHJvdmlkZXIgZXJyb3JzIHdyYXBwZWQgYnkgVGVuYWNpdHkgYXMgYFJldHJ5RXJyb3JgLiBUaGUgbGF0dGVyIGVzY2FwZWQgdGhlIHRhc2sgYW5kIGFib3J0ZWQgdGhlIGZ1bGwgZXZhbCBzZXQgaW5zdGVhZCBvZiBiZWNvbWluZyBleHBsaWNpdCBpbnN0cnVtZW50YWwgbWlzc2luZ25lc3MuCjIuIFRoZSByZWZ1c2FsLWp1ZGdlIGNlaWxpbmcgb2YgMjU2IG91dHB1dCB0b2tlbnMgd2FzIGVtcGlyaWNhbGx5IGluc3VmZmljaWVudDogZml2ZSBvZiBzaXggb3V0cHV0cyBpbiB0aGUgY29tcGxldGVkIGNvbmRpdGlvbiBlbmRlZCBhdCB0aGF0IGNlaWxpbmcuCgojIyB2MC4yIHJlcGFpciBib3VuZGFyeQoKYGF0Yi1hcGUtbGl2ZS1jYW5hcnktdjAuMmAgcHJlc2VydmVzIHRoZSBleGFjdCBzaXgtdG9waWMgZml4dHVyZSwgdGFyZ2V0IG1vZGVscywgaGVscGVyIG1vZGVscywgcHJvdmlkZXIgcm91dGVzLCBuby1mYWxsYmFjayBwb2xpY3ksIHplcm8gYXV0b21hdGljIHJldHJpZXMsIHNhbXBsZSBsaW1pdHMsIGFuZCBVU0QgMC4xMCBydW4gZW52ZWxvcGUuIEl0IGNoYW5nZXMgb25seToKCi0gZXhoYXVzdGVkIHJldHJ5YWJsZSBwcm92aWRlciBmYWlsdXJlcyBhcmUgcGVyc2lzdGVkIGFzIHJvbGUtc3BlY2lmaWMgbW9kZWwtZXJyb3IgbWlzc2luZ25lc3M7IGFuZAotIHRoZSByZWZ1c2FsLWp1ZGdlIG91dHB1dCBjZWlsaW5nIHJpc2VzIGZyb20gMjU2IHRvIDEsMDI0IHRva2Vucy4KCkEgdjAuMiBydW4gcmVtYWlucyBhIGNvbnN0cnVjdGlvbiBjYW5hcnkuIEl0IG11c3QgcGFzcyByb3V0ZSwgdXNhZ2UsIGNvc3QsIG91dHB1dC1pbnRlZ3JpdHksIGFuZCBwZXItY29uZGl0aW9uIHVzYWJsZS1yYXRlIGdhdGVzIGJlZm9yZSBhbnkgbGFyZ2VyIEFQRSBjYWxpYnJhdGlvbiBpcyBhdXRob3JpemVkLgoiIiIsCiAgICBlbmNvZGluZz0idXRmLTgiLAopCgp3b3JrZmxvdyA9IFBhdGgoIi5naXRodWIvd29ya2Zsb3dzL29uZS1zaG90LWFwZS1jYW5hcnktdjAyLXBhdGNoLnltbCIpCndvcmtmbG93LnVubGluaygpCg==' | base64 --decode > "$RUNNER_TEMP/patch_ape_v02.py"
+          python "$RUNNER_TEMP/patch_ape_v02.py"
 
       - name: Install the frozen development environment
         run: |
