@@ -1,0 +1,170 @@
+name: One-shot apply and freeze APE120 longitudinal protocol
+
+on:
+  push:
+    branches:
+      - agent/ape120-longitudinal-20260825
+    paths:
+      - .github/workflows/one-shot-apply-freeze-ape120.yml
+
+permissions:
+  contents: write
+
+jobs:
+  apply-freeze-and-verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - name: Check out exact research branch
+        uses: actions/checkout@v6
+        with:
+          ref: agent/ape120-longitudinal-20260825
+          fetch-depth: 1
+          persist-credentials: true
+
+      - name: Reconstruct and verify reviewed implementation patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat evals/patches/ape120-implementation-v0.1.part* > "$RUNNER_TEMP/ape120.patch.gz.b64"
+          test "$(sha256sum "$RUNNER_TEMP/ape120.patch.gz.b64" | cut -d ' ' -f 1)" = "99820327517c7b35d5d3ab37f658c9567f4f6bc4136f85cb232aeb790621c864"
+          base64 --decode "$RUNNER_TEMP/ape120.patch.gz.b64" > "$RUNNER_TEMP/ape120.patch.gz"
+          test "$(sha256sum "$RUNNER_TEMP/ape120.patch.gz" | cut -d ' ' -f 1)" = "654460e6826dcdd4ed0e31f71adc2fcf05f36e6bbd56ac5808d4fe8f0364c2d4"
+          gzip --decompress --stdout "$RUNNER_TEMP/ape120.patch.gz" > "$RUNNER_TEMP/ape120.patch"
+          test "$(sha256sum "$RUNNER_TEMP/ape120.patch" | cut -d ' ' -f 1)" = "4b806a18d95244698df5803d134973b02eab89f187a71315a275caf419dca094"
+          git apply --check "$RUNNER_TEMP/ape120.patch"
+          git apply "$RUNNER_TEMP/ape120.patch"
+          python -m py_compile \
+            evals/atb_eval/manifest.py \
+            evals/atb_eval/paid_execution.py \
+            evals/atb_eval/runner.py \
+            evals/atb_eval/tasks/ape.py \
+            scripts/build_ape120_inventory.py \
+            scripts/capture_ape120_routes.py \
+            scripts/freeze_ape120_longitudinal.py
+
+      - name: Check out pinned APE source
+        uses: actions/checkout@v6
+        with:
+          repository: AlignmentResearch/AttemptPersuadeEval
+          ref: d77a4b14d5d3353ea4ac73fb22df239e36606c1d
+          path: ape-source
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Set up locked uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.11.33"
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+
+      - name: Install frozen development environment
+        shell: bash
+        run: |
+          set -euo pipefail
+          uv lock --check
+          uv sync --frozen --group dev
+
+      - name: Format and lint implementation
+        shell: bash
+        run: |
+          set -euo pipefail
+          uv run --frozen ruff format \
+            evals/atb_eval/manifest.py \
+            evals/atb_eval/paid_execution.py \
+            evals/atb_eval/runner.py \
+            evals/atb_eval/tasks/ape.py \
+            scripts/build_ape120_inventory.py \
+            scripts/capture_ape120_routes.py \
+            scripts/freeze_ape120_longitudinal.py
+          uv run --frozen ruff check --fix \
+            evals/atb_eval/manifest.py \
+            evals/atb_eval/paid_execution.py \
+            evals/atb_eval/runner.py \
+            evals/atb_eval/tasks/ape.py \
+            scripts/build_ape120_inventory.py \
+            scripts/capture_ape120_routes.py \
+            scripts/freeze_ape120_longitudinal.py
+          uv run --frozen ruff format --check \
+            evals/atb_eval/manifest.py \
+            evals/atb_eval/paid_execution.py \
+            evals/atb_eval/runner.py \
+            evals/atb_eval/tasks/ape.py \
+            scripts/build_ape120_inventory.py \
+            scripts/capture_ape120_routes.py \
+            scripts/freeze_ape120_longitudinal.py
+          uv run --frozen ruff check \
+            evals/atb_eval/manifest.py \
+            evals/atb_eval/paid_execution.py \
+            evals/atb_eval/runner.py \
+            evals/atb_eval/tasks/ape.py \
+            scripts/build_ape120_inventory.py \
+            scripts/capture_ape120_routes.py \
+            scripts/freeze_ape120_longitudinal.py
+
+      - name: Refresh inventory and freeze exact longitudinal protocol
+        shell: bash
+        run: |
+          set -euo pipefail
+          uv run --frozen python scripts/build_ape120_inventory.py
+          uv run --frozen python scripts/freeze_ape120_longitudinal.py
+
+      - name: Verify frozen evidence, selection, and dry-run
+        shell: bash
+        env:
+          DRY_LOG_DIR: ${{ runner.temp }}/ape120-dryrun
+        run: |
+          set -euo pipefail
+          uv run --frozen python - <<'PY'
+          import json
+          from pathlib import Path
+          from atb_eval.manifest import load_manifest_with_hash, verify_model_revision_evidence
+
+          path = Path('evals/manifests/ape-stage2a-longitudinal-v0.1.json')
+          manifest, digest = load_manifest_with_hash(path)
+          verify_model_revision_evidence(manifest, Path('.'))
+          selection = json.loads(
+              Path('evals/research-notes/ape120-longitudinal-selection-v0.1.json')
+              .read_text(encoding='utf-8')
+          )
+          assert manifest.protocol_id == 'atb-ape-stage2a-longitudinal-v0.1'
+          assert len(manifest.models) == 65
+          assert selection['condition_count'] == 65
+          assert selection['open_weight_condition_count'] == 42
+          assert selection['hosted_condition_count'] == 23
+          assert selection['expected_total_cost_usd'] <= 29.5
+          assert manifest.run.planned_run_cost_envelope_usd == 29.5
+          assert manifest.run.provider_key_limit_usd == 30.0
+          print(digest)
+          PY
+          uv run --frozen atb-eval \
+            --manifest evals/manifests/ape-stage2a-longitudinal-v0.1.json \
+            --source-dir ape-source \
+            --log-dir "$DRY_LOG_DIR"
+
+      - name: Run complete locked test suite
+        shell: bash
+        run: |
+          set -euo pipefail
+          uv run --frozen pytest
+
+      - name: Remove staging material and commit frozen protocol
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f .github/workflows/one-shot-apply-freeze-ape120.yml
+          rm -f .github/workflows/one-shot-export-ape120-sources.yml
+          rm -rf evals/patches
+          git diff --check
+          git status --short
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Freeze 65-condition longitudinal APE120 protocol'
+          git push origin HEAD:agent/ape120-longitudinal-20260825
