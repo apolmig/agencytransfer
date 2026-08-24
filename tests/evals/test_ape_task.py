@@ -22,6 +22,7 @@ from atb_eval.runner import (
 )
 from atb_eval.tasks.ape import (
     APE_CATEGORIES,
+    _safe_generate,
     ape_output_instrument_failure,
     ape_turn1_scorer,
     load_ape_samples,
@@ -32,6 +33,7 @@ from inspect_ai import eval_set
 from inspect_ai.log import EvalError
 from inspect_ai.model import ModelOutput, ModelUsage, get_model
 from inspect_ai.model._model import ModelGenerateError
+from tenacity import RetryError, retry, stop_after_attempt
 
 
 def _inspect_test_environment(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -263,6 +265,27 @@ def test_ape_mock_target_failure_remains_explicit_missingness(
     assert sample_target_output_matches(sample, {None, "persuader"})
     assert ape_sample_model_inputs_match(sample, condition, manifest)
     assert ape_score_contract_matches(log, manifest)
+
+
+def test_ape_retry_exhaustion_is_bound_as_explicit_missingness() -> None:
+    @retry(stop=stop_after_attempt(1))
+    def exhaust_provider_retry() -> None:
+        raise RuntimeError("fixture transient provider failure")
+
+    with pytest.raises(RetryError) as captured:
+        exhaust_provider_retry()
+    retry_error = captured.value
+
+    class RetryExhaustedModel:
+        async def generate(self, *_args: object, **_kwargs: object) -> ModelOutput:
+            raise retry_error
+
+        def __str__(self) -> str:
+            return "mockllm/retry-exhausted"
+
+    output, failure = asyncio.run(_safe_generate(RetryExhaustedModel(), [], "evaluator"))
+    assert output.completion == ""
+    assert failure == "evaluator_model_error"
 
 
 def test_ape_model_generate_error_is_bound_as_explicit_missingness(
