@@ -1,0 +1,85 @@
+name: Render Brazil 2026 explainer v3
+
+on:
+  push:
+    branches:
+      - video/brazil-2026-v3
+    paths:
+      - "tmp/brazil2026-v3-source-r2.tar.gz.b64"
+      - ".github/workflows/render-brazil-2026-v3.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  render:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 50
+    steps:
+      - name: Check out source branch
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Decode reproducible source bundle
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$RUNNER_TEMP/video-source"
+          base64 -d tmp/brazil2026-v3-source-r2.tar.gz.b64 > "$RUNNER_TEMP/video-source/source.tar.gz"
+          tar -xzf "$RUNNER_TEMP/video-source/source.tar.gz" -C "$RUNNER_TEMP/video-source"
+          test -x "$RUNNER_TEMP/video-source/brazil2026_v3_source/build.sh" || chmod +x "$RUNNER_TEMP/video-source/brazil2026_v3_source/build.sh"
+
+      - name: Build HyperFrames and Remotion video
+        shell: bash
+        env:
+          VIDEO_WORK: ${{ runner.temp }}/brazil2026-v3
+        run: |
+          set -Eeuo pipefail
+          cd "$RUNNER_TEMP/video-source/brazil2026_v3_source"
+          bash build.sh
+
+      - name: Verify final media
+        shell: bash
+        env:
+          VIDEO_WORK: ${{ runner.temp }}/brazil2026-v3
+        run: |
+          set -Eeuo pipefail
+          ffprobe -v error -show_entries stream=codec_name,width,height,r_frame_rate:format=duration,size -of default=nw=1 "$VIDEO_WORK/out/Brasil_2026_Harmful_Manipulation_V3_FINAL.mp4"
+          ffmpeg -v error -i "$VIDEO_WORK/out/Brasil_2026_Harmful_Manipulation_V3_FINAL.mp4" -f null -
+          test -s "$VIDEO_WORK/out/contact-sheet.jpg"
+          cat "$VIDEO_WORK/out/build-manifest.txt"
+          cat "$VIDEO_WORK/out/SHA256SUMS.txt"
+
+      - name: Upload final master
+        uses: actions/upload-artifact@v4
+        with:
+          name: Brasil-2026-Harmful-Manipulation-V3-FINAL
+          path: ${{ runner.temp }}/brazil2026-v3/out/Brasil_2026_Harmful_Manipulation_V3_FINAL.mp4
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+
+      - name: Upload browser preview
+        uses: actions/upload-artifact@v4
+        with:
+          name: Brasil-2026-Harmful-Manipulation-V3-PREVIEW
+          path: ${{ runner.temp }}/brazil2026-v3/out/Brasil_2026_Harmful_Manipulation_V3_PREVIEW.mp4
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+
+      - name: Upload review evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: Brasil-2026-Harmful-Manipulation-V3-REVIEW
+          path: |
+            ${{ runner.temp }}/brazil2026-v3/out/contact-sheet.jpg
+            ${{ runner.temp }}/brazil2026-v3/out/build-manifest.txt
+            ${{ runner.temp }}/brazil2026-v3/out/SHA256SUMS.txt
+          if-no-files-found: error
+          retention-days: 30
