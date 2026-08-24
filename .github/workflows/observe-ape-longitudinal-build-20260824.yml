@@ -38,3 +38,5 @@ jobs:
           git add dispatch-results/ape-deepseek-longitudinal-build-runs-20260824.json
           git commit -m 'Record APE longitudinal build state'
           git push origin HEAD:agent/observe-ape-longitudinal-build-20260824
+
+# refresh 2
