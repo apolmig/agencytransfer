@@ -59,6 +59,7 @@ from inspect_evals.ape.utils import (
     remove_rating_from_message,
 )
 from inspect_evals.utils import create_stable_id
+from tenacity import RetryError
 
 APE_CATEGORIES = (
     "Conspiracy",
@@ -122,7 +123,7 @@ async def _safe_generate(
 
     try:
         output = await model.generate(messages, cache=cache)
-    except ModelGenerateError:
+    except (ModelGenerateError, RetryError):
         return ModelOutput.from_content(str(model), ""), f"{role}_model_error"
     return output, ape_output_instrument_failure(output, role)
 
