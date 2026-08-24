@@ -55,6 +55,12 @@ JOB_ID_RE = re.compile(r"[A-Za-z0-9][A-Za-z0-9_-]{7,127}")
 REPO_ID_RE = re.compile(r"apol/[a-z0-9][a-z0-9._-]{2,95}")
 EXPECTED_OWNER = "apol"
 EXPECTED_EVIDENCE_REPO = "apol/era-part1b-training-evidence"
+V6_QUARANTINE_PATH = (
+    "runs/era-p1b-v6-20260824t120929z/control/quarantine.json"
+)
+V6_QUARANTINE_SHA256 = (
+    "11fba1ff3c1f1b682d5bef8f4cb2e98fd85362e81e709661feb08e7d8c0b144a"
+)
 AUTHORIZATION_KEY_ID = "era-part1b-v7-ed25519-20260824"
 AUTHORIZATION_PUBLIC_KEY_SPKI_DER_B64 = (
     "MCowBQYDK2VwAyEADehmAFyNnRS6c941dMx8mDvec/E3y7YQuKIxnylIGhU="
@@ -62,7 +68,7 @@ AUTHORIZATION_PUBLIC_KEY_SPKI_DER_B64 = (
 AUTHORIZATION_PUBLIC_KEY_SPKI_DER_SHA256 = (
     "f650510b9e62da614293a43e5b5c5dfef563f8b5ba9a81e126de2a16b9914ff2"
 )
-EXPECTED_PROTOCOL_SHA256 = "2986236eb03462512ae423366b524ee21a8cc9b258cabb54866e20605f557b9d"
+EXPECTED_PROTOCOL_SHA256 = "b4977bdf1ff91241b190c1d0ea8ac1beb241aacdd5381fab29ad3cb0d3ca7aa7"
 EXPECTED_RUNTIME_VERSIONS = {
     "accelerate": "1.14.0",
     "bitsandbytes": "0.49.2",
@@ -267,6 +273,22 @@ def strict_object(pairs: list[tuple[str, object]]) -> dict[str, object]:
 
 def reject_json_constant(value: str) -> None:
     raise ValueError(f"non-finite JSON constant is forbidden: {value}")
+
+
+def parse_canonical_evidence_object(raw: bytes, label: str) -> dict[str, Any]:
+    try:
+        value = json.loads(
+            raw,
+            object_pairs_hook=strict_object,
+            parse_constant=reject_json_constant,
+        )
+    except (UnicodeDecodeError, json.JSONDecodeError, ValueError) as error:
+        raise RuntimeError(f"{label} JSON is invalid") from error
+    if not isinstance(value, dict):
+        raise RuntimeError(f"{label} must be an object")
+    if raw != canonical_bytes(value) + b"\n":
+        raise RuntimeError(f"{label} bytes are not canonical JSON plus newline")
+    return value
 
 
 def provider_job_id() -> str:
@@ -1190,6 +1212,24 @@ def require_exact_hub_commit_sequence(
         raise RuntimeError("target repository commit sequence mismatch")
 
 
+def validate_evidence_commit_lineage(
+    commits: list[Any], expected_newest_to_oldest: list[str]
+) -> None:
+    if len(commits) < len(expected_newest_to_oldest):
+        raise RuntimeError("authorization evidence commit lineage is incomplete")
+    observed: list[str] = []
+    for commit in commits[: len(expected_newest_to_oldest)]:
+        try:
+            commit_id = commit.commit_id
+        except AttributeError as error:
+            raise RuntimeError("Hub evidence commit object is missing commit_id") from error
+        if not isinstance(commit_id, str):
+            raise RuntimeError("Hub evidence commit object has an invalid commit_id")
+        observed.append(commit_id)
+    if observed != expected_newest_to_oldest:
+        raise RuntimeError("authorization evidence commit lineage mismatch")
+
+
 def require_private_hub_head(
     api: Any,
     *,
@@ -1347,6 +1387,128 @@ def validate_persisted_operation(
     return operation
 
 
+def validate_persisted_identity(
+    raw: bytes,
+    *,
+    expected_sha256: str,
+    run_id: str,
+    expected_intent: dict[str, str],
+    expected_write_canary: dict[str, Any],
+    expected_producer_job_id: str,
+    expected_target_repositories: list[dict[str, str]],
+) -> dict[str, Any]:
+    """Validate the signed-hash-bound producer identity and its intent binding."""
+    if sha256_bytes(raw) != expected_sha256:
+        raise RuntimeError("authorization control identity hash mismatch")
+    identity = parse_canonical_evidence_object(raw, "persisted Hub identity")
+    if set(identity) != {
+        "schema",
+        "status",
+        "account",
+        "run_id",
+        "nonce",
+        "producer_job_id",
+        "producer_script_sha256",
+        "evidence_repo",
+        "write_canary",
+        "target_repositories",
+        "producer_intent",
+        "model_repositories",
+        "created_at",
+    }:
+        raise RuntimeError("persisted Hub identity field mismatch")
+    for field, expected in {
+        "schema": "era-part1b-hub-identity/v7",
+        "status": "FRESH_HUB_NAMESPACE_CREATED",
+        "account": EXPECTED_OWNER,
+        "run_id": run_id,
+        "producer_job_id": expected_producer_job_id,
+        "write_canary": expected_write_canary,
+        "target_repositories": expected_target_repositories,
+        "producer_intent": expected_intent,
+    }.items():
+        if identity.get(field) != expected:
+            raise RuntimeError(f"persisted Hub identity {field} mismatch")
+    if re.fullmatch(r"[0-9a-f]{32}", str(identity.get("nonce"))) is None:
+        raise RuntimeError("persisted Hub identity nonce invalid")
+    if SHA256_RE.fullmatch(str(identity.get("producer_script_sha256"))) is None:
+        raise RuntimeError("persisted Hub identity producer script hash invalid")
+    if identity.get("evidence_repo") != {
+        "repo_id": EXPECTED_EVIDENCE_REPO,
+        "repo_type": "dataset",
+        "expected_parent_revision": expected_write_canary["revision"],
+        "producer_intent_path": expected_intent["path"],
+        "producer_intent_revision": expected_intent["revision"],
+        "producer_intent_sha256": expected_intent["sha256"],
+    }:
+        raise RuntimeError("persisted Hub identity evidence binding mismatch")
+    model_repositories = identity.get("model_repositories")
+    if not isinstance(model_repositories, list) or len(model_repositories) != 2:
+        raise RuntimeError("persisted Hub identity model repositories mismatch")
+    observed_targets = [
+        {
+            "adapter": item.get("adapter"),
+            "repo_id": item.get("repo_id"),
+            "repo_type": item.get("repo_type"),
+        }
+        for item in model_repositories
+        if isinstance(item, dict)
+    ]
+    if observed_targets != expected_target_repositories:
+        raise RuntimeError("persisted Hub identity bootstrap targets mismatch")
+    if not isinstance(identity.get("created_at"), str):
+        raise RuntimeError("persisted Hub identity creation time invalid")
+    return identity
+
+
+def validate_persisted_producer_intent(
+    raw: bytes,
+    *,
+    expected_sha256: str,
+    run_id: str,
+    identity: dict[str, Any],
+    expected_write_canary: dict[str, Any],
+    expected_target_repositories: list[dict[str, str]],
+) -> dict[str, Any]:
+    """Validate the immutable producer intent before any target-side write."""
+    if sha256_bytes(raw) != expected_sha256:
+        raise RuntimeError("persisted producer intent hash mismatch")
+    intent = parse_canonical_evidence_object(raw, "persisted producer intent")
+    if set(intent) != {
+        "schema",
+        "status",
+        "account",
+        "run_id",
+        "nonce",
+        "producer_job_id",
+        "producer_script_sha256",
+        "evidence_parent_revision",
+        "write_canary",
+        "target_repositories",
+        "random_canary",
+        "created_at",
+    }:
+        raise RuntimeError("persisted producer intent field mismatch")
+    for field, expected in {
+        "schema": "era-part1b-hub-producer-intent/v7",
+        "status": "PRODUCER_INTENT_PERSISTED",
+        "account": EXPECTED_OWNER,
+        "run_id": run_id,
+        "nonce": identity["nonce"],
+        "producer_job_id": identity["producer_job_id"],
+        "producer_script_sha256": identity["producer_script_sha256"],
+        "evidence_parent_revision": expected_write_canary["revision"],
+        "write_canary": expected_write_canary,
+        "target_repositories": expected_target_repositories,
+        "created_at": identity["created_at"],
+    }.items():
+        if intent.get(field) != expected:
+            raise RuntimeError(f"persisted producer intent {field} mismatch")
+    if re.fullmatch(r"[0-9a-f]{64}", str(intent.get("random_canary"))) is None:
+        raise RuntimeError("persisted producer intent random canary invalid")
+    return intent
+
+
 def verify_ed25519_authorization(authorization: dict[str, Any]) -> str:
     from cryptography.exceptions import InvalidSignature
     from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
@@ -1462,6 +1624,9 @@ def validate_training_authorization(
         "identity_path",
         "identity_revision",
         "identity_sha256",
+        "producer_intent_path",
+        "producer_intent_revision",
+        "producer_intent_sha256",
         "operation_path",
         "authorization_path",
     }:
@@ -1477,6 +1642,13 @@ def validate_training_authorization(
         raise RuntimeError("authorization evidence identity revision invalid")
     if SHA256_RE.fullmatch(str(control_repo.get("identity_sha256"))) is None:
         raise RuntimeError("authorization evidence identity hash invalid")
+    expected_intent_path = f"runs/{run_id}/control/producer-intent.json"
+    if control_repo.get("producer_intent_path") != expected_intent_path:
+        raise RuntimeError("authorization producer intent path mismatch")
+    if REVISION_RE.fullmatch(str(control_repo.get("producer_intent_revision"))) is None:
+        raise RuntimeError("authorization producer intent revision invalid")
+    if SHA256_RE.fullmatch(str(control_repo.get("producer_intent_sha256"))) is None:
+        raise RuntimeError("authorization producer intent hash invalid")
     expected_operation_path = f"runs/{run_id}/control/operation.json"
     if control_repo.get("operation_path") != expected_operation_path:
         raise RuntimeError("authorization operation path mismatch")
@@ -1495,6 +1667,7 @@ def validate_training_authorization(
         "path",
         "sha256",
         "revision",
+        "v6_quarantine",
     }:
         raise RuntimeError("authorization write-canary evidence mismatch")
     canary_job_id = write_canary.get("job_id")
@@ -1507,11 +1680,18 @@ def validate_training_authorization(
         raise RuntimeError("authorization write-canary hash invalid")
     if REVISION_RE.fullmatch(str(write_canary.get("revision"))) is None:
         raise RuntimeError("authorization write-canary revision invalid")
+    if write_canary.get("v6_quarantine") != {
+        "path": V6_QUARANTINE_PATH,
+        "sha256": V6_QUARANTINE_SHA256,
+    }:
+        raise RuntimeError("authorization write-canary v6 quarantine binding mismatch")
     if not isinstance(producer, dict) or set(producer) != {
         "job_id",
         "receipt_sha256",
         "terminal_sha256",
         "evidence_revision",
+        "intent_revision",
+        "intent_sha256",
     }:
         raise RuntimeError("authorization producer evidence mismatch")
     if not isinstance(verifier, dict) or set(verifier) != {"job_id", "terminal_sha256"}:
@@ -1552,6 +1732,15 @@ def validate_training_authorization(
         raise RuntimeError("authorization producer evidence revision invalid")
     if control_repo.get("identity_revision") != producer.get("evidence_revision"):
         raise RuntimeError("authorization evidence identity revision mismatch")
+    if REVISION_RE.fullmatch(str(producer.get("intent_revision"))) is None:
+        raise RuntimeError("authorization producer intent revision invalid")
+    if SHA256_RE.fullmatch(str(producer.get("intent_sha256"))) is None:
+        raise RuntimeError("authorization producer intent hash invalid")
+    if (
+        control_repo.get("producer_intent_revision") != producer.get("intent_revision")
+        or control_repo.get("producer_intent_sha256") != producer.get("intent_sha256")
+    ):
+        raise RuntimeError("authorization producer intent duplicate binding mismatch")
     if public.get("train_lora_hub_sha256") != script_sha256:
         raise RuntimeError("authorization training script hash mismatch")
     if public.get("protocol_sha256") != EXPECTED_PROTOCOL_SHA256:
@@ -1566,6 +1755,7 @@ def validate_training_authorization(
     seen_slot_ids: set[str] = set()
     seen_adapters: set[str] = set()
     seen_repos: set[str] = set()
+    target_repositories: list[dict[str, str]] = []
     for slot in slots:
         if not isinstance(slot, dict) or set(slot) != {
             "slot_id",
@@ -1662,6 +1852,9 @@ def validate_training_authorization(
         seen_slot_ids.add(slot_id)
         seen_adapters.add(str(slot_adapter))
         seen_repos.add(target_repo_id)
+        target_repositories.append(
+            {"adapter": str(slot_adapter), "repo_id": target_repo_id, "repo_type": "model"}
+        )
         if (
             slot_adapter == adapter
             and slot.get("phase") == phase
@@ -1689,9 +1882,14 @@ def validate_training_authorization(
         "identity_path": str(control_repo["identity_path"]),
         "identity_revision": str(control_repo["identity_revision"]),
         "identity_sha256": str(control_repo["identity_sha256"]),
+        "producer_intent_path": str(control_repo["producer_intent_path"]),
+        "producer_intent_revision": str(control_repo["producer_intent_revision"]),
+        "producer_intent_sha256": str(control_repo["producer_intent_sha256"]),
         "write_canary_path": str(canary_path),
         "write_canary_sha256": str(write_canary["sha256"]),
         "write_canary_revision": str(write_canary["revision"]),
+        "write_canary": dict(write_canary),
+        "target_repositories": target_repositories,
         "producer_job_id": str(producer_job_id),
         "write_canary_job_id": str(canary_job_id),
         "verifier_job_id": str(verifier_job_id),
@@ -1820,27 +2018,66 @@ def run_training(args: argparse.Namespace) -> int:
         raise RuntimeError("private evidence repository HEAD differs from authorization revision")
     identity_revision = authorization_evidence["identity_revision"]
     canary_revision = authorization_evidence["write_canary_revision"]
+    signed_intent_binding = {
+        "path": authorization_evidence["producer_intent_path"],
+        "revision": authorization_evidence["producer_intent_revision"],
+        "sha256": authorization_evidence["producer_intent_sha256"],
+    }
+    for revision in (identity_revision, signed_intent_binding["revision"], canary_revision):
+        info = api.repo_info(
+            repo_id=EXPECTED_EVIDENCE_REPO,
+            repo_type="dataset",
+            revision=revision,
+            token=token,
+        )
+        if info.private is not True or info.sha != revision:
+            raise RuntimeError("authorization evidence revision is not exact and private")
+
+    persisted_identity_path = hf_hub_download(
+        repo_id=EXPECTED_EVIDENCE_REPO,
+        repo_type="dataset",
+        filename=authorization_evidence["identity_path"],
+        revision=identity_revision,
+        token=token,
+    )
+    identity_bytes = Path(persisted_identity_path).read_bytes()
+    identity = validate_persisted_identity(
+        identity_bytes,
+        expected_sha256=authorization_evidence["identity_sha256"],
+        run_id=args.run_id,
+        expected_intent=signed_intent_binding,
+        expected_write_canary=authorization_evidence["write_canary"],
+        expected_producer_job_id=authorization_evidence["producer_job_id"],
+        expected_target_repositories=authorization_evidence["target_repositories"],
+    )
+    identity_intent_binding = identity["producer_intent"]
+    intent_revision = identity_intent_binding["revision"]
     evidence_commits = api.list_repo_commits(
         repo_id=EXPECTED_EVIDENCE_REPO,
         repo_type="dataset",
         revision=args.authorization_revision,
         token=token,
     )
-    evidence_commit_ids: list[str] = []
-    for commit in evidence_commits[:3]:
-        try:
-            commit_id = commit.commit_id
-        except AttributeError as error:
-            raise RuntimeError("Hub evidence commit object is missing commit_id") from error
-        if not isinstance(commit_id, str):
-            raise RuntimeError("Hub evidence commit object has an invalid commit_id")
-        evidence_commit_ids.append(commit_id)
-    if len(evidence_commits) < 3 or evidence_commit_ids != [
-        args.authorization_revision,
-        identity_revision,
-        canary_revision,
-    ]:
-        raise RuntimeError("authorization evidence commit lineage mismatch")
+    validate_evidence_commit_lineage(
+        evidence_commits,
+        [args.authorization_revision, identity_revision, intent_revision, canary_revision],
+    )
+    canary_files = set(
+        api.list_repo_files(
+            repo_id=EXPECTED_EVIDENCE_REPO,
+            repo_type="dataset",
+            revision=canary_revision,
+            token=token,
+        )
+    )
+    intent_files = set(
+        api.list_repo_files(
+            repo_id=EXPECTED_EVIDENCE_REPO,
+            repo_type="dataset",
+            revision=intent_revision,
+            token=token,
+        )
+    )
     identity_files = set(
         api.list_repo_files(
             repo_id=EXPECTED_EVIDENCE_REPO,
@@ -1849,6 +2086,18 @@ def run_training(args: argparse.Namespace) -> int:
             token=token,
         )
     )
+    intent_path = identity_intent_binding["path"]
+    producer_receipt_path = f"runs/{args.run_id}/control/producer.json"
+    if intent_path in canary_files or intent_files != canary_files | {intent_path}:
+        raise RuntimeError("producer intent evidence commit file tree mismatch")
+    if (
+        authorization_evidence["identity_path"] in intent_files
+        or producer_receipt_path in intent_files
+        or identity_files
+        != intent_files
+        | {authorization_evidence["identity_path"], producer_receipt_path}
+    ):
+        raise RuntimeError("producer identity evidence commit file tree mismatch")
     authorization_files = set(
         api.list_repo_files(
             repo_id=EXPECTED_EVIDENCE_REPO,
@@ -1861,26 +2110,28 @@ def run_training(args: argparse.Namespace) -> int:
         authorization_evidence["authorization_path"],
         authorization_evidence["operation_path"],
     }
-    if authorization_files != expected_authorization_files:
+    if (
+        authorization_evidence["authorization_path"] in identity_files
+        or authorization_evidence["operation_path"] in identity_files
+        or authorization_files != expected_authorization_files
+    ):
         raise RuntimeError("authorization evidence commit file tree mismatch")
-    for revision in (identity_revision, canary_revision):
-        info = api.repo_info(
-            repo_id=EXPECTED_EVIDENCE_REPO,
-            repo_type="dataset",
-            revision=revision,
-            token=token,
-        )
-        if info.private is not True or info.sha != revision:
-            raise RuntimeError("authorization evidence revision is not exact and private")
-    persisted_identity = hf_hub_download(
+
+    persisted_intent_path = hf_hub_download(
         repo_id=EXPECTED_EVIDENCE_REPO,
         repo_type="dataset",
-        filename=authorization_evidence["identity_path"],
-        revision=identity_revision,
+        filename=intent_path,
+        revision=intent_revision,
         token=token,
     )
-    if sha256_file(Path(persisted_identity)) != authorization_evidence["identity_sha256"]:
-        raise RuntimeError("authorization control identity hash mismatch")
+    validate_persisted_producer_intent(
+        Path(persisted_intent_path).read_bytes(),
+        expected_sha256=identity_intent_binding["sha256"],
+        run_id=args.run_id,
+        identity=identity,
+        expected_write_canary=authorization_evidence["write_canary"],
+        expected_target_repositories=authorization_evidence["target_repositories"],
+    )
     persisted_write_canary = hf_hub_download(
         repo_id=EXPECTED_EVIDENCE_REPO,
         repo_type="dataset",
@@ -1893,6 +2144,24 @@ def run_training(args: argparse.Namespace) -> int:
         != authorization_evidence["write_canary_sha256"]
     ):
         raise RuntimeError("authorization write-canary hash mismatch")
+    quarantine_binding = authorization_evidence["write_canary"]["v6_quarantine"]
+    if quarantine_binding["path"] not in canary_files or quarantine_binding["path"] not in identity_files:
+        raise RuntimeError("v6 quarantine is not preserved in canary and identity revisions")
+    quarantine_bytes: list[bytes] = []
+    for revision in (canary_revision, identity_revision):
+        persisted_quarantine_path = hf_hub_download(
+            repo_id=EXPECTED_EVIDENCE_REPO,
+            repo_type="dataset",
+            filename=quarantine_binding["path"],
+            revision=revision,
+            token=token,
+        )
+        raw_quarantine = Path(persisted_quarantine_path).read_bytes()
+        if sha256_bytes(raw_quarantine) != quarantine_binding["sha256"]:
+            raise RuntimeError("v6 quarantine persisted hash mismatch")
+        quarantine_bytes.append(raw_quarantine)
+    if quarantine_bytes[0] != quarantine_bytes[1]:
+        raise RuntimeError("v6 quarantine bytes changed before producer identity")
 
     provider_root_revision = authorization_evidence["provider_root_revision"]
     provider_root_info = api.repo_info(

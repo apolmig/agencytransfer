@@ -56,14 +56,22 @@ The runner accepts only a canonical authorization committed to the private
 2. an Ed25519 signature under the single v7 public key pinned in the runner;
 3. the canonical `era-part1b-hf-operation/v5` bytes are persisted in the same
    Hub revision and match the signed operation path and SHA-256;
-4. a maximum 24-hour validity window and exact script, protocol, runtime,
+4. the signed control-repository and producer objects duplicate the exact
+   `producer-intent.json` path, revision, and SHA-256; the signed-hash-bound
+   identity repeats that triple, and both identity and intent are strict
+   canonical JSON read from their exact private revisions;
+5. the newest evidence history is physically ordered as authorization,
+   identity, producer intent, and write canary, with exact per-commit inventory
+   deltas; the fixed v6 quarantine bytes remain present and hash-identical at
+   both the canary and identity revisions;
+6. a maximum 24-hour validity window and exact script, protocol, runtime,
    control-Job, model, step, adapter, seed, and repository bindings;
-5. an exact private provider root whose complete tree is only `.gitattributes`,
+7. an exact private provider root whose complete tree is only `.gitattributes`,
    with its signed revision, byte size, and SHA-256;
-6. an exact controlled identity head whose complete tree is `.gitattributes`
+8. an exact controlled identity head whose complete tree is `.gitattributes`
    plus `bootstrap/slot-identity.json`, with its separately signed revision and
    hashes, and whose `.gitattributes` bytes are unchanged from the root;
-7. an exact initial physical history ordered as controlled identity then
+9. an exact initial physical history ordered as controlled identity then
    provider root.
 
 Before importing Torch or downloading model weights, the Job atomically

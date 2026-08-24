@@ -74,6 +74,9 @@ def signed_authorization() -> tuple[dict[str, object], bytes, str, str]:
             "identity_path": f"runs/{RUN_ID}/control/identity.json",
             "identity_revision": "8" * 40,
             "identity_sha256": "3" * 64,
+            "producer_intent_path": f"runs/{RUN_ID}/control/producer-intent.json",
+            "producer_intent_revision": "6" * 40,
+            "producer_intent_sha256": "2" * 64,
             "operation_path": f"runs/{RUN_ID}/control/operation.json",
             "authorization_path": f"runs/{RUN_ID}/control/authorizations/authorization.json",
         },
@@ -82,12 +85,18 @@ def signed_authorization() -> tuple[dict[str, object], bytes, str, str]:
             "path": f"runs/{RUN_ID}/auth/write-canary.json",
             "sha256": "4" * 64,
             "revision": "5" * 40,
+            "v6_quarantine": {
+                "path": MODULE.V6_QUARANTINE_PATH,
+                "sha256": MODULE.V6_QUARANTINE_SHA256,
+            },
         },
         "producer": {
             "job_id": "producer-job-001",
             "receipt_sha256": "6" * 64,
             "terminal_sha256": "7" * 64,
             "evidence_revision": "8" * 40,
+            "intent_revision": "6" * 40,
+            "intent_sha256": "2" * 64,
         },
         "verifier": {"job_id": "verifier-job-001", "terminal_sha256": "9" * 64},
         "ml_stack": {"job_id": "ml-stack-job-001", "terminal_sha256": "a" * 64},
@@ -162,6 +171,78 @@ def signed_authorization() -> tuple[dict[str, object], bytes, str, str]:
     }
     raw = MODULE.canonical_bytes(authorization) + b"\n"
     return authorization, raw, public_b64, public_sha
+
+
+def producer_identity_and_intent(
+    authorization: dict[str, object],
+) -> tuple[dict[str, object], bytes, dict[str, object], bytes]:
+    control_repo = authorization["control_repo"]
+    write_canary = authorization["write_canary"]
+    producer = authorization["producer"]
+    slots = authorization["slots"]
+    assert isinstance(control_repo, dict)
+    assert isinstance(write_canary, dict)
+    assert isinstance(producer, dict)
+    assert isinstance(slots, list)
+    intent_binding = {
+        "path": control_repo["producer_intent_path"],
+        "revision": control_repo["producer_intent_revision"],
+        "sha256": control_repo["producer_intent_sha256"],
+    }
+    targets = [
+        {
+            "adapter": slot["adapter"],
+            "repo_id": slot["target_repo_id"],
+            "repo_type": "model",
+        }
+        for slot in slots
+    ]
+    created_at = "2026-08-24T13:45:00Z"
+    identity: dict[str, object] = {
+        "schema": "era-part1b-hub-identity/v7",
+        "status": "FRESH_HUB_NAMESPACE_CREATED",
+        "account": MODULE.EXPECTED_OWNER,
+        "run_id": RUN_ID,
+        "nonce": "a" * 32,
+        "producer_job_id": producer["job_id"],
+        "producer_script_sha256": "c" * 64,
+        "evidence_repo": {
+            "repo_id": MODULE.EXPECTED_EVIDENCE_REPO,
+            "repo_type": "dataset",
+            "expected_parent_revision": write_canary["revision"],
+            "producer_intent_path": intent_binding["path"],
+            "producer_intent_revision": intent_binding["revision"],
+            "producer_intent_sha256": intent_binding["sha256"],
+        },
+        "write_canary": write_canary,
+        "target_repositories": targets,
+        "producer_intent": intent_binding,
+        "model_repositories": [
+            {
+                **target,
+                "provider_root_revision": ("d" if index == 0 else "e") * 40,
+            }
+            for index, target in enumerate(targets)
+        ],
+        "created_at": created_at,
+    }
+    identity_raw = MODULE.canonical_bytes(identity) + b"\n"
+    intent: dict[str, object] = {
+        "schema": "era-part1b-hub-producer-intent/v7",
+        "status": "PRODUCER_INTENT_PERSISTED",
+        "account": MODULE.EXPECTED_OWNER,
+        "run_id": RUN_ID,
+        "nonce": identity["nonce"],
+        "producer_job_id": producer["job_id"],
+        "producer_script_sha256": identity["producer_script_sha256"],
+        "evidence_parent_revision": write_canary["revision"],
+        "write_canary": write_canary,
+        "target_repositories": targets,
+        "random_canary": "f" * 64,
+        "created_at": created_at,
+    }
+    intent_raw = MODULE.canonical_bytes(intent) + b"\n"
+    return identity, identity_raw, intent, intent_raw
 
 
 class DatasetContractTest(unittest.TestCase):
@@ -289,6 +370,12 @@ class AuthorizationContractTest(unittest.TestCase):
             self.assertEqual(evidence["provider_root_file_size"], {".gitattributes": 1519})
             self.assertEqual(evidence["write_canary_job_id"], "canary-job-001")
             self.assertEqual(
+                evidence["producer_intent_path"],
+                f"runs/{RUN_ID}/control/producer-intent.json",
+            )
+            self.assertEqual(evidence["producer_intent_revision"], "6" * 40)
+            self.assertEqual(evidence["producer_intent_sha256"], "2" * 64)
+            self.assertEqual(
                 evidence["operation_path"], f"runs/{RUN_ID}/control/operation.json"
             )
             duplicate = copy.deepcopy(authorization)
@@ -310,6 +397,174 @@ class AuthorizationContractTest(unittest.TestCase):
                         hub_repo_id=OSINT_REPO,
                         current_job_id="training-job-001",
                     )
+
+    def test_authorization_requires_exact_intent_duplicates_and_v6_quarantine(self) -> None:
+        authorization, _, _, _ = signed_authorization()
+        cases = (
+            (
+                lambda value: value["control_repo"].pop("producer_intent_path"),
+                "control repo evidence",
+            ),
+            (
+                lambda value: value["producer"].__setitem__("intent_sha256", "f" * 64),
+                "duplicate binding",
+            ),
+            (
+                lambda value: value["write_canary"]["v6_quarantine"].__setitem__(
+                    "sha256", "0" * 64
+                ),
+                "v6 quarantine",
+            ),
+        )
+        for mutate, message in cases:
+            with self.subTest(message=message):
+                tampered = copy.deepcopy(authorization)
+                mutate(tampered)
+                with mock.patch.object(
+                    MODULE, "verify_ed25519_authorization", return_value="d" * 64
+                ):
+                    with self.assertRaisesRegex(RuntimeError, message):
+                        MODULE.validate_training_authorization(
+                            tampered,
+                            authorization_sha256="c" * 64,
+                            expected_authorization_sha256="c" * 64,
+                            operation_sha256="1" * 64,
+                            script_sha256="b" * 64,
+                            adapter="public_osint",
+                            phase="production",
+                            seed=17,
+                            run_id=RUN_ID,
+                            hub_repo_id=OSINT_REPO,
+                            current_job_id="training-job-001",
+                        )
+
+    def test_signed_identity_and_intent_are_strict_canonical_and_hash_bound(self) -> None:
+        authorization, _, _, _ = signed_authorization()
+        identity, identity_raw, intent, intent_raw = producer_identity_and_intent(
+            authorization
+        )
+        control_repo = authorization["control_repo"]
+        write_canary = authorization["write_canary"]
+        producer = authorization["producer"]
+        slots = authorization["slots"]
+        assert isinstance(control_repo, dict)
+        assert isinstance(write_canary, dict)
+        assert isinstance(producer, dict)
+        assert isinstance(slots, list)
+        intent_binding = {
+            "path": control_repo["producer_intent_path"],
+            "revision": control_repo["producer_intent_revision"],
+            "sha256": control_repo["producer_intent_sha256"],
+        }
+        targets = [
+            {
+                "adapter": slot["adapter"],
+                "repo_id": slot["target_repo_id"],
+                "repo_type": "model",
+            }
+            for slot in slots
+        ]
+        parsed_identity = MODULE.validate_persisted_identity(
+            identity_raw,
+            expected_sha256=hashlib.sha256(identity_raw).hexdigest(),
+            run_id=RUN_ID,
+            expected_intent=intent_binding,
+            expected_write_canary=write_canary,
+            expected_producer_job_id=producer["job_id"],
+            expected_target_repositories=targets,
+        )
+        self.assertEqual(parsed_identity, identity)
+        self.assertEqual(
+            MODULE.validate_persisted_producer_intent(
+                intent_raw,
+                expected_sha256=hashlib.sha256(intent_raw).hexdigest(),
+                run_id=RUN_ID,
+                identity=parsed_identity,
+                expected_write_canary=write_canary,
+                expected_target_repositories=targets,
+            ),
+            intent,
+        )
+
+        omitted = copy.deepcopy(identity)
+        omitted.pop("producer_intent")
+        omitted_raw = MODULE.canonical_bytes(omitted) + b"\n"
+        with self.assertRaisesRegex(RuntimeError, "identity field mismatch"):
+            MODULE.validate_persisted_identity(
+                omitted_raw,
+                expected_sha256=hashlib.sha256(omitted_raw).hexdigest(),
+                run_id=RUN_ID,
+                expected_intent=intent_binding,
+                expected_write_canary=write_canary,
+                expected_producer_job_id=producer["job_id"],
+                expected_target_repositories=targets,
+            )
+        tampered_intent = copy.deepcopy(intent)
+        tampered_intent["random_canary"] = "0" * 64
+        tampered_raw = MODULE.canonical_bytes(tampered_intent) + b"\n"
+        with self.assertRaisesRegex(RuntimeError, "intent hash mismatch"):
+            MODULE.validate_persisted_producer_intent(
+                tampered_raw,
+                expected_sha256=hashlib.sha256(intent_raw).hexdigest(),
+                run_id=RUN_ID,
+                identity=parsed_identity,
+                expected_write_canary=write_canary,
+                expected_target_repositories=targets,
+            )
+        noncanonical_raw = json.dumps(intent, indent=2, sort_keys=True).encode() + b"\n"
+        with self.assertRaisesRegex(RuntimeError, "not canonical"):
+            MODULE.validate_persisted_producer_intent(
+                noncanonical_raw,
+                expected_sha256=hashlib.sha256(noncanonical_raw).hexdigest(),
+                run_id=RUN_ID,
+                identity=parsed_identity,
+                expected_write_canary=write_canary,
+                expected_target_repositories=targets,
+            )
+        duplicate_key_raw = intent_raw.replace(
+            b'{"account":', b'{"account":"apol","account":', 1
+        )
+        with self.assertRaisesRegex(RuntimeError, "JSON is invalid"):
+            MODULE.validate_persisted_producer_intent(
+                duplicate_key_raw,
+                expected_sha256=hashlib.sha256(duplicate_key_raw).hexdigest(),
+                run_id=RUN_ID,
+                identity=parsed_identity,
+                expected_write_canary=write_canary,
+                expected_target_repositories=targets,
+            )
+
+    def test_evidence_lineage_requires_intent_between_identity_and_canary(self) -> None:
+        authorization_revision = "a" * 40
+        identity_revision = "b" * 40
+        intent_revision = "c" * 40
+        canary_revision = "d" * 40
+        expected = [
+            authorization_revision,
+            identity_revision,
+            intent_revision,
+            canary_revision,
+        ]
+        MODULE.validate_evidence_commit_lineage(
+            [types.SimpleNamespace(commit_id=value) for value in expected], expected
+        )
+        chain_of_three = [
+            types.SimpleNamespace(commit_id=value)
+            for value in (authorization_revision, identity_revision, canary_revision)
+        ]
+        with self.assertRaisesRegex(RuntimeError, "incomplete"):
+            MODULE.validate_evidence_commit_lineage(chain_of_three, expected)
+        omitted_intent = [
+            types.SimpleNamespace(commit_id=value)
+            for value in (
+                authorization_revision,
+                identity_revision,
+                canary_revision,
+                "e" * 40,
+            )
+        ]
+        with self.assertRaisesRegex(RuntimeError, "lineage mismatch"):
+            MODULE.validate_evidence_commit_lineage(omitted_intent, expected)
 
     def test_authorization_binds_distinct_provider_root_and_unchanged_identity_base(self) -> None:
         authorization, _, _, _ = signed_authorization()

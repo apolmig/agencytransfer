@@ -85,6 +85,9 @@
     "binds": [
       "operation_sha256",
       "operation_path_and_same_revision_canonical_bytes",
+      "producer_intent_path_revision_sha256_in_control_repo_producer_and_identity",
+      "physical_evidence_history_authorization_identity_intent_canary",
+      "v6_quarantine_path_sha256_preserved_at_canary_and_identity",
       "training_script_sha256",
       "protocol_sha256",
       "runtime_versions",
@@ -145,6 +148,8 @@
       "valid_nonexpired_ed25519_authorization",
       "exact_private_evidence_revision_readback",
       "exact_persisted_operation_same_authorization_revision",
+      "exact_private_canonical_producer_intent_and_four_commit_evidence_lineage",
+      "exact_v6_quarantine_bytes_preserved_at_canary_and_identity_revisions",
       "exact_private_provider_root_and_controlled_identity",
       "exact_five_commit_physical_history_after_terminal",
       "atomic_single_job_reservation_before_gpu_work",
