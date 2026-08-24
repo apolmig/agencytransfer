@@ -31,6 +31,8 @@ jobs:
           python scripts/fix_refine_ape120_unbounded_output.py
           python -m py_compile scripts/refine_ape120_inventory_v03.py
           python scripts/refine_ape120_inventory_v03.py
+          python -m py_compile scripts/fix_ape120_csv_newlines.py
+          python scripts/fix_ape120_csv_newlines.py
           python -m py_compile scripts/build_ape120_inventory.py
           python scripts/build_ape120_inventory.py
 
@@ -64,6 +66,7 @@ jobs:
           rm scripts/refine_ape120_inventory_v03.py
           rm scripts/fix_refine_ape120_inventory_v03.py
           rm scripts/fix_refine_ape120_unbounded_output.py
+          rm scripts/fix_ape120_csv_newlines.py
 
       - name: Commit refined inventory
         shell: bash
@@ -73,6 +76,7 @@ jobs:
           test ! -e scripts/refine_ape120_inventory_v03.py
           test ! -e scripts/fix_refine_ape120_inventory_v03.py
           test ! -e scripts/fix_refine_ape120_unbounded_output.py
+          test ! -e scripts/fix_ape120_csv_newlines.py
           git diff --check
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
@@ -81,6 +85,7 @@ jobs:
             scripts/refine_ape120_inventory_v03.py \
             scripts/fix_refine_ape120_inventory_v03.py \
             scripts/fix_refine_ape120_unbounded_output.py \
+            scripts/fix_ape120_csv_newlines.py \
             scripts/build_ape120_inventory.py \
             evals/research-notes/ape120-live-inventory-20260825.json \
             evals/research-notes/ape120-live-inventory-20260825.csv
