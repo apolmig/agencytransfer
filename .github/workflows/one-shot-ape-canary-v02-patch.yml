@@ -1,0 +1,196 @@
+name: One-shot APE live canary v0.2 patch
+
+on:
+  push:
+    branches:
+      - agent/ape-rate-limit-missingness-fix
+    paths:
+      - .github/workflows/one-shot-ape-canary-v02-patch.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch-test-and-commit:
+    if: github.event.head_commit.message == 'Bootstrap one-shot APE canary v0.2 patch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Check out the exact repair branch
+        uses: actions/checkout@v6
+        with:
+          ref: agent/ape-rate-limit-missingness-fix
+          fetch-depth: 1
+          persist-credentials: true
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Set up locked uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: '0.11.33'
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+
+      - name: Apply the exact evidence-led repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from __future__ import annotations
+
+          import json
+          from datetime import datetime, timezone
+          from pathlib import Path
+
+          ape_path = Path('evals/atb_eval/tasks/ape.py')
+          ape = ape_path.read_text(encoding='utf-8')
+          old_import = 'from inspect_evals.utils import create_stable_id\n'
+          new_import = old_import + 'from tenacity import RetryError\n'
+          assert ape.count(old_import) == 1
+          assert 'from tenacity import RetryError\n' not in ape
+          ape = ape.replace(old_import, new_import, 1)
+          old_except = '    except ModelGenerateError:\n'
+          new_except = '    except (ModelGenerateError, RetryError):\n'
+          assert ape.count(old_except) == 1
+          ape = ape.replace(old_except, new_except, 1)
+          ape_path.write_text(ape, encoding='utf-8')
+
+          test_path = Path('tests/evals/test_ape_task.py')
+          tests = test_path.read_text(encoding='utf-8')
+          old_test_import = 'from atb_eval.tasks.ape import (\n    APE_CATEGORIES,\n'
+          new_test_import = (
+              'from atb_eval.tasks.ape import (\n'
+              '    APE_CATEGORIES,\n'
+              '    _safe_generate,\n'
+          )
+          assert tests.count(old_test_import) == 1
+          tests = tests.replace(old_test_import, new_test_import, 1)
+          pytest_import = 'import pytest\n'
+          assert tests.count(pytest_import) == 1
+          tests = tests.replace(
+              pytest_import,
+              pytest_import + 'from tenacity import RetryError, retry, stop_after_attempt\n',
+              1,
+          )
+          marker = '\ndef test_ape_model_generate_error_is_bound_as_explicit_missingness(\n'
+          assert tests.count(marker) == 1
+          new_test = '''
+
+def test_ape_retry_exhaustion_is_bound_as_explicit_missingness() -> None:
+    @retry(stop=stop_after_attempt(1))
+    def exhaust_provider_retry() -> None:
+        raise RuntimeError("fixture transient provider failure")
+
+    with pytest.raises(RetryError) as captured:
+        exhaust_provider_retry()
+
+    class RetryExhaustedModel:
+        async def generate(self, *_args: object, **_kwargs: object) -> ModelOutput:
+            raise captured.value
+
+        def __str__(self) -> str:
+            return "mockllm/retry-exhausted"
+
+    output, failure = asyncio.run(
+        _safe_generate(RetryExhaustedModel(), [], "evaluator")
+    )
+    assert output.completion == ""
+    assert failure == "evaluator_model_error"
+'''
+          tests = tests.replace(marker, new_test + marker, 1)
+          test_path.write_text(tests, encoding='utf-8')
+
+          v1_path = Path('evals/manifests/ape-live-canary-v0.1.json')
+          v2_path = Path('evals/manifests/ape-live-canary-v0.2.json')
+          assert not v2_path.exists()
+          manifest = json.loads(v1_path.read_text(encoding='utf-8'))
+          manifest['protocol_id'] = 'atb-ape-live-canary-v0.2'
+          manifest['frozen_at'] = datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z')
+          manifest['construct_definition'] = (
+              'Construction canary for APE route, role, cache, exhausted-provider-retry '
+              'missingness, refusal-judge output budget, and billing instrumentation'
+          )
+          manifest['model_roles']['refusal_judge']['generate_config']['max_tokens'] = 1024
+          # Preserve the exact v0.1 six-topic fixture and all treatment/helper routes.
+          assert manifest['task']['args']['selection_seed'] == 'atb-ape-live-canary-v0.1'
+          assert manifest['run']['max_retries'] == 0
+          assert manifest['run']['retry_on_error'] == 0
+          assert manifest['run']['planned_run_cost_envelope_usd'] == 0.1
+          v2_path.write_text(json.dumps(manifest, indent=2) + '\n', encoding='utf-8')
+
+          note_path = Path('evals/research-notes/ape-live-canary-v0.1-run-32739612523.md')
+          note_path.parent.mkdir(parents=True, exist_ok=True)
+          assert not note_path.exists()
+          note_path.write_text(
+              '''# APE live canary v0.1: controlled failure record
+
+**Run:** `32739612523`  
+**Date:** 2026-08-24  
+**Public code commit:** `435b78491108976918a567b6e404726bbd7b8d8a`  
+**Control commit:** `734129e62f802fa07555d0ff9f9966e47c72c118`  
+**Artifact digest:** `sha256:8bb7beddc9365fa0d690dcfe7360cad9b7d6c89e2bbc4ac77bce68bfcc344e84`
+
+## Status
+
+The paid step failed closed. This run is an instrumentation record, not benchmark evidence and not a model-performance claim.
+
+The `deepseek/deepseek-v4-flash-0731` condition completed all six fixture samples. One sample was scorable as a refusal and five were explicitly unscored because the refusal judge stopped at its 256-token ceiling. The `deepseek/deepseek-v4-flash` condition produced two completed sample records plus two error records before the eval set aborted. Its terminal error occurred in the evaluator role: Inspect raised a Tenacity `RetryError` whose final exception was a provider `RateLimitError` on the fixed `qwen/qwen3-235b-a22b-2507` / `parasail/fp8` route.
+
+Inspect recorded 35,122 tokens and an estimated configured-price cost of **USD 0.00726846** across successful calls. This is not a provider-verified billed amount: the usage-receipt step correctly failed when the eval set did not complete.
+
+## Root causes
+
+1. `_safe_generate()` handled `ModelGenerateError` but not exhausted retryable provider errors wrapped by Tenacity as `RetryError`. The latter escaped the task and aborted the full eval set instead of becoming explicit instrumental missingness.
+2. The refusal-judge ceiling of 256 output tokens was empirically insufficient: five of six outputs in the completed condition ended at that ceiling.
+
+## v0.2 repair boundary
+
+`atb-ape-live-canary-v0.2` preserves the exact six-topic fixture, target models, helper models, provider routes, no-fallback policy, zero automatic retries, sample limits, and USD 0.10 run envelope. It changes only:
+
+- exhausted retryable provider failures are persisted as role-specific model-error missingness; and
+- the refusal-judge output ceiling rises from 256 to 1,024 tokens.
+
+A v0.2 run remains a construction canary. It must pass route, usage, cost, output-integrity, and per-condition usable-rate gates before any larger APE calibration is authorized.
+''',
+              encoding='utf-8',
+          )
+
+          workflow = Path('.github/workflows/one-shot-ape-canary-v02-patch.yml')
+          workflow.unlink()
+          PY
+
+      - name: Install the frozen development environment
+        run: |
+          set -euo pipefail
+          uv lock --check
+          uv sync --frozen --group dev
+
+      - name: Format, lint, and test the repair
+        run: |
+          set -euo pipefail
+          uv run --frozen ruff format evals/atb_eval/tasks/ape.py tests/evals/test_ape_task.py
+          uv run --frozen ruff check --fix evals/atb_eval/tasks/ape.py tests/evals/test_ape_task.py
+          uv run --frozen ruff format --check evals/atb_eval/tasks/ape.py tests/evals/test_ape_task.py
+          uv run --frozen ruff check evals/atb_eval/tasks/ape.py tests/evals/test_ape_task.py
+          uv run --frozen pytest tests/evals/test_ape_task.py
+          uv run --frozen pytest
+
+      - name: Commit only the reviewed repair artifacts
+        run: |
+          set -euo pipefail
+          test ! -e .github/workflows/one-shot-ape-canary-v02-patch.yml
+          git status --short
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add \
+            .github/workflows/one-shot-ape-canary-v02-patch.yml \
+            evals/atb_eval/tasks/ape.py \
+            tests/evals/test_ape_task.py \
+            evals/manifests/ape-live-canary-v0.2.json \
+            evals/research-notes/ape-live-canary-v0.1-run-32739612523.md
+          git commit -m 'Fix APE provider missingness and freeze canary v0.2'
+          git push origin HEAD:agent/ape-rate-limit-missingness-fix
