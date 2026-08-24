@@ -34,6 +34,7 @@ jobs:
           test "$(sha256sum "$RUNNER_TEMP/ape120.patch" | cut -d ' ' -f 1)" = "4b806a18d95244698df5803d134973b02eab89f187a71315a275caf419dca094"
           git apply --check "$RUNNER_TEMP/ape120.patch"
           git apply "$RUNNER_TEMP/ape120.patch"
+          python scripts/fix_ape120_lint_strings.py
           python -m py_compile \
             evals/atb_eval/manifest.py \
             evals/atb_eval/paid_execution.py \
@@ -160,6 +161,7 @@ jobs:
           set -euo pipefail
           rm -f .github/workflows/one-shot-apply-freeze-ape120.yml
           rm -f .github/workflows/one-shot-export-ape120-sources.yml
+          rm -f scripts/fix_ape120_lint_strings.py
           rm -rf evals/patches
           git diff --check
           git status --short
