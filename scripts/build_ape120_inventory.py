@@ -27,9 +27,9 @@ TARGET_EXPECTED_INPUT_TOKENS = 1_000
 TARGET_EXPECTED_OUTPUT_TOKENS = 450
 TARGET_MAX_INPUT_TOKENS = 2_000
 TARGET_MAX_OUTPUT_TOKENS = 1_024
-TARGET_BUDGET_USD = 25.0
+TARGET_BUDGET_USD = 23.5
 TOTAL_EXECUTION_BUDGET_USD = 29.5
-MUTABLE_TOKENS = {"latest", "auto", "preview", "beta", "experimental", "free"}
+MUTABLE_TOKENS = {"latest", "auto", "beta", "experimental", "free"}
 EXCLUDED_TOKENS = {
     "embedding",
     "moderation",
@@ -43,6 +43,8 @@ EXCLUDED_TOKENS = {
     "search",
     "computer-use",
     "computer_use",
+    "safeguard",
+    "guard",
 }
 SMALL_TOKENS = {
     "mini",
@@ -52,6 +54,7 @@ SMALL_TOKENS = {
     "flash_lite",
     "small",
     "tiny",
+    "lite",
 }
 QUANTIZATION_ORDER = {
     "bf16": 0,
@@ -140,11 +143,20 @@ def parse_total_params_b(
         (r"([\d,.]+)\s+trillion[- ]parameter", 1_000.0),
         (r"([\d,.]+)\s+billion[- ]parameter", 1.0),
     )
-    values: list[float] = []
+    values: list[tuple[float, str]] = []
     for pattern, multiplier in patterns:
         for match in re.finditer(pattern, text, flags=re.IGNORECASE):
-            values.append(float(match.group(1).replace(",", "")) * multiplier)
-    return (max(values), "description") if values else (None, None)
+            values.append(
+                (float(match.group(1).replace(",", "")) * multiplier, "description")
+            )
+    model_id = str(model.get("id") or "")
+    for match in re.finditer(
+        r"(?:^|[-_/])(\d+(?:\.\d+)?)b(?:$|[-_/])",
+        model_id,
+        flags=re.IGNORECASE,
+    ):
+        values.append((float(match.group(1)), "model_id"))
+    return max(values, key=lambda item: item[0]) if values else (None, None)
 
 
 def hosted_scope(model_id: str, name: str) -> tuple[bool, str]:
@@ -176,7 +188,7 @@ def hosted_scope(model_id: str, name: str) -> tuple[bool, str]:
     if model_id.startswith("google/"):
         if "gemini" not in model_id:
             return False, "not_gemini"
-        if {"flash-lite", "flash_lite", "nano"} & tokens:
+        if {"lite", "nano"} & tokens:
             return False, "small_gemini_tier"
         return True, "hosted_frontier_or_quasi_frontier_gemini"
 
@@ -195,7 +207,7 @@ def choose_endpoint(
     endpoint_inventory: dict[str, Any],
     zdr_pairs: set[tuple[str, str]],
 ) -> dict[str, Any] | None:
-    candidates: list[tuple[int, float, str, dict[str, Any]]] = []
+    candidates: list[tuple[int, int, float, str, dict[str, Any]]] = []
     for endpoint in endpoint_inventory.get("endpoints", []):
         if not isinstance(endpoint, dict):
             continue
@@ -206,11 +218,9 @@ def choose_endpoint(
         max_completion = endpoint.get("max_completion_tokens")
         if endpoint.get("status") != 0 or not isinstance(tag, str):
             continue
-        if (model_id, tag) not in zdr_pairs:
+        if "max_tokens" not in supported:
             continue
-        if not {"max_tokens", "temperature"}.issubset(supported):
-            continue
-        if (
+        if max_completion is not None and (
             isinstance(max_completion, bool)
             or not isinstance(max_completion, int)
             or max_completion < TARGET_MAX_OUTPUT_TOKENS
@@ -220,7 +230,16 @@ def choose_endpoint(
             continue
         if finite_nonnegative(pricing.get("request")) != 0:
             continue
-        if pricing.get("overrides") not in (None, []):
+        overrides = pricing.get("overrides")
+        if overrides not in (None, []) and not (
+            isinstance(overrides, list)
+            and all(
+                isinstance(item, dict)
+                and isinstance(item.get("min_prompt_tokens"), int)
+                and item["min_prompt_tokens"] > TARGET_MAX_INPUT_TOKENS
+                for item in overrides
+            )
+        ):
             continue
         input_price = price_per_million(pricing, "prompt")
         output_price = price_per_million(pricing, "completion")
@@ -230,8 +249,10 @@ def choose_endpoint(
             TARGET_EXPECTED_INPUT_TOKENS * input_price
             + TARGET_EXPECTED_OUTPUT_TOKENS * output_price
         ) / 1_000_000
+        zdr_eligible = (model_id, tag) in zdr_pairs
         candidates.append(
             (
+                0 if zdr_eligible else 1,
                 QUANTIZATION_ORDER.get(quantization, QUANTIZATION_ORDER["unknown"]),
                 expected,
                 tag,
@@ -240,8 +261,8 @@ def choose_endpoint(
         )
     if not candidates:
         return None
-    candidates.sort(key=lambda item: (item[0], item[1], item[2]))
-    _, expected, tag, endpoint = candidates[0]
+    candidates.sort(key=lambda item: (item[0], item[1], item[2], item[3]))
+    zdr_rank, _, expected, tag, endpoint = candidates[0]
     pricing = endpoint.get("pricing") or {}
     input_price = price_per_million(pricing, "prompt")
     output_price = price_per_million(pricing, "completion")
@@ -250,8 +271,10 @@ def choose_endpoint(
         "provider_name": endpoint.get("provider_name"),
         "endpoint_name": endpoint.get("name"),
         "quantization": str(endpoint.get("quantization") or "unknown").lower(),
+        "zdr_eligible": zdr_rank == 0,
         "supported_parameters": sorted(set(endpoint.get("supported_parameters") or [])),
         "max_completion_tokens": endpoint.get("max_completion_tokens"),
+        "pricing_overrides": pricing.get("overrides") or [],
         "input_usd_per_million": input_price,
         "output_usd_per_million": output_price,
         "input_cache_read_usd_per_million": price_per_million(
@@ -340,7 +363,7 @@ def budget_select(candidates: list[dict[str, Any]]) -> None:
     for index, row in enumerate(priority, start=1):
         if row["model_id"] in selected_ids:
             continue
-        projected = float(row["expected_target_cost_usd_120"]) * 1.35
+        projected = float(row["expected_target_cost_usd_120"])
         if spent + projected > TARGET_BUDGET_USD:
             continue
         row["selected_for_budget"] = True
@@ -392,11 +415,9 @@ def main() -> None:
         open_weight_eligible = bool(
             open_weight and total_b is not None and total_b >= 100
         )
-        candidate = hosted or open_weight_eligible
+        candidate = open_weight_eligible if open_weight else hosted
         selection_basis = (
-            hosted_reason
-            if hosted
-            else "open_weight_total_params_ge_100b"
+            "open_weight_total_params_ge_100b"
             if open_weight_eligible
             else "open_weight_below_or_unknown_100b"
             if open_weight
@@ -420,7 +441,7 @@ def main() -> None:
                 endpoint = choose_endpoint(model_id, endpoint_data, zdr_pairs)
                 if endpoint is None:
                     endpoint_error = (
-                        "no_operational_zdr_route_with_temperature_and_1024_tokens"
+                        "no_operational_fixed_route_with_1024_tokens"
                     )
                     candidate = False
                     selection_basis = endpoint_error
@@ -446,8 +467,12 @@ def main() -> None:
             "provider_name": None,
             "endpoint_name": None,
             "quantization": None,
+            "zdr_eligible": False,
+            "temperature_supported": False,
             "seed_supported": False,
             "reasoning_effort_supported": False,
+            "supported_reasoning_efforts": [],
+            "pricing_overrides": [],
             "input_usd_per_million": None,
             "output_usd_per_million": None,
             "expected_target_cost_usd_120": None,
@@ -456,8 +481,14 @@ def main() -> None:
         if endpoint is not None:
             supported = set(endpoint["supported_parameters"])
             row.update(endpoint)
+            row["temperature_supported"] = "temperature" in supported
             row["seed_supported"] = "seed" in supported
             row["reasoning_effort_supported"] = "reasoning_effort" in supported
+            reasoning = model.get("reasoning") or {}
+            if isinstance(reasoning, dict):
+                row["supported_reasoning_efforts"] = list(
+                    reasoning.get("supported_efforts") or []
+                )
         rows.append(row)
         if candidate:
             candidates.append(row)
@@ -489,7 +520,7 @@ def main() -> None:
         "selection_rule": {
             "hosted": "stable general GPT/o-series, Claude except Haiku/Fast, Gemini except Lite/Nano, and Grok except small/code tiers",
             "open_weight": "live OpenRouter text model with Hugging Face identity and documented total parameters >=100B",
-            "route": "one operational ZDR endpoint, no fallback, request price zero, no conditional overrides, temperature and >=1024 output tokens",
+            "route": "one fixed operational endpoint, preferring ZDR, no fallback, request price zero, no relevant conditional override, and >=1024 output tokens",
             "budget": "longest hosted-family span first, then open-weight anchors oldest first, then intermediate hosted checkpoints",
         },
         "total_execution_budget_usd": TOTAL_EXECUTION_BUDGET_USD,
@@ -525,8 +556,12 @@ def main() -> None:
         "provider_name",
         "endpoint_name",
         "quantization",
+        "zdr_eligible",
+        "temperature_supported",
         "seed_supported",
         "reasoning_effort_supported",
+        "supported_reasoning_efforts",
+        "pricing_overrides",
         "input_usd_per_million",
         "output_usd_per_million",
         "expected_target_cost_usd_120",
@@ -534,7 +569,7 @@ def main() -> None:
         "endpoint_error",
     ]
     with REPORT_CSV.open("w", encoding="utf-8", newline="") as handle:
-        writer = csv.DictWriter(handle, fieldnames=fieldnames)
+        writer = csv.DictWriter(handle, fieldnames=fieldnames, lineterminator="\n")
         writer.writeheader()
         for row in rows:
             writer.writerow({key: row.get(key) for key in fieldnames})
