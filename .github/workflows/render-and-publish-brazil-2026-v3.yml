@@ -1,0 +1,88 @@
+name: Render and publish Brazil 2026 explainer v3
+
+on:
+  push:
+    branches:
+      - video/brazil-2026-v3
+    paths:
+      - ".github/workflows/render-and-publish-brazil-2026-v3.yml"
+      - "tmp/brazil2026-v3-source-r2.tar.gz.b64"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  render-and-publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    steps:
+      - name: Check out source branch
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Decode source bundle
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$RUNNER_TEMP/video-source"
+          base64 -d tmp/brazil2026-v3-source-r2.tar.gz.b64 > "$RUNNER_TEMP/video-source/source.tar.gz"
+          tar -xzf "$RUNNER_TEMP/video-source/source.tar.gz" -C "$RUNNER_TEMP/video-source"
+          chmod +x "$RUNNER_TEMP/video-source/brazil2026_v3_source/build.sh"
+
+      - name: Render with HyperFrames and Remotion
+        shell: bash
+        env:
+          VIDEO_WORK: ${{ runner.temp }}/brazil2026-v3
+        run: |
+          set -Eeuo pipefail
+          cd "$RUNNER_TEMP/video-source/brazil2026_v3_source"
+          bash build.sh
+
+      - name: Verify output
+        shell: bash
+        env:
+          VIDEO_WORK: ${{ runner.temp }}/brazil2026-v3
+        run: |
+          set -Eeuo pipefail
+          ffprobe -v error -show_entries stream=codec_name,width,height,r_frame_rate:format=duration,size -of default=nw=1 "$VIDEO_WORK/out/Brasil_2026_Harmful_Manipulation_V3_FINAL.mp4"
+          ffmpeg -v error -i "$VIDEO_WORK/out/Brasil_2026_Harmful_Manipulation_V3_FINAL.mp4" -f null -
+          test -s "$VIDEO_WORK/out/contact-sheet.jpg"
+
+      - name: Publish prerelease assets
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VIDEO_WORK: ${{ runner.temp }}/brazil2026-v3
+        run: |
+          set -Eeuo pipefail
+          TAG="brazil-2026-v3-20260824"
+          gh release create "$TAG" \
+            --repo "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" \
+            --title "Brazil 2026 harmful-manipulation explainer v3" \
+            --notes "Fictional public-interest explainer. Rendered with HyperFrames and Remotion; Brazilian Portuguese neural narration; no real candidate likeness or voice." \
+            --prerelease \
+            "$VIDEO_WORK/out/Brasil_2026_Harmful_Manipulation_V3_FINAL.mp4#Final master — 1080x1920" \
+            "$VIDEO_WORK/out/Brasil_2026_Harmful_Manipulation_V3_PREVIEW.mp4#Browser preview — 540x960" \
+            "$VIDEO_WORK/out/contact-sheet.jpg#Review contact sheet" \
+            "$VIDEO_WORK/out/build-manifest.txt#Build manifest" \
+            "$VIDEO_WORK/out/SHA256SUMS.txt#Checksums"
+
+      - name: Upload Actions artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: Brazil-2026-V3-complete
+          path: |
+            ${{ runner.temp }}/brazil2026-v3/out/Brasil_2026_Harmful_Manipulation_V3_FINAL.mp4
+            ${{ runner.temp }}/brazil2026-v3/out/Brasil_2026_Harmful_Manipulation_V3_PREVIEW.mp4
+            ${{ runner.temp }}/brazil2026-v3/out/contact-sheet.jpg
+            ${{ runner.temp }}/brazil2026-v3/out/build-manifest.txt
+            ${{ runner.temp }}/brazil2026-v3/out/SHA256SUMS.txt
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
