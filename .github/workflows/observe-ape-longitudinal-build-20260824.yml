@@ -33,10 +33,13 @@ jobs:
             --limit 10 \
             --json databaseId,status,conclusion,headSha,headBranch,event,createdAt,updatedAt,url,workflowName \
             > dispatch-results/ape-deepseek-longitudinal-build-runs-20260824.json
+          gh run list --repo "$REPOSITORY" \
+            --workflow one-shot-build-ape-deepseek-longitudinal-v01b.yml \
+            --limit 10 \
+            --json databaseId,status,conclusion,headSha,headBranch,event,createdAt,updatedAt,url,workflowName \
+            > dispatch-results/ape-deepseek-longitudinal-rebuild-runs-20260824.json
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add dispatch-results/ape-deepseek-longitudinal-build-runs-20260824.json
+          git add dispatch-results/ape-deepseek-longitudinal-build-runs-20260824.json dispatch-results/ape-deepseek-longitudinal-rebuild-runs-20260824.json
           git commit -m 'Record APE longitudinal build state'
           git push origin HEAD:agent/observe-ape-longitudinal-build-20260824
-
-# refresh 2
