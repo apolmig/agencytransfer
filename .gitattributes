@@ -1,4 +1,6 @@
-# Reproducible bytes for the Part 1B v4 public execution contract.
+# Reproducible bytes for the Part 1B public execution contracts.
 /part1b/benign_adapters_v4/** text eol=lf
 /.github/workflows/part1b-benign-v4-ci.yml text eol=lf
+/part1b/benign_adapters_v5/** text eol=lf
+/.github/workflows/part1b-benign-v5-ci.yml text eol=lf
 /.gitattributes text eol=lf
