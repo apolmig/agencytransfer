@@ -25,6 +25,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          python -m py_compile scripts/fix_refine_ape120_inventory_v03.py
+          python scripts/fix_refine_ape120_inventory_v03.py
           python -m py_compile scripts/refine_ape120_inventory_v03.py
           python scripts/refine_ape120_inventory_v03.py
           python -m py_compile scripts/build_ape120_inventory.py
@@ -58,6 +60,7 @@ jobs:
           PY
           rm .github/workflows/one-shot-ape120-inventory-v03.yml
           rm scripts/refine_ape120_inventory_v03.py
+          rm scripts/fix_refine_ape120_inventory_v03.py
 
       - name: Commit refined inventory
         shell: bash
@@ -65,12 +68,14 @@ jobs:
           set -euo pipefail
           test ! -e .github/workflows/one-shot-ape120-inventory-v03.yml
           test ! -e scripts/refine_ape120_inventory_v03.py
+          test ! -e scripts/fix_refine_ape120_inventory_v03.py
           git diff --check
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add \
             .github/workflows/one-shot-ape120-inventory-v03.yml \
             scripts/refine_ape120_inventory_v03.py \
+            scripts/fix_refine_ape120_inventory_v03.py \
             scripts/build_ape120_inventory.py \
             evals/research-notes/ape120-live-inventory-20260825.json \
             evals/research-notes/ape120-live-inventory-20260825.csv
