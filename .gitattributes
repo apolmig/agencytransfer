@@ -12,4 +12,6 @@
 /part1b/benign_adapters_v10/** text eol=lf
 /.github/workflows/part1b-benign-v10-ci.yml text eol=lf
 /.github/workflows/part1b-benign-v10-runtime.yml text eol=lf
+/part1b/benign_adapters_v11/** text eol=lf
+/.github/workflows/part1b-benign-v11-ci.yml text eol=lf
 /.gitattributes text eol=lf
