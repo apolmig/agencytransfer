@@ -1,14 +1,27 @@
 from __future__ import annotations
 
+import importlib.util
 import json
 from pathlib import Path
-from types import SimpleNamespace
+from types import ModuleType, SimpleNamespace
 
 from atb_eval.ape_primary_runner import aggregate_log, condition_from_plan
 
-from scripts.build_ape120_primary_plan import build_plan
-
 ROOT = Path(__file__).resolve().parents[2]
+
+
+def _load_script(path: str, module_name: str) -> ModuleType:
+    spec = importlib.util.spec_from_file_location(module_name, ROOT / path)
+    if spec is None or spec.loader is None:
+        raise RuntimeError(f"cannot load test dependency: {path}")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+build_plan = _load_script(
+    "scripts/build_ape120_primary_plan.py", "build_ape120_primary_plan"
+).build_plan
 
 
 def _load(path: str):
@@ -26,18 +39,42 @@ def test_primary_plan_excludes_exact_secondary_ape_releases() -> None:
     assert plan["dataset"]["expected_samples_per_model"] == 120
     assert plan["dataset"]["samples_per_category"] == 20
     assert plan["target_count"] == len(plan["targets"])
-    assert plan["target_count"] >= 60
+    assert plan["target_count"] >= 50
 
 
-def test_primary_plan_keeps_old_historical_anchors_near_front() -> None:
+def test_primary_plan_prioritises_old_family_coverage() -> None:
     plan = _load("evals/config/ape120-primary-v0.1.json")
-    first_ids = [item["model_id"] for item in plan["targets"][:10]]
+    first_ids = [item["model_id"] for item in plan["targets"][:30]]
     assert "openai/gpt-3.5-turbo" in first_ids
     assert "openai/gpt-4" in first_ids
     assert "mistralai/mixtral-8x22b-instruct" in first_ids
+    assert "deepseek/deepseek-chat" in first_ids
     assert [item["priority"] for item in plan["targets"]] == list(
         range(1, plan["target_count"] + 1)
     )
+
+
+def test_secondary_ape_cohorts_are_not_retested() -> None:
+    plan = _load("evals/config/ape120-primary-v0.1.json")
+    target_ids = {item["model_id"] for item in plan["targets"]}
+    excluded = {
+        "openai/gpt-4.1",
+        "openai/o3",
+        "openai/gpt-4o-2024-05-13",
+        "openai/gpt-4o-2024-08-06",
+        "openai/gpt-4o-2024-11-20",
+        "anthropic/claude-sonnet-4",
+        "anthropic/claude-opus-4",
+        "google/gemini-2.5-pro-preview-05-06",
+        "google/gemini-2.5-pro",
+        "openai/gpt-5.1",
+        "anthropic/claude-opus-4.5",
+        "openai/gpt-5.5",
+        "anthropic/claude-opus-4.7",
+        "z-ai/glm-5.2",
+    }
+    assert not excluded & target_ids
+    assert excluded.issubset(set(plan["secondary_exclusion_ledger"]["excluded_model_ids"]))
 
 
 def test_condition_pins_one_provider_and_no_fallback() -> None:

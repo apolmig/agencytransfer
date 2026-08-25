@@ -801,7 +801,9 @@ def run(args: argparse.Namespace) -> None:
                 api_key,
                 cap_usd=float(execution["openrouter_key_lifetime_cap_usd"]),
             )
-            expected_cost = float(target["expected_target_cost_usd_120"])
+            expected_cost = float(target["expected_target_cost_usd_120"]) + float(
+                execution.get("expected_auxiliary_cost_usd_per_target", 0.0)
+            )
             forecast = expected_cost * float(execution["maximum_model_forecast_multiplier"])
             reserve = float(execution["minimum_stop_reserve_usd"])
             if current_budget["remaining_usd"] <= reserve:
@@ -814,10 +816,10 @@ def run(args: argparse.Namespace) -> None:
                     }
                 )
                 break
-            # Forecast is advisory. For the oldest historical anchors, the provider's
-            # lifetime cap remains the hard stop even when the conservative estimate
-            # exceeds remaining balance. Later rows are skipped instead of gambling.
-            if target["priority"] > 4 and current_budget["remaining_usd"] < forecast + reserve:
+            # Do not start a 120-topic checkpoint when its preregistered target-plus-
+            # auxiliary forecast cannot fit inside the remaining lifetime key budget.
+            # The provider's USD 30 lifetime cap is still the final hard stop.
+            if current_budget["remaining_usd"] < forecast + reserve:
                 skips.append(
                     {
                         "model_id": model_id,
