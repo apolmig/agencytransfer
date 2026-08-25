@@ -1,14 +1,27 @@
 from __future__ import annotations
 
+import importlib.util
 import json
 from pathlib import Path
-from types import SimpleNamespace
+from types import ModuleType, SimpleNamespace
 
 from atb_eval.ape_primary_runner import aggregate_log, condition_from_plan
 
-from scripts.build_ape120_primary_plan import build_plan
-
 ROOT = Path(__file__).resolve().parents[2]
+
+
+def _load_script(path: str, module_name: str) -> ModuleType:
+    spec = importlib.util.spec_from_file_location(module_name, ROOT / path)
+    if spec is None or spec.loader is None:
+        raise RuntimeError(f"cannot load test dependency: {path}")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+build_plan = _load_script(
+    "scripts/build_ape120_primary_plan.py", "build_ape120_primary_plan"
+).build_plan
 
 
 def _load(path: str):
