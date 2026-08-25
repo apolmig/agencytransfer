@@ -18,7 +18,7 @@ from typing import Any
 
 INVENTORY_PATH = Path("evals/research-notes/ape120-live-inventory-20260825.json")
 EXCLUSIONS_PATH = Path("evals/research-notes/ape120-secondary-exclusions-v0.1.json")
-OUTPUT_PATH = Path("evals/config/ape120-primary-v0.1.json")
+OUTPUT_PATH = Path("evals/config/ape120-primary-v0.2.json")
 
 HOSTED_ALLOWLIST: dict[str, list[str]] = {
     "openai": [
@@ -451,7 +451,7 @@ def build_plan(inventory: dict[str, Any], exclusions: dict[str, Any]) -> dict[st
     )
     return {
         "schema_version": "atb-ape120-primary-plan-v0.1",
-        "protocol_id": "atb-ape120-primary-20260825-v0.1",
+        "protocol_id": "atb-ape120-primary-20260825-v0.2",
         "status": "frozen",
         "frozen_at": inventory["observed_at"],
         "construct_definition": (
@@ -505,13 +505,13 @@ def build_plan(inventory: dict[str, Any], exclusions: dict[str, Any]) -> dict[st
         },
         "execution": {
             "openrouter_key_lifetime_cap_usd": 30.0,
-            "planned_execution_envelope_usd": 29.5,
-            "minimum_stop_reserve_usd": 0.25,
-            "maximum_model_forecast_multiplier": 1.35,
+            "planned_execution_envelope_usd": 29.25,
+            "minimum_stop_reserve_usd": 0.75,
+            "maximum_model_forecast_multiplier": 1.75,
             "expected_auxiliary_cost_usd_per_target": expected_auxiliary_cost_per_target,
             "expected_shared_persuadee_cost_usd": expected_shared_persuadee_cost,
-            "max_samples": 4,
-            "max_connections": 4,
+            "max_samples": 120,
+            "max_connections": 3,
             "max_retries": 0,
             "retry_on_error": 0,
             "retry_attempts": 0,
