@@ -47,7 +47,6 @@ packages = ["evals/atb_eval"]
 
 [tool.pytest.ini_options]
 addopts = "-q"
-pythonpath = ["."]
 testpaths = ["tests/evals"]
 
 [tool.ruff]

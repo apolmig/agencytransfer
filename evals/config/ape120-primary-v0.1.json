@@ -27,7 +27,62 @@
   "decision_ledger": [
     {
       "decision": "excluded-secondary-ape",
+      "model_id": "anthropic/claude-opus-4",
+      "reason": "exact served release already has secondary APE evidence"
+    },
+    {
+      "decision": "excluded-secondary-ape",
+      "model_id": "anthropic/claude-opus-4.5",
+      "reason": "exact served release already has secondary APE evidence"
+    },
+    {
+      "decision": "excluded-secondary-ape",
       "model_id": "anthropic/claude-opus-4.7",
+      "reason": "exact served release already has secondary APE evidence"
+    },
+    {
+      "decision": "excluded-secondary-ape",
+      "model_id": "anthropic/claude-sonnet-4",
+      "reason": "exact served release already has secondary APE evidence"
+    },
+    {
+      "decision": "excluded-secondary-ape",
+      "model_id": "google/gemini-2.5-pro",
+      "reason": "exact served release already has secondary APE evidence"
+    },
+    {
+      "decision": "excluded-secondary-ape",
+      "model_id": "google/gemini-2.5-pro-preview-05-06",
+      "reason": "exact served release already has secondary APE evidence"
+    },
+    {
+      "decision": "excluded-secondary-ape",
+      "model_id": "openai/gpt-4.1",
+      "reason": "exact served release already has secondary APE evidence"
+    },
+    {
+      "decision": "excluded-secondary-ape",
+      "model_id": "openai/gpt-4o-2024-05-13",
+      "reason": "exact served release already has secondary APE evidence"
+    },
+    {
+      "decision": "excluded-secondary-ape",
+      "model_id": "openai/gpt-4o-2024-08-06",
+      "reason": "exact served release already has secondary APE evidence"
+    },
+    {
+      "decision": "excluded-secondary-ape",
+      "model_id": "openai/gpt-4o-2024-11-20",
+      "reason": "exact served release already has secondary APE evidence"
+    },
+    {
+      "decision": "excluded-secondary-ape",
+      "model_id": "openai/gpt-5.1",
+      "reason": "exact served release already has secondary APE evidence"
+    },
+    {
+      "decision": "excluded-secondary-ape",
+      "model_id": "openai/o3",
       "reason": "exact served release already has secondary APE evidence"
     },
     {
@@ -144,11 +199,13 @@
   "evidence_type": "primary-research-direct-model-evaluation",
   "execution": {
     "budget_policy": "fresh key-status check before and after every target; stop rather than exceed the provider lifetime cap",
+    "expected_auxiliary_cost_usd_per_target": 0.1,
+    "expected_shared_persuadee_cost_usd": 0.03,
     "fail_on_error": 0.05,
     "max_connections": 4,
     "max_retries": 0,
     "max_samples": 4,
-    "maximum_model_forecast_multiplier": 1.25,
+    "maximum_model_forecast_multiplier": 1.35,
     "minimum_stop_reserve_usd": 0.25,
     "openrouter_key_lifetime_cap_usd": 30.0,
     "paired_interlocutor_cache": true,
@@ -162,7 +219,8 @@
     "target_temperature": 0.5,
     "target_top_p": 1.0
   },
-  "expected_all_target_cost_usd": 61.767057,
+  "expected_all_execution_cost_usd": 53.958057000000004,
+  "expected_all_target_cost_usd": 47.328057,
   "explicit_non_claims": [
     "persuasion success",
     "belief or behaviour change",
@@ -173,7 +231,7 @@
     "cross-provider equivalence"
   ],
   "frozen_at": "2026-08-24T23:18:17.780908Z",
-  "hosted_target_count": 39,
+  "hosted_target_count": 28,
   "inventory": {
     "models_source_url": "https://openrouter.ai/api/v1/models",
     "observed_at": "2026-08-24T23:18:17.780908Z",
@@ -181,7 +239,7 @@
     "sha256": "f8b193d75202548f0fbc296a45b484f0c31edfbe63e4c7166c2899359db35daa",
     "zdr_source_url": "https://openrouter.ai/api/v1/endpoints/zdr"
   },
-  "maximum_all_target_cost_usd": 134.55268704,
+  "maximum_all_target_cost_usd": 102.98140704000001,
   "model_roles": {
     "evaluator": {
       "canonical_slug": "qwen/qwen3-235b-a22b-07-25",
@@ -238,15 +296,35 @@
   "schema_version": "atb-ape120-primary-plan-v0.1",
   "secondary_exclusion_ledger": {
     "excluded_model_ids": [
+      "anthropic/claude-3.5-haiku",
+      "anthropic/claude-opus-4",
+      "anthropic/claude-opus-4.5",
       "anthropic/claude-opus-4.7",
+      "anthropic/claude-sonnet-4",
+      "google/gemini-2.0-flash-001",
+      "google/gemini-2.5-pro",
+      "google/gemini-2.5-pro-preview",
+      "google/gemini-2.5-pro-preview-05-06",
+      "google/gemini-3-pro-preview",
+      "meta-llama/llama-3.1-8b-instruct",
+      "openai/gpt-4.1",
+      "openai/gpt-4o",
+      "openai/gpt-4o-2024-05-13",
+      "openai/gpt-4o-2024-08-06",
+      "openai/gpt-4o-2024-11-20",
+      "openai/gpt-4o-mini",
+      "openai/gpt-5.1",
       "openai/gpt-5.5",
+      "openai/o3",
+      "openai/o4-mini",
+      "qwen/qwen3-32b",
       "z-ai/glm-5.2"
     ],
     "path": "evals/research-notes/ape120-secondary-exclusions-v0.1.json",
-    "sha256": "6133b889409cc3c77f06cb2e5589586c5e4c7350e96f736a898a12e6bf459415"
+    "sha256": "160904720c75fd133320bf26c6e3c7d4b4e42c26f53e3abfd58d53a115c0beab"
   },
   "status": "frozen",
-  "target_count": 77,
+  "target_count": 66,
   "targets": [
     {
       "access_class": "hosted",
@@ -262,6 +340,7 @@
         "top_p": 1.0
       },
       "hugging_face_id": null,
+      "identity_tier": "named-release-route-frozen-snapshot-unresolved",
       "inclusion_basis": "hosted-openai-frontier-release",
       "maximum_target_cost_usd_120": 0.30432,
       "model_id": "openai/gpt-3.5-turbo",
@@ -274,7 +353,8 @@
       },
       "priority": 1,
       "registry_id": null,
-      "release_date": "2023-05-28",
+      "release_date": "2023-03-01",
+      "release_date_source": "https://openai.com/index/introducing-chatgpt-and-whisper-apis/",
       "route": {
         "endpoint_name": "OpenAI | openai/gpt-3.5-turbo",
         "max_completion_tokens": 4096,
@@ -304,6 +384,7 @@
         "top_p": 1.0
       },
       "hugging_face_id": "mistralai/Mixtral-8x22B-Instruct-v0.1",
+      "identity_tier": "original-weight-release-id",
       "inclusion_basis": "open-weight-original-lab-total-parameters-ge-100b",
       "maximum_target_cost_usd_120": 1.21728,
       "model_id": "mistralai/mixtral-8x22b-instruct",
@@ -317,6 +398,7 @@
       "priority": 2,
       "registry_id": "mixtral-8x22b-instruct",
       "release_date": "2024-04-16",
+      "release_date_source": "project-frontier-registry",
       "route": {
         "endpoint_name": "Mistral | mistralai/mixtral-8x22b-instruct",
         "max_completion_tokens": null,
@@ -333,48 +415,6 @@
       "total_params_b": 140.6
     },
     {
-      "access_class": "hosted",
-      "canonical_slug": "openai/gpt-4",
-      "expected_target_cost_usd_120": 6.84,
-      "family": "openai",
-      "generation": {
-        "compatibility_lane": "seeded",
-        "max_tokens": 1024,
-        "reasoning_effort": null,
-        "seed": 42,
-        "temperature": 0.5,
-        "top_p": 1.0
-      },
-      "hugging_face_id": null,
-      "inclusion_basis": "hosted-openai-frontier-release",
-      "maximum_target_cost_usd_120": 14.5728,
-      "model_id": "openai/gpt-4",
-      "name": "OpenAI: GPT-4",
-      "pricing_usd_per_million": {
-        "input": 30.0,
-        "input_cache_read": 0.0,
-        "input_cache_write": 0.0,
-        "output": 60.0
-      },
-      "priority": 3,
-      "registry_id": null,
-      "release_date": "2023-05-28",
-      "route": {
-        "endpoint_name": "OpenAI | openai/gpt-4",
-        "max_completion_tokens": 4096,
-        "pricing_overrides": [],
-        "provider_name": "OpenAI",
-        "provider_tag": "openai",
-        "quantization": "unknown",
-        "reasoning_effort_supported": false,
-        "seed_supported": true,
-        "supported_reasoning_efforts": [],
-        "temperature_supported": true,
-        "zdr_eligible": false
-      },
-      "total_params_b": null
-    },
-    {
       "access_class": "open-weight",
       "canonical_slug": "deepseek/deepseek-chat-v3",
       "expected_target_cost_usd_120": 0.1182,
@@ -388,6 +428,7 @@
         "top_p": 1.0
       },
       "hugging_face_id": "deepseek-ai/DeepSeek-V3",
+      "identity_tier": "original-weight-release-id",
       "inclusion_basis": "open-weight-original-lab-total-parameters-ge-100b",
       "maximum_target_cost_usd_120": 0.25574399999999997,
       "model_id": "deepseek/deepseek-chat",
@@ -398,9 +439,10 @@
         "input_cache_write": 0.0,
         "output": 1.3
       },
-      "priority": 4,
+      "priority": 3,
       "registry_id": "deepseek-v3",
       "release_date": "2024-12-26",
+      "release_date_source": "project-frontier-registry",
       "route": {
         "endpoint_name": "Novita | deepseek/deepseek-chat-v3",
         "max_completion_tokens": 16000,
@@ -417,48 +459,6 @@
       "total_params_b": 671.0
     },
     {
-      "access_class": "hosted",
-      "canonical_slug": "openai/gpt-4-turbo",
-      "expected_target_cost_usd_120": 2.82,
-      "family": "openai",
-      "generation": {
-        "compatibility_lane": "seeded",
-        "max_tokens": 1024,
-        "reasoning_effort": null,
-        "seed": 42,
-        "temperature": 0.5,
-        "top_p": 1.0
-      },
-      "hugging_face_id": null,
-      "inclusion_basis": "hosted-openai-frontier-release",
-      "maximum_target_cost_usd_120": 6.0864,
-      "model_id": "openai/gpt-4-turbo",
-      "name": "OpenAI: GPT-4 Turbo",
-      "pricing_usd_per_million": {
-        "input": 10.0,
-        "input_cache_read": 0.0,
-        "input_cache_write": 0.0,
-        "output": 30.0
-      },
-      "priority": 5,
-      "registry_id": null,
-      "release_date": "2024-04-09",
-      "route": {
-        "endpoint_name": "OpenAI | openai/gpt-4-turbo",
-        "max_completion_tokens": 4096,
-        "pricing_overrides": [],
-        "provider_name": "OpenAI",
-        "provider_tag": "openai",
-        "quantization": "unknown",
-        "reasoning_effort_supported": false,
-        "seed_supported": true,
-        "supported_reasoning_efforts": [],
-        "temperature_supported": true,
-        "zdr_eligible": false
-      },
-      "total_params_b": null
-    },
-    {
       "access_class": "open-weight",
       "canonical_slug": "minimax/minimax-01",
       "expected_target_cost_usd_120": 0.0834,
@@ -472,6 +472,7 @@
         "top_p": 1.0
       },
       "hugging_face_id": "MiniMaxAI/MiniMax-Text-01",
+      "identity_tier": "original-weight-release-id",
       "inclusion_basis": "open-weight-original-lab-total-parameters-ge-100b",
       "maximum_target_cost_usd_120": 0.183168,
       "model_id": "minimax/minimax-01",
@@ -482,9 +483,10 @@
         "input_cache_write": 0.0,
         "output": 1.1
       },
-      "priority": 6,
+      "priority": 4,
       "registry_id": null,
       "release_date": "2025-01-15",
+      "release_date_source": "openrouter-model-created-at",
       "route": {
         "endpoint_name": "Minimax | minimax/minimax-01",
         "max_completion_tokens": 1000192,
@@ -501,9 +503,642 @@
       "total_params_b": 456.0
     },
     {
+      "access_class": "open-weight",
+      "canonical_slug": "cohere/command-a-03-2025",
+      "expected_target_cost_usd_120": 0.84,
+      "family": "cohere",
+      "generation": {
+        "compatibility_lane": "seeded",
+        "max_tokens": 1024,
+        "reasoning_effort": null,
+        "seed": 42,
+        "temperature": 0.5,
+        "top_p": 1.0
+      },
+      "hugging_face_id": "CohereForAI/c4ai-command-a-03-2025",
+      "identity_tier": "original-weight-release-id",
+      "inclusion_basis": "open-weight-original-lab-total-parameters-ge-100b",
+      "maximum_target_cost_usd_120": 1.8288,
+      "model_id": "cohere/command-a",
+      "name": "Cohere: Command A",
+      "pricing_usd_per_million": {
+        "input": 2.5,
+        "input_cache_read": 0.0,
+        "input_cache_write": 0.0,
+        "output": 10.0
+      },
+      "priority": 5,
+      "registry_id": null,
+      "release_date": "2025-03-13",
+      "release_date_source": "openrouter-model-created-at",
+      "route": {
+        "endpoint_name": "Cohere | cohere/command-a-03-2025",
+        "max_completion_tokens": 8192,
+        "pricing_overrides": [],
+        "provider_name": "Cohere",
+        "provider_tag": "cohere",
+        "quantization": "unknown",
+        "reasoning_effort_supported": false,
+        "seed_supported": true,
+        "supported_reasoning_efforts": [],
+        "temperature_supported": true,
+        "zdr_eligible": false
+      },
+      "total_params_b": 111.0
+    },
+    {
+      "access_class": "open-weight",
+      "canonical_slug": "meta-llama/llama-4-maverick-17b-128e-instruct",
+      "expected_target_cost_usd_120": 0.06719999999999998,
+      "family": "Llama 4",
+      "generation": {
+        "compatibility_lane": "seeded",
+        "max_tokens": 1024,
+        "reasoning_effort": null,
+        "seed": 42,
+        "temperature": 0.5,
+        "top_p": 1.0
+      },
+      "hugging_face_id": "meta-llama/Llama-4-Maverick-17B-128E-Instruct",
+      "identity_tier": "original-weight-release-id",
+      "inclusion_basis": "open-weight-original-lab-total-parameters-ge-100b",
+      "maximum_target_cost_usd_120": 0.14630399999999996,
+      "model_id": "meta-llama/llama-4-maverick",
+      "name": "Meta: Llama 4 Maverick",
+      "pricing_usd_per_million": {
+        "input": 0.19999999999999998,
+        "input_cache_read": 0.0,
+        "input_cache_write": 0.0,
+        "output": 0.7999999999999999
+      },
+      "priority": 6,
+      "registry_id": "llama-4-maverick",
+      "release_date": "2025-04-05",
+      "release_date_source": "project-frontier-registry",
+      "route": {
+        "endpoint_name": "DeepInfra | meta-llama/llama-4-maverick-17b-128e-instruct",
+        "max_completion_tokens": 16384,
+        "pricing_overrides": [],
+        "provider_name": "DeepInfra",
+        "provider_tag": "deepinfra/base",
+        "quantization": "fp8",
+        "reasoning_effort_supported": false,
+        "seed_supported": true,
+        "supported_reasoning_efforts": [],
+        "temperature_supported": true,
+        "zdr_eligible": true
+      },
+      "total_params_b": 400.0
+    },
+    {
+      "access_class": "open-weight",
+      "canonical_slug": "qwen/qwen3-235b-a22b-04-28",
+      "expected_target_cost_usd_120": 0.15287999999999996,
+      "family": "Qwen 3",
+      "generation": {
+        "compatibility_lane": "seeded",
+        "max_tokens": 1024,
+        "reasoning_effort": null,
+        "seed": 42,
+        "temperature": 0.5,
+        "top_p": 1.0
+      },
+      "hugging_face_id": "Qwen/Qwen3-235B-A22B",
+      "identity_tier": "original-weight-release-id",
+      "inclusion_basis": "open-weight-original-lab-total-parameters-ge-100b",
+      "maximum_target_cost_usd_120": 0.33284159999999996,
+      "model_id": "qwen/qwen3-235b-a22b",
+      "name": "Qwen: Qwen3 235B A22B",
+      "pricing_usd_per_million": {
+        "input": 0.45499999999999996,
+        "input_cache_read": 0.0,
+        "input_cache_write": 0.0,
+        "output": 1.8199999999999998
+      },
+      "priority": 7,
+      "registry_id": "qwen3-235b-a22b",
+      "release_date": "2025-04-29",
+      "release_date_source": "project-frontier-registry",
+      "route": {
+        "endpoint_name": "Alibaba | qwen/qwen3-235b-a22b-04-28",
+        "max_completion_tokens": 8192,
+        "pricing_overrides": [],
+        "provider_name": "Alibaba",
+        "provider_tag": "alibaba",
+        "quantization": "unknown",
+        "reasoning_effort_supported": false,
+        "seed_supported": true,
+        "supported_reasoning_efforts": [],
+        "temperature_supported": true,
+        "zdr_eligible": false
+      },
+      "total_params_b": 235.0
+    },
+    {
       "access_class": "hosted",
-      "canonical_slug": "openai/gpt-4o-2024-05-13",
-      "expected_target_cost_usd_120": 1.41,
+      "canonical_slug": "google/gemini-2.5-flash",
+      "expected_target_cost_usd_120": 0.171,
+      "family": "google",
+      "generation": {
+        "compatibility_lane": "seeded",
+        "max_tokens": 1024,
+        "reasoning_effort": null,
+        "seed": 42,
+        "temperature": 0.5,
+        "top_p": 1.0
+      },
+      "hugging_face_id": "",
+      "identity_tier": "named-release-route-frozen-snapshot-unresolved",
+      "inclusion_basis": "hosted-google-frontier-release",
+      "maximum_target_cost_usd_120": 0.3792,
+      "model_id": "google/gemini-2.5-flash",
+      "name": "Google: Gemini 2.5 Flash",
+      "pricing_usd_per_million": {
+        "input": 0.3,
+        "input_cache_read": 0.03,
+        "input_cache_write": 0.0833333333333333,
+        "output": 2.5
+      },
+      "priority": 8,
+      "registry_id": null,
+      "release_date": "2025-06-17",
+      "release_date_source": "openrouter-model-created-at",
+      "route": {
+        "endpoint_name": "Google | google/gemini-2.5-flash",
+        "max_completion_tokens": 65535,
+        "pricing_overrides": [],
+        "provider_name": "Google",
+        "provider_tag": "google-vertex/eu",
+        "quantization": "unknown",
+        "reasoning_effort_supported": false,
+        "seed_supported": true,
+        "supported_reasoning_efforts": [],
+        "temperature_supported": true,
+        "zdr_eligible": true
+      },
+      "total_params_b": null
+    },
+    {
+      "access_class": "open-weight",
+      "canonical_slug": "baidu/ernie-4.5-vl-424b-a47b",
+      "expected_target_cost_usd_120": 0.1179,
+      "family": "baidu",
+      "generation": {
+        "compatibility_lane": "seeded",
+        "max_tokens": 1024,
+        "reasoning_effort": null,
+        "seed": 42,
+        "temperature": 0.5,
+        "top_p": 1.0
+      },
+      "hugging_face_id": "baidu/ERNIE-4.5-VL-424B-A47B-PT",
+      "identity_tier": "original-weight-release-id",
+      "inclusion_basis": "open-weight-original-lab-total-parameters-ge-100b",
+      "maximum_target_cost_usd_120": 0.2544,
+      "model_id": "baidu/ernie-4.5-vl-424b-a47b",
+      "name": "Baidu: ERNIE 4.5 VL 424B A47B ",
+      "pricing_usd_per_million": {
+        "input": 0.42,
+        "input_cache_read": 0.0,
+        "input_cache_write": 0.0,
+        "output": 1.25
+      },
+      "priority": 9,
+      "registry_id": null,
+      "release_date": "2025-06-30",
+      "release_date_source": "openrouter-model-created-at",
+      "route": {
+        "endpoint_name": "Novita | baidu/ernie-4.5-vl-424b-a47b",
+        "max_completion_tokens": 16000,
+        "pricing_overrides": [],
+        "provider_name": "Novita",
+        "provider_tag": "novita/fp16",
+        "quantization": "fp16",
+        "reasoning_effort_supported": false,
+        "seed_supported": true,
+        "supported_reasoning_efforts": [],
+        "temperature_supported": true,
+        "zdr_eligible": true
+      },
+      "total_params_b": 424.0
+    },
+    {
+      "access_class": "open-weight",
+      "canonical_slug": "moonshotai/kimi-k2",
+      "expected_target_cost_usd_120": 0.1926,
+      "family": "Kimi K2",
+      "generation": {
+        "compatibility_lane": "seeded",
+        "max_tokens": 1024,
+        "reasoning_effort": null,
+        "seed": 42,
+        "temperature": 0.5,
+        "top_p": 1.0
+      },
+      "hugging_face_id": "moonshotai/Kimi-K2-Instruct",
+      "identity_tier": "original-weight-release-id",
+      "inclusion_basis": "open-weight-original-lab-total-parameters-ge-100b",
+      "maximum_target_cost_usd_120": 0.419424,
+      "model_id": "moonshotai/kimi-k2",
+      "name": "MoonshotAI: Kimi K2 0711",
+      "pricing_usd_per_million": {
+        "input": 0.5700000000000001,
+        "input_cache_read": 0.0,
+        "input_cache_write": 0.0,
+        "output": 2.3
+      },
+      "priority": 10,
+      "registry_id": "kimi-k2-instruct",
+      "release_date": "2025-07-11",
+      "release_date_source": "project-frontier-registry",
+      "route": {
+        "endpoint_name": "Novita | moonshotai/kimi-k2",
+        "max_completion_tokens": 100352,
+        "pricing_overrides": [],
+        "provider_name": "Novita",
+        "provider_tag": "novita/fp8",
+        "quantization": "fp8",
+        "reasoning_effort_supported": false,
+        "seed_supported": true,
+        "supported_reasoning_efforts": [],
+        "temperature_supported": true,
+        "zdr_eligible": true
+      },
+      "total_params_b": 1000.0
+    },
+    {
+      "access_class": "open-weight",
+      "canonical_slug": "z-ai/glm-4.5",
+      "expected_target_cost_usd_120": 0.1908,
+      "family": "GLM 4",
+      "generation": {
+        "compatibility_lane": "provider-unseeded",
+        "max_tokens": 1024,
+        "reasoning_effort": null,
+        "seed": null,
+        "temperature": 0.5,
+        "top_p": 1.0
+      },
+      "hugging_face_id": "zai-org/GLM-4.5",
+      "identity_tier": "original-weight-release-id",
+      "inclusion_basis": "open-weight-original-lab-total-parameters-ge-100b",
+      "maximum_target_cost_usd_120": 0.414336,
+      "model_id": "z-ai/glm-4.5",
+      "name": "Z.ai: GLM 4.5",
+      "pricing_usd_per_million": {
+        "input": 0.6,
+        "input_cache_read": 0.11,
+        "input_cache_write": 0.0,
+        "output": 2.2
+      },
+      "priority": 11,
+      "registry_id": "glm-4-5",
+      "release_date": "2025-07-28",
+      "release_date_source": "project-frontier-registry",
+      "route": {
+        "endpoint_name": "Z.AI | z-ai/glm-4.5",
+        "max_completion_tokens": 98304,
+        "pricing_overrides": [],
+        "provider_name": "Z.AI",
+        "provider_tag": "z-ai/fp8",
+        "quantization": "fp8",
+        "reasoning_effort_supported": false,
+        "seed_supported": false,
+        "supported_reasoning_efforts": [],
+        "temperature_supported": true,
+        "zdr_eligible": true
+      },
+      "total_params_b": 355.0
+    },
+    {
+      "access_class": "hosted",
+      "canonical_slug": "anthropic/claude-4.1-opus-20250805",
+      "expected_target_cost_usd_120": 5.85,
+      "family": "anthropic",
+      "generation": {
+        "compatibility_lane": "provider-unseeded",
+        "max_tokens": 1024,
+        "reasoning_effort": null,
+        "seed": null,
+        "temperature": 0.5,
+        "top_p": 1.0
+      },
+      "hugging_face_id": "",
+      "identity_tier": "explicit-provider-snapshot",
+      "inclusion_basis": "hosted-anthropic-frontier-release",
+      "maximum_target_cost_usd_120": 12.816,
+      "model_id": "anthropic/claude-opus-4.1",
+      "name": "Anthropic: Claude Opus 4.1",
+      "pricing_usd_per_million": {
+        "input": 15.0,
+        "input_cache_read": 1.5,
+        "input_cache_write": 18.75,
+        "output": 75.0
+      },
+      "priority": 12,
+      "registry_id": null,
+      "release_date": "2025-08-05",
+      "release_date_source": "openrouter-model-created-at",
+      "route": {
+        "endpoint_name": "Amazon Bedrock | anthropic/claude-4.1-opus-20250805",
+        "max_completion_tokens": 32000,
+        "pricing_overrides": [],
+        "provider_name": "Amazon Bedrock",
+        "provider_tag": "amazon-bedrock",
+        "quantization": "unknown",
+        "reasoning_effort_supported": false,
+        "seed_supported": false,
+        "supported_reasoning_efforts": [],
+        "temperature_supported": true,
+        "zdr_eligible": true
+      },
+      "total_params_b": null
+    },
+    {
+      "access_class": "open-weight",
+      "canonical_slug": "stepfun/step-3.5-flash",
+      "expected_target_cost_usd_120": 0.0282,
+      "family": "stepfun",
+      "generation": {
+        "compatibility_lane": "provider-unseeded",
+        "max_tokens": 1024,
+        "reasoning_effort": null,
+        "seed": null,
+        "temperature": 0.5,
+        "top_p": 1.0
+      },
+      "hugging_face_id": "stepfun-ai/Step-3.5-Flash",
+      "identity_tier": "original-weight-release-id",
+      "inclusion_basis": "open-weight-original-lab-total-parameters-ge-100b",
+      "maximum_target_cost_usd_120": 0.060863999999999994,
+      "model_id": "stepfun/step-3.5-flash",
+      "name": "StepFun: Step 3.5 Flash",
+      "pricing_usd_per_million": {
+        "input": 0.09999999999999999,
+        "input_cache_read": 0.0,
+        "input_cache_write": 0.0,
+        "output": 0.3
+      },
+      "priority": 13,
+      "registry_id": null,
+      "release_date": "2026-01-29",
+      "release_date_source": "openrouter-model-created-at",
+      "route": {
+        "endpoint_name": "SiliconFlow | stepfun/step-3.5-flash",
+        "max_completion_tokens": 65536,
+        "pricing_overrides": [],
+        "provider_name": "SiliconFlow",
+        "provider_tag": "siliconflow/fp8",
+        "quantization": "fp8",
+        "reasoning_effort_supported": false,
+        "seed_supported": false,
+        "supported_reasoning_efforts": [],
+        "temperature_supported": true,
+        "zdr_eligible": true
+      },
+      "total_params_b": 196.0
+    },
+    {
+      "access_class": "open-weight",
+      "canonical_slug": "nvidia/nemotron-3-super-120b-a12b-20230311",
+      "expected_target_cost_usd_120": 0.031799999999999995,
+      "family": "nvidia",
+      "generation": {
+        "compatibility_lane": "seeded",
+        "max_tokens": 1024,
+        "reasoning_effort": "medium",
+        "seed": 42,
+        "temperature": 0.5,
+        "top_p": 1.0
+      },
+      "hugging_face_id": "nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-FP8",
+      "identity_tier": "explicit-provider-snapshot",
+      "inclusion_basis": "open-weight-original-lab-total-parameters-ge-100b",
+      "maximum_target_cost_usd_120": 0.06955199999999999,
+      "model_id": "nvidia/nemotron-3-super-120b-a12b",
+      "name": "NVIDIA: Nemotron 3 Super",
+      "pricing_usd_per_million": {
+        "input": 0.08499999999999999,
+        "input_cache_read": 0.0,
+        "input_cache_write": 0.0,
+        "output": 0.39999999999999997
+      },
+      "priority": 14,
+      "registry_id": null,
+      "release_date": "2026-03-11",
+      "release_date_source": "openrouter-model-created-at",
+      "route": {
+        "endpoint_name": "DeepInfra | nvidia/nemotron-3-super-120b-a12b-20230311",
+        "max_completion_tokens": 16384,
+        "pricing_overrides": [],
+        "provider_name": "DeepInfra",
+        "provider_tag": "deepinfra/bf16",
+        "quantization": "bf16",
+        "reasoning_effort_supported": true,
+        "seed_supported": true,
+        "supported_reasoning_efforts": [
+          "medium",
+          "low"
+        ],
+        "temperature_supported": true,
+        "zdr_eligible": true
+      },
+      "total_params_b": 120.0
+    },
+    {
+      "access_class": "hosted",
+      "canonical_slug": "x-ai/grok-4.20-20260309",
+      "expected_target_cost_usd_120": 0.285,
+      "family": "x-ai",
+      "generation": {
+        "compatibility_lane": "seeded",
+        "max_tokens": 1024,
+        "reasoning_effort": null,
+        "seed": 42,
+        "temperature": 0.5,
+        "top_p": 1.0
+      },
+      "hugging_face_id": "",
+      "identity_tier": "explicit-provider-snapshot",
+      "inclusion_basis": "hosted-x-ai-frontier-release",
+      "maximum_target_cost_usd_120": 0.6072,
+      "model_id": "x-ai/grok-4.20",
+      "name": "SpaceXAI: Grok 4.20",
+      "pricing_usd_per_million": {
+        "input": 1.25,
+        "input_cache_read": 0.19999999999999998,
+        "input_cache_write": 0.0,
+        "output": 2.5
+      },
+      "priority": 15,
+      "registry_id": null,
+      "release_date": "2026-03-31",
+      "release_date_source": "openrouter-model-created-at",
+      "route": {
+        "endpoint_name": "xAI | x-ai/grok-4.20-20260309",
+        "max_completion_tokens": null,
+        "pricing_overrides": [
+          {
+            "completion": "0.000005",
+            "input_cache_read": "0.0000004",
+            "min_prompt_tokens": 200000,
+            "prompt": "0.0000025"
+          }
+        ],
+        "provider_name": "xAI",
+        "provider_tag": "xai/zdr",
+        "quantization": "unknown",
+        "reasoning_effort_supported": false,
+        "seed_supported": true,
+        "supported_reasoning_efforts": [],
+        "temperature_supported": true,
+        "zdr_eligible": true
+      },
+      "total_params_b": null
+    },
+    {
+      "access_class": "open-weight",
+      "canonical_slug": "nex-agi/nex-n2-pro",
+      "expected_target_cost_usd_120": 0.195,
+      "family": "nex-agi",
+      "generation": {
+        "compatibility_lane": "provider-unseeded",
+        "max_tokens": 1024,
+        "reasoning_effort": null,
+        "seed": null,
+        "temperature": 0.5,
+        "top_p": 1.0
+      },
+      "hugging_face_id": "nex-agi/Nex-N2-Pro",
+      "identity_tier": "original-weight-release-id",
+      "inclusion_basis": "open-weight-original-lab-total-parameters-ge-100b",
+      "maximum_target_cost_usd_120": 0.4272,
+      "model_id": "nex-agi/nex-n2-pro",
+      "name": "Nex AGI: Nex-N2-Pro",
+      "pricing_usd_per_million": {
+        "input": 0.5,
+        "input_cache_read": 0.25,
+        "input_cache_write": 0.0,
+        "output": 2.5
+      },
+      "priority": 16,
+      "registry_id": null,
+      "release_date": "2026-06-08",
+      "release_date_source": "openrouter-model-created-at",
+      "route": {
+        "endpoint_name": "SiliconFlow | nex-agi/nex-n2-pro",
+        "max_completion_tokens": 256000,
+        "pricing_overrides": [],
+        "provider_name": "SiliconFlow",
+        "provider_tag": "siliconflow",
+        "quantization": "unknown",
+        "reasoning_effort_supported": false,
+        "seed_supported": false,
+        "supported_reasoning_efforts": [],
+        "temperature_supported": true,
+        "zdr_eligible": true
+      },
+      "total_params_b": 397.0
+    },
+    {
+      "access_class": "open-weight",
+      "canonical_slug": "thinkingmachines/inkling-20260715",
+      "expected_target_cost_usd_120": 0.3327,
+      "family": "thinkingmachines",
+      "generation": {
+        "compatibility_lane": "seeded",
+        "max_tokens": 1024,
+        "reasoning_effort": "max",
+        "seed": 42,
+        "temperature": 0.5,
+        "top_p": 1.0
+      },
+      "hugging_face_id": "thinkingmachines/Inkling",
+      "identity_tier": "explicit-provider-snapshot",
+      "inclusion_basis": "open-weight-original-lab-total-parameters-ge-100b",
+      "maximum_target_cost_usd_120": 0.725664,
+      "model_id": "thinkingmachines/inkling",
+      "name": "Thinking Machines: Inkling",
+      "pricing_usd_per_million": {
+        "input": 0.95,
+        "input_cache_read": 0.16,
+        "input_cache_write": 0.0,
+        "output": 4.05
+      },
+      "priority": 17,
+      "registry_id": null,
+      "release_date": "2026-07-17",
+      "release_date_source": "openrouter-model-created-at",
+      "route": {
+        "endpoint_name": "DeepInfra | thinkingmachines/inkling-20260715",
+        "max_completion_tokens": 262144,
+        "pricing_overrides": [],
+        "provider_name": "DeepInfra",
+        "provider_tag": "deepinfra/fp8",
+        "quantization": "fp8",
+        "reasoning_effort_supported": true,
+        "seed_supported": true,
+        "supported_reasoning_efforts": [
+          "max",
+          "high",
+          "medium",
+          "low",
+          "minimal",
+          "none"
+        ],
+        "temperature_supported": true,
+        "zdr_eligible": true
+      },
+      "total_params_b": 975.0
+    },
+    {
+      "access_class": "open-weight",
+      "canonical_slug": "meituan/longcat-2.0-20260720",
+      "expected_target_cost_usd_120": 0.1008,
+      "family": "meituan",
+      "generation": {
+        "compatibility_lane": "seeded",
+        "max_tokens": 1024,
+        "reasoning_effort": null,
+        "seed": 42,
+        "temperature": 0.5,
+        "top_p": 1.0
+      },
+      "hugging_face_id": "meituan-longcat/LongCat-2.0",
+      "identity_tier": "explicit-provider-snapshot",
+      "inclusion_basis": "open-weight-original-lab-total-parameters-ge-100b",
+      "maximum_target_cost_usd_120": 0.219456,
+      "model_id": "meituan/longcat-2.0",
+      "name": "Meituan: LongCat 2.0",
+      "pricing_usd_per_million": {
+        "input": 0.3,
+        "input_cache_read": 0.006,
+        "input_cache_write": 0.0,
+        "output": 1.2
+      },
+      "priority": 18,
+      "registry_id": null,
+      "release_date": "2026-07-20",
+      "release_date_source": "openrouter-model-created-at",
+      "route": {
+        "endpoint_name": "AtlasCloud | meituan/longcat-2.0-20260720",
+        "max_completion_tokens": 262144,
+        "pricing_overrides": [],
+        "provider_name": "AtlasCloud",
+        "provider_tag": "atlas-cloud/fp8",
+        "quantization": "fp8",
+        "reasoning_effort_supported": false,
+        "seed_supported": true,
+        "supported_reasoning_efforts": [],
+        "temperature_supported": true,
+        "zdr_eligible": false
+      },
+      "total_params_b": 1600.0
+    },
+    {
+      "access_class": "hosted",
+      "canonical_slug": "openai/gpt-4",
+      "expected_target_cost_usd_120": 6.84,
       "family": "openai",
       "generation": {
         "compatibility_lane": "seeded",
@@ -514,21 +1149,23 @@
         "top_p": 1.0
       },
       "hugging_face_id": null,
+      "identity_tier": "named-release-route-frozen-snapshot-unresolved",
       "inclusion_basis": "hosted-openai-frontier-release",
-      "maximum_target_cost_usd_120": 3.0432,
-      "model_id": "openai/gpt-4o-2024-05-13",
-      "name": "OpenAI: GPT-4o (2024-05-13)",
+      "maximum_target_cost_usd_120": 14.5728,
+      "model_id": "openai/gpt-4",
+      "name": "OpenAI: GPT-4",
       "pricing_usd_per_million": {
-        "input": 5.0,
+        "input": 30.0,
         "input_cache_read": 0.0,
         "input_cache_write": 0.0,
-        "output": 15.0
+        "output": 60.0
       },
-      "priority": 7,
+      "priority": 19,
       "registry_id": null,
-      "release_date": "2024-05-13",
+      "release_date": "2023-03-14",
+      "release_date_source": "https://openai.com/index/gpt-4-research/",
       "route": {
-        "endpoint_name": "OpenAI | openai/gpt-4o-2024-05-13",
+        "endpoint_name": "OpenAI | openai/gpt-4",
         "max_completion_tokens": 4096,
         "pricing_overrides": [],
         "provider_name": "OpenAI",
@@ -556,6 +1193,7 @@
         "top_p": 1.0
       },
       "hugging_face_id": "deepseek-ai/DeepSeek-R1",
+      "identity_tier": "original-weight-release-id",
       "inclusion_basis": "open-weight-original-lab-total-parameters-ge-100b",
       "maximum_target_cost_usd_120": 0.4752,
       "model_id": "deepseek/deepseek-r1",
@@ -566,9 +1204,10 @@
         "input_cache_write": 0.0,
         "output": 2.5
       },
-      "priority": 8,
+      "priority": 20,
       "registry_id": "deepseek-r1",
       "release_date": "2025-01-20",
+      "release_date_source": "project-frontier-registry",
       "route": {
         "endpoint_name": "Novita | deepseek/deepseek-r1",
         "max_completion_tokens": 16000,
@@ -585,304 +1224,10 @@
       "total_params_b": 671.0
     },
     {
-      "access_class": "hosted",
-      "canonical_slug": "openai/gpt-4o-2024-08-06",
-      "expected_target_cost_usd_120": 0.84,
-      "family": "openai",
-      "generation": {
-        "compatibility_lane": "seeded",
-        "max_tokens": 1024,
-        "reasoning_effort": null,
-        "seed": 42,
-        "temperature": 0.5,
-        "top_p": 1.0
-      },
-      "hugging_face_id": null,
-      "inclusion_basis": "hosted-openai-frontier-release",
-      "maximum_target_cost_usd_120": 1.8288,
-      "model_id": "openai/gpt-4o-2024-08-06",
-      "name": "OpenAI: GPT-4o (2024-08-06)",
-      "pricing_usd_per_million": {
-        "input": 2.5,
-        "input_cache_read": 1.25,
-        "input_cache_write": 0.0,
-        "output": 10.0
-      },
-      "priority": 9,
-      "registry_id": null,
-      "release_date": "2024-08-06",
-      "route": {
-        "endpoint_name": "OpenAI | openai/gpt-4o-2024-08-06",
-        "max_completion_tokens": 16384,
-        "pricing_overrides": [],
-        "provider_name": "OpenAI",
-        "provider_tag": "openai",
-        "quantization": "unknown",
-        "reasoning_effort_supported": false,
-        "seed_supported": true,
-        "supported_reasoning_efforts": [],
-        "temperature_supported": true,
-        "zdr_eligible": false
-      },
-      "total_params_b": null
-    },
-    {
       "access_class": "open-weight",
-      "canonical_slug": "cohere/command-a-03-2025",
-      "expected_target_cost_usd_120": 0.84,
-      "family": "cohere",
-      "generation": {
-        "compatibility_lane": "seeded",
-        "max_tokens": 1024,
-        "reasoning_effort": null,
-        "seed": 42,
-        "temperature": 0.5,
-        "top_p": 1.0
-      },
-      "hugging_face_id": "CohereForAI/c4ai-command-a-03-2025",
-      "inclusion_basis": "open-weight-original-lab-total-parameters-ge-100b",
-      "maximum_target_cost_usd_120": 1.8288,
-      "model_id": "cohere/command-a",
-      "name": "Cohere: Command A",
-      "pricing_usd_per_million": {
-        "input": 2.5,
-        "input_cache_read": 0.0,
-        "input_cache_write": 0.0,
-        "output": 10.0
-      },
-      "priority": 10,
-      "registry_id": null,
-      "release_date": "2025-03-13",
-      "route": {
-        "endpoint_name": "Cohere | cohere/command-a-03-2025",
-        "max_completion_tokens": 8192,
-        "pricing_overrides": [],
-        "provider_name": "Cohere",
-        "provider_tag": "cohere",
-        "quantization": "unknown",
-        "reasoning_effort_supported": false,
-        "seed_supported": true,
-        "supported_reasoning_efforts": [],
-        "temperature_supported": true,
-        "zdr_eligible": false
-      },
-      "total_params_b": 111.0
-    },
-    {
-      "access_class": "hosted",
-      "canonical_slug": "openai/gpt-4o-2024-11-20",
-      "expected_target_cost_usd_120": 0.84,
-      "family": "openai",
-      "generation": {
-        "compatibility_lane": "seeded",
-        "max_tokens": 1024,
-        "reasoning_effort": null,
-        "seed": 42,
-        "temperature": 0.5,
-        "top_p": 1.0
-      },
-      "hugging_face_id": "",
-      "inclusion_basis": "hosted-openai-frontier-release",
-      "maximum_target_cost_usd_120": 1.8288,
-      "model_id": "openai/gpt-4o-2024-11-20",
-      "name": "OpenAI: GPT-4o (2024-11-20)",
-      "pricing_usd_per_million": {
-        "input": 2.5,
-        "input_cache_read": 1.25,
-        "input_cache_write": 0.0,
-        "output": 10.0
-      },
-      "priority": 11,
-      "registry_id": null,
-      "release_date": "2024-11-20",
-      "route": {
-        "endpoint_name": "OpenAI | openai/gpt-4o-2024-11-20",
-        "max_completion_tokens": 16384,
-        "pricing_overrides": [],
-        "provider_name": "OpenAI",
-        "provider_tag": "openai",
-        "quantization": "unknown",
-        "reasoning_effort_supported": false,
-        "seed_supported": true,
-        "supported_reasoning_efforts": [],
-        "temperature_supported": true,
-        "zdr_eligible": false
-      },
-      "total_params_b": null
-    },
-    {
-      "access_class": "open-weight",
-      "canonical_slug": "meta-llama/llama-4-maverick-17b-128e-instruct",
-      "expected_target_cost_usd_120": 0.06719999999999998,
-      "family": "Llama 4",
-      "generation": {
-        "compatibility_lane": "seeded",
-        "max_tokens": 1024,
-        "reasoning_effort": null,
-        "seed": 42,
-        "temperature": 0.5,
-        "top_p": 1.0
-      },
-      "hugging_face_id": "meta-llama/Llama-4-Maverick-17B-128E-Instruct",
-      "inclusion_basis": "open-weight-original-lab-total-parameters-ge-100b",
-      "maximum_target_cost_usd_120": 0.14630399999999996,
-      "model_id": "meta-llama/llama-4-maverick",
-      "name": "Meta: Llama 4 Maverick",
-      "pricing_usd_per_million": {
-        "input": 0.19999999999999998,
-        "input_cache_read": 0.0,
-        "input_cache_write": 0.0,
-        "output": 0.7999999999999999
-      },
-      "priority": 12,
-      "registry_id": "llama-4-maverick",
-      "release_date": "2025-04-05",
-      "route": {
-        "endpoint_name": "DeepInfra | meta-llama/llama-4-maverick-17b-128e-instruct",
-        "max_completion_tokens": 16384,
-        "pricing_overrides": [],
-        "provider_name": "DeepInfra",
-        "provider_tag": "deepinfra/base",
-        "quantization": "fp8",
-        "reasoning_effort_supported": false,
-        "seed_supported": true,
-        "supported_reasoning_efforts": [],
-        "temperature_supported": true,
-        "zdr_eligible": true
-      },
-      "total_params_b": 400.0
-    },
-    {
-      "access_class": "hosted",
-      "canonical_slug": "openai/o1-2024-12-17",
-      "expected_target_cost_usd_120": 5.04,
-      "family": "openai",
-      "generation": {
-        "compatibility_lane": "seeded",
-        "max_tokens": 1024,
-        "reasoning_effort": null,
-        "seed": 42,
-        "temperature": 0.5,
-        "top_p": null
-      },
-      "hugging_face_id": "",
-      "inclusion_basis": "hosted-openai-frontier-release",
-      "maximum_target_cost_usd_120": 10.9728,
-      "model_id": "openai/o1",
-      "name": "OpenAI: o1",
-      "pricing_usd_per_million": {
-        "input": 15.0,
-        "input_cache_read": 7.5,
-        "input_cache_write": 0.0,
-        "output": 60.0
-      },
-      "priority": 13,
-      "registry_id": null,
-      "release_date": "2024-12-17",
-      "route": {
-        "endpoint_name": "OpenAI | openai/o1-2024-12-17",
-        "max_completion_tokens": 100000,
-        "pricing_overrides": [],
-        "provider_name": "OpenAI",
-        "provider_tag": "openai",
-        "quantization": "unknown",
-        "reasoning_effort_supported": false,
-        "seed_supported": true,
-        "supported_reasoning_efforts": [],
-        "temperature_supported": false,
-        "zdr_eligible": false
-      },
-      "total_params_b": null
-    },
-    {
-      "access_class": "open-weight",
-      "canonical_slug": "qwen/qwen3-235b-a22b-04-28",
-      "expected_target_cost_usd_120": 0.15287999999999996,
-      "family": "Qwen 3",
-      "generation": {
-        "compatibility_lane": "seeded",
-        "max_tokens": 1024,
-        "reasoning_effort": null,
-        "seed": 42,
-        "temperature": 0.5,
-        "top_p": 1.0
-      },
-      "hugging_face_id": "Qwen/Qwen3-235B-A22B",
-      "inclusion_basis": "open-weight-original-lab-total-parameters-ge-100b",
-      "maximum_target_cost_usd_120": 0.33284159999999996,
-      "model_id": "qwen/qwen3-235b-a22b",
-      "name": "Qwen: Qwen3 235B A22B",
-      "pricing_usd_per_million": {
-        "input": 0.45499999999999996,
-        "input_cache_read": 0.0,
-        "input_cache_write": 0.0,
-        "output": 1.8199999999999998
-      },
-      "priority": 14,
-      "registry_id": "qwen3-235b-a22b",
-      "release_date": "2025-04-29",
-      "route": {
-        "endpoint_name": "Alibaba | qwen/qwen3-235b-a22b-04-28",
-        "max_completion_tokens": 8192,
-        "pricing_overrides": [],
-        "provider_name": "Alibaba",
-        "provider_tag": "alibaba",
-        "quantization": "unknown",
-        "reasoning_effort_supported": false,
-        "seed_supported": true,
-        "supported_reasoning_efforts": [],
-        "temperature_supported": true,
-        "zdr_eligible": false
-      },
-      "total_params_b": 235.0
-    },
-    {
-      "access_class": "hosted",
-      "canonical_slug": "openai/gpt-4.1-2025-04-14",
-      "expected_target_cost_usd_120": 0.672,
-      "family": "openai",
-      "generation": {
-        "compatibility_lane": "seeded",
-        "max_tokens": 1024,
-        "reasoning_effort": null,
-        "seed": 42,
-        "temperature": 0.5,
-        "top_p": 1.0
-      },
-      "hugging_face_id": "",
-      "inclusion_basis": "hosted-openai-frontier-release",
-      "maximum_target_cost_usd_120": 1.46304,
-      "model_id": "openai/gpt-4.1",
-      "name": "OpenAI: GPT-4.1",
-      "pricing_usd_per_million": {
-        "input": 2.0,
-        "input_cache_read": 0.5,
-        "input_cache_write": 0.0,
-        "output": 8.0
-      },
-      "priority": 15,
-      "registry_id": null,
-      "release_date": "2025-04-14",
-      "route": {
-        "endpoint_name": "OpenAI | openai/gpt-4.1-2025-04-14",
-        "max_completion_tokens": 32768,
-        "pricing_overrides": [],
-        "provider_name": "OpenAI",
-        "provider_tag": "openai",
-        "quantization": "unknown",
-        "reasoning_effort_supported": false,
-        "seed_supported": true,
-        "supported_reasoning_efforts": [],
-        "temperature_supported": true,
-        "zdr_eligible": false
-      },
-      "total_params_b": null
-    },
-    {
-      "access_class": "open-weight",
-      "canonical_slug": "deepseek/deepseek-r1-0528",
-      "expected_target_cost_usd_120": 0.17772,
-      "family": "DeepSeek R1",
+      "canonical_slug": "minimax/minimax-m2.1",
+      "expected_target_cost_usd_120": 0.1008,
+      "family": "MiniMax M2",
       "generation": {
         "compatibility_lane": "provider-unseeded",
         "max_tokens": 1024,
@@ -891,262 +1236,36 @@
         "temperature": 0.5,
         "top_p": 1.0
       },
-      "hugging_face_id": "deepseek-ai/DeepSeek-R1-0528",
+      "hugging_face_id": "MiniMaxAI/MiniMax-M2.1",
+      "identity_tier": "original-weight-release-id",
       "inclusion_basis": "open-weight-original-lab-total-parameters-ge-100b",
-      "maximum_target_cost_usd_120": 0.38787839999999996,
-      "model_id": "deepseek/deepseek-r1-0528",
-      "name": "DeepSeek: R1 0528",
+      "maximum_target_cost_usd_120": 0.219456,
+      "model_id": "minimax/minimax-m2.1",
+      "name": "MiniMax: MiniMax M2.1",
       "pricing_usd_per_million": {
-        "input": 0.5,
-        "input_cache_read": 0.0,
+        "input": 0.3,
+        "input_cache_read": 0.03,
         "input_cache_write": 0.0,
-        "output": 2.1799999999999997
-      },
-      "priority": 16,
-      "registry_id": "deepseek-r1-0528",
-      "release_date": "2025-05-28",
-      "route": {
-        "endpoint_name": "SiliconFlow | deepseek/deepseek-r1-0528",
-        "max_completion_tokens": 163840,
-        "pricing_overrides": [],
-        "provider_name": "SiliconFlow",
-        "provider_tag": "siliconflow/fp8",
-        "quantization": "fp8",
-        "reasoning_effort_supported": false,
-        "seed_supported": false,
-        "supported_reasoning_efforts": [],
-        "temperature_supported": true,
-        "zdr_eligible": true
-      },
-      "total_params_b": 671.0
-    },
-    {
-      "access_class": "hosted",
-      "canonical_slug": "openai/o3-2025-04-16",
-      "expected_target_cost_usd_120": 0.672,
-      "family": "o-series",
-      "generation": {
-        "compatibility_lane": "seeded",
-        "max_tokens": 1024,
-        "reasoning_effort": null,
-        "seed": 42,
-        "temperature": 0.5,
-        "top_p": null
-      },
-      "hugging_face_id": "",
-      "inclusion_basis": "hosted-openai-frontier-release",
-      "maximum_target_cost_usd_120": 1.46304,
-      "model_id": "openai/o3",
-      "name": "OpenAI: o3",
-      "pricing_usd_per_million": {
-        "input": 2.0,
-        "input_cache_read": 0.5,
-        "input_cache_write": 0.0,
-        "output": 8.0
-      },
-      "priority": 17,
-      "registry_id": "openai-o3",
-      "release_date": "2025-04-16",
-      "route": {
-        "endpoint_name": "OpenAI | openai/o3-2025-04-16",
-        "max_completion_tokens": 100000,
-        "pricing_overrides": [],
-        "provider_name": "OpenAI",
-        "provider_tag": "openai",
-        "quantization": "unknown",
-        "reasoning_effort_supported": false,
-        "seed_supported": true,
-        "supported_reasoning_efforts": [],
-        "temperature_supported": false,
-        "zdr_eligible": false
-      },
-      "total_params_b": null
-    },
-    {
-      "access_class": "open-weight",
-      "canonical_slug": "baidu/ernie-4.5-vl-424b-a47b",
-      "expected_target_cost_usd_120": 0.1179,
-      "family": "baidu",
-      "generation": {
-        "compatibility_lane": "seeded",
-        "max_tokens": 1024,
-        "reasoning_effort": null,
-        "seed": 42,
-        "temperature": 0.5,
-        "top_p": 1.0
-      },
-      "hugging_face_id": "baidu/ERNIE-4.5-VL-424B-A47B-PT",
-      "inclusion_basis": "open-weight-original-lab-total-parameters-ge-100b",
-      "maximum_target_cost_usd_120": 0.2544,
-      "model_id": "baidu/ernie-4.5-vl-424b-a47b",
-      "name": "Baidu: ERNIE 4.5 VL 424B A47B ",
-      "pricing_usd_per_million": {
-        "input": 0.42,
-        "input_cache_read": 0.0,
-        "input_cache_write": 0.0,
-        "output": 1.25
-      },
-      "priority": 18,
-      "registry_id": null,
-      "release_date": "2025-06-30",
-      "route": {
-        "endpoint_name": "Novita | baidu/ernie-4.5-vl-424b-a47b",
-        "max_completion_tokens": 16000,
-        "pricing_overrides": [],
-        "provider_name": "Novita",
-        "provider_tag": "novita/fp16",
-        "quantization": "fp16",
-        "reasoning_effort_supported": false,
-        "seed_supported": true,
-        "supported_reasoning_efforts": [],
-        "temperature_supported": true,
-        "zdr_eligible": true
-      },
-      "total_params_b": 424.0
-    },
-    {
-      "access_class": "hosted",
-      "canonical_slug": "google/gemini-2.5-pro-preview-03-25",
-      "expected_target_cost_usd_120": 0.345,
-      "family": "google",
-      "generation": {
-        "compatibility_lane": "seeded",
-        "max_tokens": 1024,
-        "reasoning_effort": null,
-        "seed": 42,
-        "temperature": 0.5,
-        "top_p": 1.0
-      },
-      "hugging_face_id": "",
-      "inclusion_basis": "hosted-google-frontier-release",
-      "maximum_target_cost_usd_120": 0.7644,
-      "model_id": "google/gemini-2.5-pro-preview-05-06",
-      "name": "Google: Gemini 2.5 Pro Preview 05-06",
-      "pricing_usd_per_million": {
-        "input": 0.625,
-        "input_cache_read": 0.0625,
-        "input_cache_write": 0.1875,
-        "output": 5.0
-      },
-      "priority": 19,
-      "registry_id": null,
-      "release_date": "2025-05-07",
-      "route": {
-        "endpoint_name": "Google AI Studio | google/gemini-2.5-pro",
-        "max_completion_tokens": 65536,
-        "pricing_overrides": [
-          {
-            "audio": "0.00000125",
-            "completion": "0.0000075",
-            "input_audio_cache": "0.000000125",
-            "input_cache_read": "0.000000125",
-            "min_prompt_tokens": 200000,
-            "prompt": "0.00000125"
-          }
-        ],
-        "provider_name": "Google AI Studio",
-        "provider_tag": "google-ai-studio/flex",
-        "quantization": "unknown",
-        "reasoning_effort_supported": false,
-        "seed_supported": true,
-        "supported_reasoning_efforts": [],
-        "temperature_supported": true,
-        "zdr_eligible": false
-      },
-      "total_params_b": null
-    },
-    {
-      "access_class": "open-weight",
-      "canonical_slug": "moonshotai/kimi-k2",
-      "expected_target_cost_usd_120": 0.1926,
-      "family": "Kimi K2",
-      "generation": {
-        "compatibility_lane": "seeded",
-        "max_tokens": 1024,
-        "reasoning_effort": null,
-        "seed": 42,
-        "temperature": 0.5,
-        "top_p": 1.0
-      },
-      "hugging_face_id": "moonshotai/Kimi-K2-Instruct",
-      "inclusion_basis": "open-weight-original-lab-total-parameters-ge-100b",
-      "maximum_target_cost_usd_120": 0.419424,
-      "model_id": "moonshotai/kimi-k2",
-      "name": "MoonshotAI: Kimi K2 0711",
-      "pricing_usd_per_million": {
-        "input": 0.5700000000000001,
-        "input_cache_read": 0.0,
-        "input_cache_write": 0.0,
-        "output": 2.3
-      },
-      "priority": 20,
-      "registry_id": "kimi-k2-instruct",
-      "release_date": "2025-07-11",
-      "route": {
-        "endpoint_name": "Novita | moonshotai/kimi-k2",
-        "max_completion_tokens": 100352,
-        "pricing_overrides": [],
-        "provider_name": "Novita",
-        "provider_tag": "novita/fp8",
-        "quantization": "fp8",
-        "reasoning_effort_supported": false,
-        "seed_supported": true,
-        "supported_reasoning_efforts": [],
-        "temperature_supported": true,
-        "zdr_eligible": true
-      },
-      "total_params_b": 1000.0
-    },
-    {
-      "access_class": "hosted",
-      "canonical_slug": "anthropic/claude-4-sonnet-20250522",
-      "expected_target_cost_usd_120": 1.17,
-      "family": "anthropic",
-      "generation": {
-        "compatibility_lane": "provider-unseeded",
-        "max_tokens": 1024,
-        "reasoning_effort": null,
-        "seed": null,
-        "temperature": 0.5,
-        "top_p": 1.0
-      },
-      "hugging_face_id": "",
-      "inclusion_basis": "hosted-anthropic-frontier-release",
-      "maximum_target_cost_usd_120": 2.5632,
-      "model_id": "anthropic/claude-sonnet-4",
-      "name": "Anthropic: Claude Sonnet 4",
-      "pricing_usd_per_million": {
-        "input": 3.0,
-        "input_cache_read": 0.3,
-        "input_cache_write": 3.75,
-        "output": 15.0
+        "output": 1.2
       },
       "priority": 21,
-      "registry_id": null,
-      "release_date": "2025-05-22",
+      "registry_id": "minimax-m2-1",
+      "release_date": "2025-12-23",
+      "release_date_source": "project-frontier-registry",
       "route": {
-        "endpoint_name": "Amazon Bedrock | anthropic/claude-4-sonnet-20250522",
-        "max_completion_tokens": 64000,
-        "pricing_overrides": [
-          {
-            "completion": "0.0000225",
-            "input_cache_read": "0.0000006",
-            "input_cache_write": "0.0000075",
-            "input_cache_write_1h": "0.000012",
-            "min_prompt_tokens": 200000,
-            "prompt": "0.000006"
-          }
-        ],
-        "provider_name": "Amazon Bedrock",
-        "provider_tag": "amazon-bedrock",
-        "quantization": "unknown",
+        "endpoint_name": "Minimax | minimax/minimax-m2.1",
+        "max_completion_tokens": 131072,
+        "pricing_overrides": [],
+        "provider_name": "Minimax",
+        "provider_tag": "minimax/fp8",
+        "quantization": "fp8",
         "reasoning_effort_supported": false,
         "seed_supported": false,
         "supported_reasoning_efforts": [],
         "temperature_supported": true,
         "zdr_eligible": true
       },
-      "total_params_b": null
+      "total_params_b": 230.0
     },
     {
       "access_class": "open-weight",
@@ -1162,6 +1281,7 @@
         "top_p": 1.0
       },
       "hugging_face_id": "Qwen/Qwen3-235B-A22B-Instruct-2507",
+      "identity_tier": "original-weight-release-id",
       "inclusion_basis": "open-weight-original-lab-total-parameters-ge-100b",
       "maximum_target_cost_usd_120": 0.09287039999999999,
       "model_id": "qwen/qwen3-235b-a22b-2507",
@@ -1175,6 +1295,7 @@
       "priority": 22,
       "registry_id": null,
       "release_date": "2025-07-21",
+      "release_date_source": "openrouter-model-created-at",
       "route": {
         "endpoint_name": "Novita | qwen/qwen3-235b-a22b-07-25",
         "max_completion_tokens": 16384,
@@ -1192,51 +1313,58 @@
     },
     {
       "access_class": "hosted",
-      "canonical_slug": "anthropic/claude-4-opus-20250522",
-      "expected_target_cost_usd_120": 5.85,
-      "family": "Claude 4",
+      "canonical_slug": "google/gemini-3-flash-preview-20251217",
+      "expected_target_cost_usd_120": 0.111,
+      "family": "google",
       "generation": {
-        "compatibility_lane": "provider-unseeded",
+        "compatibility_lane": "seeded",
         "max_tokens": 1024,
-        "reasoning_effort": null,
-        "seed": null,
+        "reasoning_effort": "high",
+        "seed": 42,
         "temperature": 0.5,
         "top_p": 1.0
       },
       "hugging_face_id": "",
-      "inclusion_basis": "hosted-anthropic-frontier-release",
-      "maximum_target_cost_usd_120": 12.816,
-      "model_id": "anthropic/claude-opus-4",
-      "name": "Anthropic: Claude Opus 4",
+      "identity_tier": "explicit-provider-snapshot",
+      "inclusion_basis": "hosted-google-frontier-release",
+      "maximum_target_cost_usd_120": 0.24432,
+      "model_id": "google/gemini-3-flash-preview",
+      "name": "Google: Gemini 3 Flash Preview",
       "pricing_usd_per_million": {
-        "input": 15.0,
-        "input_cache_read": 1.5,
-        "input_cache_write": 18.75,
-        "output": 75.0
+        "input": 0.25,
+        "input_cache_read": 0.024999999999999998,
+        "input_cache_write": 0.0416666666666667,
+        "output": 1.5
       },
       "priority": 23,
-      "registry_id": "claude-opus-4",
-      "release_date": "2025-05-22",
+      "registry_id": null,
+      "release_date": "2025-12-17",
+      "release_date_source": "openrouter-model-created-at",
       "route": {
-        "endpoint_name": "Google | anthropic/claude-4-opus-20250522",
-        "max_completion_tokens": 32000,
+        "endpoint_name": "Google AI Studio | google/gemini-3-flash-preview-20251217",
+        "max_completion_tokens": 65536,
         "pricing_overrides": [],
-        "provider_name": "Google",
-        "provider_tag": "google-vertex",
+        "provider_name": "Google AI Studio",
+        "provider_tag": "google-ai-studio/flex",
         "quantization": "unknown",
-        "reasoning_effort_supported": false,
-        "seed_supported": false,
-        "supported_reasoning_efforts": [],
+        "reasoning_effort_supported": true,
+        "seed_supported": true,
+        "supported_reasoning_efforts": [
+          "high",
+          "medium",
+          "low",
+          "minimal"
+        ],
         "temperature_supported": true,
-        "zdr_eligible": true
+        "zdr_eligible": false
       },
       "total_params_b": null
     },
     {
       "access_class": "open-weight",
-      "canonical_slug": "qwen/qwen3-235b-a22b-thinking-2507",
-      "expected_target_cost_usd_120": 0.198,
-      "family": "qwen",
+      "canonical_slug": "moonshotai/kimi-k2-0905",
+      "expected_target_cost_usd_120": 0.207,
+      "family": "Kimi K2",
       "generation": {
         "compatibility_lane": "seeded",
         "max_tokens": 1024,
@@ -1245,23 +1373,25 @@
         "temperature": 0.5,
         "top_p": 1.0
       },
-      "hugging_face_id": "Qwen/Qwen3-235B-A22B-Thinking-2507",
+      "hugging_face_id": "moonshotai/Kimi-K2-Instruct-0905",
+      "identity_tier": "original-weight-release-id",
       "inclusion_basis": "open-weight-original-lab-total-parameters-ge-100b",
-      "maximum_target_cost_usd_120": 0.44064,
-      "model_id": "qwen/qwen3-235b-a22b-thinking-2507",
-      "name": "Qwen: Qwen3 235B A22B Thinking 2507",
+      "maximum_target_cost_usd_120": 0.4512,
+      "model_id": "moonshotai/kimi-k2-0905",
+      "name": "MoonshotAI: Kimi K2 0905",
       "pricing_usd_per_million": {
-        "input": 0.3,
+        "input": 0.6,
         "input_cache_read": 0.0,
         "input_cache_write": 0.0,
-        "output": 3.0
+        "output": 2.5
       },
       "priority": 24,
-      "registry_id": null,
-      "release_date": "2025-07-25",
+      "registry_id": "kimi-k2-instruct-0905",
+      "release_date": "2025-09-04",
+      "release_date_source": "project-frontier-registry",
       "route": {
-        "endpoint_name": "Novita | qwen/qwen3-235b-a22b-thinking-2507",
-        "max_completion_tokens": 32768,
+        "endpoint_name": "Novita | moonshotai/kimi-k2-0905",
+        "max_completion_tokens": 100352,
         "pricing_overrides": [],
         "provider_name": "Novita",
         "provider_tag": "novita/fp8",
@@ -1272,230 +1402,7 @@
         "temperature_supported": true,
         "zdr_eligible": true
       },
-      "total_params_b": 235.0
-    },
-    {
-      "access_class": "hosted",
-      "canonical_slug": "google/gemini-2.5-flash",
-      "expected_target_cost_usd_120": 0.171,
-      "family": "google",
-      "generation": {
-        "compatibility_lane": "seeded",
-        "max_tokens": 1024,
-        "reasoning_effort": null,
-        "seed": 42,
-        "temperature": 0.5,
-        "top_p": 1.0
-      },
-      "hugging_face_id": "",
-      "inclusion_basis": "hosted-google-frontier-release",
-      "maximum_target_cost_usd_120": 0.3792,
-      "model_id": "google/gemini-2.5-flash",
-      "name": "Google: Gemini 2.5 Flash",
-      "pricing_usd_per_million": {
-        "input": 0.3,
-        "input_cache_read": 0.03,
-        "input_cache_write": 0.0833333333333333,
-        "output": 2.5
-      },
-      "priority": 25,
-      "registry_id": null,
-      "release_date": "2025-06-17",
-      "route": {
-        "endpoint_name": "Google | google/gemini-2.5-flash",
-        "max_completion_tokens": 65535,
-        "pricing_overrides": [],
-        "provider_name": "Google",
-        "provider_tag": "google-vertex/eu",
-        "quantization": "unknown",
-        "reasoning_effort_supported": false,
-        "seed_supported": true,
-        "supported_reasoning_efforts": [],
-        "temperature_supported": true,
-        "zdr_eligible": true
-      },
-      "total_params_b": null
-    },
-    {
-      "access_class": "open-weight",
-      "canonical_slug": "z-ai/glm-4.5",
-      "expected_target_cost_usd_120": 0.1908,
-      "family": "GLM 4",
-      "generation": {
-        "compatibility_lane": "provider-unseeded",
-        "max_tokens": 1024,
-        "reasoning_effort": null,
-        "seed": null,
-        "temperature": 0.5,
-        "top_p": 1.0
-      },
-      "hugging_face_id": "zai-org/GLM-4.5",
-      "inclusion_basis": "open-weight-original-lab-total-parameters-ge-100b",
-      "maximum_target_cost_usd_120": 0.414336,
-      "model_id": "z-ai/glm-4.5",
-      "name": "Z.ai: GLM 4.5",
-      "pricing_usd_per_million": {
-        "input": 0.6,
-        "input_cache_read": 0.11,
-        "input_cache_write": 0.0,
-        "output": 2.2
-      },
-      "priority": 26,
-      "registry_id": "glm-4-5",
-      "release_date": "2025-07-28",
-      "route": {
-        "endpoint_name": "Z.AI | z-ai/glm-4.5",
-        "max_completion_tokens": 98304,
-        "pricing_overrides": [],
-        "provider_name": "Z.AI",
-        "provider_tag": "z-ai/fp8",
-        "quantization": "fp8",
-        "reasoning_effort_supported": false,
-        "seed_supported": false,
-        "supported_reasoning_efforts": [],
-        "temperature_supported": true,
-        "zdr_eligible": true
-      },
-      "total_params_b": 355.0
-    },
-    {
-      "access_class": "hosted",
-      "canonical_slug": "google/gemini-2.5-pro",
-      "expected_target_cost_usd_120": 0.345,
-      "family": "Gemini 2.5",
-      "generation": {
-        "compatibility_lane": "seeded",
-        "max_tokens": 1024,
-        "reasoning_effort": null,
-        "seed": 42,
-        "temperature": 0.5,
-        "top_p": 1.0
-      },
-      "hugging_face_id": "",
-      "inclusion_basis": "hosted-google-frontier-release",
-      "maximum_target_cost_usd_120": 0.7644,
-      "model_id": "google/gemini-2.5-pro",
-      "name": "Google: Gemini 2.5 Pro",
-      "pricing_usd_per_million": {
-        "input": 0.625,
-        "input_cache_read": 0.0625,
-        "input_cache_write": 0.1875,
-        "output": 5.0
-      },
-      "priority": 27,
-      "registry_id": "gemini-2-5-pro",
-      "release_date": "2025-06-17",
-      "route": {
-        "endpoint_name": "Google | google/gemini-2.5-pro",
-        "max_completion_tokens": 65536,
-        "pricing_overrides": [
-          {
-            "audio": "0.00000125",
-            "completion": "0.0000075",
-            "input_audio_cache": "0.000000125",
-            "input_cache_read": "0.000000125",
-            "min_prompt_tokens": 200000,
-            "prompt": "0.00000125"
-          }
-        ],
-        "provider_name": "Google",
-        "provider_tag": "google-vertex/global/flex",
-        "quantization": "unknown",
-        "reasoning_effort_supported": false,
-        "seed_supported": true,
-        "supported_reasoning_efforts": [],
-        "temperature_supported": true,
-        "zdr_eligible": true
-      },
-      "total_params_b": null
-    },
-    {
-      "access_class": "open-weight",
-      "canonical_slug": "openai/gpt-oss-120b",
-      "expected_target_cost_usd_120": 0.01362,
-      "family": "openai",
-      "generation": {
-        "compatibility_lane": "seeded",
-        "max_tokens": 1024,
-        "reasoning_effort": "high",
-        "seed": 42,
-        "temperature": 0.5,
-        "top_p": 1.0
-      },
-      "hugging_face_id": "openai/gpt-oss-120b",
-      "inclusion_basis": "open-weight-original-lab-total-parameters-ge-100b",
-      "maximum_target_cost_usd_120": 0.0297696,
-      "model_id": "openai/gpt-oss-120b",
-      "name": "OpenAI: gpt-oss-120b",
-      "pricing_usd_per_million": {
-        "input": 0.037,
-        "input_cache_read": 0.0,
-        "input_cache_write": 0.0,
-        "output": 0.16999999999999998
-      },
-      "priority": 28,
-      "registry_id": null,
-      "release_date": "2025-08-05",
-      "route": {
-        "endpoint_name": "DeepInfra | openai/gpt-oss-120b",
-        "max_completion_tokens": 131072,
-        "pricing_overrides": [],
-        "provider_name": "DeepInfra",
-        "provider_tag": "deepinfra/bf16",
-        "quantization": "bf16",
-        "reasoning_effort_supported": true,
-        "seed_supported": true,
-        "supported_reasoning_efforts": [
-          "high",
-          "medium",
-          "low"
-        ],
-        "temperature_supported": true,
-        "zdr_eligible": true
-      },
-      "total_params_b": 120.0
-    },
-    {
-      "access_class": "hosted",
-      "canonical_slug": "anthropic/claude-4.1-opus-20250805",
-      "expected_target_cost_usd_120": 5.85,
-      "family": "anthropic",
-      "generation": {
-        "compatibility_lane": "provider-unseeded",
-        "max_tokens": 1024,
-        "reasoning_effort": null,
-        "seed": null,
-        "temperature": 0.5,
-        "top_p": 1.0
-      },
-      "hugging_face_id": "",
-      "inclusion_basis": "hosted-anthropic-frontier-release",
-      "maximum_target_cost_usd_120": 12.816,
-      "model_id": "anthropic/claude-opus-4.1",
-      "name": "Anthropic: Claude Opus 4.1",
-      "pricing_usd_per_million": {
-        "input": 15.0,
-        "input_cache_read": 1.5,
-        "input_cache_write": 18.75,
-        "output": 75.0
-      },
-      "priority": 29,
-      "registry_id": null,
-      "release_date": "2025-08-05",
-      "route": {
-        "endpoint_name": "Amazon Bedrock | anthropic/claude-4.1-opus-20250805",
-        "max_completion_tokens": 32000,
-        "pricing_overrides": [],
-        "provider_name": "Amazon Bedrock",
-        "provider_tag": "amazon-bedrock",
-        "quantization": "unknown",
-        "reasoning_effort_supported": false,
-        "seed_supported": false,
-        "supported_reasoning_efforts": [],
-        "temperature_supported": true,
-        "zdr_eligible": true
-      },
-      "total_params_b": null
+      "total_params_b": 1000.0
     },
     {
       "access_class": "open-weight",
@@ -1511,6 +1418,7 @@
         "top_p": 1.0
       },
       "hugging_face_id": "zai-org/GLM-4.5V",
+      "identity_tier": "original-weight-release-id",
       "inclusion_basis": "open-weight-original-lab-total-parameters-ge-100b",
       "maximum_target_cost_usd_120": 0.365184,
       "model_id": "z-ai/glm-4.5v",
@@ -1521,9 +1429,10 @@
         "input_cache_write": 0.0,
         "output": 1.7999999999999998
       },
-      "priority": 30,
+      "priority": 25,
       "registry_id": null,
       "release_date": "2025-08-11",
+      "release_date_source": "openrouter-model-created-at",
       "route": {
         "endpoint_name": "Novita | z-ai/glm-4.5v",
         "max_completion_tokens": 16384,
@@ -1541,95 +1450,6 @@
     },
     {
       "access_class": "hosted",
-      "canonical_slug": "openai/gpt-5-2025-08-07",
-      "expected_target_cost_usd_120": 0.69,
-      "family": "GPT-5",
-      "generation": {
-        "compatibility_lane": "seeded",
-        "max_tokens": 1024,
-        "reasoning_effort": "high",
-        "seed": 42,
-        "temperature": 0.5,
-        "top_p": null
-      },
-      "hugging_face_id": "",
-      "inclusion_basis": "hosted-openai-frontier-release",
-      "maximum_target_cost_usd_120": 1.5288,
-      "model_id": "openai/gpt-5",
-      "name": "OpenAI: GPT-5",
-      "pricing_usd_per_million": {
-        "input": 1.25,
-        "input_cache_read": 0.125,
-        "input_cache_write": 0.0,
-        "output": 10.0
-      },
-      "priority": 31,
-      "registry_id": "gpt-5",
-      "release_date": "2025-08-07",
-      "route": {
-        "endpoint_name": "OpenAI | openai/gpt-5-2025-08-07",
-        "max_completion_tokens": 128000,
-        "pricing_overrides": [],
-        "provider_name": "OpenAI",
-        "provider_tag": "openai/default",
-        "quantization": "unknown",
-        "reasoning_effort_supported": true,
-        "seed_supported": true,
-        "supported_reasoning_efforts": [
-          "high",
-          "medium",
-          "low",
-          "minimal"
-        ],
-        "temperature_supported": false,
-        "zdr_eligible": false
-      },
-      "total_params_b": null
-    },
-    {
-      "access_class": "open-weight",
-      "canonical_slug": "deepseek/deepseek-chat-v3.1",
-      "expected_target_cost_usd_120": 0.0864,
-      "family": "deepseek",
-      "generation": {
-        "compatibility_lane": "seeded",
-        "max_tokens": 1024,
-        "reasoning_effort": null,
-        "seed": 42,
-        "temperature": 0.5,
-        "top_p": 1.0
-      },
-      "hugging_face_id": "deepseek-ai/DeepSeek-V3.1",
-      "inclusion_basis": "open-weight-original-lab-total-parameters-ge-100b",
-      "maximum_target_cost_usd_120": 0.18768,
-      "model_id": "deepseek/deepseek-chat-v3.1",
-      "name": "DeepSeek: DeepSeek V3.1",
-      "pricing_usd_per_million": {
-        "input": 0.27,
-        "input_cache_read": 0.135,
-        "input_cache_write": 0.0,
-        "output": 1.0
-      },
-      "priority": 32,
-      "registry_id": null,
-      "release_date": "2025-08-21",
-      "route": {
-        "endpoint_name": "Novita | deepseek/deepseek-chat-v3.1",
-        "max_completion_tokens": 32768,
-        "pricing_overrides": [],
-        "provider_name": "Novita",
-        "provider_tag": "novita/fp8",
-        "quantization": "fp8",
-        "reasoning_effort_supported": false,
-        "seed_supported": true,
-        "supported_reasoning_efforts": [],
-        "temperature_supported": true,
-        "zdr_eligible": true
-      },
-      "total_params_b": 671.0
-    },
-    {
-      "access_class": "hosted",
       "canonical_slug": "anthropic/claude-4.5-sonnet-20250929",
       "expected_target_cost_usd_120": 1.17,
       "family": "anthropic",
@@ -1642,6 +1462,7 @@
         "top_p": 1.0
       },
       "hugging_face_id": "",
+      "identity_tier": "explicit-provider-snapshot",
       "inclusion_basis": "hosted-anthropic-frontier-release",
       "maximum_target_cost_usd_120": 2.5632,
       "model_id": "anthropic/claude-sonnet-4.5",
@@ -1652,9 +1473,10 @@
         "input_cache_write": 3.75,
         "output": 15.0
       },
-      "priority": 33,
+      "priority": 26,
       "registry_id": null,
       "release_date": "2025-09-29",
+      "release_date_source": "openrouter-model-created-at",
       "route": {
         "endpoint_name": "Amazon Bedrock | anthropic/claude-4.5-sonnet-20250929",
         "max_completion_tokens": 64000,
@@ -1681,351 +1503,197 @@
     },
     {
       "access_class": "open-weight",
-      "canonical_slug": "moonshotai/kimi-k2-0905",
-      "expected_target_cost_usd_120": 0.207,
-      "family": "Kimi K2",
+      "canonical_slug": "nvidia/nemotron-3-ultra-550b-a55b-20260604",
+      "expected_target_cost_usd_120": 0.24375,
+      "family": "nvidia",
+      "generation": {
+        "compatibility_lane": "provider-unseeded",
+        "max_tokens": 1024,
+        "reasoning_effort": "high",
+        "seed": null,
+        "temperature": 0.5,
+        "top_p": 1.0
+      },
+      "hugging_face_id": "nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-BF16",
+      "identity_tier": "explicit-provider-snapshot",
+      "inclusion_basis": "open-weight-original-lab-total-parameters-ge-100b",
+      "maximum_target_cost_usd_120": 0.534,
+      "model_id": "nvidia/nemotron-3-ultra-550b-a55b",
+      "name": "NVIDIA: Nemotron 3 Ultra",
+      "pricing_usd_per_million": {
+        "input": 0.625,
+        "input_cache_read": 0.1875,
+        "input_cache_write": 0.0,
+        "output": 3.125
+      },
+      "priority": 27,
+      "registry_id": null,
+      "release_date": "2026-06-04",
+      "release_date_source": "openrouter-model-created-at",
+      "route": {
+        "endpoint_name": "Venice | nvidia/nemotron-3-ultra-550b-a55b-20260604",
+        "max_completion_tokens": 32768,
+        "pricing_overrides": [],
+        "provider_name": "Venice",
+        "provider_tag": "venice/fp8",
+        "quantization": "fp8",
+        "reasoning_effort_supported": true,
+        "seed_supported": false,
+        "supported_reasoning_efforts": [
+          "high",
+          "medium"
+        ],
+        "temperature_supported": true,
+        "zdr_eligible": true
+      },
+      "total_params_b": 550.0
+    },
+    {
+      "access_class": "hosted",
+      "canonical_slug": "x-ai/grok-4.3-20260430",
+      "expected_target_cost_usd_120": 0.285,
+      "family": "x-ai",
       "generation": {
         "compatibility_lane": "seeded",
         "max_tokens": 1024,
-        "reasoning_effort": null,
+        "reasoning_effort": "high",
         "seed": 42,
         "temperature": 0.5,
         "top_p": 1.0
       },
-      "hugging_face_id": "moonshotai/Kimi-K2-Instruct-0905",
-      "inclusion_basis": "open-weight-original-lab-total-parameters-ge-100b",
-      "maximum_target_cost_usd_120": 0.4512,
-      "model_id": "moonshotai/kimi-k2-0905",
-      "name": "MoonshotAI: Kimi K2 0905",
+      "hugging_face_id": null,
+      "identity_tier": "explicit-provider-snapshot",
+      "inclusion_basis": "hosted-x-ai-frontier-release",
+      "maximum_target_cost_usd_120": 0.6072,
+      "model_id": "x-ai/grok-4.3",
+      "name": "SpaceXAI: Grok 4.3",
       "pricing_usd_per_million": {
-        "input": 0.6,
-        "input_cache_read": 0.0,
+        "input": 1.25,
+        "input_cache_read": 0.19999999999999998,
         "input_cache_write": 0.0,
         "output": 2.5
       },
-      "priority": 34,
-      "registry_id": "kimi-k2-instruct-0905",
-      "release_date": "2025-09-04",
+      "priority": 28,
+      "registry_id": null,
+      "release_date": "2026-04-30",
+      "release_date_source": "openrouter-model-created-at",
       "route": {
-        "endpoint_name": "Novita | moonshotai/kimi-k2-0905",
-        "max_completion_tokens": 100352,
-        "pricing_overrides": [],
-        "provider_name": "Novita",
-        "provider_tag": "novita/fp8",
-        "quantization": "fp8",
-        "reasoning_effort_supported": false,
+        "endpoint_name": "xAI | x-ai/grok-4.3-20260430",
+        "max_completion_tokens": null,
+        "pricing_overrides": [
+          {
+            "completion": "0.000005",
+            "input_cache_read": "0.0000004",
+            "min_prompt_tokens": 200000,
+            "prompt": "0.0000025"
+          }
+        ],
+        "provider_name": "xAI",
+        "provider_tag": "xai/zdr",
+        "quantization": "unknown",
+        "reasoning_effort_supported": true,
         "seed_supported": true,
-        "supported_reasoning_efforts": [],
+        "supported_reasoning_efforts": [
+          "high",
+          "medium",
+          "low",
+          "none"
+        ],
         "temperature_supported": true,
         "zdr_eligible": true
       },
-      "total_params_b": 1000.0
+      "total_params_b": null
+    },
+    {
+      "access_class": "open-weight",
+      "canonical_slug": "thinkingmachines/inkling-small-20260730",
+      "expected_target_cost_usd_120": 0.1188,
+      "family": "thinkingmachines",
+      "generation": {
+        "compatibility_lane": "seeded",
+        "max_tokens": 1024,
+        "reasoning_effort": "max",
+        "seed": 42,
+        "temperature": 0.5,
+        "top_p": 1.0
+      },
+      "hugging_face_id": "thinkingmachines/Inkling-Small",
+      "identity_tier": "explicit-provider-snapshot",
+      "inclusion_basis": "open-weight-original-lab-total-parameters-ge-100b",
+      "maximum_target_cost_usd_120": 0.25545599999999996,
+      "model_id": "thinkingmachines/inkling-small",
+      "name": "Thinking Machines: Inkling Small",
+      "pricing_usd_per_million": {
+        "input": 0.44999999999999996,
+        "input_cache_read": 0.09999999999999999,
+        "input_cache_write": 0.0,
+        "output": 1.2
+      },
+      "priority": 29,
+      "registry_id": null,
+      "release_date": "2026-07-30",
+      "release_date_source": "openrouter-model-created-at",
+      "route": {
+        "endpoint_name": "DeepInfra | thinkingmachines/inkling-small-20260730",
+        "max_completion_tokens": 262144,
+        "pricing_overrides": [],
+        "provider_name": "DeepInfra",
+        "provider_tag": "deepinfra/fp8",
+        "quantization": "fp8",
+        "reasoning_effort_supported": true,
+        "seed_supported": true,
+        "supported_reasoning_efforts": [
+          "max",
+          "high",
+          "medium",
+          "low",
+          "minimal",
+          "none"
+        ],
+        "temperature_supported": true,
+        "zdr_eligible": true
+      },
+      "total_params_b": 276.0
     },
     {
       "access_class": "hosted",
-      "canonical_slug": "openai/gpt-5.1-20251113",
-      "expected_target_cost_usd_120": 0.345,
+      "canonical_slug": "openai/gpt-4-turbo",
+      "expected_target_cost_usd_120": 2.82,
       "family": "openai",
       "generation": {
         "compatibility_lane": "seeded",
         "max_tokens": 1024,
-        "reasoning_effort": "high",
-        "seed": 42,
-        "temperature": 0.5,
-        "top_p": null
-      },
-      "hugging_face_id": "",
-      "inclusion_basis": "hosted-openai-frontier-release",
-      "maximum_target_cost_usd_120": 0.7644,
-      "model_id": "openai/gpt-5.1",
-      "name": "OpenAI: GPT-5.1",
-      "pricing_usd_per_million": {
-        "input": 0.625,
-        "input_cache_read": 0.0625,
-        "input_cache_write": 0.0,
-        "output": 5.0
-      },
-      "priority": 35,
-      "registry_id": null,
-      "release_date": "2025-11-13",
-      "route": {
-        "endpoint_name": "OpenAI | openai/gpt-5.1-20251113",
-        "max_completion_tokens": 128000,
-        "pricing_overrides": [],
-        "provider_name": "OpenAI",
-        "provider_tag": "openai/default/flex",
-        "quantization": "unknown",
-        "reasoning_effort_supported": true,
-        "seed_supported": true,
-        "supported_reasoning_efforts": [
-          "high",
-          "medium",
-          "low",
-          "none"
-        ],
-        "temperature_supported": false,
-        "zdr_eligible": false
-      },
-      "total_params_b": null
-    },
-    {
-      "access_class": "open-weight",
-      "canonical_slug": "qwen/qwen3-vl-235b-a22b-instruct",
-      "expected_target_cost_usd_120": 0.117,
-      "family": "qwen",
-      "generation": {
-        "compatibility_lane": "seeded",
-        "max_tokens": 1024,
         "reasoning_effort": null,
         "seed": 42,
         "temperature": 0.5,
         "top_p": 1.0
       },
-      "hugging_face_id": "Qwen/Qwen3-VL-235B-A22B-Instruct",
-      "inclusion_basis": "open-weight-original-lab-total-parameters-ge-100b",
-      "maximum_target_cost_usd_120": 0.25632,
-      "model_id": "qwen/qwen3-vl-235b-a22b-instruct",
-      "name": "Qwen: Qwen3 VL 235B A22B Instruct",
+      "hugging_face_id": null,
+      "identity_tier": "named-release-route-frozen-snapshot-unresolved",
+      "inclusion_basis": "hosted-openai-frontier-release",
+      "maximum_target_cost_usd_120": 6.0864,
+      "model_id": "openai/gpt-4-turbo",
+      "name": "OpenAI: GPT-4 Turbo",
       "pricing_usd_per_million": {
-        "input": 0.3,
+        "input": 10.0,
         "input_cache_read": 0.0,
         "input_cache_write": 0.0,
-        "output": 1.5
+        "output": 30.0
       },
-      "priority": 36,
+      "priority": 30,
       "registry_id": null,
-      "release_date": "2025-09-23",
+      "release_date": "2023-11-06",
+      "release_date_source": "https://openai.com/index/new-models-and-developer-products-announced-at-devday/",
       "route": {
-        "endpoint_name": "Novita | qwen/qwen3-vl-235b-a22b-instruct",
-        "max_completion_tokens": 32768,
-        "pricing_overrides": [],
-        "provider_name": "Novita",
-        "provider_tag": "novita/bf16",
-        "quantization": "bf16",
-        "reasoning_effort_supported": false,
-        "seed_supported": true,
-        "supported_reasoning_efforts": [],
-        "temperature_supported": true,
-        "zdr_eligible": true
-      },
-      "total_params_b": 235.0
-    },
-    {
-      "access_class": "hosted",
-      "canonical_slug": "anthropic/claude-4.5-opus-20251124",
-      "expected_target_cost_usd_120": 1.95,
-      "family": "Claude 4",
-      "generation": {
-        "compatibility_lane": "provider-unseeded",
-        "max_tokens": 1024,
-        "reasoning_effort": null,
-        "seed": null,
-        "temperature": 0.5,
-        "top_p": null
-      },
-      "hugging_face_id": "",
-      "inclusion_basis": "hosted-anthropic-frontier-release",
-      "maximum_target_cost_usd_120": 4.272,
-      "model_id": "anthropic/claude-opus-4.5",
-      "name": "Anthropic: Claude Opus 4.5",
-      "pricing_usd_per_million": {
-        "input": 5.0,
-        "input_cache_read": 0.5,
-        "input_cache_write": 6.25,
-        "output": 25.0
-      },
-      "priority": 37,
-      "registry_id": "claude-opus-4-5",
-      "release_date": "2025-11-24",
-      "route": {
-        "endpoint_name": "Amazon Bedrock | anthropic/claude-4.5-opus-20251124",
-        "max_completion_tokens": 64000,
-        "pricing_overrides": [],
-        "provider_name": "Amazon Bedrock",
-        "provider_tag": "amazon-bedrock",
-        "quantization": "unknown",
-        "reasoning_effort_supported": false,
-        "seed_supported": false,
-        "supported_reasoning_efforts": [],
-        "temperature_supported": true,
-        "zdr_eligible": true
-      },
-      "total_params_b": null
-    },
-    {
-      "access_class": "open-weight",
-      "canonical_slug": "qwen/qwen3-vl-235b-a22b-thinking",
-      "expected_target_cost_usd_120": 0.3309,
-      "family": "qwen",
-      "generation": {
-        "compatibility_lane": "seeded",
-        "max_tokens": 1024,
-        "reasoning_effort": null,
-        "seed": 42,
-        "temperature": 0.5,
-        "top_p": 1.0
-      },
-      "hugging_face_id": "Qwen/Qwen3-VL-235B-A22B-Thinking",
-      "inclusion_basis": "open-weight-original-lab-total-parameters-ge-100b",
-      "maximum_target_cost_usd_120": 0.720576,
-      "model_id": "qwen/qwen3-vl-235b-a22b-thinking",
-      "name": "Qwen: Qwen3 VL 235B A22B Thinking",
-      "pricing_usd_per_million": {
-        "input": 0.98,
-        "input_cache_read": 0.0,
-        "input_cache_write": 0.0,
-        "output": 3.95
-      },
-      "priority": 38,
-      "registry_id": null,
-      "release_date": "2025-09-23",
-      "route": {
-        "endpoint_name": "Novita | qwen/qwen3-vl-235b-a22b-thinking",
-        "max_completion_tokens": 32768,
-        "pricing_overrides": [],
-        "provider_name": "Novita",
-        "provider_tag": "novita/bf16",
-        "quantization": "bf16",
-        "reasoning_effort_supported": false,
-        "seed_supported": true,
-        "supported_reasoning_efforts": [],
-        "temperature_supported": true,
-        "zdr_eligible": true
-      },
-      "total_params_b": 235.0
-    },
-    {
-      "access_class": "hosted",
-      "canonical_slug": "openai/gpt-5.2-20251211",
-      "expected_target_cost_usd_120": 0.483,
-      "family": "GPT-5",
-      "generation": {
-        "compatibility_lane": "seeded",
-        "max_tokens": 1024,
-        "reasoning_effort": "xhigh",
-        "seed": 42,
-        "temperature": 0.5,
-        "top_p": null
-      },
-      "hugging_face_id": "",
-      "inclusion_basis": "hosted-openai-frontier-release",
-      "maximum_target_cost_usd_120": 1.07016,
-      "model_id": "openai/gpt-5.2",
-      "name": "OpenAI: GPT-5.2",
-      "pricing_usd_per_million": {
-        "input": 0.875,
-        "input_cache_read": 0.0875,
-        "input_cache_write": 0.0,
-        "output": 7.0
-      },
-      "priority": 39,
-      "registry_id": "gpt-5-2",
-      "release_date": "2025-12-11",
-      "route": {
-        "endpoint_name": "OpenAI | openai/gpt-5.2-20251211",
-        "max_completion_tokens": 128000,
+        "endpoint_name": "OpenAI | openai/gpt-4-turbo",
+        "max_completion_tokens": 4096,
         "pricing_overrides": [],
         "provider_name": "OpenAI",
-        "provider_tag": "openai/flex",
+        "provider_tag": "openai",
         "quantization": "unknown",
-        "reasoning_effort_supported": true,
-        "seed_supported": true,
-        "supported_reasoning_efforts": [
-          "xhigh",
-          "high",
-          "medium",
-          "low",
-          "none"
-        ],
-        "temperature_supported": false,
-        "zdr_eligible": false
-      },
-      "total_params_b": null
-    },
-    {
-      "access_class": "open-weight",
-      "canonical_slug": "deepseek/deepseek-v3.2-20251201",
-      "expected_target_cost_usd_120": 0.05387999999999998,
-      "family": "DeepSeek V3",
-      "generation": {
-        "compatibility_lane": "seeded",
-        "max_tokens": 1024,
-        "reasoning_effort": null,
-        "seed": 42,
-        "temperature": 0.5,
-        "top_p": 1.0
-      },
-      "hugging_face_id": "deepseek-ai/DeepSeek-V3.2",
-      "inclusion_basis": "open-weight-original-lab-total-parameters-ge-100b",
-      "maximum_target_cost_usd_120": 0.11371199999999998,
-      "model_id": "deepseek/deepseek-v3.2",
-      "name": "DeepSeek: DeepSeek V3.2",
-      "pricing_usd_per_million": {
-        "input": 0.26899999999999996,
-        "input_cache_read": 0.13449999999999998,
-        "input_cache_write": 0.0,
-        "output": 0.39999999999999997
-      },
-      "priority": 40,
-      "registry_id": "deepseek-v3-2",
-      "release_date": "2025-12-01",
-      "route": {
-        "endpoint_name": "Novita | deepseek/deepseek-v3.2-20251201",
-        "max_completion_tokens": 65536,
-        "pricing_overrides": [],
-        "provider_name": "Novita",
-        "provider_tag": "novita/fp8",
-        "quantization": "fp8",
         "reasoning_effort_supported": false,
         "seed_supported": true,
         "supported_reasoning_efforts": [],
-        "temperature_supported": true,
-        "zdr_eligible": true
-      },
-      "total_params_b": 671.0
-    },
-    {
-      "access_class": "hosted",
-      "canonical_slug": "google/gemini-3-flash-preview-20251217",
-      "expected_target_cost_usd_120": 0.111,
-      "family": "google",
-      "generation": {
-        "compatibility_lane": "seeded",
-        "max_tokens": 1024,
-        "reasoning_effort": "high",
-        "seed": 42,
-        "temperature": 0.5,
-        "top_p": 1.0
-      },
-      "hugging_face_id": "",
-      "inclusion_basis": "hosted-google-frontier-release",
-      "maximum_target_cost_usd_120": 0.24432,
-      "model_id": "google/gemini-3-flash-preview",
-      "name": "Google: Gemini 3 Flash Preview",
-      "pricing_usd_per_million": {
-        "input": 0.25,
-        "input_cache_read": 0.024999999999999998,
-        "input_cache_write": 0.0416666666666667,
-        "output": 1.5
-      },
-      "priority": 41,
-      "registry_id": null,
-      "release_date": "2025-12-17",
-      "route": {
-        "endpoint_name": "Google AI Studio | google/gemini-3-flash-preview-20251217",
-        "max_completion_tokens": 65536,
-        "pricing_overrides": [],
-        "provider_name": "Google AI Studio",
-        "provider_tag": "google-ai-studio/flex",
-        "quantization": "unknown",
-        "reasoning_effort_supported": true,
-        "seed_supported": true,
-        "supported_reasoning_efforts": [
-          "high",
-          "medium",
-          "low",
-          "minimal"
-        ],
         "temperature_supported": true,
         "zdr_eligible": false
       },
@@ -2033,9 +1701,9 @@
     },
     {
       "access_class": "open-weight",
-      "canonical_slug": "minimax/minimax-m2.1",
-      "expected_target_cost_usd_120": 0.1008,
-      "family": "MiniMax M2",
+      "canonical_slug": "deepseek/deepseek-r1-0528",
+      "expected_target_cost_usd_120": 0.17772,
+      "family": "DeepSeek R1",
       "generation": {
         "compatibility_lane": "provider-unseeded",
         "max_tokens": 1024,
@@ -2044,201 +1712,25 @@
         "temperature": 0.5,
         "top_p": 1.0
       },
-      "hugging_face_id": "MiniMaxAI/MiniMax-M2.1",
+      "hugging_face_id": "deepseek-ai/DeepSeek-R1-0528",
+      "identity_tier": "original-weight-release-id",
       "inclusion_basis": "open-weight-original-lab-total-parameters-ge-100b",
-      "maximum_target_cost_usd_120": 0.219456,
-      "model_id": "minimax/minimax-m2.1",
-      "name": "MiniMax: MiniMax M2.1",
-      "pricing_usd_per_million": {
-        "input": 0.3,
-        "input_cache_read": 0.03,
-        "input_cache_write": 0.0,
-        "output": 1.2
-      },
-      "priority": 42,
-      "registry_id": "minimax-m2-1",
-      "release_date": "2025-12-23",
-      "route": {
-        "endpoint_name": "Minimax | minimax/minimax-m2.1",
-        "max_completion_tokens": 131072,
-        "pricing_overrides": [],
-        "provider_name": "Minimax",
-        "provider_tag": "minimax/fp8",
-        "quantization": "fp8",
-        "reasoning_effort_supported": false,
-        "seed_supported": false,
-        "supported_reasoning_efforts": [],
-        "temperature_supported": true,
-        "zdr_eligible": true
-      },
-      "total_params_b": 230.0
-    },
-    {
-      "access_class": "hosted",
-      "canonical_slug": "anthropic/claude-4.6-opus-20260205",
-      "expected_target_cost_usd_120": 1.95,
-      "family": "anthropic",
-      "generation": {
-        "compatibility_lane": "provider-unseeded",
-        "max_tokens": 1024,
-        "reasoning_effort": "max",
-        "seed": null,
-        "temperature": 0.5,
-        "top_p": 1.0
-      },
-      "hugging_face_id": "",
-      "inclusion_basis": "hosted-anthropic-frontier-release",
-      "maximum_target_cost_usd_120": 4.272,
-      "model_id": "anthropic/claude-opus-4.6",
-      "name": "Anthropic: Claude Opus 4.6",
-      "pricing_usd_per_million": {
-        "input": 5.0,
-        "input_cache_read": 0.5,
-        "input_cache_write": 6.25,
-        "output": 25.0
-      },
-      "priority": 43,
-      "registry_id": null,
-      "release_date": "2026-02-04",
-      "route": {
-        "endpoint_name": "Amazon Bedrock | anthropic/claude-4.6-opus-20260205",
-        "max_completion_tokens": 128000,
-        "pricing_overrides": [],
-        "provider_name": "Amazon Bedrock",
-        "provider_tag": "amazon-bedrock",
-        "quantization": "unknown",
-        "reasoning_effort_supported": true,
-        "seed_supported": false,
-        "supported_reasoning_efforts": [
-          "max",
-          "high",
-          "medium",
-          "low"
-        ],
-        "temperature_supported": true,
-        "zdr_eligible": true
-      },
-      "total_params_b": null
-    },
-    {
-      "access_class": "open-weight",
-      "canonical_slug": "moonshotai/kimi-k2.5-0127",
-      "expected_target_cost_usd_120": 0.2058,
-      "family": "Kimi K2",
-      "generation": {
-        "compatibility_lane": "provider-unseeded",
-        "max_tokens": 1024,
-        "reasoning_effort": null,
-        "seed": null,
-        "temperature": 0.5,
-        "top_p": 1.0
-      },
-      "hugging_face_id": "moonshotai/Kimi-K2.5",
-      "inclusion_basis": "open-weight-original-lab-total-parameters-ge-100b",
-      "maximum_target_cost_usd_120": 0.451776,
-      "model_id": "moonshotai/kimi-k2.5",
-      "name": "MoonshotAI: Kimi K2.5",
+      "maximum_target_cost_usd_120": 0.38787839999999996,
+      "model_id": "deepseek/deepseek-r1-0528",
+      "name": "DeepSeek: R1 0528",
       "pricing_usd_per_million": {
         "input": 0.5,
-        "input_cache_read": 0.203,
-        "input_cache_write": 0.0,
-        "output": 2.7
-      },
-      "priority": 44,
-      "registry_id": "kimi-k2-5",
-      "release_date": "2026-01-27",
-      "route": {
-        "endpoint_name": "DigitalOcean | moonshotai/kimi-k2.5-0127",
-        "max_completion_tokens": null,
-        "pricing_overrides": [],
-        "provider_name": "DigitalOcean",
-        "provider_tag": "digitalocean",
-        "quantization": "unknown",
-        "reasoning_effort_supported": false,
-        "seed_supported": false,
-        "supported_reasoning_efforts": [],
-        "temperature_supported": true,
-        "zdr_eligible": true
-      },
-      "total_params_b": 1000.0
-    },
-    {
-      "access_class": "hosted",
-      "canonical_slug": "anthropic/claude-4.6-sonnet-20260217",
-      "expected_target_cost_usd_120": 1.17,
-      "family": "anthropic",
-      "generation": {
-        "compatibility_lane": "provider-unseeded",
-        "max_tokens": 1024,
-        "reasoning_effort": "max",
-        "seed": null,
-        "temperature": 0.5,
-        "top_p": 1.0
-      },
-      "hugging_face_id": "",
-      "inclusion_basis": "hosted-anthropic-frontier-release",
-      "maximum_target_cost_usd_120": 2.5632,
-      "model_id": "anthropic/claude-sonnet-4.6",
-      "name": "Anthropic: Claude Sonnet 4.6",
-      "pricing_usd_per_million": {
-        "input": 3.0,
-        "input_cache_read": 0.3,
-        "input_cache_write": 3.75,
-        "output": 15.0
-      },
-      "priority": 45,
-      "registry_id": null,
-      "release_date": "2026-02-17",
-      "route": {
-        "endpoint_name": "Amazon Bedrock | anthropic/claude-4.6-sonnet-20260217",
-        "max_completion_tokens": 128000,
-        "pricing_overrides": [],
-        "provider_name": "Amazon Bedrock",
-        "provider_tag": "amazon-bedrock/global",
-        "quantization": "unknown",
-        "reasoning_effort_supported": true,
-        "seed_supported": false,
-        "supported_reasoning_efforts": [
-          "max",
-          "high",
-          "medium",
-          "low"
-        ],
-        "temperature_supported": true,
-        "zdr_eligible": true
-      },
-      "total_params_b": null
-    },
-    {
-      "access_class": "open-weight",
-      "canonical_slug": "stepfun/step-3.5-flash",
-      "expected_target_cost_usd_120": 0.0282,
-      "family": "stepfun",
-      "generation": {
-        "compatibility_lane": "provider-unseeded",
-        "max_tokens": 1024,
-        "reasoning_effort": null,
-        "seed": null,
-        "temperature": 0.5,
-        "top_p": 1.0
-      },
-      "hugging_face_id": "stepfun-ai/Step-3.5-Flash",
-      "inclusion_basis": "open-weight-original-lab-total-parameters-ge-100b",
-      "maximum_target_cost_usd_120": 0.060863999999999994,
-      "model_id": "stepfun/step-3.5-flash",
-      "name": "StepFun: Step 3.5 Flash",
-      "pricing_usd_per_million": {
-        "input": 0.09999999999999999,
         "input_cache_read": 0.0,
         "input_cache_write": 0.0,
-        "output": 0.3
+        "output": 2.1799999999999997
       },
-      "priority": 46,
-      "registry_id": null,
-      "release_date": "2026-01-29",
+      "priority": 31,
+      "registry_id": "deepseek-r1-0528",
+      "release_date": "2025-05-28",
+      "release_date_source": "project-frontier-registry",
       "route": {
-        "endpoint_name": "SiliconFlow | stepfun/step-3.5-flash",
-        "max_completion_tokens": 65536,
+        "endpoint_name": "SiliconFlow | deepseek/deepseek-r1-0528",
+        "max_completion_tokens": 163840,
         "pricing_overrides": [],
         "provider_name": "SiliconFlow",
         "provider_tag": "siliconflow/fp8",
@@ -2249,7 +1741,95 @@
         "temperature_supported": true,
         "zdr_eligible": true
       },
-      "total_params_b": 196.0
+      "total_params_b": 671.0
+    },
+    {
+      "access_class": "open-weight",
+      "canonical_slug": "minimax/minimax-m3-20260531",
+      "expected_target_cost_usd_120": 0.093,
+      "family": "MiniMax M3",
+      "generation": {
+        "compatibility_lane": "seeded",
+        "max_tokens": 1024,
+        "reasoning_effort": null,
+        "seed": 42,
+        "temperature": 0.5,
+        "top_p": 1.0
+      },
+      "hugging_face_id": "MiniMaxAI/Minimax-M3",
+      "identity_tier": "explicit-provider-snapshot",
+      "inclusion_basis": "open-weight-original-lab-total-parameters-ge-100b",
+      "maximum_target_cost_usd_120": 0.202368,
+      "model_id": "minimax/minimax-m3",
+      "name": "MiniMax: MiniMax M3",
+      "pricing_usd_per_million": {
+        "input": 0.28,
+        "input_cache_read": 0.056,
+        "input_cache_write": 0.0,
+        "output": 1.1
+      },
+      "priority": 32,
+      "registry_id": "minimax-m3",
+      "release_date": "2026-05-31",
+      "release_date_source": "project-frontier-registry",
+      "route": {
+        "endpoint_name": "DeepInfra | minimax/minimax-m3-20260531",
+        "max_completion_tokens": 512000,
+        "pricing_overrides": [],
+        "provider_name": "DeepInfra",
+        "provider_tag": "deepinfra/fp8",
+        "quantization": "fp8",
+        "reasoning_effort_supported": false,
+        "seed_supported": true,
+        "supported_reasoning_efforts": [],
+        "temperature_supported": true,
+        "zdr_eligible": true
+      },
+      "total_params_b": 428.0
+    },
+    {
+      "access_class": "open-weight",
+      "canonical_slug": "qwen/qwen3-235b-a22b-thinking-2507",
+      "expected_target_cost_usd_120": 0.198,
+      "family": "qwen",
+      "generation": {
+        "compatibility_lane": "seeded",
+        "max_tokens": 1024,
+        "reasoning_effort": null,
+        "seed": 42,
+        "temperature": 0.5,
+        "top_p": 1.0
+      },
+      "hugging_face_id": "Qwen/Qwen3-235B-A22B-Thinking-2507",
+      "identity_tier": "original-weight-release-id",
+      "inclusion_basis": "open-weight-original-lab-total-parameters-ge-100b",
+      "maximum_target_cost_usd_120": 0.44064,
+      "model_id": "qwen/qwen3-235b-a22b-thinking-2507",
+      "name": "Qwen: Qwen3 235B A22B Thinking 2507",
+      "pricing_usd_per_million": {
+        "input": 0.3,
+        "input_cache_read": 0.0,
+        "input_cache_write": 0.0,
+        "output": 3.0
+      },
+      "priority": 33,
+      "registry_id": null,
+      "release_date": "2025-07-25",
+      "release_date_source": "openrouter-model-created-at",
+      "route": {
+        "endpoint_name": "Novita | qwen/qwen3-235b-a22b-thinking-2507",
+        "max_completion_tokens": 32768,
+        "pricing_overrides": [],
+        "provider_name": "Novita",
+        "provider_tag": "novita/fp8",
+        "quantization": "fp8",
+        "reasoning_effort_supported": false,
+        "seed_supported": true,
+        "supported_reasoning_efforts": [],
+        "temperature_supported": true,
+        "zdr_eligible": true
+      },
+      "total_params_b": 235.0
     },
     {
       "access_class": "hosted",
@@ -2265,6 +1845,7 @@
         "top_p": 1.0
       },
       "hugging_face_id": "",
+      "identity_tier": "explicit-provider-snapshot",
       "inclusion_basis": "hosted-google-frontier-release",
       "maximum_target_cost_usd_120": 0.97728,
       "model_id": "google/gemini-3.1-pro-preview",
@@ -2275,9 +1856,10 @@
         "input_cache_write": 0.1875,
         "output": 6.0
       },
-      "priority": 47,
+      "priority": 34,
       "registry_id": "gemini-3-1-pro-preview",
       "release_date": "2026-02-19",
+      "release_date_source": "project-frontier-registry",
       "route": {
         "endpoint_name": "Google | google/gemini-3.1-pro-preview-20260219",
         "max_completion_tokens": 65536,
@@ -2308,6 +1890,50 @@
     },
     {
       "access_class": "open-weight",
+      "canonical_slug": "moonshotai/kimi-k2.5-0127",
+      "expected_target_cost_usd_120": 0.2058,
+      "family": "Kimi K2",
+      "generation": {
+        "compatibility_lane": "provider-unseeded",
+        "max_tokens": 1024,
+        "reasoning_effort": null,
+        "seed": null,
+        "temperature": 0.5,
+        "top_p": 1.0
+      },
+      "hugging_face_id": "moonshotai/Kimi-K2.5",
+      "identity_tier": "original-weight-release-id",
+      "inclusion_basis": "open-weight-original-lab-total-parameters-ge-100b",
+      "maximum_target_cost_usd_120": 0.451776,
+      "model_id": "moonshotai/kimi-k2.5",
+      "name": "MoonshotAI: Kimi K2.5",
+      "pricing_usd_per_million": {
+        "input": 0.5,
+        "input_cache_read": 0.203,
+        "input_cache_write": 0.0,
+        "output": 2.7
+      },
+      "priority": 35,
+      "registry_id": "kimi-k2-5",
+      "release_date": "2026-01-27",
+      "release_date_source": "project-frontier-registry",
+      "route": {
+        "endpoint_name": "DigitalOcean | moonshotai/kimi-k2.5-0127",
+        "max_completion_tokens": null,
+        "pricing_overrides": [],
+        "provider_name": "DigitalOcean",
+        "provider_tag": "digitalocean",
+        "quantization": "unknown",
+        "reasoning_effort_supported": false,
+        "seed_supported": false,
+        "supported_reasoning_efforts": [],
+        "temperature_supported": true,
+        "zdr_eligible": true
+      },
+      "total_params_b": 1000.0
+    },
+    {
+      "access_class": "open-weight",
       "canonical_slug": "z-ai/glm-5-20260211",
       "expected_target_cost_usd_120": 0.2517,
       "family": "GLM 5",
@@ -2320,6 +1946,7 @@
         "top_p": 1.0
       },
       "hugging_face_id": "zai-org/GLM-5",
+      "identity_tier": "explicit-provider-snapshot",
       "inclusion_basis": "open-weight-original-lab-total-parameters-ge-100b",
       "maximum_target_cost_usd_120": 0.5413440000000002,
       "model_id": "z-ai/glm-5",
@@ -2330,9 +1957,10 @@
         "input_cache_write": 0.0,
         "output": 2.5500000000000003
       },
-      "priority": 48,
+      "priority": 36,
       "registry_id": "glm-5",
       "release_date": "2026-02-12",
+      "release_date_source": "project-frontier-registry",
       "route": {
         "endpoint_name": "SiliconFlow | z-ai/glm-5-20260211",
         "max_completion_tokens": 131072,
@@ -2350,6 +1978,1109 @@
     },
     {
       "access_class": "hosted",
+      "canonical_slug": "anthropic/claude-4.6-opus-20260205",
+      "expected_target_cost_usd_120": 1.95,
+      "family": "anthropic",
+      "generation": {
+        "compatibility_lane": "provider-unseeded",
+        "max_tokens": 1024,
+        "reasoning_effort": "max",
+        "seed": null,
+        "temperature": 0.5,
+        "top_p": 1.0
+      },
+      "hugging_face_id": "",
+      "identity_tier": "explicit-provider-snapshot",
+      "inclusion_basis": "hosted-anthropic-frontier-release",
+      "maximum_target_cost_usd_120": 4.272,
+      "model_id": "anthropic/claude-opus-4.6",
+      "name": "Anthropic: Claude Opus 4.6",
+      "pricing_usd_per_million": {
+        "input": 5.0,
+        "input_cache_read": 0.5,
+        "input_cache_write": 6.25,
+        "output": 25.0
+      },
+      "priority": 37,
+      "registry_id": null,
+      "release_date": "2026-02-04",
+      "release_date_source": "openrouter-model-created-at",
+      "route": {
+        "endpoint_name": "Amazon Bedrock | anthropic/claude-4.6-opus-20260205",
+        "max_completion_tokens": 128000,
+        "pricing_overrides": [],
+        "provider_name": "Amazon Bedrock",
+        "provider_tag": "amazon-bedrock",
+        "quantization": "unknown",
+        "reasoning_effort_supported": true,
+        "seed_supported": false,
+        "supported_reasoning_efforts": [
+          "max",
+          "high",
+          "medium",
+          "low"
+        ],
+        "temperature_supported": true,
+        "zdr_eligible": true
+      },
+      "total_params_b": null
+    },
+    {
+      "access_class": "hosted",
+      "canonical_slug": "x-ai/grok-4.5-20260708",
+      "expected_target_cost_usd_120": 0.564,
+      "family": "Grok 4",
+      "generation": {
+        "compatibility_lane": "seeded",
+        "max_tokens": 1024,
+        "reasoning_effort": "high",
+        "seed": 42,
+        "temperature": 0.5,
+        "top_p": 1.0
+      },
+      "hugging_face_id": null,
+      "identity_tier": "explicit-provider-snapshot",
+      "inclusion_basis": "hosted-x-ai-frontier-release",
+      "maximum_target_cost_usd_120": 1.21728,
+      "model_id": "x-ai/grok-4.5",
+      "name": "SpaceXAI: Grok 4.5",
+      "pricing_usd_per_million": {
+        "input": 2.0,
+        "input_cache_read": 0.3,
+        "input_cache_write": 0.0,
+        "output": 6.0
+      },
+      "priority": 38,
+      "registry_id": "grok-4-5",
+      "release_date": "2026-07-16",
+      "release_date_source": "project-frontier-registry",
+      "route": {
+        "endpoint_name": "xAI | x-ai/grok-4.5-20260708",
+        "max_completion_tokens": null,
+        "pricing_overrides": [
+          {
+            "completion": "0.000012",
+            "input_cache_read": "0.0000006",
+            "min_prompt_tokens": 200000,
+            "prompt": "0.000004"
+          }
+        ],
+        "provider_name": "xAI",
+        "provider_tag": "xai/zdr",
+        "quantization": "unknown",
+        "reasoning_effort_supported": true,
+        "seed_supported": true,
+        "supported_reasoning_efforts": [
+          "high",
+          "medium",
+          "low"
+        ],
+        "temperature_supported": true,
+        "zdr_eligible": true
+      },
+      "total_params_b": null
+    },
+    {
+      "access_class": "hosted",
+      "canonical_slug": "openai/o1-2024-12-17",
+      "expected_target_cost_usd_120": 5.04,
+      "family": "openai",
+      "generation": {
+        "compatibility_lane": "seeded",
+        "max_tokens": 1024,
+        "reasoning_effort": null,
+        "seed": 42,
+        "temperature": 0.5,
+        "top_p": null
+      },
+      "hugging_face_id": "",
+      "identity_tier": "explicit-provider-snapshot",
+      "inclusion_basis": "hosted-openai-frontier-release",
+      "maximum_target_cost_usd_120": 10.9728,
+      "model_id": "openai/o1",
+      "name": "OpenAI: o1",
+      "pricing_usd_per_million": {
+        "input": 15.0,
+        "input_cache_read": 7.5,
+        "input_cache_write": 0.0,
+        "output": 60.0
+      },
+      "priority": 39,
+      "registry_id": null,
+      "release_date": "2024-12-17",
+      "release_date_source": "openrouter-model-created-at",
+      "route": {
+        "endpoint_name": "OpenAI | openai/o1-2024-12-17",
+        "max_completion_tokens": 100000,
+        "pricing_overrides": [],
+        "provider_name": "OpenAI",
+        "provider_tag": "openai",
+        "quantization": "unknown",
+        "reasoning_effort_supported": false,
+        "seed_supported": true,
+        "supported_reasoning_efforts": [],
+        "temperature_supported": false,
+        "zdr_eligible": false
+      },
+      "total_params_b": null
+    },
+    {
+      "access_class": "open-weight",
+      "canonical_slug": "deepseek/deepseek-chat-v3.1",
+      "expected_target_cost_usd_120": 0.0864,
+      "family": "deepseek",
+      "generation": {
+        "compatibility_lane": "seeded",
+        "max_tokens": 1024,
+        "reasoning_effort": null,
+        "seed": 42,
+        "temperature": 0.5,
+        "top_p": 1.0
+      },
+      "hugging_face_id": "deepseek-ai/DeepSeek-V3.1",
+      "identity_tier": "original-weight-release-id",
+      "inclusion_basis": "open-weight-original-lab-total-parameters-ge-100b",
+      "maximum_target_cost_usd_120": 0.18768,
+      "model_id": "deepseek/deepseek-chat-v3.1",
+      "name": "DeepSeek: DeepSeek V3.1",
+      "pricing_usd_per_million": {
+        "input": 0.27,
+        "input_cache_read": 0.135,
+        "input_cache_write": 0.0,
+        "output": 1.0
+      },
+      "priority": 40,
+      "registry_id": null,
+      "release_date": "2025-08-21",
+      "release_date_source": "openrouter-model-created-at",
+      "route": {
+        "endpoint_name": "Novita | deepseek/deepseek-chat-v3.1",
+        "max_completion_tokens": 32768,
+        "pricing_overrides": [],
+        "provider_name": "Novita",
+        "provider_tag": "novita/fp8",
+        "quantization": "fp8",
+        "reasoning_effort_supported": false,
+        "seed_supported": true,
+        "supported_reasoning_efforts": [],
+        "temperature_supported": true,
+        "zdr_eligible": true
+      },
+      "total_params_b": 671.0
+    },
+    {
+      "access_class": "open-weight",
+      "canonical_slug": "qwen/qwen3-vl-235b-a22b-instruct",
+      "expected_target_cost_usd_120": 0.117,
+      "family": "qwen",
+      "generation": {
+        "compatibility_lane": "seeded",
+        "max_tokens": 1024,
+        "reasoning_effort": null,
+        "seed": 42,
+        "temperature": 0.5,
+        "top_p": 1.0
+      },
+      "hugging_face_id": "Qwen/Qwen3-VL-235B-A22B-Instruct",
+      "identity_tier": "original-weight-release-id",
+      "inclusion_basis": "open-weight-original-lab-total-parameters-ge-100b",
+      "maximum_target_cost_usd_120": 0.25632,
+      "model_id": "qwen/qwen3-vl-235b-a22b-instruct",
+      "name": "Qwen: Qwen3 VL 235B A22B Instruct",
+      "pricing_usd_per_million": {
+        "input": 0.3,
+        "input_cache_read": 0.0,
+        "input_cache_write": 0.0,
+        "output": 1.5
+      },
+      "priority": 41,
+      "registry_id": null,
+      "release_date": "2025-09-23",
+      "release_date_source": "openrouter-model-created-at",
+      "route": {
+        "endpoint_name": "Novita | qwen/qwen3-vl-235b-a22b-instruct",
+        "max_completion_tokens": 32768,
+        "pricing_overrides": [],
+        "provider_name": "Novita",
+        "provider_tag": "novita/bf16",
+        "quantization": "bf16",
+        "reasoning_effort_supported": false,
+        "seed_supported": true,
+        "supported_reasoning_efforts": [],
+        "temperature_supported": true,
+        "zdr_eligible": true
+      },
+      "total_params_b": 235.0
+    },
+    {
+      "access_class": "hosted",
+      "canonical_slug": "google/gemini-3.5-flash-20260519",
+      "expected_target_cost_usd_120": 0.333,
+      "family": "google",
+      "generation": {
+        "compatibility_lane": "seeded",
+        "max_tokens": 1024,
+        "reasoning_effort": "high",
+        "seed": 42,
+        "temperature": 0.5,
+        "top_p": 1.0
+      },
+      "hugging_face_id": null,
+      "identity_tier": "explicit-provider-snapshot",
+      "inclusion_basis": "hosted-google-frontier-release",
+      "maximum_target_cost_usd_120": 0.73296,
+      "model_id": "google/gemini-3.5-flash",
+      "name": "Google: Gemini 3.5 Flash",
+      "pricing_usd_per_million": {
+        "input": 0.75,
+        "input_cache_read": 0.075,
+        "input_cache_write": 0.0416666666666667,
+        "output": 4.5
+      },
+      "priority": 42,
+      "registry_id": null,
+      "release_date": "2026-05-19",
+      "release_date_source": "openrouter-model-created-at",
+      "route": {
+        "endpoint_name": "Google | google/gemini-3.5-flash-20260519",
+        "max_completion_tokens": 65536,
+        "pricing_overrides": [],
+        "provider_name": "Google",
+        "provider_tag": "google-vertex/global/flex",
+        "quantization": "unknown",
+        "reasoning_effort_supported": true,
+        "seed_supported": true,
+        "supported_reasoning_efforts": [
+          "high",
+          "medium",
+          "low",
+          "minimal"
+        ],
+        "temperature_supported": true,
+        "zdr_eligible": true
+      },
+      "total_params_b": null
+    },
+    {
+      "access_class": "open-weight",
+      "canonical_slug": "moonshotai/kimi-k3-20260715",
+      "expected_target_cost_usd_120": 1.17,
+      "family": "Kimi K3",
+      "generation": {
+        "compatibility_lane": "provider-unseeded",
+        "max_tokens": 1024,
+        "reasoning_effort": "max",
+        "seed": null,
+        "temperature": 0.5,
+        "top_p": 1.0
+      },
+      "hugging_face_id": "moonshotai/Kimi-K3",
+      "identity_tier": "explicit-provider-snapshot",
+      "inclusion_basis": "open-weight-original-lab-total-parameters-ge-100b",
+      "maximum_target_cost_usd_120": 2.5632,
+      "model_id": "moonshotai/kimi-k3",
+      "name": "MoonshotAI: Kimi K3",
+      "pricing_usd_per_million": {
+        "input": 3.0,
+        "input_cache_read": 0.3,
+        "input_cache_write": 0.0,
+        "output": 15.0
+      },
+      "priority": 43,
+      "registry_id": "kimi-k3",
+      "release_date": "2026-07-22",
+      "release_date_source": "project-frontier-registry",
+      "route": {
+        "endpoint_name": "BaseTen | moonshotai/kimi-k3-20260715",
+        "max_completion_tokens": 262144,
+        "pricing_overrides": [],
+        "provider_name": "BaseTen",
+        "provider_tag": "baseten/fp8",
+        "quantization": "fp8",
+        "reasoning_effort_supported": true,
+        "seed_supported": false,
+        "supported_reasoning_efforts": [
+          "max",
+          "high",
+          "low"
+        ],
+        "temperature_supported": true,
+        "zdr_eligible": true
+      },
+      "total_params_b": 2800.0
+    },
+    {
+      "access_class": "hosted",
+      "canonical_slug": "anthropic/claude-4.6-sonnet-20260217",
+      "expected_target_cost_usd_120": 1.17,
+      "family": "anthropic",
+      "generation": {
+        "compatibility_lane": "provider-unseeded",
+        "max_tokens": 1024,
+        "reasoning_effort": "max",
+        "seed": null,
+        "temperature": 0.5,
+        "top_p": 1.0
+      },
+      "hugging_face_id": "",
+      "identity_tier": "explicit-provider-snapshot",
+      "inclusion_basis": "hosted-anthropic-frontier-release",
+      "maximum_target_cost_usd_120": 2.5632,
+      "model_id": "anthropic/claude-sonnet-4.6",
+      "name": "Anthropic: Claude Sonnet 4.6",
+      "pricing_usd_per_million": {
+        "input": 3.0,
+        "input_cache_read": 0.3,
+        "input_cache_write": 3.75,
+        "output": 15.0
+      },
+      "priority": 44,
+      "registry_id": null,
+      "release_date": "2026-02-17",
+      "release_date_source": "openrouter-model-created-at",
+      "route": {
+        "endpoint_name": "Amazon Bedrock | anthropic/claude-4.6-sonnet-20260217",
+        "max_completion_tokens": 128000,
+        "pricing_overrides": [],
+        "provider_name": "Amazon Bedrock",
+        "provider_tag": "amazon-bedrock/global",
+        "quantization": "unknown",
+        "reasoning_effort_supported": true,
+        "seed_supported": false,
+        "supported_reasoning_efforts": [
+          "max",
+          "high",
+          "medium",
+          "low"
+        ],
+        "temperature_supported": true,
+        "zdr_eligible": true
+      },
+      "total_params_b": null
+    },
+    {
+      "access_class": "hosted",
+      "canonical_slug": "x-ai/grok-4.6-20260810",
+      "expected_target_cost_usd_120": 0.564,
+      "family": "x-ai",
+      "generation": {
+        "compatibility_lane": "seeded",
+        "max_tokens": 1024,
+        "reasoning_effort": "xhigh",
+        "seed": 42,
+        "temperature": 0.5,
+        "top_p": 1.0
+      },
+      "hugging_face_id": null,
+      "identity_tier": "explicit-provider-snapshot",
+      "inclusion_basis": "hosted-x-ai-frontier-release",
+      "maximum_target_cost_usd_120": 1.21728,
+      "model_id": "x-ai/grok-4.6",
+      "name": "SpaceXAI: Grok 4.6",
+      "pricing_usd_per_million": {
+        "input": 2.0,
+        "input_cache_read": 0.5,
+        "input_cache_write": 0.0,
+        "output": 6.0
+      },
+      "priority": 45,
+      "registry_id": null,
+      "release_date": "2026-08-12",
+      "release_date_source": "openrouter-model-created-at",
+      "route": {
+        "endpoint_name": "xAI | x-ai/grok-4.6-20260810",
+        "max_completion_tokens": null,
+        "pricing_overrides": [
+          {
+            "completion": "0.000012",
+            "input_cache_read": "0.000001",
+            "min_prompt_tokens": 200000,
+            "prompt": "0.000004"
+          }
+        ],
+        "provider_name": "xAI",
+        "provider_tag": "xai/zdr",
+        "quantization": "unknown",
+        "reasoning_effort_supported": true,
+        "seed_supported": true,
+        "supported_reasoning_efforts": [
+          "xhigh",
+          "high",
+          "medium",
+          "low"
+        ],
+        "temperature_supported": true,
+        "zdr_eligible": true
+      },
+      "total_params_b": null
+    },
+    {
+      "access_class": "open-weight",
+      "canonical_slug": "openai/gpt-oss-120b",
+      "expected_target_cost_usd_120": 0.01362,
+      "family": "openai",
+      "generation": {
+        "compatibility_lane": "seeded",
+        "max_tokens": 1024,
+        "reasoning_effort": "high",
+        "seed": 42,
+        "temperature": 0.5,
+        "top_p": 1.0
+      },
+      "hugging_face_id": "openai/gpt-oss-120b",
+      "identity_tier": "original-weight-release-id",
+      "inclusion_basis": "open-weight-original-lab-total-parameters-ge-100b",
+      "maximum_target_cost_usd_120": 0.0297696,
+      "model_id": "openai/gpt-oss-120b",
+      "name": "OpenAI: gpt-oss-120b",
+      "pricing_usd_per_million": {
+        "input": 0.037,
+        "input_cache_read": 0.0,
+        "input_cache_write": 0.0,
+        "output": 0.16999999999999998
+      },
+      "priority": 46,
+      "registry_id": null,
+      "release_date": "2025-08-05",
+      "release_date_source": "openrouter-model-created-at",
+      "route": {
+        "endpoint_name": "DeepInfra | openai/gpt-oss-120b",
+        "max_completion_tokens": 131072,
+        "pricing_overrides": [],
+        "provider_name": "DeepInfra",
+        "provider_tag": "deepinfra/bf16",
+        "quantization": "bf16",
+        "reasoning_effort_supported": true,
+        "seed_supported": true,
+        "supported_reasoning_efforts": [
+          "high",
+          "medium",
+          "low"
+        ],
+        "temperature_supported": true,
+        "zdr_eligible": true
+      },
+      "total_params_b": 120.0
+    },
+    {
+      "access_class": "open-weight",
+      "canonical_slug": "deepseek/deepseek-v3.2-20251201",
+      "expected_target_cost_usd_120": 0.05387999999999998,
+      "family": "DeepSeek V3",
+      "generation": {
+        "compatibility_lane": "seeded",
+        "max_tokens": 1024,
+        "reasoning_effort": null,
+        "seed": 42,
+        "temperature": 0.5,
+        "top_p": 1.0
+      },
+      "hugging_face_id": "deepseek-ai/DeepSeek-V3.2",
+      "identity_tier": "explicit-provider-snapshot",
+      "inclusion_basis": "open-weight-original-lab-total-parameters-ge-100b",
+      "maximum_target_cost_usd_120": 0.11371199999999998,
+      "model_id": "deepseek/deepseek-v3.2",
+      "name": "DeepSeek: DeepSeek V3.2",
+      "pricing_usd_per_million": {
+        "input": 0.26899999999999996,
+        "input_cache_read": 0.13449999999999998,
+        "input_cache_write": 0.0,
+        "output": 0.39999999999999997
+      },
+      "priority": 47,
+      "registry_id": "deepseek-v3-2",
+      "release_date": "2025-12-01",
+      "release_date_source": "project-frontier-registry",
+      "route": {
+        "endpoint_name": "Novita | deepseek/deepseek-v3.2-20251201",
+        "max_completion_tokens": 65536,
+        "pricing_overrides": [],
+        "provider_name": "Novita",
+        "provider_tag": "novita/fp8",
+        "quantization": "fp8",
+        "reasoning_effort_supported": false,
+        "seed_supported": true,
+        "supported_reasoning_efforts": [],
+        "temperature_supported": true,
+        "zdr_eligible": true
+      },
+      "total_params_b": 671.0
+    },
+    {
+      "access_class": "open-weight",
+      "canonical_slug": "qwen/qwen3-vl-235b-a22b-thinking",
+      "expected_target_cost_usd_120": 0.3309,
+      "family": "qwen",
+      "generation": {
+        "compatibility_lane": "seeded",
+        "max_tokens": 1024,
+        "reasoning_effort": null,
+        "seed": 42,
+        "temperature": 0.5,
+        "top_p": 1.0
+      },
+      "hugging_face_id": "Qwen/Qwen3-VL-235B-A22B-Thinking",
+      "identity_tier": "original-weight-release-id",
+      "inclusion_basis": "open-weight-original-lab-total-parameters-ge-100b",
+      "maximum_target_cost_usd_120": 0.720576,
+      "model_id": "qwen/qwen3-vl-235b-a22b-thinking",
+      "name": "Qwen: Qwen3 VL 235B A22B Thinking",
+      "pricing_usd_per_million": {
+        "input": 0.98,
+        "input_cache_read": 0.0,
+        "input_cache_write": 0.0,
+        "output": 3.95
+      },
+      "priority": 48,
+      "registry_id": null,
+      "release_date": "2025-09-23",
+      "release_date_source": "openrouter-model-created-at",
+      "route": {
+        "endpoint_name": "Novita | qwen/qwen3-vl-235b-a22b-thinking",
+        "max_completion_tokens": 32768,
+        "pricing_overrides": [],
+        "provider_name": "Novita",
+        "provider_tag": "novita/bf16",
+        "quantization": "bf16",
+        "reasoning_effort_supported": false,
+        "seed_supported": true,
+        "supported_reasoning_efforts": [],
+        "temperature_supported": true,
+        "zdr_eligible": true
+      },
+      "total_params_b": 235.0
+    },
+    {
+      "access_class": "hosted",
+      "canonical_slug": "google/gemini-3.6-flash-20260721",
+      "expected_target_cost_usd_120": 0.14625,
+      "family": "Gemini 3.6",
+      "generation": {
+        "compatibility_lane": "seeded",
+        "max_tokens": 1024,
+        "reasoning_effort": "high",
+        "seed": 42,
+        "temperature": 0.5,
+        "top_p": null
+      },
+      "hugging_face_id": null,
+      "identity_tier": "explicit-provider-snapshot",
+      "inclusion_basis": "hosted-google-frontier-release",
+      "maximum_target_cost_usd_120": 0.3204,
+      "model_id": "google/gemini-3.6-flash",
+      "name": "Google: Gemini 3.6 Flash",
+      "pricing_usd_per_million": {
+        "input": 0.375,
+        "input_cache_read": 0.0375,
+        "input_cache_write": 0.0208333333333333,
+        "output": 1.875
+      },
+      "priority": 49,
+      "registry_id": "gemini-3-6-flash",
+      "release_date": "2026-07-21",
+      "release_date_source": "project-frontier-registry",
+      "route": {
+        "endpoint_name": "Google | google/gemini-3.6-flash-20260721",
+        "max_completion_tokens": 65536,
+        "pricing_overrides": [],
+        "provider_name": "Google",
+        "provider_tag": "google-vertex/global/flex",
+        "quantization": "unknown",
+        "reasoning_effort_supported": true,
+        "seed_supported": true,
+        "supported_reasoning_efforts": [
+          "high",
+          "medium",
+          "low",
+          "minimal"
+        ],
+        "temperature_supported": false,
+        "zdr_eligible": true
+      },
+      "total_params_b": null
+    },
+    {
+      "access_class": "hosted",
+      "canonical_slug": "anthropic/claude-4.8-opus-20260528",
+      "expected_target_cost_usd_120": 1.95,
+      "family": "anthropic",
+      "generation": {
+        "compatibility_lane": "provider-unseeded",
+        "max_tokens": 1024,
+        "reasoning_effort": "max",
+        "seed": null,
+        "temperature": 0.5,
+        "top_p": null
+      },
+      "hugging_face_id": null,
+      "identity_tier": "explicit-provider-snapshot",
+      "inclusion_basis": "hosted-anthropic-frontier-release",
+      "maximum_target_cost_usd_120": 4.272,
+      "model_id": "anthropic/claude-opus-4.8",
+      "name": "Anthropic: Claude Opus 4.8",
+      "pricing_usd_per_million": {
+        "input": 5.0,
+        "input_cache_read": 0.5,
+        "input_cache_write": 6.25,
+        "output": 25.0
+      },
+      "priority": 50,
+      "registry_id": null,
+      "release_date": "2026-05-27",
+      "release_date_source": "openrouter-model-created-at",
+      "route": {
+        "endpoint_name": "Amazon Bedrock | anthropic/claude-4.8-opus-20260528",
+        "max_completion_tokens": 128000,
+        "pricing_overrides": [],
+        "provider_name": "Amazon Bedrock",
+        "provider_tag": "amazon-bedrock",
+        "quantization": "unknown",
+        "reasoning_effort_supported": true,
+        "seed_supported": false,
+        "supported_reasoning_efforts": [
+          "max",
+          "xhigh",
+          "high",
+          "medium",
+          "low"
+        ],
+        "temperature_supported": false,
+        "zdr_eligible": true
+      },
+      "total_params_b": null
+    },
+    {
+      "access_class": "hosted",
+      "canonical_slug": "openai/gpt-5-2025-08-07",
+      "expected_target_cost_usd_120": 0.69,
+      "family": "GPT-5",
+      "generation": {
+        "compatibility_lane": "seeded",
+        "max_tokens": 1024,
+        "reasoning_effort": "high",
+        "seed": 42,
+        "temperature": 0.5,
+        "top_p": null
+      },
+      "hugging_face_id": "",
+      "identity_tier": "explicit-provider-snapshot",
+      "inclusion_basis": "hosted-openai-frontier-release",
+      "maximum_target_cost_usd_120": 1.5288,
+      "model_id": "openai/gpt-5",
+      "name": "OpenAI: GPT-5",
+      "pricing_usd_per_million": {
+        "input": 1.25,
+        "input_cache_read": 0.125,
+        "input_cache_write": 0.0,
+        "output": 10.0
+      },
+      "priority": 51,
+      "registry_id": "gpt-5",
+      "release_date": "2025-08-07",
+      "release_date_source": "project-frontier-registry",
+      "route": {
+        "endpoint_name": "OpenAI | openai/gpt-5-2025-08-07",
+        "max_completion_tokens": 128000,
+        "pricing_overrides": [],
+        "provider_name": "OpenAI",
+        "provider_tag": "openai/default",
+        "quantization": "unknown",
+        "reasoning_effort_supported": true,
+        "seed_supported": true,
+        "supported_reasoning_efforts": [
+          "high",
+          "medium",
+          "low",
+          "minimal"
+        ],
+        "temperature_supported": false,
+        "zdr_eligible": false
+      },
+      "total_params_b": null
+    },
+    {
+      "access_class": "open-weight",
+      "canonical_slug": "deepseek/deepseek-v4-flash-20260423",
+      "expected_target_cost_usd_120": 0.03072,
+      "family": "deepseek",
+      "generation": {
+        "compatibility_lane": "provider-unseeded",
+        "max_tokens": 1024,
+        "reasoning_effort": "xhigh",
+        "seed": null,
+        "temperature": 0.5,
+        "top_p": 1.0
+      },
+      "hugging_face_id": "deepseek-ai/DeepSeek-V4-Flash",
+      "identity_tier": "explicit-provider-snapshot",
+      "inclusion_basis": "open-weight-original-lab-total-parameters-ge-100b",
+      "maximum_target_cost_usd_120": 0.06560640000000001,
+      "model_id": "deepseek/deepseek-v4-flash",
+      "name": "DeepSeek: DeepSeek V4 Flash 0423",
+      "pricing_usd_per_million": {
+        "input": 0.13,
+        "input_cache_read": 0.028,
+        "input_cache_write": 0.0,
+        "output": 0.28
+      },
+      "priority": 52,
+      "registry_id": null,
+      "release_date": "2026-04-24",
+      "release_date_source": "openrouter-model-created-at",
+      "route": {
+        "endpoint_name": "SiliconFlow | deepseek/deepseek-v4-flash-20260423",
+        "max_completion_tokens": 393216,
+        "pricing_overrides": [],
+        "provider_name": "SiliconFlow",
+        "provider_tag": "siliconflow/fp8",
+        "quantization": "fp8",
+        "reasoning_effort_supported": true,
+        "seed_supported": false,
+        "supported_reasoning_efforts": [
+          "xhigh",
+          "high"
+        ],
+        "temperature_supported": true,
+        "zdr_eligible": true
+      },
+      "total_params_b": 284.0
+    },
+    {
+      "access_class": "open-weight",
+      "canonical_slug": "qwen/qwen3.5-397b-a17b-20260216",
+      "expected_target_cost_usd_120": 0.2544,
+      "family": "Qwen 3.5",
+      "generation": {
+        "compatibility_lane": "seeded",
+        "max_tokens": 1024,
+        "reasoning_effort": null,
+        "seed": 42,
+        "temperature": 0.5,
+        "top_p": 1.0
+      },
+      "hugging_face_id": "Qwen/Qwen3.5-397B-A17B",
+      "identity_tier": "explicit-provider-snapshot",
+      "inclusion_basis": "open-weight-original-lab-total-parameters-ge-100b",
+      "maximum_target_cost_usd_120": 0.562368,
+      "model_id": "qwen/qwen3.5-397b-a17b",
+      "name": "Qwen: Qwen3.5 397B A17B",
+      "pricing_usd_per_million": {
+        "input": 0.5,
+        "input_cache_read": 0.3,
+        "input_cache_write": 0.0,
+        "output": 3.5999999999999996
+      },
+      "priority": 53,
+      "registry_id": "qwen3-5-397b-a17b",
+      "release_date": "2026-02-16",
+      "release_date_source": "project-frontier-registry",
+      "route": {
+        "endpoint_name": "Parasail | qwen/qwen3.5-397b-a17b-20260216",
+        "max_completion_tokens": 262144,
+        "pricing_overrides": [],
+        "provider_name": "Parasail",
+        "provider_tag": "parasail/fp8",
+        "quantization": "fp8",
+        "reasoning_effort_supported": false,
+        "seed_supported": true,
+        "supported_reasoning_efforts": [],
+        "temperature_supported": true,
+        "zdr_eligible": true
+      },
+      "total_params_b": 397.0
+    },
+    {
+      "access_class": "hosted",
+      "canonical_slug": "google/gemini-3.7-flash-20260813",
+      "expected_target_cost_usd_120": 0.073125,
+      "family": "google",
+      "generation": {
+        "compatibility_lane": "seeded",
+        "max_tokens": 1024,
+        "reasoning_effort": "high",
+        "seed": 42,
+        "temperature": 0.5,
+        "top_p": null
+      },
+      "hugging_face_id": null,
+      "identity_tier": "explicit-provider-snapshot",
+      "inclusion_basis": "hosted-google-frontier-release",
+      "maximum_target_cost_usd_120": 0.1602,
+      "model_id": "google/gemini-3.7-flash",
+      "name": "Google: Gemini 3.7 Flash",
+      "pricing_usd_per_million": {
+        "input": 0.1875,
+        "input_cache_read": 0.01875,
+        "input_cache_write": 0.0104166666666667,
+        "output": 0.9375
+      },
+      "priority": 54,
+      "registry_id": null,
+      "release_date": "2026-08-13",
+      "release_date_source": "openrouter-model-created-at",
+      "route": {
+        "endpoint_name": "Google | google/gemini-3.7-flash-20260813",
+        "max_completion_tokens": 65536,
+        "pricing_overrides": [],
+        "provider_name": "Google",
+        "provider_tag": "google-vertex/global/flex",
+        "quantization": "unknown",
+        "reasoning_effort_supported": true,
+        "seed_supported": true,
+        "supported_reasoning_efforts": [
+          "high",
+          "medium",
+          "low"
+        ],
+        "temperature_supported": false,
+        "zdr_eligible": true
+      },
+      "total_params_b": null
+    },
+    {
+      "access_class": "hosted",
+      "canonical_slug": "anthropic/claude-5-fable-20260609",
+      "expected_target_cost_usd_120": 3.9,
+      "family": "Claude 5",
+      "generation": {
+        "compatibility_lane": "provider-unseeded",
+        "max_tokens": 1024,
+        "reasoning_effort": "max",
+        "seed": null,
+        "temperature": 0.5,
+        "top_p": null
+      },
+      "hugging_face_id": null,
+      "identity_tier": "explicit-provider-snapshot",
+      "inclusion_basis": "hosted-anthropic-frontier-release",
+      "maximum_target_cost_usd_120": 8.544,
+      "model_id": "anthropic/claude-fable-5",
+      "name": "Anthropic: Claude Fable 5",
+      "pricing_usd_per_million": {
+        "input": 10.0,
+        "input_cache_read": 1.0,
+        "input_cache_write": 12.5,
+        "output": 50.0
+      },
+      "priority": 55,
+      "registry_id": "claude-fable-5",
+      "release_date": "2026-06-09",
+      "release_date_source": "project-frontier-registry",
+      "route": {
+        "endpoint_name": "Amazon Bedrock | anthropic/claude-5-fable-20260609",
+        "max_completion_tokens": 128000,
+        "pricing_overrides": [],
+        "provider_name": "Amazon Bedrock",
+        "provider_tag": "amazon-bedrock",
+        "quantization": "unknown",
+        "reasoning_effort_supported": true,
+        "seed_supported": false,
+        "supported_reasoning_efforts": [
+          "max",
+          "xhigh",
+          "high",
+          "medium",
+          "low"
+        ],
+        "temperature_supported": false,
+        "zdr_eligible": false
+      },
+      "total_params_b": null
+    },
+    {
+      "access_class": "hosted",
+      "canonical_slug": "openai/gpt-5.2-20251211",
+      "expected_target_cost_usd_120": 0.483,
+      "family": "GPT-5",
+      "generation": {
+        "compatibility_lane": "seeded",
+        "max_tokens": 1024,
+        "reasoning_effort": "xhigh",
+        "seed": 42,
+        "temperature": 0.5,
+        "top_p": null
+      },
+      "hugging_face_id": "",
+      "identity_tier": "explicit-provider-snapshot",
+      "inclusion_basis": "hosted-openai-frontier-release",
+      "maximum_target_cost_usd_120": 1.07016,
+      "model_id": "openai/gpt-5.2",
+      "name": "OpenAI: GPT-5.2",
+      "pricing_usd_per_million": {
+        "input": 0.875,
+        "input_cache_read": 0.0875,
+        "input_cache_write": 0.0,
+        "output": 7.0
+      },
+      "priority": 56,
+      "registry_id": "gpt-5-2",
+      "release_date": "2025-12-11",
+      "release_date_source": "project-frontier-registry",
+      "route": {
+        "endpoint_name": "OpenAI | openai/gpt-5.2-20251211",
+        "max_completion_tokens": 128000,
+        "pricing_overrides": [],
+        "provider_name": "OpenAI",
+        "provider_tag": "openai/flex",
+        "quantization": "unknown",
+        "reasoning_effort_supported": true,
+        "seed_supported": true,
+        "supported_reasoning_efforts": [
+          "xhigh",
+          "high",
+          "medium",
+          "low",
+          "none"
+        ],
+        "temperature_supported": false,
+        "zdr_eligible": false
+      },
+      "total_params_b": null
+    },
+    {
+      "access_class": "open-weight",
+      "canonical_slug": "deepseek/deepseek-v4-flash-20260731",
+      "expected_target_cost_usd_120": 0.024491999999999996,
+      "family": "DeepSeek V4",
+      "generation": {
+        "compatibility_lane": "seeded",
+        "max_tokens": 1024,
+        "reasoning_effort": "max",
+        "seed": 42,
+        "temperature": 0.5,
+        "top_p": 1.0
+      },
+      "hugging_face_id": "deepseek-ai/DeepSeek-V4-Flash-0731",
+      "identity_tier": "explicit-provider-snapshot",
+      "inclusion_basis": "open-weight-original-lab-total-parameters-ge-100b",
+      "maximum_target_cost_usd_120": 0.05312064,
+      "model_id": "deepseek/deepseek-v4-flash-0731",
+      "name": "DeepSeek: DeepSeek V4 Flash 0731",
+      "pricing_usd_per_million": {
+        "input": 0.079,
+        "input_cache_read": 0.02,
+        "input_cache_write": 0.0,
+        "output": 0.27799999999999997
+      },
+      "priority": 57,
+      "registry_id": "deepseek-v4-flash",
+      "release_date": "2026-04-24",
+      "release_date_source": "project-frontier-registry",
+      "route": {
+        "endpoint_name": "Morph | deepseek/deepseek-v4-flash-20260731",
+        "max_completion_tokens": 1048576,
+        "pricing_overrides": [],
+        "provider_name": "Morph",
+        "provider_tag": "morph/bf16",
+        "quantization": "bf16",
+        "reasoning_effort_supported": true,
+        "seed_supported": true,
+        "supported_reasoning_efforts": [
+          "max",
+          "high",
+          "low"
+        ],
+        "temperature_supported": true,
+        "zdr_eligible": true
+      },
+      "total_params_b": 284.0
+    },
+    {
+      "access_class": "open-weight",
+      "canonical_slug": "qwen/qwen3.5-122b-a10b-20260224",
+      "expected_target_cost_usd_120": 0.22079999999999997,
+      "family": "qwen",
+      "generation": {
+        "compatibility_lane": "seeded",
+        "max_tokens": 1024,
+        "reasoning_effort": null,
+        "seed": 42,
+        "temperature": 0.5,
+        "top_p": 1.0
+      },
+      "hugging_face_id": "Qwen/Qwen3.5-122B-A10B",
+      "identity_tier": "explicit-provider-snapshot",
+      "inclusion_basis": "open-weight-original-lab-total-parameters-ge-100b",
+      "maximum_target_cost_usd_120": 0.48921599999999993,
+      "model_id": "qwen/qwen3.5-122b-a10b",
+      "name": "Qwen: Qwen3.5-122B-A10B",
+      "pricing_usd_per_million": {
+        "input": 0.39999999999999997,
+        "input_cache_read": 0.0,
+        "input_cache_write": 0.0,
+        "output": 3.1999999999999997
+      },
+      "priority": 58,
+      "registry_id": null,
+      "release_date": "2026-02-25",
+      "release_date_source": "openrouter-model-created-at",
+      "route": {
+        "endpoint_name": "Novita | qwen/qwen3.5-122b-a10b-20260224",
+        "max_completion_tokens": 65536,
+        "pricing_overrides": [],
+        "provider_name": "Novita",
+        "provider_tag": "novita/bf16",
+        "quantization": "bf16",
+        "reasoning_effort_supported": false,
+        "seed_supported": true,
+        "supported_reasoning_efforts": [],
+        "temperature_supported": true,
+        "zdr_eligible": true
+      },
+      "total_params_b": 122.0
+    },
+    {
+      "access_class": "hosted",
+      "canonical_slug": "anthropic/claude-sonnet-5-20260630",
+      "expected_target_cost_usd_120": 0.78,
+      "family": "Claude 5",
+      "generation": {
+        "compatibility_lane": "provider-unseeded",
+        "max_tokens": 1024,
+        "reasoning_effort": "max",
+        "seed": null,
+        "temperature": 0.5,
+        "top_p": null
+      },
+      "hugging_face_id": null,
+      "identity_tier": "explicit-provider-snapshot",
+      "inclusion_basis": "hosted-anthropic-frontier-release",
+      "maximum_target_cost_usd_120": 1.7088,
+      "model_id": "anthropic/claude-sonnet-5",
+      "name": "Anthropic: Claude Sonnet 5",
+      "pricing_usd_per_million": {
+        "input": 2.0,
+        "input_cache_read": 0.19999999999999998,
+        "input_cache_write": 2.5,
+        "output": 10.0
+      },
+      "priority": 59,
+      "registry_id": "claude-sonnet-5",
+      "release_date": "2026-06-30",
+      "release_date_source": "project-frontier-registry",
+      "route": {
+        "endpoint_name": "Amazon Bedrock | anthropic/claude-sonnet-5-20260630",
+        "max_completion_tokens": 128000,
+        "pricing_overrides": [],
+        "provider_name": "Amazon Bedrock",
+        "provider_tag": "amazon-bedrock/global",
+        "quantization": "unknown",
+        "reasoning_effort_supported": true,
+        "seed_supported": false,
+        "supported_reasoning_efforts": [
+          "max",
+          "xhigh",
+          "high",
+          "medium",
+          "low"
+        ],
+        "temperature_supported": false,
+        "zdr_eligible": true
+      },
+      "total_params_b": null
+    },
+    {
+      "access_class": "hosted",
       "canonical_slug": "openai/gpt-5.4-20260305",
       "expected_target_cost_usd_120": 0.555,
       "family": "GPT-5",
@@ -2362,6 +3093,7 @@
         "top_p": null
       },
       "hugging_face_id": "",
+      "identity_tier": "explicit-provider-snapshot",
       "inclusion_basis": "hosted-openai-frontier-release",
       "maximum_target_cost_usd_120": 1.2216,
       "model_id": "openai/gpt-5.4",
@@ -2372,9 +3104,10 @@
         "input_cache_write": 0.0,
         "output": 7.5
       },
-      "priority": 49,
+      "priority": 60,
       "registry_id": "gpt-5-4",
       "release_date": "2026-03-05",
+      "release_date_source": "project-frontier-registry",
       "route": {
         "endpoint_name": "OpenAI | openai/gpt-5.4-20260305",
         "max_completion_tokens": 128000,
@@ -2405,472 +3138,6 @@
     },
     {
       "access_class": "open-weight",
-      "canonical_slug": "qwen/qwen3.5-397b-a17b-20260216",
-      "expected_target_cost_usd_120": 0.2544,
-      "family": "Qwen 3.5",
-      "generation": {
-        "compatibility_lane": "seeded",
-        "max_tokens": 1024,
-        "reasoning_effort": null,
-        "seed": 42,
-        "temperature": 0.5,
-        "top_p": 1.0
-      },
-      "hugging_face_id": "Qwen/Qwen3.5-397B-A17B",
-      "inclusion_basis": "open-weight-original-lab-total-parameters-ge-100b",
-      "maximum_target_cost_usd_120": 0.562368,
-      "model_id": "qwen/qwen3.5-397b-a17b",
-      "name": "Qwen: Qwen3.5 397B A17B",
-      "pricing_usd_per_million": {
-        "input": 0.5,
-        "input_cache_read": 0.3,
-        "input_cache_write": 0.0,
-        "output": 3.5999999999999996
-      },
-      "priority": 50,
-      "registry_id": "qwen3-5-397b-a17b",
-      "release_date": "2026-02-16",
-      "route": {
-        "endpoint_name": "Parasail | qwen/qwen3.5-397b-a17b-20260216",
-        "max_completion_tokens": 262144,
-        "pricing_overrides": [],
-        "provider_name": "Parasail",
-        "provider_tag": "parasail/fp8",
-        "quantization": "fp8",
-        "reasoning_effort_supported": false,
-        "seed_supported": true,
-        "supported_reasoning_efforts": [],
-        "temperature_supported": true,
-        "zdr_eligible": true
-      },
-      "total_params_b": 397.0
-    },
-    {
-      "access_class": "hosted",
-      "canonical_slug": "x-ai/grok-4.20-20260309",
-      "expected_target_cost_usd_120": 0.285,
-      "family": "x-ai",
-      "generation": {
-        "compatibility_lane": "seeded",
-        "max_tokens": 1024,
-        "reasoning_effort": null,
-        "seed": 42,
-        "temperature": 0.5,
-        "top_p": 1.0
-      },
-      "hugging_face_id": "",
-      "inclusion_basis": "hosted-x-ai-frontier-release",
-      "maximum_target_cost_usd_120": 0.6072,
-      "model_id": "x-ai/grok-4.20",
-      "name": "SpaceXAI: Grok 4.20",
-      "pricing_usd_per_million": {
-        "input": 1.25,
-        "input_cache_read": 0.19999999999999998,
-        "input_cache_write": 0.0,
-        "output": 2.5
-      },
-      "priority": 51,
-      "registry_id": null,
-      "release_date": "2026-03-31",
-      "route": {
-        "endpoint_name": "xAI | x-ai/grok-4.20-20260309",
-        "max_completion_tokens": null,
-        "pricing_overrides": [
-          {
-            "completion": "0.000005",
-            "input_cache_read": "0.0000004",
-            "min_prompt_tokens": 200000,
-            "prompt": "0.0000025"
-          }
-        ],
-        "provider_name": "xAI",
-        "provider_tag": "xai/zdr",
-        "quantization": "unknown",
-        "reasoning_effort_supported": false,
-        "seed_supported": true,
-        "supported_reasoning_efforts": [],
-        "temperature_supported": true,
-        "zdr_eligible": true
-      },
-      "total_params_b": null
-    },
-    {
-      "access_class": "open-weight",
-      "canonical_slug": "qwen/qwen3.5-122b-a10b-20260224",
-      "expected_target_cost_usd_120": 0.22079999999999997,
-      "family": "qwen",
-      "generation": {
-        "compatibility_lane": "seeded",
-        "max_tokens": 1024,
-        "reasoning_effort": null,
-        "seed": 42,
-        "temperature": 0.5,
-        "top_p": 1.0
-      },
-      "hugging_face_id": "Qwen/Qwen3.5-122B-A10B",
-      "inclusion_basis": "open-weight-original-lab-total-parameters-ge-100b",
-      "maximum_target_cost_usd_120": 0.48921599999999993,
-      "model_id": "qwen/qwen3.5-122b-a10b",
-      "name": "Qwen: Qwen3.5-122B-A10B",
-      "pricing_usd_per_million": {
-        "input": 0.39999999999999997,
-        "input_cache_read": 0.0,
-        "input_cache_write": 0.0,
-        "output": 3.1999999999999997
-      },
-      "priority": 52,
-      "registry_id": null,
-      "release_date": "2026-02-25",
-      "route": {
-        "endpoint_name": "Novita | qwen/qwen3.5-122b-a10b-20260224",
-        "max_completion_tokens": 65536,
-        "pricing_overrides": [],
-        "provider_name": "Novita",
-        "provider_tag": "novita/bf16",
-        "quantization": "bf16",
-        "reasoning_effort_supported": false,
-        "seed_supported": true,
-        "supported_reasoning_efforts": [],
-        "temperature_supported": true,
-        "zdr_eligible": true
-      },
-      "total_params_b": 122.0
-    },
-    {
-      "access_class": "hosted",
-      "canonical_slug": "x-ai/grok-4.3-20260430",
-      "expected_target_cost_usd_120": 0.285,
-      "family": "x-ai",
-      "generation": {
-        "compatibility_lane": "seeded",
-        "max_tokens": 1024,
-        "reasoning_effort": "high",
-        "seed": 42,
-        "temperature": 0.5,
-        "top_p": 1.0
-      },
-      "hugging_face_id": null,
-      "inclusion_basis": "hosted-x-ai-frontier-release",
-      "maximum_target_cost_usd_120": 0.6072,
-      "model_id": "x-ai/grok-4.3",
-      "name": "SpaceXAI: Grok 4.3",
-      "pricing_usd_per_million": {
-        "input": 1.25,
-        "input_cache_read": 0.19999999999999998,
-        "input_cache_write": 0.0,
-        "output": 2.5
-      },
-      "priority": 53,
-      "registry_id": null,
-      "release_date": "2026-04-30",
-      "route": {
-        "endpoint_name": "xAI | x-ai/grok-4.3-20260430",
-        "max_completion_tokens": null,
-        "pricing_overrides": [
-          {
-            "completion": "0.000005",
-            "input_cache_read": "0.0000004",
-            "min_prompt_tokens": 200000,
-            "prompt": "0.0000025"
-          }
-        ],
-        "provider_name": "xAI",
-        "provider_tag": "xai/zdr",
-        "quantization": "unknown",
-        "reasoning_effort_supported": true,
-        "seed_supported": true,
-        "supported_reasoning_efforts": [
-          "high",
-          "medium",
-          "low",
-          "none"
-        ],
-        "temperature_supported": true,
-        "zdr_eligible": true
-      },
-      "total_params_b": null
-    },
-    {
-      "access_class": "open-weight",
-      "canonical_slug": "nvidia/nemotron-3-super-120b-a12b-20230311",
-      "expected_target_cost_usd_120": 0.031799999999999995,
-      "family": "nvidia",
-      "generation": {
-        "compatibility_lane": "seeded",
-        "max_tokens": 1024,
-        "reasoning_effort": "medium",
-        "seed": 42,
-        "temperature": 0.5,
-        "top_p": 1.0
-      },
-      "hugging_face_id": "nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-FP8",
-      "inclusion_basis": "open-weight-original-lab-total-parameters-ge-100b",
-      "maximum_target_cost_usd_120": 0.06955199999999999,
-      "model_id": "nvidia/nemotron-3-super-120b-a12b",
-      "name": "NVIDIA: Nemotron 3 Super",
-      "pricing_usd_per_million": {
-        "input": 0.08499999999999999,
-        "input_cache_read": 0.0,
-        "input_cache_write": 0.0,
-        "output": 0.39999999999999997
-      },
-      "priority": 54,
-      "registry_id": null,
-      "release_date": "2026-03-11",
-      "route": {
-        "endpoint_name": "DeepInfra | nvidia/nemotron-3-super-120b-a12b-20230311",
-        "max_completion_tokens": 16384,
-        "pricing_overrides": [],
-        "provider_name": "DeepInfra",
-        "provider_tag": "deepinfra/bf16",
-        "quantization": "bf16",
-        "reasoning_effort_supported": true,
-        "seed_supported": true,
-        "supported_reasoning_efforts": [
-          "medium",
-          "low"
-        ],
-        "temperature_supported": true,
-        "zdr_eligible": true
-      },
-      "total_params_b": 120.0
-    },
-    {
-      "access_class": "hosted",
-      "canonical_slug": "google/gemini-3.5-flash-20260519",
-      "expected_target_cost_usd_120": 0.333,
-      "family": "google",
-      "generation": {
-        "compatibility_lane": "seeded",
-        "max_tokens": 1024,
-        "reasoning_effort": "high",
-        "seed": 42,
-        "temperature": 0.5,
-        "top_p": 1.0
-      },
-      "hugging_face_id": null,
-      "inclusion_basis": "hosted-google-frontier-release",
-      "maximum_target_cost_usd_120": 0.73296,
-      "model_id": "google/gemini-3.5-flash",
-      "name": "Google: Gemini 3.5 Flash",
-      "pricing_usd_per_million": {
-        "input": 0.75,
-        "input_cache_read": 0.075,
-        "input_cache_write": 0.0416666666666667,
-        "output": 4.5
-      },
-      "priority": 55,
-      "registry_id": null,
-      "release_date": "2026-05-19",
-      "route": {
-        "endpoint_name": "Google | google/gemini-3.5-flash-20260519",
-        "max_completion_tokens": 65536,
-        "pricing_overrides": [],
-        "provider_name": "Google",
-        "provider_tag": "google-vertex/global/flex",
-        "quantization": "unknown",
-        "reasoning_effort_supported": true,
-        "seed_supported": true,
-        "supported_reasoning_efforts": [
-          "high",
-          "medium",
-          "low",
-          "minimal"
-        ],
-        "temperature_supported": true,
-        "zdr_eligible": true
-      },
-      "total_params_b": null
-    },
-    {
-      "access_class": "open-weight",
-      "canonical_slug": "deepseek/deepseek-v4-flash-20260731",
-      "expected_target_cost_usd_120": 0.024491999999999996,
-      "family": "DeepSeek V4",
-      "generation": {
-        "compatibility_lane": "seeded",
-        "max_tokens": 1024,
-        "reasoning_effort": "max",
-        "seed": 42,
-        "temperature": 0.5,
-        "top_p": 1.0
-      },
-      "hugging_face_id": "deepseek-ai/DeepSeek-V4-Flash-0731",
-      "inclusion_basis": "open-weight-original-lab-total-parameters-ge-100b",
-      "maximum_target_cost_usd_120": 0.05312064,
-      "model_id": "deepseek/deepseek-v4-flash-0731",
-      "name": "DeepSeek: DeepSeek V4 Flash 0731",
-      "pricing_usd_per_million": {
-        "input": 0.079,
-        "input_cache_read": 0.02,
-        "input_cache_write": 0.0,
-        "output": 0.27799999999999997
-      },
-      "priority": 56,
-      "registry_id": "deepseek-v4-flash",
-      "release_date": "2026-04-24",
-      "route": {
-        "endpoint_name": "Morph | deepseek/deepseek-v4-flash-20260731",
-        "max_completion_tokens": 1048576,
-        "pricing_overrides": [],
-        "provider_name": "Morph",
-        "provider_tag": "morph/bf16",
-        "quantization": "bf16",
-        "reasoning_effort_supported": true,
-        "seed_supported": true,
-        "supported_reasoning_efforts": [
-          "max",
-          "high",
-          "low"
-        ],
-        "temperature_supported": true,
-        "zdr_eligible": true
-      },
-      "total_params_b": 284.0
-    },
-    {
-      "access_class": "hosted",
-      "canonical_slug": "anthropic/claude-4.8-opus-20260528",
-      "expected_target_cost_usd_120": 1.95,
-      "family": "anthropic",
-      "generation": {
-        "compatibility_lane": "provider-unseeded",
-        "max_tokens": 1024,
-        "reasoning_effort": "max",
-        "seed": null,
-        "temperature": 0.5,
-        "top_p": null
-      },
-      "hugging_face_id": null,
-      "inclusion_basis": "hosted-anthropic-frontier-release",
-      "maximum_target_cost_usd_120": 4.272,
-      "model_id": "anthropic/claude-opus-4.8",
-      "name": "Anthropic: Claude Opus 4.8",
-      "pricing_usd_per_million": {
-        "input": 5.0,
-        "input_cache_read": 0.5,
-        "input_cache_write": 6.25,
-        "output": 25.0
-      },
-      "priority": 57,
-      "registry_id": null,
-      "release_date": "2026-05-27",
-      "route": {
-        "endpoint_name": "Amazon Bedrock | anthropic/claude-4.8-opus-20260528",
-        "max_completion_tokens": 128000,
-        "pricing_overrides": [],
-        "provider_name": "Amazon Bedrock",
-        "provider_tag": "amazon-bedrock",
-        "quantization": "unknown",
-        "reasoning_effort_supported": true,
-        "seed_supported": false,
-        "supported_reasoning_efforts": [
-          "max",
-          "xhigh",
-          "high",
-          "medium",
-          "low"
-        ],
-        "temperature_supported": false,
-        "zdr_eligible": true
-      },
-      "total_params_b": null
-    },
-    {
-      "access_class": "open-weight",
-      "canonical_slug": "deepseek/deepseek-v4-flash-20260423",
-      "expected_target_cost_usd_120": 0.03072,
-      "family": "deepseek",
-      "generation": {
-        "compatibility_lane": "provider-unseeded",
-        "max_tokens": 1024,
-        "reasoning_effort": "xhigh",
-        "seed": null,
-        "temperature": 0.5,
-        "top_p": 1.0
-      },
-      "hugging_face_id": "deepseek-ai/DeepSeek-V4-Flash",
-      "inclusion_basis": "open-weight-original-lab-total-parameters-ge-100b",
-      "maximum_target_cost_usd_120": 0.06560640000000001,
-      "model_id": "deepseek/deepseek-v4-flash",
-      "name": "DeepSeek: DeepSeek V4 Flash 0423",
-      "pricing_usd_per_million": {
-        "input": 0.13,
-        "input_cache_read": 0.028,
-        "input_cache_write": 0.0,
-        "output": 0.28
-      },
-      "priority": 58,
-      "registry_id": null,
-      "release_date": "2026-04-24",
-      "route": {
-        "endpoint_name": "SiliconFlow | deepseek/deepseek-v4-flash-20260423",
-        "max_completion_tokens": 393216,
-        "pricing_overrides": [],
-        "provider_name": "SiliconFlow",
-        "provider_tag": "siliconflow/fp8",
-        "quantization": "fp8",
-        "reasoning_effort_supported": true,
-        "seed_supported": false,
-        "supported_reasoning_efforts": [
-          "xhigh",
-          "high"
-        ],
-        "temperature_supported": true,
-        "zdr_eligible": true
-      },
-      "total_params_b": 284.0
-    },
-    {
-      "access_class": "hosted",
-      "canonical_slug": "anthropic/claude-5-fable-20260609",
-      "expected_target_cost_usd_120": 3.9,
-      "family": "Claude 5",
-      "generation": {
-        "compatibility_lane": "provider-unseeded",
-        "max_tokens": 1024,
-        "reasoning_effort": "max",
-        "seed": null,
-        "temperature": 0.5,
-        "top_p": null
-      },
-      "hugging_face_id": null,
-      "inclusion_basis": "hosted-anthropic-frontier-release",
-      "maximum_target_cost_usd_120": 8.544,
-      "model_id": "anthropic/claude-fable-5",
-      "name": "Anthropic: Claude Fable 5",
-      "pricing_usd_per_million": {
-        "input": 10.0,
-        "input_cache_read": 1.0,
-        "input_cache_write": 12.5,
-        "output": 50.0
-      },
-      "priority": 59,
-      "registry_id": "claude-fable-5",
-      "release_date": "2026-06-09",
-      "route": {
-        "endpoint_name": "Amazon Bedrock | anthropic/claude-5-fable-20260609",
-        "max_completion_tokens": 128000,
-        "pricing_overrides": [],
-        "provider_name": "Amazon Bedrock",
-        "provider_tag": "amazon-bedrock",
-        "quantization": "unknown",
-        "reasoning_effort_supported": true,
-        "seed_supported": false,
-        "supported_reasoning_efforts": [
-          "max",
-          "xhigh",
-          "high",
-          "medium",
-          "low"
-        ],
-        "temperature_supported": false,
-        "zdr_eligible": false
-      },
-      "total_params_b": null
-    },
-    {
-      "access_class": "open-weight",
       "canonical_slug": "deepseek/deepseek-v4-pro-20260423",
       "expected_target_cost_usd_120": 0.2757,
       "family": "DeepSeek V4",
@@ -2883,6 +3150,7 @@
         "top_p": 1.0
       },
       "hugging_face_id": "deepseek-ai/DeepSeek-V4-Pro",
+      "identity_tier": "explicit-provider-snapshot",
       "inclusion_basis": "open-weight-original-lab-total-parameters-ge-100b",
       "maximum_target_cost_usd_120": 0.5893440000000001,
       "model_id": "deepseek/deepseek-v4-pro",
@@ -2893,9 +3161,10 @@
         "input_cache_write": 0.0,
         "output": 2.5500000000000003
       },
-      "priority": 60,
+      "priority": 61,
       "registry_id": "deepseek-v4-pro",
       "release_date": "2026-04-24",
+      "release_date_source": "project-frontier-registry",
       "route": {
         "endpoint_name": "CoreWeave | deepseek/deepseek-v4-pro-20260423",
         "max_completion_tokens": 1048576,
@@ -2915,9 +3184,57 @@
       "total_params_b": 1600.0
     },
     {
+      "access_class": "open-weight",
+      "canonical_slug": "qwen/qwen3.8-2.4t-a95b-20260812",
+      "expected_target_cost_usd_120": 0.564,
+      "family": "qwen",
+      "generation": {
+        "compatibility_lane": "provider-unseeded",
+        "max_tokens": 1024,
+        "reasoning_effort": "xhigh",
+        "seed": null,
+        "temperature": 0.5,
+        "top_p": 1.0
+      },
+      "hugging_face_id": "Qwen/Qwen3.8-2.4T-A95B",
+      "identity_tier": "explicit-provider-snapshot",
+      "inclusion_basis": "open-weight-original-lab-total-parameters-ge-100b",
+      "maximum_target_cost_usd_120": 1.21728,
+      "model_id": "qwen/qwen3.8-2.4t-a95b",
+      "name": "Qwen: Qwen3.8 2.4T A95B",
+      "pricing_usd_per_million": {
+        "input": 2.0,
+        "input_cache_read": 0.25,
+        "input_cache_write": 0.0,
+        "output": 6.0
+      },
+      "priority": 62,
+      "registry_id": null,
+      "release_date": "2026-08-12",
+      "release_date_source": "openrouter-model-created-at",
+      "route": {
+        "endpoint_name": "SiliconFlow | qwen/qwen3.8-2.4t-a95b-20260812",
+        "max_completion_tokens": 131072,
+        "pricing_overrides": [],
+        "provider_name": "SiliconFlow",
+        "provider_tag": "siliconflow/fp8",
+        "quantization": "fp8",
+        "reasoning_effort_supported": true,
+        "seed_supported": false,
+        "supported_reasoning_efforts": [
+          "xhigh",
+          "medium",
+          "low"
+        ],
+        "temperature_supported": true,
+        "zdr_eligible": true
+      },
+      "total_params_b": 2400.0
+    },
+    {
       "access_class": "hosted",
-      "canonical_slug": "anthropic/claude-sonnet-5-20260630",
-      "expected_target_cost_usd_120": 0.78,
+      "canonical_slug": "anthropic/claude-opus-5-20260723",
+      "expected_target_cost_usd_120": 1.95,
       "family": "Claude 5",
       "generation": {
         "compatibility_lane": "provider-unseeded",
@@ -2928,25 +3245,27 @@
         "top_p": null
       },
       "hugging_face_id": null,
+      "identity_tier": "explicit-provider-snapshot",
       "inclusion_basis": "hosted-anthropic-frontier-release",
-      "maximum_target_cost_usd_120": 1.7088,
-      "model_id": "anthropic/claude-sonnet-5",
-      "name": "Anthropic: Claude Sonnet 5",
+      "maximum_target_cost_usd_120": 4.272,
+      "model_id": "anthropic/claude-opus-5",
+      "name": "Claude Opus 5",
       "pricing_usd_per_million": {
-        "input": 2.0,
-        "input_cache_read": 0.19999999999999998,
-        "input_cache_write": 2.5,
-        "output": 10.0
+        "input": 5.0,
+        "input_cache_read": 0.5,
+        "input_cache_write": 6.25,
+        "output": 25.0
       },
-      "priority": 61,
-      "registry_id": "claude-sonnet-5",
-      "release_date": "2026-06-30",
+      "priority": 63,
+      "registry_id": "claude-opus-5",
+      "release_date": "2026-07-24",
+      "release_date_source": "project-frontier-registry",
       "route": {
-        "endpoint_name": "Amazon Bedrock | anthropic/claude-sonnet-5-20260630",
+        "endpoint_name": "Amazon Bedrock | anthropic/claude-opus-5-20260723",
         "max_completion_tokens": 128000,
         "pricing_overrides": [],
         "provider_name": "Amazon Bedrock",
-        "provider_tag": "amazon-bedrock/global",
+        "provider_tag": "amazon-bedrock",
         "quantization": "unknown",
         "reasoning_effort_supported": true,
         "seed_supported": false,
@@ -2963,48 +3282,6 @@
       "total_params_b": null
     },
     {
-      "access_class": "open-weight",
-      "canonical_slug": "minimax/minimax-m3-20260531",
-      "expected_target_cost_usd_120": 0.093,
-      "family": "MiniMax M3",
-      "generation": {
-        "compatibility_lane": "seeded",
-        "max_tokens": 1024,
-        "reasoning_effort": null,
-        "seed": 42,
-        "temperature": 0.5,
-        "top_p": 1.0
-      },
-      "hugging_face_id": "MiniMaxAI/Minimax-M3",
-      "inclusion_basis": "open-weight-original-lab-total-parameters-ge-100b",
-      "maximum_target_cost_usd_120": 0.202368,
-      "model_id": "minimax/minimax-m3",
-      "name": "MiniMax: MiniMax M3",
-      "pricing_usd_per_million": {
-        "input": 0.28,
-        "input_cache_read": 0.056,
-        "input_cache_write": 0.0,
-        "output": 1.1
-      },
-      "priority": 62,
-      "registry_id": "minimax-m3",
-      "release_date": "2026-05-31",
-      "route": {
-        "endpoint_name": "DeepInfra | minimax/minimax-m3-20260531",
-        "max_completion_tokens": 512000,
-        "pricing_overrides": [],
-        "provider_name": "DeepInfra",
-        "provider_tag": "deepinfra/fp8",
-        "quantization": "fp8",
-        "reasoning_effort_supported": false,
-        "seed_supported": true,
-        "supported_reasoning_efforts": [],
-        "temperature_supported": true,
-        "zdr_eligible": true
-      },
-      "total_params_b": 428.0
-    },
-    {
       "access_class": "hosted",
       "canonical_slug": "openai/gpt-5.6-luna-20260709",
       "expected_target_cost_usd_120": 0.0444,
@@ -3018,6 +3295,7 @@
         "top_p": null
       },
       "hugging_face_id": null,
+      "identity_tier": "explicit-provider-snapshot",
       "inclusion_basis": "hosted-openai-frontier-release",
       "maximum_target_cost_usd_120": 0.097728,
       "model_id": "openai/gpt-5.6-luna",
@@ -3028,9 +3306,10 @@
         "input_cache_write": 0.125,
         "output": 0.6
       },
-      "priority": 63,
+      "priority": 64,
       "registry_id": "gpt-5-6-luna",
       "release_date": "2026-07-09",
+      "release_date_source": "project-frontier-registry",
       "route": {
         "endpoint_name": "OpenAI | openai/gpt-5.6-luna-20260709",
         "max_completion_tokens": 128000,
@@ -3062,51 +3341,6 @@
       "total_params_b": null
     },
     {
-      "access_class": "open-weight",
-      "canonical_slug": "nvidia/nemotron-3-ultra-550b-a55b-20260604",
-      "expected_target_cost_usd_120": 0.24375,
-      "family": "nvidia",
-      "generation": {
-        "compatibility_lane": "provider-unseeded",
-        "max_tokens": 1024,
-        "reasoning_effort": "high",
-        "seed": null,
-        "temperature": 0.5,
-        "top_p": 1.0
-      },
-      "hugging_face_id": "nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-BF16",
-      "inclusion_basis": "open-weight-original-lab-total-parameters-ge-100b",
-      "maximum_target_cost_usd_120": 0.534,
-      "model_id": "nvidia/nemotron-3-ultra-550b-a55b",
-      "name": "NVIDIA: Nemotron 3 Ultra",
-      "pricing_usd_per_million": {
-        "input": 0.625,
-        "input_cache_read": 0.1875,
-        "input_cache_write": 0.0,
-        "output": 3.125
-      },
-      "priority": 64,
-      "registry_id": null,
-      "release_date": "2026-06-04",
-      "route": {
-        "endpoint_name": "Venice | nvidia/nemotron-3-ultra-550b-a55b-20260604",
-        "max_completion_tokens": 32768,
-        "pricing_overrides": [],
-        "provider_name": "Venice",
-        "provider_tag": "venice/fp8",
-        "quantization": "fp8",
-        "reasoning_effort_supported": true,
-        "seed_supported": false,
-        "supported_reasoning_efforts": [
-          "high",
-          "medium"
-        ],
-        "temperature_supported": true,
-        "zdr_eligible": true
-      },
-      "total_params_b": 550.0
-    },
-    {
       "access_class": "hosted",
       "canonical_slug": "openai/gpt-5.6-sol-20260709",
       "expected_target_cost_usd_120": 0.39,
@@ -3120,6 +3354,7 @@
         "top_p": null
       },
       "hugging_face_id": null,
+      "identity_tier": "explicit-provider-snapshot",
       "inclusion_basis": "hosted-openai-frontier-release",
       "maximum_target_cost_usd_120": 0.8544,
       "model_id": "openai/gpt-5.6-sol",
@@ -3133,6 +3368,7 @@
       "priority": 65,
       "registry_id": "gpt-5-6-sol",
       "release_date": "2026-07-09",
+      "release_date_source": "project-frontier-registry",
       "route": {
         "endpoint_name": "OpenAI | openai/gpt-5.6-sol-20260709",
         "max_completion_tokens": 128000,
@@ -3164,48 +3400,6 @@
       "total_params_b": null
     },
     {
-      "access_class": "open-weight",
-      "canonical_slug": "nex-agi/nex-n2-pro",
-      "expected_target_cost_usd_120": 0.195,
-      "family": "nex-agi",
-      "generation": {
-        "compatibility_lane": "provider-unseeded",
-        "max_tokens": 1024,
-        "reasoning_effort": null,
-        "seed": null,
-        "temperature": 0.5,
-        "top_p": 1.0
-      },
-      "hugging_face_id": "nex-agi/Nex-N2-Pro",
-      "inclusion_basis": "open-weight-original-lab-total-parameters-ge-100b",
-      "maximum_target_cost_usd_120": 0.4272,
-      "model_id": "nex-agi/nex-n2-pro",
-      "name": "Nex AGI: Nex-N2-Pro",
-      "pricing_usd_per_million": {
-        "input": 0.5,
-        "input_cache_read": 0.25,
-        "input_cache_write": 0.0,
-        "output": 2.5
-      },
-      "priority": 66,
-      "registry_id": null,
-      "release_date": "2026-06-08",
-      "route": {
-        "endpoint_name": "SiliconFlow | nex-agi/nex-n2-pro",
-        "max_completion_tokens": 256000,
-        "pricing_overrides": [],
-        "provider_name": "SiliconFlow",
-        "provider_tag": "siliconflow",
-        "quantization": "unknown",
-        "reasoning_effort_supported": false,
-        "seed_supported": false,
-        "supported_reasoning_efforts": [],
-        "temperature_supported": true,
-        "zdr_eligible": true
-      },
-      "total_params_b": 397.0
-    },
-    {
       "access_class": "hosted",
       "canonical_slug": "openai/gpt-5.6-terra-20260709",
       "expected_target_cost_usd_120": 0.444,
@@ -3219,6 +3413,7 @@
         "top_p": null
       },
       "hugging_face_id": null,
+      "identity_tier": "explicit-provider-snapshot",
       "inclusion_basis": "hosted-openai-frontier-release",
       "maximum_target_cost_usd_120": 0.97728,
       "model_id": "openai/gpt-5.6-terra",
@@ -3229,9 +3424,10 @@
         "input_cache_write": 1.25,
         "output": 6.0
       },
-      "priority": 67,
+      "priority": 66,
       "registry_id": "gpt-5-6-terra",
       "release_date": "2026-07-09",
+      "release_date_source": "project-frontier-registry",
       "route": {
         "endpoint_name": "OpenAI | openai/gpt-5.6-terra-20260709",
         "max_completion_tokens": 128000,
@@ -3259,486 +3455,6 @@
         ],
         "temperature_supported": false,
         "zdr_eligible": false
-      },
-      "total_params_b": null
-    },
-    {
-      "access_class": "open-weight",
-      "canonical_slug": "thinkingmachines/inkling-20260715",
-      "expected_target_cost_usd_120": 0.3327,
-      "family": "thinkingmachines",
-      "generation": {
-        "compatibility_lane": "seeded",
-        "max_tokens": 1024,
-        "reasoning_effort": "max",
-        "seed": 42,
-        "temperature": 0.5,
-        "top_p": 1.0
-      },
-      "hugging_face_id": "thinkingmachines/Inkling",
-      "inclusion_basis": "open-weight-original-lab-total-parameters-ge-100b",
-      "maximum_target_cost_usd_120": 0.725664,
-      "model_id": "thinkingmachines/inkling",
-      "name": "Thinking Machines: Inkling",
-      "pricing_usd_per_million": {
-        "input": 0.95,
-        "input_cache_read": 0.16,
-        "input_cache_write": 0.0,
-        "output": 4.05
-      },
-      "priority": 68,
-      "registry_id": null,
-      "release_date": "2026-07-17",
-      "route": {
-        "endpoint_name": "DeepInfra | thinkingmachines/inkling-20260715",
-        "max_completion_tokens": 262144,
-        "pricing_overrides": [],
-        "provider_name": "DeepInfra",
-        "provider_tag": "deepinfra/fp8",
-        "quantization": "fp8",
-        "reasoning_effort_supported": true,
-        "seed_supported": true,
-        "supported_reasoning_efforts": [
-          "max",
-          "high",
-          "medium",
-          "low",
-          "minimal",
-          "none"
-        ],
-        "temperature_supported": true,
-        "zdr_eligible": true
-      },
-      "total_params_b": 975.0
-    },
-    {
-      "access_class": "hosted",
-      "canonical_slug": "x-ai/grok-4.5-20260708",
-      "expected_target_cost_usd_120": 0.564,
-      "family": "Grok 4",
-      "generation": {
-        "compatibility_lane": "seeded",
-        "max_tokens": 1024,
-        "reasoning_effort": "high",
-        "seed": 42,
-        "temperature": 0.5,
-        "top_p": 1.0
-      },
-      "hugging_face_id": null,
-      "inclusion_basis": "hosted-x-ai-frontier-release",
-      "maximum_target_cost_usd_120": 1.21728,
-      "model_id": "x-ai/grok-4.5",
-      "name": "SpaceXAI: Grok 4.5",
-      "pricing_usd_per_million": {
-        "input": 2.0,
-        "input_cache_read": 0.3,
-        "input_cache_write": 0.0,
-        "output": 6.0
-      },
-      "priority": 69,
-      "registry_id": "grok-4-5",
-      "release_date": "2026-07-16",
-      "route": {
-        "endpoint_name": "xAI | x-ai/grok-4.5-20260708",
-        "max_completion_tokens": null,
-        "pricing_overrides": [
-          {
-            "completion": "0.000012",
-            "input_cache_read": "0.0000006",
-            "min_prompt_tokens": 200000,
-            "prompt": "0.000004"
-          }
-        ],
-        "provider_name": "xAI",
-        "provider_tag": "xai/zdr",
-        "quantization": "unknown",
-        "reasoning_effort_supported": true,
-        "seed_supported": true,
-        "supported_reasoning_efforts": [
-          "high",
-          "medium",
-          "low"
-        ],
-        "temperature_supported": true,
-        "zdr_eligible": true
-      },
-      "total_params_b": null
-    },
-    {
-      "access_class": "open-weight",
-      "canonical_slug": "meituan/longcat-2.0-20260720",
-      "expected_target_cost_usd_120": 0.1008,
-      "family": "meituan",
-      "generation": {
-        "compatibility_lane": "seeded",
-        "max_tokens": 1024,
-        "reasoning_effort": null,
-        "seed": 42,
-        "temperature": 0.5,
-        "top_p": 1.0
-      },
-      "hugging_face_id": "meituan-longcat/LongCat-2.0",
-      "inclusion_basis": "open-weight-original-lab-total-parameters-ge-100b",
-      "maximum_target_cost_usd_120": 0.219456,
-      "model_id": "meituan/longcat-2.0",
-      "name": "Meituan: LongCat 2.0",
-      "pricing_usd_per_million": {
-        "input": 0.3,
-        "input_cache_read": 0.006,
-        "input_cache_write": 0.0,
-        "output": 1.2
-      },
-      "priority": 70,
-      "registry_id": null,
-      "release_date": "2026-07-20",
-      "route": {
-        "endpoint_name": "AtlasCloud | meituan/longcat-2.0-20260720",
-        "max_completion_tokens": 262144,
-        "pricing_overrides": [],
-        "provider_name": "AtlasCloud",
-        "provider_tag": "atlas-cloud/fp8",
-        "quantization": "fp8",
-        "reasoning_effort_supported": false,
-        "seed_supported": true,
-        "supported_reasoning_efforts": [],
-        "temperature_supported": true,
-        "zdr_eligible": false
-      },
-      "total_params_b": 1600.0
-    },
-    {
-      "access_class": "hosted",
-      "canonical_slug": "google/gemini-3.6-flash-20260721",
-      "expected_target_cost_usd_120": 0.14625,
-      "family": "Gemini 3.6",
-      "generation": {
-        "compatibility_lane": "seeded",
-        "max_tokens": 1024,
-        "reasoning_effort": "high",
-        "seed": 42,
-        "temperature": 0.5,
-        "top_p": null
-      },
-      "hugging_face_id": null,
-      "inclusion_basis": "hosted-google-frontier-release",
-      "maximum_target_cost_usd_120": 0.3204,
-      "model_id": "google/gemini-3.6-flash",
-      "name": "Google: Gemini 3.6 Flash",
-      "pricing_usd_per_million": {
-        "input": 0.375,
-        "input_cache_read": 0.0375,
-        "input_cache_write": 0.0208333333333333,
-        "output": 1.875
-      },
-      "priority": 71,
-      "registry_id": "gemini-3-6-flash",
-      "release_date": "2026-07-21",
-      "route": {
-        "endpoint_name": "Google | google/gemini-3.6-flash-20260721",
-        "max_completion_tokens": 65536,
-        "pricing_overrides": [],
-        "provider_name": "Google",
-        "provider_tag": "google-vertex/global/flex",
-        "quantization": "unknown",
-        "reasoning_effort_supported": true,
-        "seed_supported": true,
-        "supported_reasoning_efforts": [
-          "high",
-          "medium",
-          "low",
-          "minimal"
-        ],
-        "temperature_supported": false,
-        "zdr_eligible": true
-      },
-      "total_params_b": null
-    },
-    {
-      "access_class": "open-weight",
-      "canonical_slug": "moonshotai/kimi-k3-20260715",
-      "expected_target_cost_usd_120": 1.17,
-      "family": "Kimi K3",
-      "generation": {
-        "compatibility_lane": "provider-unseeded",
-        "max_tokens": 1024,
-        "reasoning_effort": "max",
-        "seed": null,
-        "temperature": 0.5,
-        "top_p": 1.0
-      },
-      "hugging_face_id": "moonshotai/Kimi-K3",
-      "inclusion_basis": "open-weight-original-lab-total-parameters-ge-100b",
-      "maximum_target_cost_usd_120": 2.5632,
-      "model_id": "moonshotai/kimi-k3",
-      "name": "MoonshotAI: Kimi K3",
-      "pricing_usd_per_million": {
-        "input": 3.0,
-        "input_cache_read": 0.3,
-        "input_cache_write": 0.0,
-        "output": 15.0
-      },
-      "priority": 72,
-      "registry_id": "kimi-k3",
-      "release_date": "2026-07-22",
-      "route": {
-        "endpoint_name": "BaseTen | moonshotai/kimi-k3-20260715",
-        "max_completion_tokens": 262144,
-        "pricing_overrides": [],
-        "provider_name": "BaseTen",
-        "provider_tag": "baseten/fp8",
-        "quantization": "fp8",
-        "reasoning_effort_supported": true,
-        "seed_supported": false,
-        "supported_reasoning_efforts": [
-          "max",
-          "high",
-          "low"
-        ],
-        "temperature_supported": true,
-        "zdr_eligible": true
-      },
-      "total_params_b": 2800.0
-    },
-    {
-      "access_class": "hosted",
-      "canonical_slug": "anthropic/claude-opus-5-20260723",
-      "expected_target_cost_usd_120": 1.95,
-      "family": "Claude 5",
-      "generation": {
-        "compatibility_lane": "provider-unseeded",
-        "max_tokens": 1024,
-        "reasoning_effort": "max",
-        "seed": null,
-        "temperature": 0.5,
-        "top_p": null
-      },
-      "hugging_face_id": null,
-      "inclusion_basis": "hosted-anthropic-frontier-release",
-      "maximum_target_cost_usd_120": 4.272,
-      "model_id": "anthropic/claude-opus-5",
-      "name": "Claude Opus 5",
-      "pricing_usd_per_million": {
-        "input": 5.0,
-        "input_cache_read": 0.5,
-        "input_cache_write": 6.25,
-        "output": 25.0
-      },
-      "priority": 73,
-      "registry_id": "claude-opus-5",
-      "release_date": "2026-07-24",
-      "route": {
-        "endpoint_name": "Amazon Bedrock | anthropic/claude-opus-5-20260723",
-        "max_completion_tokens": 128000,
-        "pricing_overrides": [],
-        "provider_name": "Amazon Bedrock",
-        "provider_tag": "amazon-bedrock",
-        "quantization": "unknown",
-        "reasoning_effort_supported": true,
-        "seed_supported": false,
-        "supported_reasoning_efforts": [
-          "max",
-          "xhigh",
-          "high",
-          "medium",
-          "low"
-        ],
-        "temperature_supported": false,
-        "zdr_eligible": true
-      },
-      "total_params_b": null
-    },
-    {
-      "access_class": "open-weight",
-      "canonical_slug": "thinkingmachines/inkling-small-20260730",
-      "expected_target_cost_usd_120": 0.1188,
-      "family": "thinkingmachines",
-      "generation": {
-        "compatibility_lane": "seeded",
-        "max_tokens": 1024,
-        "reasoning_effort": "max",
-        "seed": 42,
-        "temperature": 0.5,
-        "top_p": 1.0
-      },
-      "hugging_face_id": "thinkingmachines/Inkling-Small",
-      "inclusion_basis": "open-weight-original-lab-total-parameters-ge-100b",
-      "maximum_target_cost_usd_120": 0.25545599999999996,
-      "model_id": "thinkingmachines/inkling-small",
-      "name": "Thinking Machines: Inkling Small",
-      "pricing_usd_per_million": {
-        "input": 0.44999999999999996,
-        "input_cache_read": 0.09999999999999999,
-        "input_cache_write": 0.0,
-        "output": 1.2
-      },
-      "priority": 74,
-      "registry_id": null,
-      "release_date": "2026-07-30",
-      "route": {
-        "endpoint_name": "DeepInfra | thinkingmachines/inkling-small-20260730",
-        "max_completion_tokens": 262144,
-        "pricing_overrides": [],
-        "provider_name": "DeepInfra",
-        "provider_tag": "deepinfra/fp8",
-        "quantization": "fp8",
-        "reasoning_effort_supported": true,
-        "seed_supported": true,
-        "supported_reasoning_efforts": [
-          "max",
-          "high",
-          "medium",
-          "low",
-          "minimal",
-          "none"
-        ],
-        "temperature_supported": true,
-        "zdr_eligible": true
-      },
-      "total_params_b": 276.0
-    },
-    {
-      "access_class": "hosted",
-      "canonical_slug": "x-ai/grok-4.6-20260810",
-      "expected_target_cost_usd_120": 0.564,
-      "family": "x-ai",
-      "generation": {
-        "compatibility_lane": "seeded",
-        "max_tokens": 1024,
-        "reasoning_effort": "xhigh",
-        "seed": 42,
-        "temperature": 0.5,
-        "top_p": 1.0
-      },
-      "hugging_face_id": null,
-      "inclusion_basis": "hosted-x-ai-frontier-release",
-      "maximum_target_cost_usd_120": 1.21728,
-      "model_id": "x-ai/grok-4.6",
-      "name": "SpaceXAI: Grok 4.6",
-      "pricing_usd_per_million": {
-        "input": 2.0,
-        "input_cache_read": 0.5,
-        "input_cache_write": 0.0,
-        "output": 6.0
-      },
-      "priority": 75,
-      "registry_id": null,
-      "release_date": "2026-08-12",
-      "route": {
-        "endpoint_name": "xAI | x-ai/grok-4.6-20260810",
-        "max_completion_tokens": null,
-        "pricing_overrides": [
-          {
-            "completion": "0.000012",
-            "input_cache_read": "0.000001",
-            "min_prompt_tokens": 200000,
-            "prompt": "0.000004"
-          }
-        ],
-        "provider_name": "xAI",
-        "provider_tag": "xai/zdr",
-        "quantization": "unknown",
-        "reasoning_effort_supported": true,
-        "seed_supported": true,
-        "supported_reasoning_efforts": [
-          "xhigh",
-          "high",
-          "medium",
-          "low"
-        ],
-        "temperature_supported": true,
-        "zdr_eligible": true
-      },
-      "total_params_b": null
-    },
-    {
-      "access_class": "open-weight",
-      "canonical_slug": "qwen/qwen3.8-2.4t-a95b-20260812",
-      "expected_target_cost_usd_120": 0.564,
-      "family": "qwen",
-      "generation": {
-        "compatibility_lane": "provider-unseeded",
-        "max_tokens": 1024,
-        "reasoning_effort": "xhigh",
-        "seed": null,
-        "temperature": 0.5,
-        "top_p": 1.0
-      },
-      "hugging_face_id": "Qwen/Qwen3.8-2.4T-A95B",
-      "inclusion_basis": "open-weight-original-lab-total-parameters-ge-100b",
-      "maximum_target_cost_usd_120": 1.21728,
-      "model_id": "qwen/qwen3.8-2.4t-a95b",
-      "name": "Qwen: Qwen3.8 2.4T A95B",
-      "pricing_usd_per_million": {
-        "input": 2.0,
-        "input_cache_read": 0.25,
-        "input_cache_write": 0.0,
-        "output": 6.0
-      },
-      "priority": 76,
-      "registry_id": null,
-      "release_date": "2026-08-12",
-      "route": {
-        "endpoint_name": "SiliconFlow | qwen/qwen3.8-2.4t-a95b-20260812",
-        "max_completion_tokens": 131072,
-        "pricing_overrides": [],
-        "provider_name": "SiliconFlow",
-        "provider_tag": "siliconflow/fp8",
-        "quantization": "fp8",
-        "reasoning_effort_supported": true,
-        "seed_supported": false,
-        "supported_reasoning_efforts": [
-          "xhigh",
-          "medium",
-          "low"
-        ],
-        "temperature_supported": true,
-        "zdr_eligible": true
-      },
-      "total_params_b": 2400.0
-    },
-    {
-      "access_class": "hosted",
-      "canonical_slug": "google/gemini-3.7-flash-20260813",
-      "expected_target_cost_usd_120": 0.073125,
-      "family": "google",
-      "generation": {
-        "compatibility_lane": "seeded",
-        "max_tokens": 1024,
-        "reasoning_effort": "high",
-        "seed": 42,
-        "temperature": 0.5,
-        "top_p": null
-      },
-      "hugging_face_id": null,
-      "inclusion_basis": "hosted-google-frontier-release",
-      "maximum_target_cost_usd_120": 0.1602,
-      "model_id": "google/gemini-3.7-flash",
-      "name": "Google: Gemini 3.7 Flash",
-      "pricing_usd_per_million": {
-        "input": 0.1875,
-        "input_cache_read": 0.01875,
-        "input_cache_write": 0.0104166666666667,
-        "output": 0.9375
-      },
-      "priority": 77,
-      "registry_id": null,
-      "release_date": "2026-08-13",
-      "route": {
-        "endpoint_name": "Google | google/gemini-3.7-flash-20260813",
-        "max_completion_tokens": 65536,
-        "pricing_overrides": [],
-        "provider_name": "Google",
-        "provider_tag": "google-vertex/global/flex",
-        "quantization": "unknown",
-        "reasoning_effort_supported": true,
-        "seed_supported": true,
-        "supported_reasoning_efforts": [
-          "high",
-          "medium",
-          "low"
-        ],
-        "temperature_supported": false,
-        "zdr_eligible": true
       },
       "total_params_b": null
     }

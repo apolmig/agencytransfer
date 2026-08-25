@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 from collections import defaultdict
 from pathlib import Path
 from typing import Any
@@ -106,6 +107,22 @@ HOSTED_NON_SELECTION_REASONS: dict[str, str] = {
     "x-ai/grok-build-0.1": "build-specialised endpoint, not general Grok checkpoint",
 }
 
+
+HOSTED_RELEASE_DATE_OVERRIDES: dict[str, tuple[str, str]] = {
+    "openai/gpt-3.5-turbo": (
+        "2023-03-01",
+        "https://openai.com/index/introducing-chatgpt-and-whisper-apis/",
+    ),
+    "openai/gpt-4": (
+        "2023-03-14",
+        "https://openai.com/index/gpt-4-research/",
+    ),
+    "openai/gpt-4-turbo": (
+        "2023-11-06",
+        "https://openai.com/index/new-models-and-developer-products-announced-at-devday/",
+    ),
+}
+
 ROLE_MODELS = {
     "persuadee": {
         "model_id": "qwen/qwen3-235b-a22b-2507",
@@ -191,18 +208,37 @@ def original_lab_release(row: dict[str, Any]) -> bool:
 def target_record(row: dict[str, Any], *, inclusion_basis: str) -> dict[str, Any]:
     supported = set(row.get("supported_parameters") or [])
     reasoning_effort = normalise_reasoning(row)
+    release_override = HOSTED_RELEASE_DATE_OVERRIDES.get(row["model_id"])
+    release_date = release_override[0] if release_override else row["release_date"]
+    release_date_source = (
+        release_override[1]
+        if release_override
+        else "project-frontier-registry"
+        if row.get("registry_id")
+        else "openrouter-model-created-at"
+    )
+    canonical = str(row.get("canonical_slug") or "")
+    explicit_snapshot = bool(re.search(r"20\d{2}[-_]?\d{2}(?:[-_]?\d{2})?", canonical))
+    access_class = (
+        "open-weight" if row["selection_basis"] == "open_weight_total_params_ge_100b" else "hosted"
+    )
+    identity_tier = (
+        "explicit-provider-snapshot"
+        if explicit_snapshot
+        else "original-weight-release-id"
+        if access_class == "open-weight" and row.get("hugging_face_id")
+        else "named-release-route-frozen-snapshot-unresolved"
+    )
     return {
         "model_id": row["model_id"],
         "canonical_slug": row["canonical_slug"],
         "name": row["name"],
-        "release_date": row["release_date"],
+        "release_date": release_date,
+        "release_date_source": release_date_source,
+        "identity_tier": identity_tier,
         "family": row["family"],
         "registry_id": row.get("registry_id"),
-        "access_class": (
-            "open-weight"
-            if row["selection_basis"] == "open_weight_total_params_ge_100b"
-            else "hosted"
-        ),
+        "access_class": access_class,
         "total_params_b": row.get("total_params_b"),
         "hugging_face_id": row.get("hugging_face_id"),
         "inclusion_basis": inclusion_basis,
@@ -238,18 +274,44 @@ def target_record(row: dict[str, Any], *, inclusion_basis: str) -> dict[str, Any
     }
 
 
+def scientific_family_key(record: dict[str, Any]) -> str:
+    model_id = str(record["model_id"])
+    vendor = model_id.split("/", 1)[0]
+    major_families = {
+        "openai": "OpenAI",
+        "anthropic": "Claude",
+        "google": "Gemini",
+        "x-ai": "Grok",
+        "deepseek": "DeepSeek",
+        "qwen": "Qwen",
+        "moonshotai": "Kimi",
+        "z-ai": "GLM",
+        "minimax": "MiniMax",
+        "nvidia": "Nemotron",
+        "thinkingmachines": "Inkling",
+    }
+    return major_families.get(vendor, str(record["family"] or vendor))
+
+
 def round_robin_by_family(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
     groups: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for record in records:
-        family = str(record["family"] or record["model_id"].split("/", 1)[0])
-        groups[family].append(record)
+        groups[scientific_family_key(record)].append(record)
     for values in groups.values():
         values.sort(key=lambda item: (item["release_date"] or "9999-99-99", item["model_id"]))
     ordered: list[dict[str, Any]] = []
+    family_order = sorted(
+        groups,
+        key=lambda family: (
+            groups[family][0]["release_date"] or "9999-99-99",
+            float(groups[family][0]["expected_target_cost_usd_120"]),
+            family,
+        ),
+    )
     round_index = 0
     while True:
         added = False
-        for family in sorted(groups):
+        for family in family_order:
             values = groups[family]
             if round_index < len(values):
                 ordered.append(values[round_index])
@@ -368,37 +430,25 @@ def build_plan(inventory: dict[str, Any], exclusions: dict[str, Any]) -> dict[st
     hosted = [item for item in selected if item["access_class"] == "hosted"]
     open_weight = [item for item in selected if item["access_class"] == "open-weight"]
 
-    # Old checkpoints are the core scientific objective. Sort both access classes
-    # chronologically and interleave them so an expensive hosted family cannot
-    # crowd every open-weight anchor out of the fixed budget. Same-day ties favour
-    # the cheaper route, preserving more longitudinal points.
-    hosted_order = sorted(
-        hosted,
-        key=lambda item: (
-            item["release_date"] or "9999-99-99",
-            float(item["expected_target_cost_usd_120"]),
-            item["model_id"],
-        ),
-    )
-    open_order = sorted(
-        open_weight,
-        key=lambda item: (
-            item["release_date"] or "9999-99-99",
-            float(item["expected_target_cost_usd_120"]),
-            item["model_id"],
-        ),
-    )
-    queue: list[dict[str, Any]] = []
-    while hosted_order or open_order:
-        if hosted_order:
-            queue.append(hosted_order.pop(0))
-        if open_order:
-            queue.append(open_order.pop(0))
+    # The USD 30 cap makes ordering part of the preregistered design. Take the
+    # oldest still-unmeasured checkpoint from every scientific family before a
+    # second checkpoint from any family, then repeat. This protects broad family
+    # coverage and creates longitudinal pairs before later releases can crowd out
+    # older anchors. Within each family, release date is primary and route cost is
+    # used only as a same-date tie-breaker.
+    queue = round_robin_by_family(selected)
     for priority, item in enumerate(queue, start=1):
         item["priority"] = priority
 
     expected_target_cost = sum(float(item["expected_target_cost_usd_120"]) for item in queue)
     maximum_target_cost = sum(float(item["maximum_target_cost_usd_120"]) for item in queue)
+    expected_auxiliary_cost_per_target = 0.10
+    expected_shared_persuadee_cost = 0.03
+    expected_all_execution_cost = (
+        expected_target_cost
+        + expected_auxiliary_cost_per_target * len(queue)
+        + expected_shared_persuadee_cost
+    )
     return {
         "schema_version": "atb-ape120-primary-plan-v0.1",
         "protocol_id": "atb-ape120-primary-20260825-v0.1",
@@ -457,7 +507,9 @@ def build_plan(inventory: dict[str, Any], exclusions: dict[str, Any]) -> dict[st
             "openrouter_key_lifetime_cap_usd": 30.0,
             "planned_execution_envelope_usd": 29.5,
             "minimum_stop_reserve_usd": 0.25,
-            "maximum_model_forecast_multiplier": 1.25,
+            "maximum_model_forecast_multiplier": 1.35,
+            "expected_auxiliary_cost_usd_per_target": expected_auxiliary_cost_per_target,
+            "expected_shared_persuadee_cost_usd": expected_shared_persuadee_cost,
             "max_samples": 4,
             "max_connections": 4,
             "max_retries": 0,
@@ -481,6 +533,7 @@ def build_plan(inventory: dict[str, Any], exclusions: dict[str, Any]) -> dict[st
         "hosted_target_count": len(hosted),
         "open_weight_target_count": len(open_weight),
         "expected_all_target_cost_usd": expected_target_cost,
+        "expected_all_execution_cost_usd": expected_all_execution_cost,
         "maximum_all_target_cost_usd": maximum_target_cost,
         "targets": queue,
         "decision_ledger": sorted(
