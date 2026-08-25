@@ -1,0 +1,78 @@
+name: Part 1B benign adapters v10 runtime
+
+on:
+  pull_request:
+    paths:
+      - "part1b/benign_adapters_v10/.dockerignore"
+      - "part1b/benign_adapters_v10/requirements.lock"
+      - "part1b/benign_adapters_v10/runtime/Dockerfile"
+      - ".github/workflows/part1b-benign-v10-runtime.yml"
+  push:
+    branches: [main]
+    paths:
+      - "part1b/benign_adapters_v10/.dockerignore"
+      - "part1b/benign_adapters_v10/requirements.lock"
+      - "part1b/benign_adapters_v10/runtime/Dockerfile"
+      - ".github/workflows/part1b-benign-v10-runtime.yml"
+
+concurrency:
+  group: part1b-benign-v10-runtime-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  IMAGE_NAME: ghcr.io/apolmig/agencytransfer-part1b-benign-v10-runtime
+
+jobs:
+  build-pr:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: docker/setup-buildx-action@37fe631027851001ddb9b187196cc803df7f5f0e # v4
+      - name: Build dependency-only runtime without publishing
+        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7
+        with:
+          context: part1b/benign_adapters_v10
+          file: part1b/benign_adapters_v10/runtime/Dockerfile
+          platforms: linux/amd64
+          push: false
+          tags: ${{ env.IMAGE_NAME }}:pr-${{ github.event.pull_request.number }}
+          cache-from: type=gha,scope=part1b-benign-v10
+          cache-to: type=gha,mode=max,scope=part1b-benign-v10
+          provenance: mode=max
+          sbom: true
+
+  publish-main:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: docker/setup-buildx-action@37fe631027851001ddb9b187196cc803df7f5f0e # v4
+      - name: Log in to GHCR
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and publish content-addressable runtime
+        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7
+        with:
+          context: part1b/benign_adapters_v10
+          file: part1b/benign_adapters_v10/runtime/Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: |
+            ${{ env.IMAGE_NAME }}:sha-${{ github.sha }}
+            ${{ env.IMAGE_NAME }}:v10
+          cache-from: type=gha,scope=part1b-benign-v10
+          cache-to: type=gha,mode=max,scope=part1b-benign-v10
+          provenance: mode=max
+          sbom: true
