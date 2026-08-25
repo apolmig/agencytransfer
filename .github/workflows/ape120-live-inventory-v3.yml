@@ -1,0 +1,48 @@
+name: APE120 live inventory v3
+
+on:
+  push:
+    branches:
+      - agent/ape120-longitudinal-20260825
+    paths:
+      - .github/workflows/ape120-live-inventory-v3.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ape120-live-inventory-v3
+  cancel-in-progress: false
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: agent/ape120-longitudinal-20260825
+          fetch-depth: 1
+          persist-credentials: true
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Build and validate live inventory
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile scripts/build_ape120_inventory.py
+          python scripts/build_ape120_inventory.py
+          python -m json.tool evals/research-notes/ape120-live-inventory-20260825.json >/dev/null
+          test -s evals/research-notes/ape120-live-inventory-20260825.csv
+          git diff --check
+      - name: Persist sanitised inventory
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add evals/research-notes/ape120-live-inventory-20260825.json evals/research-notes/ape120-live-inventory-20260825.csv
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'Capture corrected live APE120 inventory'
+          git push origin HEAD:agent/ape120-longitudinal-20260825
