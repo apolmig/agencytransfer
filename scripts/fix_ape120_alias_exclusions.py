@@ -170,17 +170,6 @@ replace(
 )
 
 replace(
-    '''            "exclusions": "mutable aliases, small/specialist tiers, premium duplicate tiers, multi-agent variants, and checkpoints that cannot fit the fixed USD 30 key cap",
-''',
-    '''            "exclusions": (
-                "mutable or remapped aliases, small/specialist tiers, premium "
-                "duplicate tiers, multi-agent variants, and checkpoints that cannot "
-                "fit the fixed USD 30 key cap"
-            ),
-''',
-)
-
-replace(
     '''                "hosted_count": selection["hosted_condition_count"],
                 "expected_target_cost_usd": expected_target_cost,
 ''',
