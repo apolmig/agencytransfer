@@ -1,0 +1,223 @@
+name: One-shot correct and verify APE-120 v0.2
+
+on:
+  push:
+    branches:
+      - agent/ape120-v02-corrected
+    paths:
+      - .github/workflows/one-shot-ape120-v02-correct.yml
+
+permissions:
+  contents: write
+
+jobs:
+  correct-and-test:
+    if: github.event.head_commit.message == 'Bootstrap corrected APE120 v0.2 protocol'
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - name: Check out exact correction branch
+        uses: actions/checkout@v6
+        with:
+          ref: agent/ape120-v02-corrected
+          fetch-depth: 1
+          persist-credentials: true
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Set up locked uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: '0.11.33'
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+
+      - name: Create a new protocol version and harden its invariants
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          builder_path = Path('scripts/build_ape120_primary_plan.py')
+          builder = builder_path.read_text(encoding='utf-8')
+          replacements = [
+              (
+                  'OUTPUT_PATH = Path("evals/config/ape120-primary-v0.1.json")',
+                  'OUTPUT_PATH = Path("evals/config/ape120-primary-v0.2.json")',
+              ),
+              (
+                  '"protocol_id": "atb-ape120-primary-20260825-v0.1",',
+                  '"protocol_id": "atb-ape120-primary-20260825-v0.2",',
+              ),
+              (
+                  '"planned_execution_envelope_usd": 29.5,',
+                  '"planned_execution_envelope_usd": 29.25,',
+              ),
+              (
+                  '"minimum_stop_reserve_usd": 0.25,',
+                  '"minimum_stop_reserve_usd": 0.75,',
+              ),
+              (
+                  '"maximum_model_forecast_multiplier": 1.35,',
+                  '"maximum_model_forecast_multiplier": 1.75,',
+              ),
+              ('"max_samples": 4,', '"max_samples": 120,'),
+              ('"max_connections": 4,', '"max_connections": 3,'),
+          ]
+          for old, new in replacements:
+              count = builder.count(old)
+              if count != 1:
+                  raise SystemExit(f'builder replacement mismatch for {old!r}: {count}')
+              builder = builder.replace(old, new, 1)
+          builder_path.write_text(builder, encoding='utf-8')
+
+          runner_path = Path('evals/atb_eval/ape_primary_runner.py')
+          runner = runner_path.read_text(encoding='utf-8')
+          anchor = '''    if plan.get("evidence_type") != "primary-research-direct-model-evaluation":
+        raise ValueError("APE primary plan has the wrong evidence type")
+'''
+          hardened = anchor + '''    if plan.get("protocol_id") != "atb-ape120-primary-20260825-v0.2":
+        raise ValueError("APE primary runner accepts only the corrected v0.2 protocol")
+    dataset = plan.get("dataset")
+    execution = plan.get("execution")
+    if not isinstance(dataset, dict) or not isinstance(execution, dict):
+        raise ValueError("APE primary plan lacks dataset or execution configuration")
+    expected_categories = [
+        "Conspiracy",
+        "BenignOpinion",
+        "BenignFactual",
+        "Controversial",
+        "NoncontroversiallyHarmful",
+        "UnderminingControl",
+    ]
+    if dataset.get("categories") != expected_categories:
+        raise ValueError("APE primary plan does not preserve the six frozen categories")
+    if dataset.get("samples_per_category") != 20:
+        raise ValueError("APE primary plan must use 20 topics per category")
+    if dataset.get("expected_samples_per_model") != 120:
+        raise ValueError("APE primary plan must expect 120 samples per model")
+    if execution.get("max_samples") != 120:
+        raise ValueError("APE primary execution must run all 120 samples")
+    if execution.get("max_samples") != dataset.get("expected_samples_per_model"):
+        raise ValueError("APE primary execution and dataset sample counts disagree")
+    if execution.get("max_retries") != 0 or execution.get("retry_attempts") != 0:
+        raise ValueError("APE primary execution must disable automatic retries")
+    if execution.get("retry_on_error") != 0:
+        raise ValueError("APE primary execution must not retry failed samples")
+    if execution.get("openrouter_key_lifetime_cap_usd") != 30.0:
+        raise ValueError("APE primary execution requires the frozen USD 30 key cap")
+    if execution.get("planned_execution_envelope_usd") != 29.25:
+        raise ValueError("APE primary execution requires the USD 29.25 client envelope")
+    if execution.get("minimum_stop_reserve_usd") != 0.75:
+        raise ValueError("APE primary execution requires the USD 0.75 stop reserve")
+    for target in plan.get("targets", []):
+        model_id = str(target.get("model_id") or "")
+        canonical_slug = str(target.get("canonical_slug") or "")
+        provider_tag = str((target.get("route") or {}).get("provider_tag") or "")
+        identity = f"{model_id} {canonical_slug}".lower()
+        if not model_id or not canonical_slug or not provider_tag:
+            raise ValueError("APE primary target lacks a frozen model or provider identity")
+        if any(marker in identity for marker in (":free", "/auto", "latest")):
+            raise ValueError("APE primary target uses a mutable or discount alias")
+'''
+          count = runner.count(anchor)
+          if count != 1:
+              raise SystemExit(f'runner hardening anchor mismatch: {count}')
+          runner = runner.replace(anchor, hardened, 1)
+          runner_path.write_text(runner, encoding='utf-8')
+
+          tests_path = Path('tests/evals/test_ape120_primary.py')
+          tests = tests_path.read_text(encoding='utf-8')
+          old_config = 'evals/config/ape120-primary-v0.1.json'
+          count = tests.count(old_config)
+          if count != 3:
+              raise SystemExit(f'test config path count mismatch: {count}')
+          tests = tests.replace(old_config, 'evals/config/ape120-primary-v0.2.json')
+          test_anchor = '''    assert plan["dataset"]["samples_per_category"] == 20
+    assert plan["target_count"] == len(plan["targets"])
+'''
+          test_hardened = '''    assert plan["dataset"]["samples_per_category"] == 20
+    assert plan["execution"]["max_samples"] == 120
+    assert plan["execution"]["planned_execution_envelope_usd"] == 29.25
+    assert plan["execution"]["minimum_stop_reserve_usd"] == 0.75
+    assert plan["execution"]["max_retries"] == 0
+    assert plan["execution"]["retry_attempts"] == 0
+    assert plan["protocol_id"] == "atb-ape120-primary-20260825-v0.2"
+    assert plan["target_count"] == len(plan["targets"])
+'''
+          count = tests.count(test_anchor)
+          if count != 1:
+              raise SystemExit(f'test hardening anchor mismatch: {count}')
+          tests = tests.replace(test_anchor, test_hardened, 1)
+          tests_path.write_text(tests, encoding='utf-8')
+
+          note = Path('evals/research-notes/ape120-primary-v0.1-retired.md')
+          if note.exists():
+              raise SystemExit('v0.1 retirement note already exists')
+          note.write_text(
+              '''# APE-120 primary protocol v0.1 — retired before confirmatory execution
+
+Protocol `atb-ape120-primary-20260825-v0.1` is retained only for audit. It is not a valid APE-120 execution protocol because its execution plan set `max_samples` to 4 while the dataset specification required 120 observations per checkpoint. The overlapping private orchestration also generated repeated failed Actions runs.
+
+No strict confirmatory result may cite v0.1. The corrected protocol is `atb-ape120-primary-20260825-v0.2`, which requires all 120 frozen topics, disables automatic retries and provider fallback, reserves USD 0.75 under the USD 30 provider-key cap, and excludes served releases already covered by secondary APE evidence.
+''',
+              encoding='utf-8',
+          )
+
+          workflow = Path('.github/workflows/one-shot-ape120-v02-correct.yml')
+          workflow.unlink()
+          PY
+
+      - name: Install the frozen development environment
+        run: |
+          set -euo pipefail
+          uv lock --check
+          uv sync --frozen --group dev
+
+      - name: Generate the frozen v0.2 plan
+        run: |
+          set -euo pipefail
+          uv run --frozen python scripts/build_ape120_primary_plan.py \
+            --output evals/config/ape120-primary-v0.2.json
+          test "$(jq -r '.protocol_id' evals/config/ape120-primary-v0.2.json)" = 'atb-ape120-primary-20260825-v0.2'
+          test "$(jq -r '.execution.max_samples' evals/config/ape120-primary-v0.2.json)" = '120'
+          test "$(jq -r '.dataset.expected_samples_per_model' evals/config/ape120-primary-v0.2.json)" = '120'
+          test "$(jq -r '.execution.planned_execution_envelope_usd' evals/config/ape120-primary-v0.2.json)" = '29.25'
+          test "$(jq -r '.execution.minimum_stop_reserve_usd' evals/config/ape120-primary-v0.2.json)" = '0.75'
+
+      - name: Format, lint, and test without network inference
+        run: |
+          set -euo pipefail
+          uv run --frozen ruff format \
+            evals/atb_eval/ape_primary_runner.py \
+            scripts/build_ape120_primary_plan.py \
+            tests/evals/test_ape120_primary.py
+          uv run --frozen ruff check --fix \
+            evals/atb_eval/ape_primary_runner.py \
+            scripts/build_ape120_primary_plan.py \
+            tests/evals/test_ape120_primary.py
+          uv run --frozen ruff format --check evals/atb_eval scripts tests/evals
+          uv run --frozen ruff check evals/atb_eval tests/evals
+          uv run --frozen pytest -q tests/evals/test_ape120_primary.py
+          uv run --frozen pytest -q
+          git diff --check
+
+      - name: Commit one reviewed protocol correction
+        run: |
+          set -euo pipefail
+          test ! -e .github/workflows/one-shot-ape120-v02-correct.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add \
+            .github/workflows/one-shot-ape120-v02-correct.yml \
+            evals/atb_eval/ape_primary_runner.py \
+            scripts/build_ape120_primary_plan.py \
+            tests/evals/test_ape120_primary.py \
+            evals/config/ape120-primary-v0.2.json \
+            evals/research-notes/ape120-primary-v0.1-retired.md
+          git commit -m 'Correct and freeze APE-120 primary protocol v0.2'
+          git push origin HEAD:agent/ape120-v02-corrected
