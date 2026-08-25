@@ -630,6 +630,49 @@ def verify_plan(plan: dict[str, Any], plan_path: Path, source_dir: Path) -> None
         raise ValueError("APE primary plan must be frozen")
     if plan.get("evidence_type") != "primary-research-direct-model-evaluation":
         raise ValueError("APE primary plan has the wrong evidence type")
+    if plan.get("protocol_id") != "atb-ape120-primary-20260825-v0.2":
+        raise ValueError("APE primary runner accepts only the corrected v0.2 protocol")
+    dataset = plan.get("dataset")
+    execution = plan.get("execution")
+    if not isinstance(dataset, dict) or not isinstance(execution, dict):
+        raise ValueError("APE primary plan lacks dataset or execution configuration")
+    expected_categories = [
+        "Conspiracy",
+        "BenignOpinion",
+        "BenignFactual",
+        "Controversial",
+        "NoncontroversiallyHarmful",
+        "UnderminingControl",
+    ]
+    if dataset.get("categories") != expected_categories:
+        raise ValueError("APE primary plan does not preserve the six frozen categories")
+    if dataset.get("samples_per_category") != 20:
+        raise ValueError("APE primary plan must use 20 topics per category")
+    if dataset.get("expected_samples_per_model") != 120:
+        raise ValueError("APE primary plan must expect 120 samples per model")
+    if execution.get("max_samples") != 120:
+        raise ValueError("APE primary execution must run all 120 samples")
+    if execution.get("max_samples") != dataset.get("expected_samples_per_model"):
+        raise ValueError("APE primary execution and dataset sample counts disagree")
+    if execution.get("max_retries") != 0 or execution.get("retry_attempts") != 0:
+        raise ValueError("APE primary execution must disable automatic retries")
+    if execution.get("retry_on_error") != 0:
+        raise ValueError("APE primary execution must not retry failed samples")
+    if execution.get("openrouter_key_lifetime_cap_usd") != 30.0:
+        raise ValueError("APE primary execution requires the frozen USD 30 key cap")
+    if execution.get("planned_execution_envelope_usd") != 29.25:
+        raise ValueError("APE primary execution requires the USD 29.25 client envelope")
+    if execution.get("minimum_stop_reserve_usd") != 0.75:
+        raise ValueError("APE primary execution requires the USD 0.75 stop reserve")
+    for target in plan.get("targets", []):
+        model_id = str(target.get("model_id") or "")
+        canonical_slug = str(target.get("canonical_slug") or "")
+        provider_tag = str((target.get("route") or {}).get("provider_tag") or "")
+        identity = f"{model_id} {canonical_slug}".lower()
+        if not model_id or not canonical_slug or not provider_tag:
+            raise ValueError("APE primary target lacks a frozen model or provider identity")
+        if any(marker in identity for marker in (":free", "/auto", "latest")):
+            raise ValueError("APE primary target uses a mutable or discount alias")
     repo_root = plan_path.resolve().parents[2]
     inventory = repo_root / plan["inventory"]["path"]
     exclusions = repo_root / plan["secondary_exclusion_ledger"]["path"]

@@ -38,12 +38,18 @@ def test_primary_plan_excludes_exact_secondary_ape_releases() -> None:
     assert plan["evidence_type"] == "primary-research-direct-model-evaluation"
     assert plan["dataset"]["expected_samples_per_model"] == 120
     assert plan["dataset"]["samples_per_category"] == 20
+    assert plan["execution"]["max_samples"] == 120
+    assert plan["execution"]["planned_execution_envelope_usd"] == 29.25
+    assert plan["execution"]["minimum_stop_reserve_usd"] == 0.75
+    assert plan["execution"]["max_retries"] == 0
+    assert plan["execution"]["retry_attempts"] == 0
+    assert plan["protocol_id"] == "atb-ape120-primary-20260825-v0.2"
     assert plan["target_count"] == len(plan["targets"])
     assert plan["target_count"] >= 50
 
 
 def test_primary_plan_prioritises_old_family_coverage() -> None:
-    plan = _load("evals/config/ape120-primary-v0.1.json")
+    plan = _load("evals/config/ape120-primary-v0.2.json")
     first_ids = [item["model_id"] for item in plan["targets"][:30]]
     assert "openai/gpt-3.5-turbo" in first_ids
     assert "openai/gpt-4" in first_ids
@@ -55,7 +61,7 @@ def test_primary_plan_prioritises_old_family_coverage() -> None:
 
 
 def test_secondary_ape_cohorts_are_not_retested() -> None:
-    plan = _load("evals/config/ape120-primary-v0.1.json")
+    plan = _load("evals/config/ape120-primary-v0.2.json")
     target_ids = {item["model_id"] for item in plan["targets"]}
     excluded = {
         "openai/gpt-4.1",
@@ -78,7 +84,7 @@ def test_secondary_ape_cohorts_are_not_retested() -> None:
 
 
 def test_condition_pins_one_provider_and_no_fallback() -> None:
-    plan = _load("evals/config/ape120-primary-v0.1.json")
+    plan = _load("evals/config/ape120-primary-v0.2.json")
     condition = condition_from_plan(plan["targets"][0])
     assert condition.model.startswith("openrouter/")
     assert condition.route is not None
