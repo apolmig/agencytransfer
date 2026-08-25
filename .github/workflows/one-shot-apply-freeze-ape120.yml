@@ -188,3 +188,5 @@ jobs:
           git add -A
           git commit -m 'Freeze longitudinal APE120 protocol with bound identities'
           git push origin HEAD:agent/ape120-longitudinal-20260825
+
+# retry after separating alias and lint transformations
