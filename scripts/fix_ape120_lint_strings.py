@@ -71,8 +71,8 @@ replace(
     "scripts/freeze_ape120_longitudinal.py",
     '            "exclusions": "mutable aliases, small/specialist tiers, premium duplicate tiers, multi-agent variants, and checkpoints that cannot fit the fixed USD 30 key cap",',
     '            "exclusions": (\n'
-    '                "mutable aliases, small/specialist tiers, premium duplicate "\n'
-    '                "tiers, multi-agent variants, and checkpoints that cannot fit "\n'
-    '                "the fixed USD 30 key cap"\n'
+    '                "mutable or remapped aliases, small/specialist tiers, premium "\n'
+    '                "duplicate tiers, multi-agent variants, and checkpoints that "\n'
+    '                "cannot fit the fixed USD 30 key cap"\n'
     '            ),',
 )
