@@ -176,11 +176,21 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          git fetch --no-tags origin main
           rm -f .github/workflows/one-shot-apply-freeze-ape120.yml
           rm -f .github/workflows/one-shot-export-ape120-sources.yml
+          rm -f .github/workflows/one-shot-install-ape120-primary.yml
           rm -f scripts/fix_ape120_alias_exclusions.py
           rm -f scripts/fix_ape120_lint_strings.py
+          rm -f evals/atb_eval/ape_primary_runner.py
+          rm -f scripts/build_ape120_primary_plan.py
+          rm -f scripts/sanitise_ape120_primary_summary.py
+          rm -f tests/evals/test_ape120_primary.py
+          rm -f evals/config/ape120-primary-v0.1.json
+          rm -f evals/research-notes/ape120-secondary-exclusions-v0.1.json
+          rm -rf .ape120-patch
           rm -rf evals/patches
+          git checkout origin/main -- pyproject.toml
           git diff --check
           git status --short
           git config user.name 'github-actions[bot]'
@@ -189,4 +199,4 @@ jobs:
           git commit -m 'Freeze longitudinal APE120 protocol with bound identities'
           git push origin HEAD:agent/ape120-longitudinal-20260825
 
-# retry after separating alias and lint transformations
+# quarantine the incompatible primary-wave scaffold before the frozen commit
