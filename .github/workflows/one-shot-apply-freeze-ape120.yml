@@ -34,6 +34,7 @@ jobs:
           test "$(sha256sum "$RUNNER_TEMP/ape120.patch" | cut -d ' ' -f 1)" = "4b806a18d95244698df5803d134973b02eab89f187a71315a275caf419dca094"
           git apply --check "$RUNNER_TEMP/ape120.patch"
           git apply "$RUNNER_TEMP/ape120.patch"
+          python scripts/fix_ape120_alias_exclusions.py
           python scripts/fix_ape120_lint_strings.py
           python -m py_compile \
             evals/atb_eval/manifest.py \
@@ -135,10 +136,26 @@ jobs:
               .read_text(encoding='utf-8')
           )
           assert manifest.protocol_id == 'atb-ape-stage2a-longitudinal-v0.1'
-          assert len(manifest.models) == 65
-          assert selection['condition_count'] == 65
-          assert selection['open_weight_condition_count'] == 42
-          assert selection['hosted_condition_count'] == 23
+          assert len(manifest.models) == selection['condition_count']
+          assert selection['condition_count'] >= 60
+          assert (
+              selection['open_weight_condition_count']
+              + selection['hosted_condition_count']
+              == selection['condition_count']
+          )
+          assert selection['identity_alias_exclusion_count'] >= 1
+          excluded = {
+              row['model_id'] for row in selection['identity_alias_exclusions']
+          }
+          assert 'google/gemini-2.5-pro-preview-05-06' in excluded
+          model_ids = {
+              condition.model.removeprefix('openrouter/')
+              for condition in manifest.models
+          }
+          assert any(model.startswith('openai/gpt-') for model in model_ids)
+          assert any(model.startswith('anthropic/claude-') for model in model_ids)
+          assert any(model.startswith('google/gemini-') for model in model_ids)
+          assert any(model.startswith('x-ai/grok-') for model in model_ids)
           assert selection['expected_total_cost_usd'] <= 29.5
           assert manifest.run.planned_run_cost_envelope_usd == 29.5
           assert manifest.run.provider_key_limit_usd == 30.0
@@ -161,6 +178,7 @@ jobs:
           set -euo pipefail
           rm -f .github/workflows/one-shot-apply-freeze-ape120.yml
           rm -f .github/workflows/one-shot-export-ape120-sources.yml
+          rm -f scripts/fix_ape120_alias_exclusions.py
           rm -f scripts/fix_ape120_lint_strings.py
           rm -rf evals/patches
           git diff --check
@@ -168,5 +186,5 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -A
-          git commit -m 'Freeze 65-condition longitudinal APE120 protocol'
+          git commit -m 'Freeze longitudinal APE120 protocol with bound identities'
           git push origin HEAD:agent/ape120-longitudinal-20260825
