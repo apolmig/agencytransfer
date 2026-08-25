@@ -1,0 +1,137 @@
+name: One-shot install primary APE-120 wave
+
+on:
+  push:
+    branches:
+      - agent/ape120-longitudinal-20260825
+    paths:
+      - .github/workflows/one-shot-install-ape120-primary.yml
+
+permissions:
+  contents: write
+
+jobs:
+  install-test-commit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Check out exact research branch
+        uses: actions/checkout@v6
+        with:
+          ref: agent/ape120-longitudinal-20260825
+          fetch-depth: 1
+          persist-credentials: true
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Set up locked uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.11.33"
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+
+      - name: Reconstruct and install reviewed patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(find .ape120-patch -maxdepth 1 -type f -name 'part-*' | wc -l)" -eq 6
+          cat .ape120-patch/part-* | base64 --decode > "$RUNNER_TEMP/ape120-primary.tar.gz"
+          test "$(sha256sum "$RUNNER_TEMP/ape120-primary.tar.gz" | cut -d ' ' -f 1)" = \
+            "bb31d1d3c2d936abff6866b8fb1b65d49f0676f71862264a657590d6b1a3aa42"
+          python - "$RUNNER_TEMP/ape120-primary.tar.gz" <<'PY'
+          import pathlib
+          import sys
+          import tarfile
+
+          archive = pathlib.Path(sys.argv[1])
+          allowed = {
+              "pyproject.toml",
+              "evals/atb_eval/ape_primary_runner.py",
+              "scripts/build_ape120_primary_plan.py",
+              "scripts/sanitise_ape120_primary_summary.py",
+              "tests/evals/test_ape120_primary.py",
+              "evals/config/ape120-primary-v0.1.json",
+              "evals/research-notes/ape120-secondary-exclusions-v0.1.json",
+          }
+          with tarfile.open(archive, "r:gz") as handle:
+              names = {member.name for member in handle.getmembers()}
+              if names != allowed:
+                  raise SystemExit(f"unexpected patch inventory: {sorted(names ^ allowed)}")
+              for member in handle.getmembers():
+                  path = pathlib.PurePosixPath(member.name)
+                  if path.is_absolute() or ".." in path.parts or not member.isfile():
+                      raise SystemExit(f"unsafe archive member: {member.name}")
+          PY
+          tar -xzf "$RUNNER_TEMP/ape120-primary.tar.gz"
+          rm -rf .ape120-patch
+          git diff --check
+
+      - name: Verify deterministic protocol construction
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp evals/config/ape120-primary-v0.1.json "$RUNNER_TEMP/frozen-plan.json"
+          python scripts/build_ape120_primary_plan.py
+          cmp "$RUNNER_TEMP/frozen-plan.json" evals/config/ape120-primary-v0.1.json
+          python -m compileall -q \
+            evals/atb_eval/ape_primary_runner.py \
+            scripts/build_ape120_primary_plan.py \
+            scripts/sanitise_ape120_primary_summary.py \
+            tests/evals/test_ape120_primary.py
+
+      - name: Install frozen development environment
+        shell: bash
+        run: |
+          set -euo pipefail
+          uv lock --check
+          uv sync --frozen --group dev
+
+      - name: Format, lint, and test
+        shell: bash
+        run: |
+          set -euo pipefail
+          uv run --frozen ruff format \
+            evals/atb_eval/ape_primary_runner.py \
+            scripts/build_ape120_primary_plan.py \
+            scripts/sanitise_ape120_primary_summary.py \
+            tests/evals/test_ape120_primary.py
+          uv run --frozen ruff check --fix \
+            evals/atb_eval/ape_primary_runner.py \
+            scripts/build_ape120_primary_plan.py \
+            scripts/sanitise_ape120_primary_summary.py \
+            tests/evals/test_ape120_primary.py
+          uv run --frozen ruff format --check \
+            evals/atb_eval/ape_primary_runner.py \
+            scripts/build_ape120_primary_plan.py \
+            scripts/sanitise_ape120_primary_summary.py \
+            tests/evals/test_ape120_primary.py
+          uv run --frozen ruff check \
+            evals/atb_eval/ape_primary_runner.py \
+            scripts/build_ape120_primary_plan.py \
+            scripts/sanitise_ape120_primary_summary.py \
+            tests/evals/test_ape120_primary.py
+          uv run --frozen pytest -q tests/evals/test_ape120_primary.py
+          uv run --frozen pytest -q
+
+      - name: Commit tested primary-research implementation
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A \
+            .ape120-patch \
+            pyproject.toml \
+            evals/atb_eval/ape_primary_runner.py \
+            scripts/build_ape120_primary_plan.py \
+            scripts/sanitise_ape120_primary_summary.py \
+            tests/evals/test_ape120_primary.py \
+            evals/config/ape120-primary-v0.1.json \
+            evals/research-notes/ape120-secondary-exclusions-v0.1.json
+          git commit -m "Add primary APE-120 longitudinal execution wave"
+          git push origin HEAD:agent/ape120-longitudinal-20260825
