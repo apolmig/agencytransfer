@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "schema": "era-part1b-runtime-reuse/v12",
+  "status": "REUSE_AUTHORIZED",
+  "reason": "The v11 C11 attempt was rejected locally by the Jobs connector before provider dispatch because its timeout envelope used a number instead of the required string; no remote Job, evidence write, target write, training, or image fault occurred. The dependency-only v10 runtime remains byte-identical, passed its immutable smoke, and embeds no runner source.",
+  "image": {
+    "reference": "ghcr.io/apolmig/agencytransfer-part1b-benign-v10-runtime@sha256:97d631c79c40bf2f10a3dce5f300fc7d0570a783916592555e67a1aed52d7289",
+    "index_digest": "sha256:97d631c79c40bf2f10a3dce5f300fc7d0570a783916592555e67a1aed52d7289",
+    "linux_amd64_manifest_digest": "sha256:f82b3e490c4193ee4eafe8b91ea611ba874f3b8beca2e9014c12e58f9c656bc5",
+    "attestation_digest": "sha256:7b73082c24632b91a097871b671ac8b3b66088584471fd24a62d9a2c110b2761",
+    "dependency_only": true,
+    "runner_embedded": false,
+    "new_v12_build_required": false,
+    "new_v12_smoke_authorized": false
+  },
+  "public_provenance": {
+    "repository": "apolmig/agencytransfer",
+    "v10_merge_commit": "c8c2ba081ea2e5043da820f3d633c2fcb9bca3c1",
+    "requirements_lock_sha256": "23d17580ddbebc82440b167630344bc3640611d33c2836daf3a4f529ee6675f3",
+    "dockerfile_sha256": "2ed16bc4c1071f08e44ac9526cec8428ca92c6ac85e043de8859413d182c3067",
+    "dockerignore_sha256": "127c0cf41ae63d143a5ef959a953321181d2b0322c70c80cead78a6c25416d0c",
+    "publish_workflow_run_id": "32869757348"
+  },
+  "smoke": {
+    "job_id": "6a8dc027984507d9db4e435c",
+    "stage": "COMPLETED",
+    "retry": 0,
+    "flavor": "cpu-basic",
+    "timeout_seconds": 1800,
+    "script_sha256": "0532a3496b22cb74c3ac27d698dea4789ab20e6b5c8be91028f4397c854e5356",
+    "command_sha256": "ec65e9e8dfbda2d971ac25aef9dc2b70c4ac112ee83c51ef1ec1688856dcc0e1",
+    "raw_provider_sha256": "c454777959b939d001d286ef252ad9233b48f632e8ea7468673230ea879f4da9",
+    "terminal_sha256": "cb4a2423f36a296617ce5334adda69dc5719d5f9cf99d22d60ad468c84c3acdd"
+  },
+  "v12_contract": {
+    "requirements_lock_must_be_byte_identical_to_v10": true,
+    "dockerfile_must_be_byte_identical_to_v10": true,
+    "dockerignore_must_be_byte_identical_to_v10": true,
+    "launcher_materializes_hash_bound_runner": true,
+    "image_reference_must_be_digest_pinned": true
+  }
+}
