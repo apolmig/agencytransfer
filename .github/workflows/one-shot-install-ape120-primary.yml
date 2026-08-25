@@ -106,8 +106,8 @@ jobs:
           uv run --frozen ruff check --fix "${targets[@]}"
           uv run --frozen ruff format --check "${targets[@]}"
           uv run --frozen ruff check "${targets[@]}"
-          uv run --frozen pytest -q tests/evals/test_ape120_primary.py
-          uv run --frozen pytest -q
+          PYTHONPATH="$PWD" uv run --frozen pytest -q tests/evals/test_ape120_primary.py
+          PYTHONPATH="$PWD" uv run --frozen pytest -q
 
       - name: Commit tested primary-research implementation
         shell: bash
