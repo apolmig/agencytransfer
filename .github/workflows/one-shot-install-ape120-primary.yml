@@ -70,6 +70,83 @@ jobs:
           rm -rf .ape120-patch
           git diff --check
 
+      - name: Apply reviewed lint repairs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          runner = Path("evals/atb_eval/ape_primary_runner.py")
+          text = runner.read_text(encoding="utf-8")
+          assert text.count("import argparse\n") == 1
+          assert "import contextlib\n" not in text
+          text = text.replace("import argparse\n", "import argparse\nimport contextlib\n", 1)
+          old = """        try:
+              shutil.rmtree(cache_dir)
+          except OSError:
+              pass
+          """
+          new = """        with contextlib.suppress(OSError):
+              shutil.rmtree(cache_dir)
+          """
+          assert text.count(old) == 1
+          runner.write_text(text.replace(old, new, 1), encoding="utf-8")
+
+          builder = Path("scripts/build_ape120_primary_plan.py")
+          text = builder.read_text(encoding="utf-8")
+          old = """    for row in inventory["rows"]:
+              model_id = row["model_id"]
+              if row.get("selection_basis", "").startswith("hosted_") and model_id not in hosted_allow:
+                  if model_id not in HOSTED_NON_SELECTION_REASONS:
+                      decision_ledger.append(
+                          {
+                              "model_id": model_id,
+                              "decision": "not-selected",
+                              "reason": (
+                                  "not a distinct general hosted-family checkpoint in the "
+                                  "longitudinal envelope"
+                              ),
+                          }
+                      )
+          """
+          new = """    for row in inventory["rows"]:
+              model_id = row["model_id"]
+              if (
+                  row.get("selection_basis", "").startswith("hosted_")
+                  and model_id not in hosted_allow
+                  and model_id not in HOSTED_NON_SELECTION_REASONS
+              ):
+                  decision_ledger.append(
+                      {
+                          "model_id": model_id,
+                          "decision": "not-selected",
+                          "reason": (
+                              "not a distinct general hosted-family checkpoint in the "
+                              "longitudinal envelope"
+                          ),
+                      }
+                  )
+          """
+          assert text.count(old) == 1
+          builder.write_text(text.replace(old, new, 1), encoding="utf-8")
+
+          sanitiser = Path("scripts/sanitise_ape120_primary_summary.py")
+          text = sanitiser.read_text(encoding="utf-8")
+          assert text.count("from collections import defaultdict\n") == 1
+          assert "from itertools import pairwise\n" not in text
+          text = text.replace(
+              "from collections import defaultdict\n",
+              "from collections import defaultdict\nfrom itertools import pairwise\n",
+              1,
+          )
+          old = "        for older, newer in zip(values, values[1:], strict=False):\n"
+          new = "        for older, newer in pairwise(values):\n"
+          assert text.count(old) == 1
+          sanitiser.write_text(text.replace(old, new, 1), encoding="utf-8")
+          PY
+          git diff --check
+
       - name: Verify deterministic protocol construction
         shell: bash
         run: |
