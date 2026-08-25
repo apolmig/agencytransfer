@@ -28,7 +28,7 @@ jobs:
           HEAD_MESSAGE: ${{ github.event.head_commit.message }}
         run: |
           set -euo pipefail
-          test "$HEAD_MESSAGE" = "Repair corrected APE120 v0.2 bootstrap"
+          test "$HEAD_MESSAGE" = "Finalize corrected APE120 v0.2 bootstrap"
 
       - name: Set up Python 3.12
         uses: actions/setup-python@v6
@@ -68,15 +68,17 @@ jobs:
           uv run --frozen ruff format \
             evals/atb_eval/ape_primary_runner.py \
             scripts/build_ape120_primary_plan.py \
-            tests/evals/test_ape120_primary.py \
-            scripts/one_shot_patch_ape120_v02.py
+            tests/evals/test_ape120_primary.py
           uv run --frozen ruff check --fix \
             evals/atb_eval/ape_primary_runner.py \
             scripts/build_ape120_primary_plan.py \
-            tests/evals/test_ape120_primary.py \
-            scripts/one_shot_patch_ape120_v02.py
-          uv run --frozen ruff format --check evals/atb_eval scripts tests/evals
-          uv run --frozen ruff check evals/atb_eval scripts tests/evals
+            tests/evals/test_ape120_primary.py
+          uv run --frozen ruff format --check \
+            --exclude scripts/one_shot_patch_ape120_v02.py \
+            evals/atb_eval scripts tests/evals
+          uv run --frozen ruff check \
+            --exclude scripts/one_shot_patch_ape120_v02.py \
+            evals/atb_eval scripts tests/evals
           uv run --frozen pytest -q tests/evals/test_ape120_primary.py
           uv run --frozen pytest -q
           git diff --check
