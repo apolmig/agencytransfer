@@ -1,0 +1,142 @@
+name: Ingest sanitised APE120 primary candidate
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/ingest-ape120-public-candidate.yml
+  workflow_dispatch:
+  schedule:
+    - cron: '17,47 * * * *'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: ingest-ape120-public-candidate-20260825
+  cancel-in-progress: true
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 355
+    env:
+      TOPIC: era-ape120-v4-public-packet-20260825-75cdb3f7e224476b
+      RESULT_BRANCH: agent/ape120-primary-results-20260825
+      RESULT_DIR: evals/results/ape120-primary-20260825
+
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: true
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Wait for the strictly sanitised candidate attachment
+        shell: bash
+        run: |
+          set -euo pipefail
+          attachment=''
+          for _ in $(seq 1 700); do
+            events="$(curl --fail --silent --show-error "https://ntfy.sh/$TOPIC/json?poll=1&since=all")"
+            attachment="$(printf '%s\n' "$events" \
+              | jq -r 'select(.attachment.name == "ape120-public-candidate.zip") | .attachment.url' \
+              | tail -n1)"
+            if test -n "$attachment" && test "$attachment" != 'null'; then
+              break
+            fi
+            sleep 30
+          done
+          test -n "$attachment"
+          case "$attachment" in
+            https://ntfy.sh/*) ;;
+            *) echo 'Unexpected attachment host' >&2; exit 1 ;;
+          esac
+          curl --fail --silent --show-error --location \
+            --proto '=https' --tlsv1.2 \
+            "$attachment" -o /tmp/ape120-public-candidate.zip
+          test -s /tmp/ape120-public-candidate.zip
+
+      - name: Extract without path traversal and validate the bridge
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/ape120-candidate
+          mkdir -p /tmp/ape120-candidate
+          mapfile -t entries < <(unzip -Z1 /tmp/ape120-public-candidate.zip)
+          expected=(
+            BRIDGE-MANIFEST.json
+            README.md
+            ape120-primary-public-candidate.json
+            checkpoint-results.csv
+            primary-secondary-ledger.csv
+          )
+          printf '%s\n' "${entries[@]}" | sort > /tmp/actual-files.txt
+          printf '%s\n' "${expected[@]}" | sort > /tmp/expected-files.txt
+          diff -u /tmp/expected-files.txt /tmp/actual-files.txt
+          if printf '%s\n' "${entries[@]}" | grep -Eq '(^/|(^|/)\.\.(/|$)|\\)'; then
+            echo 'Unsafe archive path' >&2
+            exit 1
+          fi
+          unzip -q /tmp/ape120-public-candidate.zip -d /tmp/ape120-candidate
+          python scripts/ingest_ape120_public_candidate.py \
+            --source-dir /tmp/ape120-candidate \
+            --output-dir "$RESULT_DIR"
+          python -m json.tool "$RESULT_DIR/ape120-primary-public-candidate.json" >/dev/null
+          git diff --check
+
+      - name: Commit the candidate to a dedicated branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git checkout -B "$RESULT_BRANCH" origin/main
+          git add "$RESULT_DIR"
+          if git diff --cached --quiet; then
+            echo 'No result changes.'
+          else
+            git commit -m 'Add longitudinal APE120 primary-research candidate'
+            git push --force-with-lease origin "$RESULT_BRANCH"
+          fi
+
+      - name: Open or update a draft results PR
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          conclusion="$(jq -r '.source_conclusion' "$RESULT_DIR/ape120-primary-public-candidate.json")"
+          models="$(jq '.model_results | length' "$RESULT_DIR/ape120-primary-public-candidate.json")"
+          cost="$(jq -r '.provider_reported_spend_delta_usd // "unknown"' "$RESULT_DIR/ape120-primary-public-candidate.json")"
+          existing="$(gh pr list --head "$RESULT_BRANCH" --base main --state open --json number --jq '.[0].number // empty')"
+          body="$(cat <<EOF
+## APE-120 longitudinal primary-research candidate
+
+- Controlled source conclusion: **$conclusion**
+- Directly observed checkpoints: **$models**
+- Provider-reported spend delta: **USD $cost**
+- Raw prompts, outputs, API records, judge traces, and sample logs remain private.
+
+This PR contains the exact-checkpoint primary-vs-secondary ledger, checkpoint aggregates, missingness, provider-route metadata, costs, and paired adjacent-release comparisons. It is intentionally draft pending two-person review.
+
+### Claim ceiling
+
+APE turn 1 measures response-class behaviour under a fixed simulated interaction. It does not establish realised persuasion, belief change, harmful-manipulation efficacy, agency transfer, deployment prevalence, electoral effect, or democratic harm.
+EOF
+)"
+          if test -n "$existing"; then
+            gh pr edit "$existing" --title 'APE-120 longitudinal primary-research candidate' --body "$body"
+          else
+            gh pr create \
+              --base main \
+              --head "$RESULT_BRANCH" \
+              --title 'APE-120 longitudinal primary-research candidate' \
+              --body "$body" \
+              --draft
+          fi
