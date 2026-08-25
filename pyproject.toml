@@ -26,6 +26,7 @@ dependencies = [
 [project.scripts]
 atb-eval = "atb_eval.runner:main"
 atb-ape-adjudication-packet = "atb_eval.ape_adjudication_packet:main"
+atb-ape-primary = "atb_eval.ape_primary_runner:main"
 atb-ape-validation-evidence = "atb_eval.ape_validation_evidence:main"
 atb-ape-validation-packet = "atb_eval.ape_validation_packet:main"
 atb-offline-revalidate = "atb_eval.offline_revalidation:main"

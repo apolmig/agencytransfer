@@ -1,0 +1,74 @@
+{
+  "schema_version": "atb-ape-secondary-exclusion-ledger-v0.1",
+  "frozen_at": "2026-08-25T00:00:00Z",
+  "rule": "Exclude an exact served model release from the primary APE-120 wave when an author-reported or independently reported APE turn-1 result for that exact release is already in the repository evidence registry. Adjacent releases and distinct service tiers remain eligible.",
+  "exclusions": [
+    {
+      "model_id": "openai/gpt-5.5",
+      "canonical_ids": [
+        "openai/gpt-5.5-20260423"
+      ],
+      "registry_model_id": "gpt-5-5",
+      "source_type": "secondary-research",
+      "source_title": "SaferAI GLM-5.2 Evaluation Report",
+      "source_url": "https://www.safer-ai.org/u/2026/08/SaferAI-GLM-Evaluation-Report.pdf",
+      "source_locator": "Section 5.2 and Figure 10; Appendix A.8",
+      "published_at": "2026-08-02",
+      "reported_protocol": "APE turn 1, supporting role, maximum reasoning",
+      "reported_categories": [
+        "Conspiracy",
+        "NoncontroversiallyHarmful",
+        "UnderminingControl"
+      ],
+      "reported_n_per_category": 100,
+      "reason": "An exact-release APE result is already available from secondary research; rerunning it would spend scarce primary-research budget without adding a new release point."
+    },
+    {
+      "model_id": "anthropic/claude-opus-4.7",
+      "canonical_ids": [
+        "anthropic/claude-4.7-opus-20260416",
+        "anthropic/claude-opus-4.7-20260416"
+      ],
+      "registry_model_id": "claude-opus-4-7",
+      "source_type": "secondary-research",
+      "source_title": "SaferAI GLM-5.2 Evaluation Report",
+      "source_url": "https://www.safer-ai.org/u/2026/08/SaferAI-GLM-Evaluation-Report.pdf",
+      "source_locator": "Section 5.2 and Figure 10; Appendix A.8",
+      "published_at": "2026-08-02",
+      "reported_protocol": "APE turn 1, supporting role, maximum reasoning",
+      "reported_categories": [
+        "Conspiracy",
+        "NoncontroversiallyHarmful",
+        "UnderminingControl"
+      ],
+      "reported_n_per_category": 100,
+      "reason": "An exact-release APE result is already available from secondary research; rerunning it would spend scarce primary-research budget without adding a new release point."
+    },
+    {
+      "model_id": "z-ai/glm-5.2",
+      "canonical_ids": [
+        "z-ai/glm-5.2",
+        "z-ai/glm-5.2-20260616"
+      ],
+      "registry_model_id": "glm-5-2",
+      "source_type": "secondary-research",
+      "source_title": "SaferAI GLM-5.2 Evaluation Report",
+      "source_url": "https://www.safer-ai.org/u/2026/08/SaferAI-GLM-Evaluation-Report.pdf",
+      "source_locator": "Section 5.2 and Figure 10; Appendix A.8",
+      "published_at": "2026-08-02",
+      "reported_protocol": "APE turn 1, supporting role, maximum reasoning",
+      "reported_categories": [
+        "Conspiracy",
+        "NoncontroversiallyHarmful",
+        "UnderminingControl"
+      ],
+      "reported_n_per_category": 100,
+      "reason": "An exact-release APE result is already available from secondary research; rerunning it would spend scarce primary-research budget without adding a new release point."
+    }
+  ],
+  "non_exclusions": [
+    "Adjacent checkpoints in the GPT-5, Claude, and GLM families remain eligible because they add longitudinal release points.",
+    "Secondary results from MASK, DisElect, InfoOpsBench, or Anthropic agentic-influence evaluations do not exclude a model from APE because they measure different constructs.",
+    "The prior six-topic project APE construction canary is not a 120-topic benchmark result and does not exclude either DeepSeek V4 Flash checkpoint."
+  ]
+}
