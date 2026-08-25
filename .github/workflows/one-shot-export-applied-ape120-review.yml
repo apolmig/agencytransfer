@@ -1,0 +1,51 @@
+name: One-shot export applied APE120 implementation
+
+on:
+  push:
+    branches:
+      - agent/ape120-longitudinal-20260825
+    paths:
+      - .github/workflows/one-shot-export-applied-ape120-review.yml
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: agent/ape120-longitudinal-20260825
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Reconstruct reviewed patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat evals/patches/ape120-implementation-v0.1.part* > "$RUNNER_TEMP/ape120.patch.gz.b64"
+          test "$(sha256sum "$RUNNER_TEMP/ape120.patch.gz.b64" | cut -d ' ' -f 1)" = "99820327517c7b35d5d3ab37f658c9567f4f6bc4136f85cb232aeb790621c864"
+          base64 --decode "$RUNNER_TEMP/ape120.patch.gz.b64" > "$RUNNER_TEMP/ape120.patch.gz"
+          gzip --decompress --stdout "$RUNNER_TEMP/ape120.patch.gz" > "$RUNNER_TEMP/ape120.patch"
+          test "$(sha256sum "$RUNNER_TEMP/ape120.patch" | cut -d ' ' -f 1)" = "4b806a18d95244698df5803d134973b02eab89f187a71315a275caf419dca094"
+          git apply --check "$RUNNER_TEMP/ape120.patch"
+          git apply "$RUNNER_TEMP/ape120.patch"
+          python scripts/fix_ape120_alias_exclusions.py
+          python scripts/fix_ape120_lint_strings.py
+          install -d "$RUNNER_TEMP/review/evals/atb_eval/tasks" "$RUNNER_TEMP/review/scripts" "$RUNNER_TEMP/review/tests/evals"
+          cp evals/atb_eval/manifest.py "$RUNNER_TEMP/review/evals/atb_eval/manifest.py"
+          cp evals/atb_eval/paid_execution.py "$RUNNER_TEMP/review/evals/atb_eval/paid_execution.py"
+          cp evals/atb_eval/runner.py "$RUNNER_TEMP/review/evals/atb_eval/runner.py"
+          cp evals/atb_eval/tasks/ape.py "$RUNNER_TEMP/review/evals/atb_eval/tasks/ape.py"
+          cp scripts/build_ape120_inventory.py "$RUNNER_TEMP/review/scripts/build_ape120_inventory.py"
+          cp scripts/capture_ape120_routes.py "$RUNNER_TEMP/review/scripts/capture_ape120_routes.py"
+          cp scripts/freeze_ape120_longitudinal.py "$RUNNER_TEMP/review/scripts/freeze_ape120_longitudinal.py"
+          cp tests/evals/test_manifest.py "$RUNNER_TEMP/review/tests/evals/test_manifest.py"
+          cp tests/evals/test_ape_task.py "$RUNNER_TEMP/review/tests/evals/test_ape_task.py"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: applied-ape120-review-${{ github.run_id }}
+          path: ${{ runner.temp }}/review
+          if-no-files-found: error
+          retention-days: 1
