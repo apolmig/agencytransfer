@@ -6,4 +6,7 @@
 /part1b/benign_adapters_v6/** text eol=lf
 /.github/workflows/part1b-benign-v6-ci.yml text eol=lf
 /.github/workflows/part1b-benign-v6-runtime.yml text eol=lf
+/part1b/benign_adapters_v7/** text eol=lf
+/.github/workflows/part1b-benign-v7-ci.yml text eol=lf
+/.github/workflows/part1b-benign-v7-runtime.yml text eol=lf
 /.gitattributes text eol=lf
