@@ -1,0 +1,102 @@
+name: Part 1B benign adapters v15
+
+on:
+  pull_request:
+    paths:
+      - "part1b/benign_adapters_v15/**"
+      - ".github/workflows/part1b-benign-v15-ci.yml"
+      - ".gitattributes"
+  push:
+    branches: [main]
+    paths:
+      - "part1b/benign_adapters_v15/**"
+      - ".github/workflows/part1b-benign-v15-ci.yml"
+      - ".gitattributes"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      PYTHONPYCACHEPREFIX: /tmp/era-part1b-v15-public-pycache
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: "3.12"
+      - name: Verify authoritative LF bytes
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          root = Path("part1b/benign_adapters_v15")
+          paths = (
+              root / "jobs/train_lora.py",
+              root / "jobs/ml_stack_preflight.py",
+              root / ".dockerignore",
+              root / "protocol.json",
+              root / "requirements.lock",
+              root / "runtime-reuse.json",
+              root / "runtime/Dockerfile",
+              root / "tests/test_contract.py",
+          )
+          assert len(paths) == 8
+          for path in paths:
+              raw = path.read_bytes()
+              assert b"\r" not in raw, f"{path}: carriage return found"
+              assert raw.endswith(b"\n"), f"{path}: final LF missing"
+              assert raw.decode("utf-8").encode("utf-8") == raw, f"{path}: not UTF-8"
+          PY
+      - name: Verify immutable v10 runtime reuse and no v15 image workflow
+        run: |
+          python - <<'PY'
+          import hashlib
+          import json
+          from pathlib import Path
+
+          v10 = Path("part1b/benign_adapters_v10")
+          v15 = Path("part1b/benign_adapters_v15")
+          for relative in ("requirements.lock", "runtime/Dockerfile", ".dockerignore"):
+              assert (v15 / relative).read_bytes() == (v10 / relative).read_bytes(), relative
+          reuse = json.loads((v15 / "runtime-reuse.json").read_text(encoding="utf-8"))
+          assert reuse["status"] == "REUSE_AUTHORIZED"
+          assert reuse["image"]["new_v15_build_required"] is False
+          assert reuse["image"]["new_v15_smoke_authorized"] is False
+          assert hashlib.sha256((v15 / "requirements.lock").read_bytes()).hexdigest() == reuse["public_provenance"]["requirements_lock_sha256"]
+          assert not Path(".github/workflows/part1b-benign-v15-runtime.yml").exists()
+          PY
+      - name: Install pinned contract-test dependencies
+        run: >-
+          python -m pip install --disable-pip-version-check
+          cryptography==49.0.0 huggingface-hub==1.24.0
+      - name: Compile
+        run: |
+          python -m py_compile \
+            part1b/benign_adapters_v15/jobs/train_lora.py \
+            part1b/benign_adapters_v15/jobs/ml_stack_preflight.py \
+            part1b/benign_adapters_v15/tests/test_contract.py
+      - name: Frozen dataset, authorization, persistence, and ML contracts
+        run: python -m unittest discover -s part1b/benign_adapters_v15/tests -v
+      - name: Validate both adapters without ML dependencies
+        run: |
+          python part1b/benign_adapters_v15/jobs/train_lora.py \
+            --adapter transparent_persuasion --phase production \
+            --run-id github-ci-validation --seed 17 --validate-only >/tmp/p.json
+          python part1b/benign_adapters_v15/jobs/train_lora.py \
+            --adapter public_osint --phase production \
+            --run-id github-ci-validation --seed 17 --validate-only >/tmp/o.json
+          python -m json.tool /tmp/p.json >/dev/null
+          python -m json.tool /tmp/o.json >/dev/null
+          python -m json.tool part1b/benign_adapters_v15/protocol.json >/dev/null
+          python -m json.tool part1b/benign_adapters_v15/runtime-reuse.json >/dev/null
+      - name: Verify frozen protocol pin
+        run: >-
+          python -c "import hashlib,importlib.util,pathlib;
+          p=pathlib.Path('part1b/benign_adapters_v15');
+          s=importlib.util.spec_from_file_location('runner',p/'jobs/train_lora.py');
+          m=importlib.util.module_from_spec(s);s.loader.exec_module(m);
+          actual=hashlib.sha256((p/'protocol.json').read_bytes()).hexdigest();
+          assert actual==m.EXPECTED_PROTOCOL_SHA256,(actual,m.EXPECTED_PROTOCOL_SHA256)"
