@@ -5,6 +5,7 @@ import "./styles.css";
 import "./programme.css";
 import "./programme-overrides.css";
 import "./editorial-v2.css";
+import "./editorial-v2-visuals.css";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
