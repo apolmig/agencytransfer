@@ -56,7 +56,7 @@ function Hero() {
   );
 }
 
-function AnimationFeature() {
+export function AnimationFeature() {
   return (
     <section className="v2-animation-section">
       <div className="v2-section-lead">
@@ -72,7 +72,7 @@ function AnimationFeature() {
 }
 
 function KeyResources() {
-  const items = [
+  const items: Array<{ label: string; detail: string; href: string; external?: boolean }> = [
     { label: "Paper", detail: "Current v1.0 working draft reflected in the web edition", href: route("paper/") },
     { label: "Poster", detail: "Draft visual overview; final asset pending", href: route("outputs/#poster") },
     { label: "White paper", detail: "Accessible policy synthesis; draft", href: route("outputs/#white-paper") },
