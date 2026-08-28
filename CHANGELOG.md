@@ -2,6 +2,36 @@
 
 All notable project changes are recorded here. Dates use ISO 8601.
 
+## Unreleased — 2026-08-28
+
+### Programme foundation
+
+- Repositioned the repository from a standalone benchmark site to the maintained
+  **Agency Transfer Research Programme**.
+- Added a canonical machine-readable manifest covering the programme, four
+  research parts, artifacts, versions, evidence cutoffs, routes, claim ceilings,
+  visibility, media requirements, and publication blockers.
+- Added an artifact inventory, sitemap, page-level content map, media inventory,
+  and publishing rules before beginning the visual migration.
+- Added fail-closed validation for public URLs, private repositories, temporary
+  media hosting, Part I counting boundaries, Part III count layers, artifact
+  references, redirects, and published-video accessibility requirements.
+- Integrated programme-manifest validation into every site build.
+- Preserved the current Evaluation Registry as Part II and recorded redirects for
+  the existing Evidence and Testing pages.
+- Recorded the Brazil 2026 explainer as a synthetic media artifact requiring
+  durable hosting, captions, transcript, poster frame, and responsible-release
+  review before publication.
+
+### Canonicalisation still required
+
+- Publish the flagship paper at stable web and PDF URLs.
+- Select and publish the standalone canonical white paper, one-page brief, and
+  research poster.
+- Complete the inventory and durable hosting of explainer and presentation media.
+- Implement the programme publication shell and migrate the current Part II
+  interface without breaking historical links.
+
 ## Unreleased — 2026-08-16
 
 - Removed the experimental weighted proxy, its estimated index/frontier artifacts,
