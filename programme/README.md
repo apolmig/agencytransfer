@@ -36,6 +36,7 @@ The central discipline is simple: capability is not deployment; deployment is no
 - [`CONTENT_MAP.md`](CONTENT_MAP.md) — page-level editorial content and evidence boundaries.
 - [`MEDIA_INVENTORY.md`](MEDIA_INVENTORY.md) — explainers, visual media, hosting requirements, and release checks.
 - [`PUBLISHING_RULES.md`](PUBLISHING_RULES.md) — canonicalisation, evidence, versioning, and responsible-release rules.
+- [`IMPLEMENTATION_PLAN.md`](IMPLEMENTATION_PLAN.md) — staged migration from the current Part II interface to the complete programme publication.
 
 ## Status model
 
