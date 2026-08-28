@@ -6,11 +6,7 @@
 
 This repository maintains Miguel Guerrero’s research programme on **frontier AI, harmful manipulation, election security, agency transfer, and concentrated democratic power**.
 
-The programme asks a wider question than whether one model can produce persuasive text:
-
-> When can frontier-AI capability become an operational influence system; who controls that system; what effects follow; and when does that control threaten democratic self-government?
-
-The public project is at **[miguelguerrero.eu/agencytransfer](https://miguelguerrero.eu/agencytransfer/)**.
+The canonical public programme is **[miguelguerrero.eu/agencytransfer](https://miguelguerrero.eu/agencytransfer/)**.
 
 ## Flagship argument
 
@@ -19,9 +15,7 @@ The public project is at **[miguelguerrero.eu/agencytransfer](https://miguelguer
 
 > **The next Cambridge Analytica will be a system.**
 
-Frontier AI can join generation, personal context, action, distribution, and feedback into influence infrastructure before its downstream effects can be independently measured. The democratic risk is not only false content. It is concentrated control over the environments in which attention, trust, participation, and choice are formed—and over the evidence needed to contest that influence.
-
-The Capability–Deployment–Effect Gap preserves the missing causal bridges:
+Frontier AI can join generation, personal context, action, distribution, and feedback into influence infrastructure before its downstream effects can be independently measured. The democratic risk is not only false content. It is concentrated control over the environments in which attention, trust, participation, dependency, and choice are formed—and over the evidence needed to contest that influence.
 
 ```text
 capability → served system → controller and deployment → authentic exposure
@@ -30,39 +24,47 @@ capability → served system → controller and deployment → authentic exposur
 
 A model output is not a campaign. A campaign is not authentic exposure. Exposure is not persuasion. Persuasion is not manipulation. Manipulation of some people is not an electoral effect.
 
-The reverse error is also wrong. Identity deception, unlawful data use, opaque distribution, unbounded action authority, or failed evidence preservation do not become harmless because final vote effects remain unknown.
+## Public programme
+
+- **[Programme](https://miguelguerrero.eu/agencytransfer/)** — editorial overview, CDE topology, evidence status, selected outputs, and current programme log.
+- **[Research](https://miguelguerrero.eu/agencytransfer/research/)** — four connected research parts.
+- **[Flagship working paper](https://miguelguerrero.eu/agencytransfer/paper/)** — current source-integrated web working edition.
+- **[Outputs](https://miguelguerrero.eu/agencytransfer/outputs/)** — paper, white paper, one-page brief, poster, datasets, tools, methods, and code.
+- **[Explainers](https://miguelguerrero.eu/agencytransfer/explainers/)** — synthetic scenarios and visual mechanism explainers with visible claim ceilings.
+- **[About](https://miguelguerrero.eu/agencytransfer/about/)** — scope, author, evidence policy, citation, and responsible release.
 
 ## Four research parts
 
 | Part | Research object | Strongest current contribution | Claim ceiling |
 |---|---|---|---|
-| **I. From output to operationalisation** | Served systems, exploratory probes, trace bundles, and access-to-control methods | Bounded routes can produce campaign-planning elements; technical conversion to reproducible intervention remains fragile | No successful intervention, autonomous execution, authentic exposure, persuasion, or electoral effect |
-| **II. Capability and measurement** | Evaluation Registry and recovered APE-120 audit | Persuasion attempts are common among valid observations, but the measurement infrastructure remains non-confirmatory | No pooled manipulation score, human-effect estimate, safety ranking, or defensible frontier trend |
-| **III. Election evidence** | Claim-level public evidence index | Operations, mechanisms, attribution, distribution proxies, and institutional responses are more observable than human or electoral effects | No prevalence estimate or validated national electoral effect |
-| **IV. Policy evidence** | Causal policy atlas | Policy supply is broad; checked and bounded effectiveness evidence is sparse | No global policy-effect estimate or composite “best policy” ranking |
+| **[I. From output to operationalisation](https://miguelguerrero.eu/agencytransfer/research/part-i/)** | Served systems, exploratory probes, trace bundles, and access-to-control methods | Bounded routes can produce campaign-planning elements; technical conversion to reproducible intervention remains fragile | No successful intervention, autonomous execution, authentic exposure, persuasion, or electoral effect |
+| **[II. Capability and measurement](https://miguelguerrero.eu/agencytransfer/research/part-ii/)** | Evaluation Registry and recovered APE-120 audit | Persuasion attempts are common among valid observations, but the measurement infrastructure remains non-confirmatory | No pooled manipulation score, human-effect estimate, safety ranking, or defensible frontier trend |
+| **[III. Election evidence](https://miguelguerrero.eu/agencytransfer/research/part-iii/)** | Claim-level public evidence index | Operations, mechanisms, attribution, distribution proxies, and institutional responses are more observable than human or electoral effects | No prevalence estimate or validated national electoral effect |
+| **[IV. Policy evidence](https://miguelguerrero.eu/agencytransfer/research/part-iv/)** | Causal policy atlas | Policy supply is broad; checked and bounded effectiveness evidence is sparse | No global policy-effect estimate or composite “best policy” ranking |
 
 The four parts observe different links in one risk system. They are not an additive score or a completed causal ladder.
 
-## Current public artifacts
+## Principal artifacts
 
 ### Part I
 
 - **[Agency Transfer Lab](https://agency-transfer-lab.miguelguerrero.eu)** — deterministic evidence-harness and control-semantics prototype. It does not measure frontier capability, persuasion, behaviour change, agency transfer, actor uplift, or electoral impact.
-- [`part1b/`](part1b/) — public access-to-intervention methods records and fail-closed contracts. These document technical process, failed attempts, and incomplete transitions; they do not establish a successful model intervention.
+- [`part1b/`](part1b/) — public access-to-intervention methods records and fail-closed contracts. They document technical process, failed attempts, and incomplete transitions; they do not establish a successful model intervention.
+- **[Manuel / Miami explainer](https://miguelguerrero.eu/agencytransfer/explainers/#manuel-miami)** — synthetic scenario illustrating target discovery, synthetic authority, distribution, repetition, and scale.
+- **[Brazil 2026 storyboard](https://miguelguerrero.eu/agencytransfer/explainers/#brazil-2026)** — the final master remains withheld from the site until durable hosting, accessibility, and responsible-release requirements pass.
 
 ### Part II
 
-- **[Frontier Evaluation Registry](https://miguelguerrero.eu/agencytransfer/)** — the current public interface, which will be preserved under Part II as the programme site is restructured.
+- **[Frontier Evaluation Registry](https://miguelguerrero.eu/agencytransfer/research/part-ii/)** — source-linked release map preserving benchmark-native outcomes and visible missingness.
+- **[Part II evidence](https://miguelguerrero.eu/agencytransfer/research/part-ii/evidence/)** — literature, construct boundaries, agentic execution, deception, historical election operations, and access conditions.
+- **[Part II testing](https://miguelguerrero.eu/agencytransfer/research/part-ii/testing/)** — direct tests, exclusions, route integrity, validation status, and confirmatory publication gate.
 - **[Agency Transfer Benchmark dataset](https://huggingface.co/datasets/apol/agency-transfer-benchmark)** — aggregate-and-provenance-only public mirror.
-- [`evals/`](evals/) — direct evaluation harness, manifests, fixtures, validation, and historical audit records.
 
-The registry retains benchmark-native outcomes. It does not pool unlike instruments into a scalar, ranking, latent capability estimate, or causal time trend.
+Legacy `/evidence/` and `/testing/` routes remain available and declare the new canonical URLs.
 
 ### Part III
 
 - **[AI, Elections and Agency Transfer Evidence Index](https://huggingface.co/datasets/apol/ai-election-manipulation-cases)**
-
-The public count must be read as:
 
 ```text
 1,087 relational rows → 64 catalogue entries → 10 core records
@@ -76,11 +78,11 @@ Rows and catalogue entries are not cases. The corpus is purposive, not a prevale
 - **[Agency Transfer Policy Atlas](https://huggingface.co/datasets/apol/agency-transfer-policy-atlas)**
 - [`policy-atlas/`](policy-atlas/) — source, methods, schemas, validation, and versioned releases.
 
-The beta Atlas contains 68 control families and 118 implementations. It maps interventions, mechanisms, authority, evidence, rights risks, maturity, and research gaps. It does not publish a numeric policy ranking.
+The beta Atlas contains 68 control families and 118 implementations. It maps interventions, authority, mechanism evidence, effect evidence, rights risks, maturity, and research gaps. It does not publish a numeric policy ranking.
 
 ## Programme control record
 
-The canonical inventory, content architecture, routes, media requirements, and publication rules are under [`programme/`](programme/):
+The canonical inventory, routes, content architecture, media requirements, and publishing rules are under [`programme/`](programme/):
 
 - [`project-manifest.json`](programme/project-manifest.json)
 - [`ARTIFACT_INVENTORY.md`](programme/ARTIFACT_INVENTORY.md)
@@ -88,16 +90,11 @@ The canonical inventory, content architecture, routes, media requirements, and p
 - [`CONTENT_MAP.md`](programme/CONTENT_MAP.md)
 - [`MEDIA_INVENTORY.md`](programme/MEDIA_INVENTORY.md)
 - [`PUBLISHING_RULES.md`](programme/PUBLISHING_RULES.md)
+- [`IMPLEMENTATION_PLAN.md`](programme/IMPLEMENTATION_PLAN.md)
 
 The manifest separates source versions, public releases, evidence cutoffs, canonical URLs, claim ceilings, public artifacts, and controlled material. Every site build validates it.
 
-## Publication status
-
-The flagship paper, white paper, one-page brief, research poster, and explainer videos are being canonicalised before publication through the programme site. They are not linked from this README until one stable public asset and URL have been fixed for each output.
-
-The current root interface still presents Part II. The planned migration will make the programme the root publication and move the registry, evidence, and testing views under `/research/part-ii/`, while preserving existing links.
-
-## Reproduce the current site
+## Reproduce the site
 
 Requirements: Node.js 24 and npm.
 
@@ -111,7 +108,7 @@ npm run typecheck
 npm run build
 ```
 
-`npm run build` writes the static site to `dist/`. GitHub Actions deploys that artifact after a successful build on `main`.
+`npm run build` writes the complete static publication to `dist/`. GitHub Actions validates every canonical and legacy route before deployment to GitHub Pages.
 
 ## Responsible release
 
@@ -121,4 +118,4 @@ Synthetic explainers are illustrations. They are not evidence of a real operatio
 
 ## Citation and reuse
 
-Use [`CITATION.cff`](CITATION.cff) for the repository citation and retain the citations required by each upstream source. Project code is Apache-2.0. Project-authored aggregate data and metadata are CC BY 4.0, subject to the upstream rights recorded in [`LICENSES/DATA.md`](LICENSES/DATA.md).
+Use [`CITATION.cff`](CITATION.cff) for the programme citation and retain the citations required by every upstream source. Project code is Apache-2.0. Project-authored aggregate data and metadata are CC BY 4.0, subject to the upstream rights recorded in [`LICENSES/DATA.md`](LICENSES/DATA.md).
