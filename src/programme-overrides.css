@@ -2,6 +2,23 @@
   overflow: hidden;
 }
 
+.evidence-funnel,
+.election-matrix,
+.election-matrix__scroll {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.election-matrix {
+  overflow: hidden;
+}
+
+.election-matrix__scroll {
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+}
+
 @media (max-width: 560px) {
   .rift-figure svg {
     margin-inline: 0;
