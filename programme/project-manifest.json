@@ -1,0 +1,524 @@
+{
+  "schema_version": "1.1.0",
+  "programme": {
+    "id": "agency-transfer-research-programme",
+    "title": "Agency Transfer Research Programme",
+    "subtitle": "Frontier AI, harmful manipulation, and democratic power",
+    "flagship_title": "Harmful Manipulation and Election Security",
+    "flagship_subtitle": "The Capability–Deployment–Effect Gap",
+    "lead": "The next Cambridge Analytica will be a system.",
+    "scope_statement": "Manipulation at scale facilitated by frontier AI: what is happening, what may be coming, and how democracies can mitigate the danger.",
+    "secondary_lens": "Manipulation as a mechanism for the extreme concentration of political and epistemic power.",
+    "thesis": "Frontier AI can make influence more scalable, adaptive, persistent, and infrastructural. The democratic risk lies not only in false content, but in concentrated control over the systems that shape attention, trust, choice, dependency, and the evidence needed to contest them.",
+    "status": "working_programme",
+    "author": "Miguel Guerrero",
+    "affiliation": "ERA:AI Summer Research Fellowship, Cambridge",
+    "programme_period": "2026",
+    "evidence_freeze": "2026-08-28",
+    "last_updated": "2026-08-28",
+    "canonical_site": "https://miguelguerrero.eu/agencytransfer/",
+    "canonical_repository": "https://github.com/apolmig/agencytransfer",
+    "claim_boundary": "The programme does not establish a closed adaptive influence loop, authentic audience exposure, durable agency erosion, a prevalence estimate, or an AI-attributable electoral effect."
+  },
+  "evidence_grades": [
+    {
+      "id": "established",
+      "label": "Established evidence",
+      "definition": "Directly observed or source-verified within the stated system, protocol, and endpoint."
+    },
+    {
+      "id": "strong_inference",
+      "label": "Strong inference",
+      "definition": "A conclusion well supported by established observations but not directly measured at the claimed layer."
+    },
+    {
+      "id": "plausible_hypothesis",
+      "label": "Plausible hypothesis",
+      "definition": "A mechanism consistent with available evidence that still requires direct testing."
+    },
+    {
+      "id": "speculative_scenario",
+      "label": "Speculative scenario",
+      "definition": "A conditional pathway whose conjunction, probability, or threshold is not established."
+    },
+    {
+      "id": "open_question",
+      "label": "Open question",
+      "definition": "A material uncertainty for which the programme does not yet have sufficient evidence."
+    }
+  ],
+  "causal_topology": [
+    "AI capability",
+    "served system",
+    "controller and purpose",
+    "data, authority, and tools",
+    "deployment and distribution",
+    "authentic exposure",
+    "human or institutional response",
+    "agency transfer",
+    "concentration of power",
+    "democratic harm",
+    "mitigation"
+  ],
+  "research_parts": [
+    {
+      "id": "part-i",
+      "number": "I",
+      "title": "From output to operationalisation",
+      "question": "When does model or served-system capability become an operational influence system?",
+      "observed_unit": "Paired red-team objectives, exploratory probes, forensic trace bundles, and access-to-control methods runs.",
+      "strongest_supported_claim": "Recorded served routes produced recognisable campaign-planning elements under bounded conditions, while conversion from model access to a reproducible intervention remained technically fragile.",
+      "claim_ceiling": "No successful intervention, autonomous execution, authentic audience contact, persuasion, manipulation of a real person, or electoral effect.",
+      "primary_evidence_grade": "established",
+      "headline_metrics": {
+        "paired_objectives": 10,
+        "scenario_families": 2,
+        "midpoint_probes": 3,
+        "forensic_trace_bundles": 2,
+        "forensic_requests": 5,
+        "completed_outputs": 3,
+        "failed_or_empty_streams": 2,
+        "ledger_events": 18907,
+        "live_actions": 0
+      },
+      "counting_note": "These are different evidence units, may partially overlap, and must not be summed.",
+      "artifact_ids": [
+        "part-i-served-system-evidence",
+        "part-i-agency-transfer-lab",
+        "part-i-access-to-intervention-methods",
+        "controlled-evaluation-evidence",
+        "manuel-miami-explainer",
+        "brazil-2026-explainer"
+      ]
+    },
+    {
+      "id": "part-ii",
+      "number": "II",
+      "title": "Capability and measurement",
+      "question": "What can current instruments say about manipulation-relevant frontier-model behaviour, and where does the measurement system fail?",
+      "observed_unit": "A six-instrument Evaluation Registry and a recovered APE-120 audit across served model conditions.",
+      "strongest_supported_claim": "Persuasion attempts were common among valid APE-120 observations, but route instability, missingness, evaluator validity, and coverage prevented every prespecified confirmatory model estimate and any defensible pooled longitudinal index.",
+      "claim_ceiling": "No pooled manipulation score, no human persuasion estimate, no model safety ranking, and no defensible longitudinal frontier trend.",
+      "primary_evidence_grade": "established",
+      "headline_metrics": {
+        "registry_instruments": 6,
+        "ape120_topics": 120,
+        "finalised_served_conditions": 28,
+        "finalised_records": 3360,
+        "valid_target_and_attempt_evaluator_observations": 2683,
+        "evaluator_coded_attempts": 2345,
+        "descriptive_complete_case_attempt_rate_percent": 87.4,
+        "conditions_passing_confirmatory_gate": 0
+      },
+      "artifact_ids": [
+        "part-ii-evaluation-registry",
+        "part-ii-ape120-audit",
+        "part-ii-hugging-face-dataset"
+      ]
+    },
+    {
+      "id": "part-iii",
+      "number": "III",
+      "title": "Election evidence and the effect gap",
+      "question": "What do public election records establish about AI-mediated influence operations, exposure, and downstream effects?",
+      "observed_unit": "A purposive claim-level evidence index of incidents, mechanisms, distribution evidence, attribution, and institutional response.",
+      "strongest_supported_claim": "Public records establish selected operations, mechanisms, attribution evidence, distribution proxies, and institutional responses more often than authentic exposure, durable human effects, or electoral consequences.",
+      "claim_ceiling": "No prevalence estimate and no validated national electoral effect attributable to AI-mediated manipulation.",
+      "primary_evidence_grade": "established",
+      "headline_metrics": {
+        "relational_rows": 1087,
+        "catalogue_entries": 64,
+        "core_records": 10,
+        "incident_eligible_records": 8,
+        "documented_manipulation_records": 6
+      },
+      "counting_note": "Relational rows and catalogue entries are not incident counts. The public release contains six documented-manipulation records.",
+      "artifact_ids": [
+        "part-iii-election-evidence-index"
+      ]
+    },
+    {
+      "id": "part-iv",
+      "number": "IV",
+      "title": "Policy evidence and intervention",
+      "question": "Where can democracies interrupt the causal chain, under whose authority, and with what evidence and rights burden?",
+      "observed_unit": "A causal policy atlas of control families, implementations, claims, sources, mechanisms, decision gates, and research gaps.",
+      "strongest_supported_claim": "The intervention portfolio is broad, but checked and bounded evidence of effectiveness remains sparse; the current atlas supports causal mapping and research triage, not a numeric policy ranking.",
+      "claim_ceiling": "No globally representative policy-effect estimate and no composite 'best policy' score.",
+      "primary_evidence_grade": "established",
+      "headline_metrics": {
+        "control_families": 68,
+        "implementations": 118,
+        "atomic_claims": 320,
+        "canonical_sources": 123,
+        "mechanisms": 16,
+        "legal_instruments": 28,
+        "policy_packages": 15,
+        "non_compensable_decision_gates": 24,
+        "cases_or_contexts": 9,
+        "research_gaps": 16,
+        "priority_effect_claims_checked": 6
+      },
+      "artifact_ids": [
+        "part-iv-policy-atlas"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "id": "flagship-paper",
+      "title": "Harmful Manipulation and Election Security: The Capability–Deployment–Effect Gap",
+      "kind": "working_paper",
+      "part": "programme",
+      "role": "Programme-level flagship synthesis and primary editorial spine.",
+      "status": "published",
+      "visibility": "public",
+      "canonical_url": "https://miguelguerrero.eu/agencytransfer/paper/",
+      "source_url": null,
+      "repo_path": null,
+      "source_version": "source-integrated-20260828",
+      "public_release_version": "current-web-working-edition",
+      "evidence_cutoff": "2026-08-28",
+      "planned_route": "/paper/",
+      "claim_ceiling": "Programme synthesis, not a single-estimand study; no closed adaptive loop, authentic exposure, durable agency erosion, prevalence estimate, or AI-attributable electoral effect.",
+      "publication_note": "The web working edition is canonical until a frozen downloadable paper is supplied."
+    },
+    {
+      "id": "part-i-served-system-evidence",
+      "title": "Client-observed served-system evidence bundles",
+      "kind": "evidence_bundle",
+      "part": "part-i",
+      "role": "Deep forensic subset of the broader Part I exploratory programme.",
+      "status": "withheld",
+      "visibility": "withheld",
+      "canonical_url": null,
+      "source_url": null,
+      "repo_path": null,
+      "source_version": "2026-08 forensic subset",
+      "public_release_version": null,
+      "evidence_cutoff": "2026-08-27",
+      "planned_route": "/research/part-i/",
+      "claim_ceiling": "Output-level planning evidence from an unidentified served route; no checkpoint identity, autonomous execution, exposure, persuasion, or electoral effect.",
+      "responsible_release_note": "Raw harmful prompts, campaign-ready outputs, credentials, and operational traces remain withheld."
+    },
+    {
+      "id": "part-i-agency-transfer-lab",
+      "title": "Agency Transfer Lab",
+      "kind": "research_tool",
+      "part": "part-i",
+      "role": "Experimental evidence-harness and control-semantics prototype.",
+      "status": "published",
+      "visibility": "public",
+      "canonical_url": "https://agency-transfer-lab.miguelguerrero.eu",
+      "source_url": null,
+      "repo_path": null,
+      "source_version": null,
+      "public_release_version": "working-prototype",
+      "evidence_cutoff": null,
+      "planned_route": "/research/part-i/",
+      "claim_ceiling": "Validates deterministic harness behaviour, replay, persistence, migration, and integrity; it does not measure frontier capability, persuasion, behaviour change, agency transfer, actor uplift, or electoral impact.",
+      "publication_note": "The public deployment may be linked. The private source repository must not be linked."
+    },
+    {
+      "id": "part-i-access-to-intervention-methods",
+      "title": "From open weights to reproducible intervention",
+      "kind": "methods_record",
+      "part": "part-i",
+      "role": "Access-to-control methods study and public fail-closed contracts.",
+      "status": "working",
+      "visibility": "public",
+      "canonical_url": "https://github.com/apolmig/agencytransfer/tree/main/part1b",
+      "source_url": "https://github.com/apolmig/agencytransfer/tree/main/part1b",
+      "repo_path": "part1b/",
+      "source_version": "v1.1 methods note and public contract series",
+      "public_release_version": null,
+      "evidence_cutoff": "2026-08-27",
+      "planned_route": "/research/part-i/",
+      "claim_ceiling": "Documents technical process and failed or incomplete conversion attempts; no saved behavioural intervention or successful model modification is established."
+    },
+    {
+      "id": "controlled-evaluation-evidence",
+      "title": "Controlled evaluation evidence",
+      "kind": "controlled_evidence",
+      "part": "cross-programme",
+      "role": "Private logs, outputs, grader traces, reviewer mappings, validation material, and encrypted archives.",
+      "status": "withheld",
+      "visibility": "private",
+      "canonical_url": null,
+      "source_url": null,
+      "repo_path": null,
+      "source_version": null,
+      "public_release_version": null,
+      "evidence_cutoff": null,
+      "planned_route": null,
+      "claim_ceiling": "Supports controlled validation and audit only; it is not a public artifact.",
+      "responsible_release_note": "Do not publish or link the private control plane."
+    },
+    {
+      "id": "part-ii-evaluation-registry",
+      "title": "Frontier Evaluation Registry",
+      "kind": "interactive_research",
+      "part": "part-ii",
+      "role": "Source-linked release map retaining benchmark-native outcomes and comparability limits.",
+      "status": "published",
+      "visibility": "public",
+      "canonical_url": "https://miguelguerrero.eu/agencytransfer/research/part-ii/",
+      "source_url": "https://github.com/apolmig/agencytransfer",
+      "repo_path": "src/",
+      "source_version": "0.2.0-draft",
+      "public_release_version": "programme-v1-part-ii",
+      "evidence_cutoff": "2026-08-16",
+      "planned_route": "/research/part-ii/",
+      "claim_ceiling": "No cross-instrument scalar, ranking, latent capability estimate, or causal time trend.",
+      "publication_note": "The original registry, evidence, and testing views are preserved under Part II; legacy URLs remain available."
+    },
+    {
+      "id": "part-ii-ape120-audit",
+      "title": "APE-120 recovered audit",
+      "kind": "evaluation_audit",
+      "part": "part-ii",
+      "role": "Direct primary-research audit of instructed persuasion attempts across served conditions.",
+      "status": "working",
+      "visibility": "public",
+      "canonical_url": "https://miguelguerrero.eu/agencytransfer/research/part-ii/testing/",
+      "source_url": "https://github.com/apolmig/agencytransfer/tree/main/evals",
+      "repo_path": "evals/",
+      "source_version": "recovered APE-120 audit",
+      "public_release_version": "descriptive-audit",
+      "evidence_cutoff": "2026-08-25",
+      "planned_route": "/research/part-ii/testing/",
+      "claim_ceiling": "Descriptive attempt evidence only; no condition passed the confirmatory gate and no model-level efficacy or safety claim is licensed."
+    },
+    {
+      "id": "part-ii-hugging-face-dataset",
+      "title": "Agency Transfer Benchmark dataset",
+      "kind": "dataset",
+      "part": "part-ii",
+      "role": "Aggregate-and-provenance-only public mirror for Part II.",
+      "status": "published",
+      "visibility": "public",
+      "canonical_url": "https://huggingface.co/datasets/apol/agency-transfer-benchmark",
+      "source_url": "https://github.com/apolmig/agencytransfer",
+      "repo_path": "huggingface/",
+      "source_version": "repository main",
+      "public_release_version": "frontier draft 0.2",
+      "evidence_cutoff": "2026-08-16",
+      "planned_route": "/research/part-ii/",
+      "claim_ceiling": "Aggregate and provenance data only; raw harmful generations are excluded."
+    },
+    {
+      "id": "part-iii-election-evidence-index",
+      "title": "AI, Elections and Agency Transfer Evidence Index",
+      "kind": "dataset",
+      "part": "part-iii",
+      "role": "Claim-level evidence index and public election-case dataset.",
+      "status": "published",
+      "visibility": "public",
+      "canonical_url": "https://huggingface.co/datasets/apol/ai-election-manipulation-cases",
+      "source_url": null,
+      "repo_path": null,
+      "source_version": "source-integrated v0.3.1",
+      "public_release_version": "v0.4.4",
+      "evidence_cutoff": "2026-08-12",
+      "planned_route": "/research/part-iii/",
+      "claim_ceiling": "Purposive evidence corpus, not a prevalence sample; public records do not validate national vote effects attributable to AI-mediated manipulation.",
+      "publication_note": "The site displays source version, public release version, and research cutoff separately."
+    },
+    {
+      "id": "part-iv-policy-atlas",
+      "title": "Agency Transfer Policy Atlas",
+      "kind": "dataset",
+      "part": "part-iv",
+      "role": "Causal evidence map of interventions against AI-mediated manipulation.",
+      "status": "published",
+      "visibility": "public",
+      "canonical_url": "https://huggingface.co/datasets/apol/agency-transfer-policy-atlas",
+      "source_url": "https://github.com/apolmig/agencytransfer/tree/main/policy-atlas",
+      "repo_path": "policy-atlas/",
+      "source_version": "source-integrated v0.3.1",
+      "public_release_version": "v0.1.0-beta.2",
+      "evidence_cutoff": "2026-08-11",
+      "planned_route": "/research/part-iv/",
+      "claim_ceiling": "Beta causal map and research-triage artifact; no numeric policy ranking or globally representative effect estimate.",
+      "publication_note": "Legal force, mechanism evidence, intervention-effect evidence, maturity, rights burden, and verification depth remain separate."
+    },
+    {
+      "id": "white-paper",
+      "title": "The Persuasion Machines: Frontier AI, Persuasion, and the Risk of Harmful Manipulation",
+      "kind": "white_paper",
+      "part": "programme",
+      "role": "Accessible adjacent synthesis for policy and general audiences.",
+      "status": "working",
+      "visibility": "public",
+      "canonical_url": "https://miguelguerrero.eu/agencytransfer/outputs/#white-paper",
+      "source_url": null,
+      "repo_path": null,
+      "source_version": "tenth edition",
+      "public_release_version": "web-summary",
+      "evidence_cutoff": "2026-08-27",
+      "planned_route": "/outputs/#white-paper",
+      "claim_ceiling": "Adjacent synthesis; not a substitute for the flagship paper or its source-specific claim ceilings.",
+      "publication_note": "The current web summary will be replaced by the standalone canonical file when supplied."
+    },
+    {
+      "id": "one-page-brief",
+      "title": "The next Cambridge Analytica will be a system",
+      "kind": "brief",
+      "part": "programme",
+      "role": "One-page explanation of the CDE Gap and the four research parts.",
+      "status": "working",
+      "visibility": "public",
+      "canonical_url": "https://miguelguerrero.eu/agencytransfer/outputs/#one-page-brief",
+      "source_url": null,
+      "repo_path": null,
+      "source_version": "August 2026",
+      "public_release_version": "web-facsimile",
+      "evidence_cutoff": "2026-08-28",
+      "planned_route": "/outputs/#one-page-brief",
+      "claim_ceiling": "Editorial summary only; figures remain bound to the denominators and caveats in the flagship paper.",
+      "publication_note": "The web facsimile will be replaced by the final canonical brief when supplied."
+    },
+    {
+      "id": "research-poster",
+      "title": "Harmful Manipulation and Election Security",
+      "kind": "poster",
+      "part": "programme",
+      "role": "Visual overview of the evidence rift, the four research parts, and the security response.",
+      "status": "working",
+      "visibility": "public",
+      "canonical_url": "https://miguelguerrero.eu/agencytransfer/outputs/#research-poster",
+      "source_url": null,
+      "repo_path": null,
+      "source_version": "latest available August 2026 poster",
+      "public_release_version": "web-facsimile",
+      "evidence_cutoff": "2026-08-28",
+      "planned_route": "/outputs/#research-poster",
+      "claim_ceiling": "Visual synthesis; numbers are evidence observed at different layers and are not a single funnel or additive score.",
+      "publication_note": "The web facsimile will be replaced by the final poster asset when supplied."
+    },
+    {
+      "id": "manuel-miami-explainer",
+      "title": "Manuel: an agentic influence scenario",
+      "kind": "video",
+      "part": "part-i",
+      "role": "Synthetic scenario illustrating target discovery, persona modelling, synthetic authority, distribution, repetition, and scale.",
+      "status": "working",
+      "visibility": "public",
+      "canonical_url": "https://miguelguerrero.eu/agencytransfer/explainers/#manuel-miami",
+      "source_url": "https://www.youtube.com/watch?v=ZTyWOhF7Pto",
+      "repo_path": null,
+      "source_version": "current YouTube cut",
+      "public_release_version": "web-embedded",
+      "evidence_cutoff": null,
+      "planned_route": "/explainers/#manuel-miami",
+      "claim_ceiling": "Illustrates a possible mechanism; not evidence of a real campaign, authentic exposure, behaviour change, or electoral effect.",
+      "media": {
+        "format": "video/youtube",
+        "language": "en",
+        "duration_seconds": null,
+        "embed_url": "https://www.youtube-nocookie.com/embed/ZTyWOhF7Pto",
+        "poster_frame_url": null,
+        "captions_url": null,
+        "transcript_url": null,
+        "hosting_status": "durable_public"
+      }
+    },
+    {
+      "id": "brazil-2026-explainer",
+      "title": "Brazil 2026: the final-hour voice",
+      "kind": "video",
+      "part": "part-i",
+      "role": "Synthetic scenario illustrating capability, cloned identity, private distribution, timing, and the unresolved gap to aggregate effect.",
+      "status": "hosting_required",
+      "visibility": "public",
+      "canonical_url": "https://miguelguerrero.eu/agencytransfer/explainers/#brazil-2026",
+      "source_url": null,
+      "repo_path": "tmp/brazil2026-artifacts-20260824.md",
+      "source_version": "final MP4 build, 2026-08-24",
+      "public_release_version": "storyboard-only",
+      "evidence_cutoff": null,
+      "planned_route": "/explainers/#brazil-2026",
+      "claim_ceiling": "Illustrative synthetic scenario; not evidence of a real operation, authentic exposure, behaviour change, or electoral effect.",
+      "responsible_release_note": "The temporary-host URL is not published. The master still requires a durable host, captions, transcript, poster frame, and final dual-use review.",
+      "media": {
+        "format": "video/mp4",
+        "language": "pt",
+        "duration_seconds": 58,
+        "embed_url": null,
+        "poster_frame_url": null,
+        "captions_url": null,
+        "transcript_url": null,
+        "hosting_status": "temporary_source_only"
+      }
+    }
+  ],
+  "routes": {
+    "primary_navigation": [
+      {
+        "label": "Programme",
+        "path": "/"
+      },
+      {
+        "label": "Research",
+        "path": "/research/"
+      },
+      {
+        "label": "Paper",
+        "path": "/paper/"
+      },
+      {
+        "label": "Outputs",
+        "path": "/outputs/"
+      },
+      {
+        "label": "Explainers",
+        "path": "/explainers/"
+      },
+      {
+        "label": "About",
+        "path": "/about/"
+      }
+    ],
+    "canonical_routes": [
+      "/",
+      "/research/",
+      "/research/part-i/",
+      "/research/part-ii/",
+      "/research/part-ii/evidence/",
+      "/research/part-ii/testing/",
+      "/research/part-iii/",
+      "/research/part-iv/",
+      "/paper/",
+      "/outputs/",
+      "/explainers/",
+      "/updates/",
+      "/about/"
+    ],
+    "redirects": [
+      {
+        "from": "/evidence/",
+        "to": "/research/part-ii/evidence/"
+      },
+      {
+        "from": "/testing/",
+        "to": "/research/part-ii/testing/"
+      }
+    ]
+  },
+  "publication_rules": {
+    "single_canonical_asset_per_output": true,
+    "stable_url_required_for_published_status": true,
+    "source_and_public_versions_must_be_separate": true,
+    "counts_require_denominator_and_cutoff": true,
+    "claims_require_evidence_grade_and_claim_ceiling": true,
+    "temporary_media_hosts_forbidden": true,
+    "private_repositories_must_not_be_linked": true,
+    "videos_require_durable_host_poster_frame_and_transcript": true,
+    "raw_harmful_operational_material_is_withheld": true
+  },
+  "known_blockers": [
+    "Replace the current paper web edition with the final canonical manuscript and frozen PDF when supplied.",
+    "Replace the white-paper summary, brief facsimile, and poster facsimile with their final canonical assets when supplied.",
+    "Move the Brazil explainer master to durable hosting and add captions, transcript, poster frame, and final responsible-release review."
+  ]
+}

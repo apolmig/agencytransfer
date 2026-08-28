@@ -29,13 +29,24 @@ jobs:
         run: npm ci
       - name: Validate, type-check, and build
         run: npm run build
-      - name: Assert multipage output
+      - name: Assert programme output
         run: |
           test -f dist/index.html
+          test -f dist/research/index.html
+          test -f dist/research/part-i/index.html
+          test -f dist/research/part-ii/index.html
+          test -f dist/research/part-ii/evidence/index.html
+          test -f dist/research/part-ii/testing/index.html
+          test -f dist/research/part-iii/index.html
+          test -f dist/research/part-iv/index.html
+          test -f dist/paper/index.html
+          test -f dist/outputs/index.html
+          test -f dist/explainers/index.html
+          test -f dist/updates/index.html
+          test -f dist/about/index.html
           test -f dist/evidence/index.html
           test -f dist/testing/index.html
       - name: Upload Pages artifact
-        if: github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v5
         with:
           path: dist

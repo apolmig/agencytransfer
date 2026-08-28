@@ -1,9 +1,9 @@
 cff-version: 1.2.0
-message: "If you use this software or its project-authored data, cite it and the relevant upstream sources."
-title: "Agency Transfer Benchmark"
+message: "If you use this programme, its software, or its project-authored data, cite the programme and every relevant upstream source."
+title: "Agency Transfer Research Programme"
 type: software
-version: 0.2.0-draft
-date-released: 2026-08-10
+version: 0.3.0-draft
+date-released: 2026-08-28
 authors:
   - family-names: "Guerrero Manchón"
     given-names: "Miguel"
@@ -11,13 +11,20 @@ repository-code: "https://github.com/apolmig/agencytransfer"
 url: "https://miguelguerrero.eu/agencytransfer/"
 license: Apache-2.0
 abstract: >-
-  A frontier-only, source-linked retrospective release-series map of AI model
-  behaviour, safeguards, access conditions, and system-level research questions
-  relevant to harmful manipulation and election security.
+  A maintained research programme on frontier AI, harmful manipulation,
+  election security, agency transfer, and concentrated democratic power. It
+  integrates four research strands: served-system operationalisation,
+  capability measurement, election evidence, and policy intervention. The
+  programme preserves the Capability–Deployment–Effect Gap and does not treat
+  evidence at one layer as proof of authentic exposure, human effect, agency
+  transfer, or electoral consequence at another.
 keywords:
   - artificial intelligence
-  - evaluation
-  - manipulation
+  - harmful manipulation
+  - election security
+  - agency transfer
+  - democratic power
   - persuasion
   - agentic systems
-  - model safety
+  - model evaluation
+  - AI governance

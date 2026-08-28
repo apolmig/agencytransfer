@@ -2,6 +2,57 @@
 
 All notable project changes are recorded here. Dates use ISO 8601.
 
+## Unreleased — 2026-08-28
+
+### Agency Transfer Research Programme v1
+
+- Repositioned the repository and canonical GitHub Pages site from a standalone
+  benchmark to the maintained **Agency Transfer Research Programme**.
+- Built a restrained editorial home page around the flagship argument,
+  Capability–Deployment–Effect topology, four research parts, evidence grades,
+  selected outputs, explainers, and programme log.
+- Published dedicated routes for Programme, Research, Parts I–IV, the flagship
+  paper, Outputs, Explainers, Updates, and About.
+- Preserved the existing Frontier Evaluation Registry, Evidence, and Testing
+  interfaces under Part II while retaining the legacy `/evidence/` and
+  `/testing/` paths with the new canonical metadata.
+- Added a current web working edition of *Harmful Manipulation and Election
+  Security: The Capability–Deployment–Effect Gap*.
+- Added Part I evidence architecture, conceptual mechanism illustrations,
+  Agency Transfer Lab and public methods links, and explicit responsible-release
+  boundaries.
+- Added the recovered APE-120 attrition, attempt-rate, missingness-sensitivity,
+  and zero-confirmatory-gate presentation alongside the original release map.
+- Added Part III count layers, a case-by-claim evidence matrix, case notes, and
+  the public Election Evidence Index link.
+- Added Part IV portfolio coverage, evidence backlog, manipulation baselines,
+  governance priorities, design objectives, and the public Policy Atlas link.
+- Added web facsimiles of the one-page brief and current poster, plus a working
+  white-paper summary. These can be replaced by final canonical assets without
+  changing routes or page structure.
+- Embedded the Manuel/Miami synthetic explainer with an adjacent claim ceiling.
+  Added a Brazil 2026 storyboard while withholding its temporary-host video URL
+  until durable hosting, accessibility, and responsible-release checks pass.
+- Added a dedicated editorial design layer while retaining the existing Part II
+  chart and evidence styles.
+- Added a canonical machine-readable manifest covering programme scope, Parts
+  I–IV, artifacts, versions, cutoffs, URLs, claim ceilings, visibility, media,
+  routes, and publication blockers.
+- Added fail-closed programme validation for private links, temporary hosts,
+  Part I counting boundaries, Part III count layers, artifact references,
+  redirects, and video requirements.
+- Extended both GitHub Actions workflows to type-check, build, and assert every
+  canonical and legacy publication route.
+
+### Remaining asset substitutions
+
+- Replace the current paper web working edition with the final canonical
+  manuscript and frozen PDF when supplied.
+- Replace the white-paper summary, one-page brief facsimile, and poster facsimile
+  with final canonical assets when supplied.
+- Move the Brazil explainer master to durable hosting and add captions,
+  transcript, poster frame, and final responsible-release review.
+
 ## Unreleased — 2026-08-16
 
 - Removed the experimental weighted proxy, its estimated index/frontier artifacts,
