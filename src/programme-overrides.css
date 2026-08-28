@@ -1,0 +1,10 @@
+.rift-figure {
+  overflow: hidden;
+}
+
+@media (max-width: 560px) {
+  .rift-figure svg {
+    margin-inline: 0;
+    width: 100%;
+  }
+}
