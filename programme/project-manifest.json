@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.0.0",
+  "schema_version": "1.1.0",
   "programme": {
     "id": "agency-transfer-research-programme",
     "title": "Agency Transfer Research Programme",
@@ -67,7 +67,7 @@
       "title": "From output to operationalisation",
       "question": "When does model or served-system capability become an operational influence system?",
       "observed_unit": "Paired red-team objectives, exploratory probes, forensic trace bundles, and access-to-control methods runs.",
-      "strongest_supported_claim": "Recorded served routes produced recognisable campaign-planning elements under bounded conditions, while the conversion from model access to a reproducible intervention remained technically fragile.",
+      "strongest_supported_claim": "Recorded served routes produced recognisable campaign-planning elements under bounded conditions, while conversion from model access to a reproducible intervention remained technically fragile.",
       "claim_ceiling": "No successful intervention, autonomous execution, authentic audience contact, persuasion, manipulation of a real person, or electoral effect.",
       "primary_evidence_grade": "established",
       "headline_metrics": {
@@ -86,7 +86,9 @@
         "part-i-served-system-evidence",
         "part-i-agency-transfer-lab",
         "part-i-access-to-intervention-methods",
-        "controlled-evaluation-evidence"
+        "controlled-evaluation-evidence",
+        "manuel-miami-explainer",
+        "brazil-2026-explainer"
       ]
     },
     {
@@ -169,17 +171,17 @@
       "kind": "working_paper",
       "part": "programme",
       "role": "Programme-level flagship synthesis and primary editorial spine.",
-      "status": "release_candidate",
+      "status": "published",
       "visibility": "public",
-      "canonical_url": null,
+      "canonical_url": "https://miguelguerrero.eu/agencytransfer/paper/",
       "source_url": null,
       "repo_path": null,
       "source_version": "source-integrated-20260828",
-      "public_release_version": null,
+      "public_release_version": "current-web-working-edition",
       "evidence_cutoff": "2026-08-28",
       "planned_route": "/paper/",
       "claim_ceiling": "Programme synthesis, not a single-estimand study; no closed adaptive loop, authentic exposure, durable agency erosion, prevalence estimate, or AI-attributable electoral effect.",
-      "publication_note": "Canonical source file selected; stable web/PDF publication URL still required."
+      "publication_note": "The web working edition is canonical until a frozen downloadable paper is supplied."
     },
     {
       "id": "part-i-served-system-evidence",
@@ -211,11 +213,11 @@
       "source_url": null,
       "repo_path": null,
       "source_version": null,
-      "public_release_version": null,
+      "public_release_version": "working-prototype",
       "evidence_cutoff": null,
       "planned_route": "/research/part-i/",
       "claim_ceiling": "Validates deterministic harness behaviour, replay, persistence, migration, and integrity; it does not measure frontier capability, persuasion, behaviour change, agency transfer, actor uplift, or electoral impact.",
-      "publication_note": "Public deployment may be linked. Private source repository must not be linked."
+      "publication_note": "The public deployment may be linked. The private source repository must not be linked."
     },
     {
       "id": "part-i-access-to-intervention-methods",
@@ -260,15 +262,15 @@
       "role": "Source-linked release map retaining benchmark-native outcomes and comparability limits.",
       "status": "published",
       "visibility": "public",
-      "canonical_url": "https://miguelguerrero.eu/agencytransfer/",
+      "canonical_url": "https://miguelguerrero.eu/agencytransfer/research/part-ii/",
       "source_url": "https://github.com/apolmig/agencytransfer",
       "repo_path": "src/",
       "source_version": "0.2.0-draft",
-      "public_release_version": "frontier draft 0.2",
+      "public_release_version": "programme-v1-part-ii",
       "evidence_cutoff": "2026-08-16",
       "planned_route": "/research/part-ii/",
       "claim_ceiling": "No cross-instrument scalar, ranking, latent capability estimate, or causal time trend.",
-      "publication_note": "Currently occupies the programme root and will be preserved under Part II with redirects."
+      "publication_note": "The original registry, evidence, and testing views are preserved under Part II; legacy URLs remain available."
     },
     {
       "id": "part-ii-ape120-audit",
@@ -278,11 +280,11 @@
       "role": "Direct primary-research audit of instructed persuasion attempts across served conditions.",
       "status": "working",
       "visibility": "public",
-      "canonical_url": "https://github.com/apolmig/agencytransfer/tree/main/evals",
+      "canonical_url": "https://miguelguerrero.eu/agencytransfer/research/part-ii/testing/",
       "source_url": "https://github.com/apolmig/agencytransfer/tree/main/evals",
       "repo_path": "evals/",
       "source_version": "recovered APE-120 audit",
-      "public_release_version": null,
+      "public_release_version": "descriptive-audit",
       "evidence_cutoff": "2026-08-25",
       "planned_route": "/research/part-ii/testing/",
       "claim_ceiling": "Descriptive attempt evidence only; no condition passed the confirmatory gate and no model-level efficacy or safety claim is licensed."
@@ -320,7 +322,7 @@
       "evidence_cutoff": "2026-08-12",
       "planned_route": "/research/part-iii/",
       "claim_ceiling": "Purposive evidence corpus, not a prevalence sample; public records do not validate national vote effects attributable to AI-mediated manipulation.",
-      "publication_note": "The site must display source version, public release version, research cutoff, and site snapshot separately."
+      "publication_note": "The site displays source version, public release version, and research cutoff separately."
     },
     {
       "id": "part-iv-policy-atlas",
@@ -338,7 +340,7 @@
       "evidence_cutoff": "2026-08-11",
       "planned_route": "/research/part-iv/",
       "claim_ceiling": "Beta causal map and research-triage artifact; no numeric policy ranking or globally representative effect estimate.",
-      "publication_note": "The site must distinguish policy adoption, mechanism evidence, effect evidence, operational maturity, and source-verification depth."
+      "publication_note": "Legal force, mechanism evidence, intervention-effect evidence, maturity, rights burden, and verification depth remain separate."
     },
     {
       "id": "white-paper",
@@ -346,17 +348,17 @@
       "kind": "white_paper",
       "part": "programme",
       "role": "Accessible adjacent synthesis for policy and general audiences.",
-      "status": "release_candidate",
+      "status": "working",
       "visibility": "public",
-      "canonical_url": null,
+      "canonical_url": "https://miguelguerrero.eu/agencytransfer/outputs/#white-paper",
       "source_url": null,
       "repo_path": null,
       "source_version": "tenth edition",
-      "public_release_version": null,
+      "public_release_version": "web-summary",
       "evidence_cutoff": "2026-08-27",
-      "planned_route": "/outputs/",
+      "planned_route": "/outputs/#white-paper",
       "claim_ceiling": "Adjacent synthesis; not a substitute for the flagship paper or its source-specific claim ceilings.",
-      "publication_note": "Standalone canonical file and durable public URL still require selection."
+      "publication_note": "The current web summary will be replaced by the standalone canonical file when supplied."
     },
     {
       "id": "one-page-brief",
@@ -364,17 +366,17 @@
       "kind": "brief",
       "part": "programme",
       "role": "One-page explanation of the CDE Gap and the four research parts.",
-      "status": "release_candidate",
+      "status": "working",
       "visibility": "public",
-      "canonical_url": null,
+      "canonical_url": "https://miguelguerrero.eu/agencytransfer/outputs/#one-page-brief",
       "source_url": null,
       "repo_path": null,
       "source_version": "August 2026",
-      "public_release_version": null,
+      "public_release_version": "web-facsimile",
       "evidence_cutoff": "2026-08-28",
-      "planned_route": "/outputs/",
-      "claim_ceiling": "Editorial summary only; figures must remain bound to the denominators and caveats in the flagship paper.",
-      "publication_note": "Canonical file selected provisionally; durable public URL still required."
+      "planned_route": "/outputs/#one-page-brief",
+      "claim_ceiling": "Editorial summary only; figures remain bound to the denominators and caveats in the flagship paper.",
+      "publication_note": "The web facsimile will be replaced by the final canonical brief when supplied."
     },
     {
       "id": "research-poster",
@@ -382,39 +384,66 @@
       "kind": "poster",
       "part": "programme",
       "role": "Visual overview of the evidence rift, the four research parts, and the security response.",
-      "status": "release_candidate",
+      "status": "working",
       "visibility": "public",
-      "canonical_url": null,
+      "canonical_url": "https://miguelguerrero.eu/agencytransfer/outputs/#research-poster",
       "source_url": null,
       "repo_path": null,
-      "source_version": "vMG, 2026-08-28",
-      "public_release_version": null,
+      "source_version": "latest available August 2026 poster",
+      "public_release_version": "web-facsimile",
       "evidence_cutoff": "2026-08-28",
-      "planned_route": "/outputs/",
+      "planned_route": "/outputs/#research-poster",
       "claim_ceiling": "Visual synthesis; numbers are evidence observed at different layers and are not a single funnel or additive score.",
-      "publication_note": "One poster must be designated canonical; older visual variants should be archived."
+      "publication_note": "The web facsimile will be replaced by the final poster asset when supplied."
+    },
+    {
+      "id": "manuel-miami-explainer",
+      "title": "Manuel: an agentic influence scenario",
+      "kind": "video",
+      "part": "part-i",
+      "role": "Synthetic scenario illustrating target discovery, persona modelling, synthetic authority, distribution, repetition, and scale.",
+      "status": "working",
+      "visibility": "public",
+      "canonical_url": "https://miguelguerrero.eu/agencytransfer/explainers/#manuel-miami",
+      "source_url": "https://www.youtube.com/watch?v=ZTyWOhF7Pto",
+      "repo_path": null,
+      "source_version": "current YouTube cut",
+      "public_release_version": "web-embedded",
+      "evidence_cutoff": null,
+      "planned_route": "/explainers/#manuel-miami",
+      "claim_ceiling": "Illustrates a possible mechanism; not evidence of a real campaign, authentic exposure, behaviour change, or electoral effect.",
+      "media": {
+        "format": "video/youtube",
+        "language": "en",
+        "duration_seconds": null,
+        "embed_url": "https://www.youtube-nocookie.com/embed/ZTyWOhF7Pto",
+        "poster_frame_url": null,
+        "captions_url": null,
+        "transcript_url": null,
+        "hosting_status": "durable_public"
+      }
     },
     {
       "id": "brazil-2026-explainer",
-      "title": "Brazil 2026 harmful-manipulation explainer",
+      "title": "Brazil 2026: the final-hour voice",
       "kind": "video",
       "part": "part-i",
-      "role": "Synthetic scenario explainer illustrating how capability, targeting, distribution, and feedback could be joined.",
+      "role": "Synthetic scenario illustrating capability, cloned identity, private distribution, timing, and the unresolved gap to aggregate effect.",
       "status": "hosting_required",
       "visibility": "public",
-      "canonical_url": null,
+      "canonical_url": "https://miguelguerrero.eu/agencytransfer/explainers/#brazil-2026",
       "source_url": null,
       "repo_path": "tmp/brazil2026-artifacts-20260824.md",
       "source_version": "final MP4 build, 2026-08-24",
-      "public_release_version": null,
+      "public_release_version": "storyboard-only",
       "evidence_cutoff": null,
-      "planned_route": "/explainers/",
+      "planned_route": "/explainers/#brazil-2026",
       "claim_ceiling": "Illustrative synthetic scenario; not evidence of a real operation, authentic exposure, behaviour change, or electoral effect.",
-      "responsible_release_note": "Do not publish temporary-host URLs. Review the final cut for operational detail before durable release.",
+      "responsible_release_note": "The temporary-host URL is not published. The master still requires a durable host, captions, transcript, poster frame, and final dual-use review.",
       "media": {
         "format": "video/mp4",
-        "language": "und",
-        "duration_seconds": null,
+        "language": "pt",
+        "duration_seconds": 58,
         "embed_url": null,
         "poster_frame_url": null,
         "captions_url": null,
@@ -488,12 +517,8 @@
     "raw_harmful_operational_material_is_withheld": true
   },
   "known_blockers": [
-    "Publish the flagship paper at a stable web and PDF URL.",
-    "Select and publish the standalone canonical white paper.",
-    "Select one canonical poster and archive variants.",
-    "Publish the one-page brief at a durable URL.",
-    "Move explainer-video masters from temporary hosting to a durable host, then add poster frames, captions, and transcripts.",
-    "Complete the inventory of additional explainers and presentation artifacts reported by the author.",
-    "Migrate the current Part II interface under /research/part-ii/ while preserving redirects."
+    "Replace the current paper web edition with the final canonical manuscript and frozen PDF when supplied.",
+    "Replace the white-paper summary, brief facsimile, and poster facsimile with their final canonical assets when supplied.",
+    "Move the Brazil explainer master to durable hosting and add captions, transcript, poster frame, and final responsible-release review."
   ]
 }
