@@ -158,6 +158,15 @@
 }
 
 @media (max-width: 680px) {
+  .v2-header nav {
+    gap: 14px;
+  }
+
+  .v2-header nav a:first-child,
+  .v2-header nav a:last-child {
+    display: none;
+  }
+
   .v2-hero--repository {
     padding-top: 38px;
   }
