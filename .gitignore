@@ -19,3 +19,4 @@ evals/private/
 .env
 .env.*
 !.env.example
+public/media/cde-rift-hero.webp
