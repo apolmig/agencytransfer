@@ -144,4 +144,4 @@ jobs:
           test -f dist/about/index.html
           test -f dist/evidence/index.html
           test -f dist/testing/index.html
-          test -f dist/media/cde-rift-hero.png
+          test -f dist/media/cde-rift-hero.webp
