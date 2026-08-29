@@ -12,6 +12,7 @@ export const route = (path = "") => `${BASE}${path.replace(/^\/+/, "")}`;
 const asset = (path: string) => route(path);
 
 export const RIFT_ANIMATION = asset("media/cde-rift-animation/index.html");
+export const RIFT_IMAGE = asset("media/cde-rift-hero.png");
 
 export const getPath = () => {
   const base = BASE.replace(/\/$/, "");
@@ -26,16 +27,12 @@ const metadata: Record<string, { title: string; description: string }> = {
     description: "A draft research programme on frontier AI, harmful manipulation, election security, and the Capability–Deployment–Effect Gap.",
   },
   research: {
-    title: "Research programme · Harmful Manipulation and Election Security",
+    title: "Research · Harmful Manipulation and Election Security",
     description: "Four linked audits of operations, evaluation, field evidence, and policy evidence.",
   },
   "research/part-i": {
     title: "Part I · Operations · Harmful Manipulation and Election Security",
     description: "Why model access is not operational control, and why planning output is not deployment.",
-  },
-  "research/part-ii": {
-    title: "Part II · Frontier Evaluation Registry · Working Draft",
-    description: "The featured evaluation registry, evidence review, and testing record for manipulation-relevant frontier-model behaviour.",
   },
   "research/part-iii": {
     title: "Part III · Field evidence · Harmful Manipulation and Election Security",
@@ -47,10 +44,10 @@ const metadata: Record<string, { title: string; description: string }> = {
   },
   paper: {
     title: "Flagship Working Paper · Harmful Manipulation and Election Security",
-    description: "Web overview and full draft of Harmful Manipulation and Election Security: The Capability–Deployment–Effect Gap.",
+    description: "Web overview of Harmful Manipulation and Election Security: The Capability–Deployment–Effect Gap.",
   },
   outputs: {
-    title: "Research outputs · Harmful Manipulation and Election Security",
+    title: "Artifacts · Harmful Manipulation and Election Security",
     description: "Working paper, visual overview, registry, evidence index, policy atlas, explainers, and research tools.",
   },
   explainers: {
@@ -88,9 +85,8 @@ export function useMetadata(path: string) {
 
 const activeSection = (path: string) => {
   if (!path) return "programme";
-  if (path.startsWith("research/part-ii") || path === "evidence" || path === "testing") return "registry";
   if (path === "research" || path.startsWith("research/")) return "research";
-  if (path === "outputs" || path === "explainers" || path === "paper") return "resources";
+  if (path === "outputs" || path === "explainers" || path === "paper") return "artifacts";
   return "about";
 };
 
@@ -99,9 +95,9 @@ export function SiteHeader({ path }: { path: string }) {
   const links = [
     ["programme", "Programme", route()],
     ["research", "Research", route("research/")],
-    ["registry", "Registry", route("research/part-ii/")],
+    ["registry", "Registry", route("registry/")],
     ["lab", "Lab", LAB_URL],
-    ["resources", "Resources", route("outputs/")],
+    ["artifacts", "Artifacts", route("outputs/")],
     ["about", "About", route("about/")],
   ] as const;
 
@@ -149,8 +145,8 @@ export function SiteFooter() {
       </div>
       <div className="v2-footer-links">
         <a href={route("paper/")}>Working paper</a>
-        <a href={route("research/part-ii/")}>Registry</a>
-        <a href={route("explainers/")}>Explainers</a>
+        <a href={route("registry/")}>Registry</a>
+        <a href={route("outputs/")}>Artifacts</a>
         <a href={`${REPOSITORY_URL}/blob/main/RESPONSIBLE_RELEASE.md`} target="_blank" rel="noreferrer">Responsible release ↗</a>
         <a href={REPOSITORY_URL} target="_blank" rel="noreferrer">Source ↗</a>
       </div>

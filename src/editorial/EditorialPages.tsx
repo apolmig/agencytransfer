@@ -1,7 +1,6 @@
 import { HomePage, PartIPage, ResearchPage } from "./ProgrammePages";
 import { PartIIIPage, PartIVPage } from "./EvidencePages";
 import { AboutPage, ExplainersPage, OutputsPage, PaperPage, UpdatesPage } from "./ResourcePages";
-export { PartIILead } from "./ProgrammePages";
 
 export function renderEditorialPage(path: string) {
   switch (path) {
