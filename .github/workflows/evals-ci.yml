@@ -134,6 +134,9 @@ jobs:
           test -f dist/research/part-ii/testing/index.html
           test -f dist/research/part-iii/index.html
           test -f dist/research/part-iv/index.html
+          test -f dist/registry/index.html
+          test -f dist/registry/evidence/index.html
+          test -f dist/registry/testing/index.html
           test -f dist/paper/index.html
           test -f dist/outputs/index.html
           test -f dist/explainers/index.html
@@ -141,3 +144,4 @@ jobs:
           test -f dist/about/index.html
           test -f dist/evidence/index.html
           test -f dist/testing/index.html
+          test -f dist/media/cde-rift-hero.png
