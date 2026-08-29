@@ -1,4 +1,4 @@
-import { LAB_URL, REPOSITORY_URL, RIFT_ANIMATION, RIFT_IMAGE, DraftBoundary, PageLead, TextLink, route } from "./EditorialShell";
+import { LAB_URL, REPOSITORY_URL, RIFT_ANIMATION, DraftBoundary, PageLead, TextLink, route } from "./EditorialShell";
 import { MechanismStrip } from "./EditorialVisuals";
 
 const researchParts = [
@@ -72,7 +72,7 @@ function Hero() {
         </div>
       </div>
       <figure className="v2-hero-art v2-hero-art--supplied">
-        <img src={RIFT_IMAGE} alt="Illustration of the Capability–Deployment–Effect Rift, from model capability and deployment to uncertain behavioural and electoral consequences." />
+        <img src={route("media/cde-rift-hero.webp")} alt="Illustration of the Capability–Deployment–Effect Rift, from model capability and deployment to uncertain behavioural and electoral consequences." />
         <figcaption>Conceptual illustration. Evidence is stronger upstream and progressively weaker across authentic exposure, human response, and aggregate consequence.</figcaption>
       </figure>
     </section>
