@@ -9,6 +9,7 @@ const researchParts = [
     body: "What a served system can produce, what an operator can operationalise, and where the chain stopped.",
     href: route("research/part-i/"),
     action: "Open Part I",
+    featured: false,
   },
   {
     label: "Part II",
@@ -26,6 +27,7 @@ const researchParts = [
     body: "What public election records establish about operations, exposure, response, and electoral consequence.",
     href: route("research/part-iii/"),
     action: "Open Part III",
+    featured: false,
   },
   {
     label: "Part IV",
@@ -34,6 +36,7 @@ const researchParts = [
     body: "Where controls act, who holds the evidence, and what the strongest defensible policy claim is.",
     href: route("research/part-iv/"),
     action: "Open Part IV",
+    featured: false,
   },
 ] as const;
 
