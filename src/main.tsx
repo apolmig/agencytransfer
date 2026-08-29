@@ -1,12 +1,14 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import App from "./App";
+import EditorialApp from "./EditorialApp";
 import "./styles.css";
 import "./programme.css";
 import "./programme-overrides.css";
+import "./editorial-v2.css";
+import "./editorial-v2-visuals.css";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <App />
+    <EditorialApp />
   </StrictMode>,
 );
