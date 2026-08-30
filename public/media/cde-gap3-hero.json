@@ -1,0 +1,22 @@
+{
+  "source_name": "the-capability-deployment-effect-gap3.png",
+  "source_bytes": 2818263,
+  "source_sha256": "a35e2dedcb311e71d374e05eeceb383d5948c27af30b8512b8b2d460087ca781",
+  "operation": "WebP encoding, same composition and transparency; no generative editing; 824px variant resized with Lanczos.",
+  "assets": [
+    {
+      "name": "cde-gap3-hero-824.webp",
+      "width": 824,
+      "height": 464,
+      "bytes": 196448,
+      "sha256": "6c7b9122060da0c052aca02343c458a46672fd7d6edee0b224d44879fccaceb6"
+    },
+    {
+      "name": "cde-gap3-hero-1672.webp",
+      "width": 1672,
+      "height": 941,
+      "bytes": 620816,
+      "sha256": "5d41200d1aa40f4e76117cf542166c33905b7ec6343d98ba5718eff2b65f13ae"
+    }
+  ]
+}

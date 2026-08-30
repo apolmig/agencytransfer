@@ -72,7 +72,18 @@ function Hero() {
         </div>
       </div>
       <figure className="v2-hero-art v2-hero-art--supplied">
-        <img src={route("media/cde-rift-hero.webp")} alt="Illustration of the Capability–Deployment–Effect Rift, from model capability and deployment to uncertain behavioural and electoral consequences." />
+        <img
+  src={route("media/cde-gap3-hero-1672.webp")}
+  srcSet={`${route("media/cde-gap3-hero-824.webp")} 824w, ${route("media/cde-gap3-hero-1672.webp")} 1672w`}
+  sizes="(max-width: 1050px) calc(100vw - 48px), 55vw"
+  width={1672}
+  height={941}
+  loading="eager"
+  fetchPriority="high"
+  decoding="async"
+  style={{ height: "auto" }}
+  alt="The Capability–Deployment–Effect Gap: AI capability and deployment are separated from electoral consequences by uncertain links through exposure, attention, beliefs, and intentions."
+/>
         <figcaption>Conceptual illustration. Evidence is stronger upstream and progressively weaker across authentic exposure, human response, and aggregate consequence.</figcaption>
       </figure>
     </section>
