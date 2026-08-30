@@ -1,82 +1,41 @@
-name: Import approved hero image once
-
+name: Inspect uploaded hero asset
 on:
   push:
     branches: [replace-hero-with-final-cde-illustration]
     paths: [.github/workflows/import-approved-hero-once.yml]
-
 permissions:
-  contents: write
-
+  contents: read
 jobs:
-  import:
+  inspect:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 3
     steps:
-      - uses: actions/checkout@v6
-        with:
-          ref: replace-hero-with-final-cde-illustration
-      - name: Install image encoder
-        run: python -m pip install --quiet Pillow==11.3.0
-      - name: Retrieve approved source, verify pixels, and encode WebP
+      - name: Inspect stored image
         env:
-          SOURCE_URL: 'https://media.canva.com/v2/image-resize/format:PNG/height:941/quality:100/uri:ifs%3A%2F%2FM%2Fe911b6fb-cba1-41d0-9a05-8ee5d9530f48/watermark:F/width:1672?csig=AAAAAAAAAAAAAAAAAAAAAIEEDBdR8Bveyr4Emrw3RVo3h7ab1nmBg3ATABULJWzX&exp=1788113874&osig=AAAAAAAAAAAAAAAAAAAAAKu_QK2pmU_j-cfVj4KBm9o-gsfaEP89QtEOOzOKvU9D&signer=media-rpc&x-canva-quality=thumbnail'
+          GH_TOKEN: ${{ github.token }}
         run: |
+          mkdir -p inspection
+          gh api repos/apolmig/agencytransfer/git/blobs/504ca557b6556f4761bc348bbbe10795e3e6f04c > inspection/blob.json
+          python -m pip install --quiet Pillow==11.3.0
           python - <<'PY'
-          import hashlib, io, json, os, pathlib, urllib.request
+          import base64, hashlib, json, pathlib
           from PIL import Image
-          raw = urllib.request.urlopen(os.environ['SOURCE_URL'], timeout=45).read()
-          image = Image.open(io.BytesIO(raw)).convert('RGBA')
-          assert image.size == (1672, 941), image.size
-          pixels = bytearray(image.tobytes())
-          for i in range(0, len(pixels), 4):
-              if pixels[i + 3] == 0:
-                  pixels[i:i + 3] = b'\0\0\0'
-          digest = hashlib.sha256(pixels).hexdigest()
-          expected = '04ab3dfcefdc8ceca52f30c7f44b4d834b8e1ddd7b6c3b453bb7e261cffad527'
-          assert digest == expected, f'Original-pixel verification failed: {digest}'
-          dest = pathlib.Path('public/media')
-          dest.mkdir(parents=True, exist_ok=True)
-          assets = []
-          for width in (824, 1672):
-              scaled = image if width == image.width else image.resize((width, round(image.height * width / image.width)), Image.Resampling.LANCZOS)
-              file = dest / f'cde-gap3-hero-{width}.webp'
-              scaled.save(file, 'WEBP', quality=88, method=6, alpha_quality=100, exact=True)
-              content = file.read_bytes()
-              assets.append({'name': file.name, 'width': scaled.width, 'height': scaled.height, 'bytes': len(content), 'sha256': hashlib.sha256(content).hexdigest()})
-          metadata = {'source_name': 'the-capability-deployment-effect-gap3.png', 'source_sha256': 'a35e2dedcb311e71d374e05eeceb383d5948c27af30b8512b8b2d460087ca781', 'source_normalized_rgba_sha256': expected, 'operation': 'Original artwork verified pixel-for-pixel (transparent RGB ignored), encoded as WebP quality 88. No redraw, crop, or generative editing.', 'assets': assets}
-          (dest / 'cde-gap3-hero.json').write_text(json.dumps(metadata, indent=2) + '\n')
-          source = pathlib.Path('src/editorial/ProgrammePages.tsx')
-          text = source.read_text()
-          old = '<img src={route("media/cde-rift-hero.webp")} alt="Illustration of the Capability–Deployment–Effect Rift, from model capability and deployment to uncertain behavioural and electoral consequences." />'
-          new = '''<img
-            src={route("media/cde-gap3-hero-1672.webp")}
-            srcSet={`${route("media/cde-gap3-hero-824.webp")} 824w, ${route("media/cde-gap3-hero-1672.webp")} 1672w`}
-            sizes="(max-width: 1050px) calc(100vw - 48px), 55vw"
-            width={1672}
-            height={941}
-            loading="eager"
-            fetchPriority="high"
-            decoding="async"
-            style={{ height: "auto" }}
-            alt="The Capability–Deployment–Effect Gap: AI capability and deployment are separated from electoral consequences by uncertain links through exposure, attention, beliefs, and intentions."
-          />'''
-          assert text.count(old) == 1, 'Expected exactly one existing hero image.'
-          source.write_text(text.replace(old, new))
-          print(json.dumps(metadata, indent=2))
-          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as f:
-              f.write('## Approved image verified\n\nPixel identity verified against the uploaded source. No generative edits.\n\n```json\n' + json.dumps(metadata, indent=2) + '\n```\n')
+          root = pathlib.Path('inspection')
+          blob = json.loads((root / 'blob.json').read_text())
+          raw = base64.b64decode(blob['content'])
+          (root / 'uploaded.webp').write_bytes(raw)
+          print('BYTES',len(raw),'SHA256',hashlib.sha256(raw).hexdigest())
+          try:
+              im=Image.open(root / 'uploaded.webp')
+              im.load()
+              print('IMAGE',im.size,im.mode)
+              im.save(root / 'preview.png')
+          except Exception as e:
+              print('DECODE ERROR',str(e))
+          (root / 'blob.json').unlink()
           PY
-      - name: Commit only the image replacement
-        run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add public/media/cde-gap3-hero-824.webp public/media/cde-gap3-hero-1672.webp public/media/cde-gap3-hero.json src/editorial/ProgrammePages.tsx
-          git diff --cached --stat
-          git commit -m 'Replace hero with pixel-verified user artwork and responsive WebP assets'
-          git push origin HEAD:replace-hero-with-final-cde-illustration
-      - name: Check live HTTPS and HTTP redirect
-        if: always()
-        run: |
-          curl --max-time 30 --silent --show-error --head https://miguelguerrero.eu/agencytransfer/
-          curl --max-time 30 --silent --show-error --head http://miguelguerrero.eu/agencytransfer/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: uploaded-hero-inspection
+          path: inspection/
+          retention-days: 1
