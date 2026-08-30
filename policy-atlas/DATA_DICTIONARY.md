@@ -18,6 +18,7 @@ frozen working-register snapshot.
 | policy_packages.csv | package_id | Candidate decision-oriented bundles |
 | decision_gates.csv | criterion_code | Non-compensable gates |
 | priority_claim_reviews.csv | claim_id | Designs, endpoints, limitations, and publication treatment for six priority effect claims |
+| stable_release_gates.csv | gate_id | Machine-readable stable-release requirements and current blockers |
 
 ## Public relation tables
 
@@ -35,6 +36,8 @@ frozen working-register snapshot.
 | File | Unit | Purpose |
 |---|---|---|
 | atlas.csv | implementation_id | One-row-per-implementation policy-facing view generated from the normalized tables |
+| stable_core_candidates.csv | implementation_id | Thirty provisionally selected implementations joined to current evidence-readiness fields; not a stable core |
+| candidate_registry.csv | implementation_id | Exact 88-row complement retained outside the current verification wave |
 
 The source snapshot also contains provenance-only working tables such as
 `implementation_findings.csv`, `verification_log.csv`, and `changelog.csv`.
@@ -57,7 +60,21 @@ in the derived atlas are typed lists and review flags are typed booleans.
   endpoint.
 - `claim_role` describes how a claim relates to an implementation; it is not an
   evidence grade.
-- `decision_tier` is a posture, not an ordinal score.
+- `working_register_decision_tier` in normalized implementation/package tables
+  and `working_register_decision_posture` in families preserve author labels
+  from the source register; neither is an effect estimate, gate result, or
+  public recommendation. The default atlas omits the source tier. The
+  authoritative public field is
+  `publication_decision_posture`, which is `not_assessed` throughout this
+  release. The imperative source name `decision_tier` is omitted from public
+  tables.
+- `stable_core_selection_status=proposed_core_candidate` prioritises review; it
+  is not stable admission, evidence of effectiveness, or a recommendation.
+- `display_order` in `stable_core_candidates` follows ascending
+  `implementation_id`; it is not a priority or rank.
+- `rank_eligibility` describes why a future comparison is currently blocked;
+  no value in this release means rankable.
+- `stable_core_ready` and `ranking_ready` are false for every atlas row.
 - `sources.verification_level` records review of the source record; the
   authoritative claim-specific status is
   `claim_sources.verification_level` on each relation.

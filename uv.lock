@@ -28,7 +28,9 @@ dependencies = [
 [package.dev-dependencies]
 dev = [
     { name = "jsonschema" },
+    { name = "pyarrow" },
     { name = "pytest" },
+    { name = "pyyaml" },
     { name = "ruff" },
 ]
 
@@ -50,7 +52,9 @@ requires-dist = [
 [package.metadata.requires-dev]
 dev = [
     { name = "jsonschema", specifier = ">=4.23,<5" },
+    { name = "pyarrow", specifier = "==25.0.1" },
     { name = "pytest", specifier = ">=8.4,<10" },
+    { name = "pyyaml", specifier = ">=6,<7" },
     { name = "ruff", specifier = ">=0.15,<0.16" },
 ]
 

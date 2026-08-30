@@ -1,5 +1,14 @@
 """Single source of truth for Policy Atlas release and curation versions."""
 
-VERSION = "v0.1.0-beta.2"
+VERSION = "v0.2.0-beta.1"
 CURATION_VERSION = "curation-v0.4-wave1"
-
+STABLE_CORE_SELECTION_VERSION = "stable-core-selection-v0.1"
+STABLE_CORE_SOURCE_VERSION = "v0.1.0-beta.2"
+STABLE_CORE_SOURCE_MANIFEST_SHA256 = (
+    "26fc870523b1a2482b505dbb590d7504507b034fca4726442c2d343eb184e926"
+)
+HISTORICAL_RELEASE_MANIFEST_SHA256 = {
+    "v0.1.0-beta.1": "c05ec9ef4165d9dbd794e1afe7a5e6032067ed0ed055499c9a6e232a1a1cc746",
+    STABLE_CORE_SOURCE_VERSION: STABLE_CORE_SOURCE_MANIFEST_SHA256,
+}
+RANKING_PROTOCOL_VERSION = "ranking-protocol-v0.1"

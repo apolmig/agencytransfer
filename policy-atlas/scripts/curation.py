@@ -5,7 +5,6 @@ from __future__ import annotations
 import csv
 from pathlib import Path
 
-
 ROOT = Path(__file__).resolve().parents[1]
 BASE = ROOT / "data" / "draft-v0.3"
 CURATION = ROOT / "data" / "curation-v0.4"
@@ -18,9 +17,7 @@ CORRECTION_FILES = {
     ],
     "sources.csv": [("source_corrections.csv", "source_id")],
     "claim_sources.csv": [("claim_source_corrections.csv", "relation_id")],
-    "implementation_claims.csv": [
-        ("implementation_claim_corrections.csv", "relation_id")
-    ],
+    "implementation_claims.csv": [("implementation_claim_corrections.csv", "relation_id")],
     "legal_instruments.csv": [("legal_instrument_corrections.csv", "legal_id")],
 }
 

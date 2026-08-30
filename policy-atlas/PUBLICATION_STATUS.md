@@ -3,7 +3,7 @@
 This snapshot is structurally valid and materially improved, but still
 evidentially incomplete.
 
-## Ready for public beta
+## Technically prepared for public beta; human sign-off pending
 
 - project-authored taxonomy and relational object model;
 - stable IDs, generated normalized tables, and a denormalized atlas view;
@@ -15,11 +15,16 @@ evidentially incomplete.
 - deduplicated public claim–source edges, frozen checksums, and typed Parquet;
 - explicit evidence boundaries, limitations, failure modes, and negative
   findings.
+- a retrospective, non-preregistered 30-row proposed verification core whose
+  process ledger records that apparent effect direction was not used, plus an
+  88-row candidate-registry complement;
+- machine-readable stable-release blockers, prospective ranking templates,
+  governance, correction, licensing, and fail-closed preservation controls.
 
 ## Research candidates, not citation-ready claims
 
-- the 101 source records that do not yet participate in any checked
-  claim–source relation;
+- the 103 source records that do not yet participate in a type-eligible, fully
+  supporting, checked claim–source relation;
 - the 112 of 118 control-effectiveness claims without a checked empirical
   source;
 - claim–source edges marked context-only or pending claim check;
@@ -31,6 +36,10 @@ evidentially incomplete.
   bridge is added;
 - prospective Brazil and United States records before their dated
   observations.
+- all 30 proposed core candidates before complete claim disposition, gate
+  assessment, independent review, and human sign-off;
+- every ranking template and any output derived before preregistration; the
+  current templates contain metadata placeholders, not observations.
 
 ## Stable-release gate
 
@@ -46,7 +55,37 @@ A stable release requires:
 7. no unresolved legal status or applicability field in the public portfolio.
 
 The beta must not receive a DOI. A DOI should be minted only when the stable
-release gate is met.
+release gate is met. `DOI_RELEASE.md` designates Zenodo as the single future
+DOI authority; Hugging Face remains the distribution and Viewer surface.
+
+## Stable-core and ranking foundation
+
+Version v0.2.0-beta.1 freezes 30 proposed stable-core candidates for the next
+verification wave and exposes the other 88 implementations as a candidate
+registry. `proposed_core_candidate` is a workload-prioritisation status, not a
+scientific or policy endorsement. Every selected row has
+`stable_core_admission_status=blocked_pending_verification` and
+`ranking_ready=false`.
+
+The selection was conducted retrospectively after inspecting beta.2 and was
+not preregistered. Only the 30 included rows have row-specific rationales; the
+88-row complement does not yet have a full screening/exclusion ledger. The
+recorded `effect_direction_used_for_selection=false` field is a process
+declaration, not proof of blinded selection. The selected set is also more
+operationally mature (22/30 operational) than the registry (40/88), which is
+appropriate for a verification workload but not representative sampling.
+
+The imperative `Enforce now`/`Implement now` labels from the frozen working
+register are not published as decision outcomes. Normalized implementation
+and package tables retain them only as explicitly named
+`working_register_decision_tier` provenance; the default atlas omits them.
+`publication_decision_posture=not_assessed` is authoritative until
+implementation-level gates and human review are complete.
+
+The ranking protocol is `draft_not_preregistered`. It prohibits a universal
+league table, applies non-compensable gates before scoring, treats missing
+required evidence as unrankable, and permits comparison only inside a frozen
+scenario. No rank-results table is included in the public release.
 
 ## Priority evidence wave
 

@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/apolmig/agencytransfer/policy-atlas/schemas/candidate-registry.schema.json",
+  "title": "Policy Atlas candidate-registry row",
+  "type": "object",
+  "required": [
+    "implementation_id",
+    "control_family_id",
+    "intervention",
+    "publication_decision_posture",
+    "registry_status",
+    "verification_wave",
+    "rank_eligibility",
+    "nonselection_meaning"
+  ],
+  "properties": {
+    "implementation_id": {"type": "string", "pattern": "^I-[0-9]{3}$"},
+    "control_family_id": {"type": "string", "pattern": "^CF-[0-9]{3}$"},
+    "intervention": {"type": "string", "minLength": 1},
+    "publication_decision_posture": {"const": "not_assessed"},
+    "registry_status": {"const": "candidate_registry"},
+    "verification_wave": {"const": "outside_stable_core_selection_v0.1"},
+    "rank_eligibility": {"const": "not_assessed_outside_core_wave"},
+    "nonselection_meaning": {"type": "string", "minLength": 1}
+  },
+  "not": {"required": ["decision_tier"]},
+  "additionalProperties": true
+}
