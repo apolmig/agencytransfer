@@ -1,5 +1,7 @@
 # Agency Transfer Policy Atlas
 
+> **Current recommendations · 1 September 2026:** The later [source-linked review](review/source-linked-20260901/README.md) supersedes the A–F presentation for current recommendations. It distinguishes bounded human outcomes, technical authority, frontier defensive pilots and structural safeguards. This document retains the historical classification; the published beta.3 data and empirical verification flags are unchanged.
+
 **Comparative policy recommendations, not six effective policies.**
 
 This Part IV artifact asks which interventions could interrupt AI-enabled agency transfer, where they act, who can implement them, and what evidence, rights burdens and uncertainties attach to them.

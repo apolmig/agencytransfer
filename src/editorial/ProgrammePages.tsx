@@ -31,9 +31,9 @@ const researchParts = [
   },
   {
     label: "Part IV",
-    title: "Policy evidence",
-    line: "Adoption is not effectiveness.",
-    body: "Where controls act, who holds the evidence, and what the strongest defensible policy claim is.",
+    title: "Policy interventions",
+    line: "What works—and for whom?",
+    body: "Source-linked review of 118 interventions: what changes, what remains untested, and whose agency a safeguard protects.",
     href: route("research/part-iv/"),
     action: "Open Part IV",
     featured: false,
@@ -107,7 +107,7 @@ export function AnimationFeature() {
 
 function KeyArtifacts() {
   const items: Array<{ label: string; detail: string; href: string; external?: boolean }> = [
-    { label: "Working paper", detail: "Flagship v1.0 web draft", href: route("paper/") },
+    { label: "Working paper", detail: "v1.3 working draft · full PDF", href: route("paper/") },
     { label: "Poster", detail: "Draft visual overview", href: route("outputs/#poster") },
     { label: "White paper", detail: "Accessible policy synthesis", href: route("outputs/#white-paper") },
     { label: "Explainers", detail: "Animation and synthetic scenarios", href: route("explainers/") },

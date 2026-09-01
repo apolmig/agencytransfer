@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-01 — Source-linked Part IV web update (draft)
+
+- Integrated the later 118-implementation, 69-source review, with eight new substantive checks and six retained earlier adjudications.
+- Replaced the A–F website presentation with the source-defined four recommendation portfolios; preserved historical assignments and all production-dataset empirical flags.
+- Updated the home P4 description, policy page, paper web summary, outputs and draft log. Integrated the latest available v1.3 manuscript and published its PDF unchanged; Parts I–III retain the 28 August empirical freeze while P4 is dated 1 September.
+- Published unchanged source findings, individual dossiers, source ledger and workbook, with checksums and recorded review depths.
+- Preserved the approved hero, original Registry, its data/evidence/testing, all routes and the rest of the layout.
+
 All notable project changes are recorded here. Dates use ISO 8601.
 
 ## Unreleased — 2026-08-28

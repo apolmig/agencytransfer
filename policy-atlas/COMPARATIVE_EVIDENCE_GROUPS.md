@@ -1,5 +1,7 @@
 # Comparative recommendation groups
 
+> **Current recommendations · 1 September 2026:** The later [source-linked review](review/source-linked-20260901/README.md) supersedes the A–F presentation for current recommendations. It distinguishes bounded human outcomes, technical authority, frontier defensive pilots and structural safeguards. This document retains the historical classification; the published beta.3 data and empirical verification flags are unchanged.
+
 **Classification: 1 September 2026 · provisional author synthesis · not peer reviewed**
 
 The six records originally selected for re-audit were the strongest prior effect claims, not six effective policies. The working register now assigns all 118 implementations to six recommendation postures. Public release v0.1.0-beta.3 publishes these assignments in the dataset itself.
