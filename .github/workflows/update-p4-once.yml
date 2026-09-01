@@ -26,15 +26,15 @@ jobs:
           import hashlib, io, os, pathlib, urllib.request, zipfile
           request = urllib.request.Request(os.environ['PACKAGE_URL'], headers={'User-Agent':'AgencyTransfer-Publication/1.0'})
           raw = urllib.request.urlopen(request, timeout=60).read()
-          assert len(raw) == 177910, len(raw)
-          assert hashlib.sha256(raw).hexdigest() == '612cbbccca062dbd853d161667d3c64237638dcff141b67e8614d35565bb2ce2'
+          assert len(raw) == 1202808, len(raw)
+          assert hashlib.sha256(raw).hexdigest() == '6647144b8a779ca4ca24fb889f257b34efc7255c5e54598f5574dcd3ed648297'
           dest = pathlib.Path(os.environ['RUNNER_TEMP']) / 'p4-source-package'
           dest.mkdir()
           with zipfile.ZipFile(io.BytesIO(raw)) as z:
               for item in z.infolist():
                   p = pathlib.PurePosixPath(item.filename)
                   assert not p.is_absolute() and '..' not in p.parts
-                  assert item.file_size < 1000000
+                  assert item.file_size < 2000000
               z.extractall(dest)
           print('Verified source package and safe extraction.')
           PY
@@ -48,13 +48,14 @@ jobs:
           test -f dist/research/part-iv/index.html
           test -f dist/registry/index.html
           test -f dist/research/p4-source-linked-review-20260901.xlsx
+          test -f dist/research/harmful-manipulation-election-security-v1.3-20260901.pdf
       - name: Commit only reviewed content and its sources
         run: |
-          git add src/editorial/EvidencePages.tsx src/editorial/ProgrammePages.tsx src/editorial/ResourcePages.tsx src/editorial/PolicyPage.tsx src/editorial/policy-review.css programme/project-manifest.json policy-atlas/README.md policy-atlas/COMPARATIVE_EVIDENCE_GROUPS.md policy-atlas/review/source-linked-20260901 public/research/p4-source-linked-review-20260901.xlsx README.md CHANGELOG.md
+          git add src/editorial/EvidencePages.tsx src/editorial/ProgrammePages.tsx src/editorial/ResourcePages.tsx src/editorial/PolicyPage.tsx src/editorial/policy-review.css programme/project-manifest.json policy-atlas/README.md policy-atlas/COMPARATIVE_EVIDENCE_GROUPS.md policy-atlas/review/source-linked-20260901 public/research/p4-source-linked-review-20260901.xlsx public/research/harmful-manipulation-election-security-v1.3-20260901.pdf public/research/flagship-v1.3-metadata.json README.md CHANGELOG.md
           git diff --cached --stat
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git commit -m 'Update P4 findings from the source-linked 118-implementation review'
+          git commit -m 'Update P4 findings and publish the latest v1.3 working paper'
           git push origin HEAD:p4-source-linked-web-20260901
       - name: Preserve the built preview
         uses: actions/upload-artifact@v4
