@@ -65,7 +65,7 @@
       "id": "part-i",
       "number": "I",
       "title": "From output to operationalisation",
-      "question": "When does model or served-system capability become an operational influence system?",
+      "question": "How far can an adversarial actor go with $10?",
       "observed_unit": "Paired red-team objectives, exploratory probes, forensic trace bundles, and access-to-control methods runs.",
       "strongest_supported_claim": "Recorded served routes produced recognisable campaign-planning elements under bounded conditions, while conversion from model access to a reproducible intervention remained technically fragile.",
       "claim_ceiling": "No successful intervention, autonomous execution, authentic audience contact, persuasion, manipulation of a real person, or electoral effect.",
@@ -181,8 +181,8 @@
       "status": "published",
       "visibility": "public",
       "canonical_url": "https://miguelguerrero.eu/agencytransfer/paper/",
-      "source_url": "https://miguelguerrero.eu/agencytransfer/research/harmful-manipulation-election-security-v1.3-20260901.pdf",
-      "repo_path": "public/research/harmful-manipulation-election-security-v1.3-20260901.pdf",
+      "source_url": "https://miguelguerrero.eu/agencytransfer/research/harmful-manipulation-election-security-v1.5-20260901.pdf",
+      "repo_path": "public/research/harmful-manipulation-election-security-v1.5-20260901.pdf",
       "source_version": "v1.5-20260901",
       "public_release_version": "v1.5-draft-20260901",
       "evidence_cutoff": "2026-09-01",
@@ -488,16 +488,16 @@
         "path": "/research/"
       },
       {
-        "label": "Paper",
-        "path": "/paper/"
+        "label": "Registry",
+        "path": "/registry/"
       },
       {
-        "label": "Outputs",
+        "label": "References",
+        "path": "/references/"
+      },
+      {
+        "label": "Artifacts",
         "path": "/outputs/"
-      },
-      {
-        "label": "Explainers",
-        "path": "/explainers/"
       },
       {
         "label": "About",
@@ -518,16 +518,19 @@
       "/explainers/",
       "/updates/",
       "/about/",
-      "/references/"
+      "/references/",
+      "/registry/",
+      "/registry/evidence/",
+      "/registry/testing/"
     ],
     "redirects": [
       {
         "from": "/evidence/",
-        "to": "/research/part-ii/evidence/"
+        "to": "/registry/evidence/"
       },
       {
         "from": "/testing/",
-        "to": "/research/part-ii/testing/"
+        "to": "/registry/testing/"
       }
     ]
   },

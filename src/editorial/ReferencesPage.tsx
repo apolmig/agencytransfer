@@ -63,15 +63,16 @@ export function ReferencesPage() {
   const reset = () => { history.replaceState(null, "", location.pathname); setQuery(""); setScope("all"); setCollection("all"); setPage(1); };
   const label = (id: string) => library?.collections.find(c => c.id === id)?.label ?? id;
   return <main id="main-content" className="v2-main references-page">
-    <PageLead eyebrow="References & source library" title="The reading behind the research" deck="The flagship bibliography and the wider sources reviewed, registered or considered across the programme. Inclusion is not endorsement, independent verification or proof of an effect." />
-    <p className="reference-scope">Manuscript v{library?.manuscriptVersion ?? "1.5"} · Source snapshot: 1 September 2026. {library?.scopeNote}</p>
-    <div className="reference-downloads"><a href={route("research/references.html")} target="_blank" rel="noopener noreferrer">Read the full bibliography</a><a href={route("research/references.json")} download>Download source index · JSON</a></div>
+    <PageLead eyebrow="References & source library" title="The reading behind the research" deck="The flagship bibliography and the wider reading behind the programme. Search by author, title or subject. Review depth varies; inclusion is not endorsement." />
+    <p className="reference-scope">Manuscript v{library?.manuscriptVersion ?? "1.5"} · Source snapshot: 1 September 2026.</p>
+
     <section className="reference-search" aria-label="Find references">
       <div className="reference-tabs" role="group" aria-label="Reference scope">
         {[["all", "All sources"], ["flagship", "Cited in the flagship"], ["wider", "Wider reading & records"]].map(([id, title]) => <button key={id} type="button" aria-pressed={scope === id} onClick={() => { clearHash(); setScope(id); }}>{title}</button>)}
       </div>
       <div className="reference-fields"><label>Search by title, author or subject<input type="search" value={query} onChange={e => { clearHash(); setQuery(e.target.value); }} placeholder="For example: persuasion, Salvi, provenance…" /></label><label>Source collection<select value={collection} onChange={e => { clearHash(); setCollection(e.target.value); }}><option value="all">All collections</option>{library?.collections.map(c => <option key={c.id} value={c.id}>{c.label}</option>)}</select></label><button type="button" onClick={reset}>Clear filters</button></div>
     </section>
+    <div className="reference-downloads"><a href={route("research/references.html")} target="_blank" rel="noopener noreferrer">Read the full bibliography</a><a href={route("research/references.json")} download>Download source index · JSON</a></div>
     {error ? <p role="alert">{error}</p> : null}
     {!library && !error ? <p role="status">Loading references…</p> : null}
     {library ? <>
@@ -95,7 +96,7 @@ export function ReferencesPage() {
         </li>)}</ol>}
       </section>
       {pages > 1 ? <nav className="reference-pagination" aria-label="Reference pages"><button type="button" disabled={currentPage === 1} onClick={() => changePage(currentPage - 1)}>Previous</button><span>Page {currentPage} of {pages}</span><button type="button" disabled={currentPage === pages} onClick={() => changePage(currentPage + 1)}>Next</button></nav> : null}
-      <details className="reference-method"><summary>What is included, and how duplicates are handled</summary><p>{library.counts.sourceEntries} recorded entries were brought together into {library.counts.records} source records. Exact identifiers and matching titles join repeat entries; original titles, versions and collection locators remain accessible. Corrections and different editions are not treated as independent replication.</p><p>The main citation follows the current manuscript where available. Broader records retain their recorded source status, which may be incomplete or historical. Provider affiliation, peer review and evidence strength are separate questions.</p><ul>{library.collections.map(c => <li key={c.id}>{c.label} · {c.date} · {c.recordCount} input entries</li>)}</ul><p>Unlinked draft modules and proposed controls are not counted as literature. The manuscript’s five unpublished programme records are retained and clearly marked. No private folders or raw operational evidence are linked.</p></details>
+      <details className="reference-method"><summary>What is included, and how duplicates are handled</summary><p>{library.scopeNote}</p><p>{library.counts.sourceEntries} recorded entries were brought together into {library.counts.records} source records. Exact identifiers and matching titles join repeat entries; original titles, versions and collection locators remain accessible. Corrections and different editions are not treated as independent replication.</p><p>The main citation follows the current manuscript where available. Broader records retain their recorded source status, which may be incomplete or historical. Provider affiliation, peer review and evidence strength are separate questions.</p><ul>{library.collections.map(c => <li key={c.id}>{c.label} · {c.date} · {c.recordCount} input entries</li>)}</ul><p>Unlinked draft modules and proposed controls are not counted as literature. The manuscript’s five unpublished programme records are retained and clearly marked. No private folders or raw operational evidence are linked.</p></details>
     </> : null}
   </main>;
 }
