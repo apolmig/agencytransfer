@@ -1,0 +1,113 @@
+name: Verify live draft publication
+on:
+  push:
+    branches: [draft-humility-four-parts-20260901]
+    paths: [.github/workflows/verify-draft-publication.yml]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Install browser bindings
+        run: python -m pip install --quiet playwright
+      - name: Verify production
+        run: |
+          python - <<'PY'
+          import hashlib, json, pathlib, shutil, subprocess, time, urllib.request
+          from playwright.sync_api import sync_playwright
+          base='https://miguelguerrero.eu/agencytransfer/'
+          out=pathlib.Path('live-draft-review'); out.mkdir()
+          for attempt in range(24):
+              with urllib.request.urlopen(base+'research/part-i/',timeout=30) as r:
+                  ready='How far can an adversarial actor go with $10?' in r.read().decode()
+              if ready: break
+              time.sleep(5)
+          assert ready, 'New route metadata not yet served by production'
+          chrome=shutil.which('google-chrome') or shutil.which('chromium')
+          if not chrome: subprocess.run(['python','-m','playwright','install','chromium'],check=True)
+          report={'mode':'live','base':base,'published_commit':'1b1c4837568f071a57b27c670cfab0eb340959df','pages':[],'files':[],'result':'pending'}
+          try:
+              with sync_playwright() as p:
+                  browser=p.chromium.launch(executable_path=chrome)
+                  routes=('','research/','research/part-i/','research/part-ii/','research/part-ii/evidence/','research/part-ii/testing/','research/part-iii/','research/part-iv/','registry/','registry/evidence/','registry/testing/','paper/','outputs/','about/','updates/','explainers/','evidence/','testing/')
+                  for width in (1440,390):
+                      ctx=browser.new_context(viewport={'width':width,'height':1000 if width==1440 else 844})
+                      page=ctx.new_page(); errors=[]
+                      page.on('pageerror',lambda e:errors.append(str(e)))
+                      for slug in routes:
+                          res=page.goto(base+slug,wait_until='networkidle',timeout=30000)
+                          assert res.status==200,(slug,res.status)
+                          page.locator('h1').first.wait_for()
+                          text=page.locator('body').inner_text().lower()
+                          assert all(s in text for s in ('draft','progress','not peer reviewed')),(slug,'draft boundary missing')
+                          assert 'draft' in page.title().lower(),(slug,'title')
+                          sw=page.evaluate('document.documentElement.scrollWidth')
+                          if sw>width+1:
+                              assert 'evidence/' in slug and width==390 and sw<=696,(slug,width,sw,'new overflow')
+                          if slug=='':
+                              cards=page.locator('.v2-parts--simple .v2-part-card')
+                              assert cards.count()==4
+                              assert all(c.locator('a').count()==1 for c in cards.all())
+                              assert cards.nth(1).locator('a').get_attribute('href')=='/agencytransfer/registry/'
+                              image=page.locator('.v2-hero-art img')
+                              assert 'cde-gap3-hero-' in image.get_attribute('src')
+                              assert image.evaluate('(e)=>e.complete&&e.naturalWidth>0')
+                          if slug=='research/part-i/':
+                              assert page.locator('h1').inner_text()=='How far can an adversarial actor go with $10?'
+                              assert 'pretty far, actually' in text and 'us$500' in text and 'author-reported' in text
+                          if slug=='research/part-iii/':
+                              assert 'real operations. unresolved electoral effects.' in text
+                              assert 'strong inference' in text and 'plausible hypothesis' in text
+                          if slug=='research/part-iv/':
+                              assert page.locator('.policy-example').count()==6
+                              assert page.locator('.p4-portfolios article').count()==4
+                              assert page.locator('.p4-findings details').count()==6
+                              assert 'four months after notification' in text
+                              for item in page.locator('.policy-example').all():
+                                  assert item.locator('a').count()>=1
+                                  item.locator('summary').click()
+                                  assert item.locator('details').get_attribute('open') is not None
+                                  item.locator('summary').click()
+                          if slug=='registry/': assert page.locator('.measurement-gap--compact').count()==1
+                          if slug=='registry/evidence/': assert page.locator('#measurement-gap').count()==1
+                          if slug=='about/': assert page.locator('.evidence-status-key dt').count()==5
+                          if slug=='paper/':
+                              assert page.locator('a[href$="v1.3-20260901.pdf"]').count()==1
+                              assert page.locator('.web-revision-note').count()==1
+                          report['pages'].append({'path':slug,'viewport':width,'status':res.status,'h1':page.locator('h1').first.inner_text(),'scroll_width':sw})
+                          if slug in ('','research/part-i/','research/part-iii/','research/part-iv/','registry/'):
+                              page.evaluate("document.documentElement.style.scrollBehavior='auto'; if(document.activeElement instanceof HTMLElement) document.activeElement.blur(); window.scrollTo(0,0)")
+                              page.wait_for_timeout(100)
+                              name=(slug or 'home').strip('/').replace('/','-')
+                              page.screenshot(path=str(out/f'{name}-{width}.png'),full_page=True)
+                      assert not errors,errors
+                      ctx.close()
+                  browser.close()
+              files={
+                'media/cde-gap3-hero-1672.webp':'5d41200d1aa40f4e76117cf542166c33905b7ec6343d98ba5718eff2b65f13ae',
+                'research/harmful-manipulation-election-security-v1.3-20260901.pdf':'9049528ada708e9c5d591fac2343ef53d89a86d5e1d2703d22b1ef84bf701c5e',
+                'research/p4-source-linked-review-20260901.xlsx':'2104cb1851d5661ddacd0ae0b616e11a9c8ed6ef904d988d1ff7a305f9cdc421',
+              }
+              for name,expected in files.items():
+                  with urllib.request.urlopen(base+name,timeout=45) as r: raw=r.read();status=r.status
+                  digest=hashlib.sha256(raw).hexdigest()
+                  assert status==200 and digest==expected,(name,status,digest)
+                  report['files'].append({'path':name,'bytes':len(raw),'sha256':digest})
+              with urllib.request.urlopen(base+'media/cde-rift-animation/',timeout=30) as r: animation=r.read().decode()
+              assert 'Draft · work in progress' in animation
+              report['standalone_animation_status']='pass'
+              report['result']='pass'
+          except Exception as e:
+              report['result']='fail';report['error']=str(e);raise
+          finally:
+              (out/'report.json').write_text(json.dumps(report,indent=2))
+          print(json.dumps(report,indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: live-draft-review
+          path: live-draft-review
+          retention-days: 7
