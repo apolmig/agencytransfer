@@ -74,6 +74,39 @@ corrections and additions are stored in a versioned curation overlay and
 applied deterministically when building a release. The original claim, the
 corrected public claim, and the review decision therefore remain auditable.
 
+## Comparative recommendation grouping
+
+The six re-audited effect records are not treated as six effective policies.
+They were the strongest prior audit candidates. The comparative synthesis
+assigns each of the 118 implementations to one recommendation posture:
+
+- A · act now on bounded component evidence;
+- B · build control and observability infrastructure;
+- C · enforce legal and operational baselines;
+- D · use authenticity and disclosure as auxiliary controls;
+- E · pilot frontier-specific and structural controls;
+- F · research or hold unvalidated general triggers.
+
+Assignment considers, without numeric aggregation:
+
+1. the strongest checked endpoint and its directness to the proposed control;
+2. the match between the intervention and the CDE node it can change;
+3. legal and operational maturity;
+4. reversibility and monitoring feasibility;
+5. rights, competition, access, and anti-capture costs;
+6. displacement and adversarial adaptation risk; and
+7. the missing evidence required to justify a stronger claim or action.
+
+The groups are recommendation postures, not effect sizes. Group A supports
+narrow outcomes such as consent quality, sharing friction, recognition,
+factual accuracy, or reduced data exposure. Group B is prioritised because it
+preserves observability, interruption, contestability, and reversal, not
+because end-to-end manipulation reduction has been demonstrated. Group D must
+not be presented as sufficient against longitudinal or adaptive influence.
+Group E requires bounded pilots. Group F must not become an automatic release
+or prohibition threshold without construct, calibration, comparator, and
+decision-rule validation.
+
 ## Decision tiers
 
 The Atlas proposes non-compensable rights and institutional gates. This beta
@@ -83,6 +116,10 @@ They reflect current legal authority, operational maturity, causal
 plausibility, reversibility, evaluability, and evidence without numeric
 aggregation.
 
+The decision rule is node-specific: act on the mechanism evidenced, do not
+claim an effect at a node that was not measured, and preserve the records
+needed to test the next claim.
+
 ## Limitations
 
 The snapshot is English-language and weighted toward the EU, United States,
@@ -90,6 +127,11 @@ Brazil, and the selected election cases. Evidence on conversational,
 longitudinal, multi-agent, and institutional agency transfer remains weak.
 Policy packages are hypotheses about complementary controls, not estimated
 treatment bundles.
+
+The comparative grouping is not a completed 118-intervention meta-analysis
+with independent double screening and full-text adjudication of every source.
+Candidate sources do not upgrade an intervention until design, endpoint,
+comparator, population, and causal match have been checked.
 
 ## Updating
 
