@@ -22,6 +22,14 @@ configs:
     data_files:
       - split: train
         path: data/derived/atlas.parquet
+  - config_name: evidence_groups
+    data_files:
+      - split: train
+        path: data/core/evidence_groups.parquet
+  - config_name: implementation_evidence_groups
+    data_files:
+      - split: train
+        path: data/relations/implementation_evidence_groups.parquet
   - config_name: intervention_families
     data_files:
       - split: train
@@ -94,72 +102,49 @@ configs:
 
 # Agency Transfer Policy Atlas
 
-A causal evidence map of interventions against AI-mediated manipulation.
+**Comparative policy recommendations, not six effective policies.**
 
-This is the Part 4 artifact of *From Persuasion to Agency Transfer*. It maps
-where an intervention could interrupt the chain from AI capability and control
-to concentrated influence and democratic harm, who could implement it, and
-what is known about its legal status, mechanism, effect evidence, failure
-modes, rights risks, maturity, and evaluability.
+This Part IV research artifact maps how interventions could interrupt AI-enabled agency transfer, who can implement them, and what the evidence supports. The democratic concern is concentrated control over people's information, choices, dependencies, and institutional decisions, not misinformation alone.
 
-## Status
+## Current release
 
-`v0.1.0-beta.2` is a **research preview**, not a validated policy benchmark.
-The `train` split name is only the Hugging Face Dataset Viewer container; these
-records are not intended as model-training examples.
+`v0.1.0-beta.3` incorporates the working register's **v0.4 comparative classification** into the actual dataset: the default `atlas` has group fields for all **118 implementations**, with normalized `evidence_groups` and `implementation_evidence_groups` tables. The 68 control families, 320 atomic claims, and 123 source records retain their existing identifiers and evidence coding.
 
-The release has 68 control families, 118 implementations, 320 atomic claims,
-123 sources, 16 mechanisms, 15 candidate policy packages, and 24
-non-compensable decision gates. It has no composite effectiveness score or
-leaderboard.
+This is a **research preview and provisional author synthesis**, not a validated policy benchmark or a completed full-text systematic review. The `train` split is a viewer container, not a recommendation to train a model on these records.
 
-## Critical evidence boundary
+## Comparative recommendation groups
 
-The existence of a law, the plausibility of a mechanism, and evidence that an
-intervention works are different claims. In this preview:
+| Group | Implementations | Working policy posture | Examples |
+|---|---:|---|---|
+| A | 5 | Prioritize bounded component controls, subject to source-specific limits | Choice architecture, forwarding friction, technique-based prebunking, official-source grounding, data minimisation |
+| B | 41 | Build control and observability infrastructure; measure its effects | Least privilege, confirmations, traces, independent access, incident response |
+| C | 31 | Enforce legal and operational baselines where applicable | Platform duties, targeting and data rules, audits, complaints and remedies |
+| D | 16 | Use authenticity and disclosure as auxiliary controls | Provenance, labels, caller authentication, detection and ad repositories |
+| E | 19 | Pilot frontier-specific and structural controls | Purpose and workflow controls, memory/dependency safeguards, loyalty audits, functional portability |
+| F | 6 | Research before using general triggers as automatic gates | Unvalidated capability/reach thresholds and broad release triggers |
 
-- 22 of 123 source records participate in at least one checked claim–source
-  relation; the other 101 remain candidate source records;
-- 56 duplicate claim–source rows are removed from the generated release;
-- 6 of 118 control-effect claims have a checked empirical source and a bounded
-  observed endpoint; the other 112 remain unchecked;
-- of the six priority implementations, three are now strong inference, two
-  are open questions, and only technique-recognition prebunking retains an
-  established component-effect classification;
-- established legal-status rows without a checked legal claim are also exposed
-  as provisional in the default atlas view; 25 of 53 currently have a checked
-  primary-legal claim;
-- the two project-mechanism rows are provisional until their mechanism claims
-  receive claim-specific source verification.
+These groups combine evidence relevance, mechanism, maturity and decision posture. **They are not an ordinal ranking of efficacy, legal force, effect size, cost-effectiveness or democratic importance.** An intervention in E may be more structurally important than one in A. A does not mean that five implemented policies have directly demonstrated beneficial effects.
 
-The dataset therefore supports mapping, audit, and research-priority setting.
-It does not support claims that the listed controls reduce democratic harm.
+## What is verified, and what is not
 
-## Configurations
+**118/118 is classification coverage, not empirical verification coverage.** This release adds no new claim-source adjudications. Existing `effect_claim_checked`, `publication_claim_class`, source links and bounded endpoints remain authoritative and are not overwritten by group membership.
 
-`atlas` is the default denormalized view, one row per implementation. The other
-configurations expose the normalized objects and bridge tables. Parquet keeps
-multi-value ID fields as typed lists. CSV companions remain in the repository
-for transparent diffs.
+The retained wave-1 record contains six checked empirical effect claims, not six proven policies. At implementation level, it supports one established bounded component effect, three strong inferences and two open questions. Immediate recognition of taught manipulation techniques is the retained established component effect. In particular, forwarding limits and functional portability must not be represented as directly proven effective on the basis of that audit; portability remains in E.
+
+The other 112 effect claims still lack a checked empirical claim-source relation in the reproducible core. This does **not** mean that no relevant literature exists or that those interventions fail. Twenty-two of 123 source records participate in at least one checked claim-source relation; the other 101 remain candidate source records. The comparative grouping does not close these verification gaps.
+
+The raw `implementations` table preserves historical source coding. Use the default `atlas` and its `publication_*` fields for current publication-safe evidence classifications. A law's existence, compliance, a technical mechanism and a democratic effect are distinct propositions. Legal applicability must be verified for the relevant jurisdiction and date.
+
+## Provenance and reproducibility
+
+The empirical curation remains `curation-v0.4-wave1`. The separately versioned recommendation layer is `comparative-v0.4-20260901`, sourced from the working register's `v0.4 Evidence Groups` sheet. Its source workbook hash and provenance are recorded in `manifests/release.json`.
+
+Group descriptions are author synthesis, not independent empirical sources. The builder checks complete, unique 118-row membership and preserves every pre-existing evidence field. CSV and typed Parquet companions, checksums and the immutable release tag make the published state inspectable. Previous tags are retained rather than moved.
 
 ## Responsible use
 
-Use the Atlas to compare intervention points, trace claims to sources, identify
-coverage gaps, and design bounded evaluations. Do not use a decision tier as
-an effectiveness estimate. Do not infer vote effects from reach, virality, or
-case linkage. The dataset contains no targeting profiles, current-campaign
-playbooks, safeguard-bypass prompts, personally identifiable data, or raw
-harmful model outputs.
+Use this Atlas to prioritize bounded controls, assemble complementary safeguards, inspect claims and design evaluations. Do not infer reduced agency transfer, preserved turnout or democratic integrity from labels, logs, consent clicks or message reach. Controls should preserve reflective agency, contestability, rights and meaningful exit; a stronger recommendation is not permission to bypass those conditions.
 
-## Licensing and citation
+No targeting profiles, campaign playbooks, safeguard-bypass prompts, personal data or raw harmful model outputs are included. No DOI is minted for this beta. CC BY 4.0 covers project-authored annotations and metadata, not third-party sources.
 
-CC BY 4.0 covers project-authored taxonomy, annotations, relations, and
-metadata. It does not relicense linked statutes, papers, reports, or other
-third-party material. No DOI is minted for this beta. Cite the repository and
-version using `CITATION.cff` until a stable, independently reviewed release.
-
-Canonical repository:
-https://github.com/apolmig/agencytransfer/tree/main/policy-atlas
-
-Immutable dataset version:
-https://huggingface.co/datasets/apol/agency-transfer-policy-atlas/tree/v0.1.0-beta.2
+[Canonical source and methods](https://github.com/apolmig/agencytransfer/tree/main/policy-atlas) · [Immutable dataset version](https://huggingface.co/datasets/apol/agency-transfer-policy-atlas/tree/v0.1.0-beta.3) · [Programme and working paper](https://miguelguerrero.eu/agencytransfer/paper/)
