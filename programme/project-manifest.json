@@ -542,9 +542,9 @@
     "raw_harmful_operational_material_is_withheld": true
   },
   "known_blockers": [
-    "Public downloadable hosting of the v1.2 manuscript and frozen PDF remains separate from the updated canonical web overview and Drive originals.",
+    "Public downloadable hosting of the v1.3 manuscript and frozen PDF remains separate from the updated canonical web overview and Drive originals.",
     "Replace the white-paper summary, brief facsimile, and poster facsimile with their final canonical assets when supplied.",
     "Move the Brazil explainer master to durable hosting and add captions, transcript, poster frame, and final responsible-release review.",
-    "The P4 comparative grouping is provisional: 112 effect claims still lack a checked empirical relation in the reproducible core."
+    "The P4 production core still has 112 effect claims without a checked empirical relation. The later source-linked review and manuscript v1.3 do not silently adjudicate these core claims."
   ]
 }
