@@ -66,18 +66,19 @@ try:
      frame=page.frame_locator('iframe');frame.locator('#play').wait_for()
      assert frame.locator('#play').inner_text()=='Play'
     if slug=='media/cde-rift-animation/':
-     assert page.locator('#play').inner_text()=='Play'
-     page.wait_for_timeout(300);assert page.locator('#time').inner_text()=='00:00 / 01:33'
+     assert page.locator('.v2-header nav a').count()==6
+     frame=page.frame_locator('iframe')
+     assert frame.locator('#play').inner_text()=='Play'
+     page.wait_for_timeout(300);assert frame.locator('#time').inner_text()=='00:00 / 01:33'
      for i in range(6):
-      page.locator(f'[data-chapter="{i}"]').click()
-      assert page.locator(f'[data-chapter="{i}"]').get_attribute('aria-pressed')=='true'
-      assert page.evaluate('document.documentElement.scrollWidth')<=w+1
-     assert page.locator('#time').inner_text()=='01:15 / 01:33'
-     page.locator('#play').click();page.wait_for_timeout(450);page.locator('#play').click()
-     assert page.locator('#play').inner_text()=='Play'
-     page.locator('#restart').click()
-     assert page.locator('.landscape img').evaluate('(e)=>e.naturalWidth>0')
-     assert page.locator('a').first.get_attribute('href')=='../../paper/'
+      frame.locator(f'[data-chapter="{i}"]').click()
+      assert frame.locator(f'[data-chapter="{i}"]').get_attribute('aria-pressed')=='true'
+     assert frame.locator('#time').inner_text()=='01:15 / 01:33'
+     frame.locator('#play').click();page.wait_for_timeout(450);frame.locator('#play').click()
+     assert frame.locator('#play').inner_text()=='Play'
+     frame.locator('#restart').click()
+     assert frame.locator('.landscape img').evaluate('(e)=>e.naturalWidth>0')
+     assert not frame.locator('.player-heading').is_visible()
     report['pages'].append({'path':slug,'viewport':w,'status':response.status,'scrollWidth':sw,'title':page.locator('h1').first.inner_text()})
     page.evaluate("document.documentElement.style.scrollBehavior='auto';if(document.activeElement instanceof HTMLElement)document.activeElement.blur();window.scrollTo(0,0)")
     page.wait_for_timeout(100)
@@ -88,9 +89,9 @@ try:
    ctx.close()
   ctx=browser.new_context(viewport={'width':390,'height':844},reduced_motion='reduce');page=ctx.new_page()
   page.goto(base+'media/cde-rift-animation/',wait_until='networkidle')
-  assert 'Reduced motion' in page.locator('#motion-note').inner_text();assert page.locator('#play').inner_text()=='Play';ctx.close()
+  frame=page.frame_locator('iframe');assert 'Reduced motion' in frame.locator('#motion-note').inner_text();assert frame.locator('#play').inner_text()=='Play';ctx.close()
   ctx=browser.new_context(java_script_enabled=False,viewport={'width':390,'height':844});page=ctx.new_page()
-  page.goto(base+'media/cde-rift-animation/');assert page.locator('#text-agency').is_visible()
+  page.goto(base+'media/cde-rift-animation/');assert page.locator('.reading-fallback nav a').count()==6;assert page.frame_locator('iframe').locator('#text-agency').is_visible()
   page.goto(base+'research/references.html');assert page.locator('ol>li').count()==431;ctx.close()
   ctx=browser.new_context(viewport={'width':1280,'height':850});page=ctx.new_page()
   # A stable entry link must work outside the first result page.

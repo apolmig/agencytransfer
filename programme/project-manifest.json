@@ -3,11 +3,11 @@
   "programme": {
     "id": "agency-transfer-research-programme",
     "title": "Agency Transfer Research Programme",
-    "subtitle": "Frontier AI, harmful manipulation, and democratic power",
+    "subtitle": "Harmful manipulation and epistemic risk",
     "flagship_title": "Harmful Manipulation and Election Security",
     "flagship_subtitle": "The Capability–Deployment–Effect Gap",
     "lead": "The next Cambridge Analytica will be a system.",
-    "scope_statement": "Manipulation at scale facilitated by frontier AI: what is happening, what may be coming, and how democracies can mitigate the danger.",
+    "scope_statement": "A research programme in progress on harmful manipulation and epistemic risk, with election security as its first focus.",
     "secondary_lens": "Manipulation as a mechanism for the extreme concentration of political and epistemic power.",
     "thesis": "Frontier AI can make influence more scalable, adaptive, persistent, and infrastructural. The democratic risk lies not only in false content, but in concentrated control over the systems that shape attention, trust, choice, dependency, and the evidence needed to contest them.",
     "status": "working_programme",
@@ -485,7 +485,7 @@
       },
       {
         "label": "Research",
-        "path": "/research/"
+        "path": "/#research"
       },
       {
         "label": "Registry",
@@ -532,6 +532,13 @@
         "from": "/testing/",
         "to": "/registry/testing/"
       }
+    ],
+    "reader_aliases": [
+      {
+        "from": "/media/cde-rift-animation/",
+        "to": "/explainers/",
+        "behaviour": "Same publication shell and explainer, without a separate navigation system."
+      }
     ]
   },
   "publication_rules": {
@@ -546,7 +553,6 @@
     "raw_harmful_operational_material_is_withheld": true
   },
   "known_blockers": [
-    "Public downloadable hosting of the v1.3 manuscript and frozen PDF remains separate from the updated canonical web overview and Drive originals.",
     "Replace the white-paper summary, brief facsimile, and poster facsimile with their final canonical assets when supplied.",
     "Move the Brazil explainer master to durable hosting and add captions, transcript, poster frame, and final responsible-release review.",
     "The P4 production core still has 112 effect claims without a checked empirical relation. The later source-linked review and manuscript v1.3 do not silently adjudicate these core claims."

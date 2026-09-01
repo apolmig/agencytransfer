@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { EvidenceStatusKey, WebRevisionNote } from "../components/ResearchStatus";
 import { ELECTION_INDEX_URL, LAB_URL, MANUEL_VIDEO_URL, POLICY_ATLAS_URL, REPOSITORY_URL, RIFT_ANIMATION, DraftBoundary, PageLead, TextLink, route } from "./EditorialShell";
 import { EditorialRiftVisual, MechanismStrip } from "./EditorialVisuals";
@@ -81,26 +82,65 @@ export function PaperPage() {
 }
 
 export function OutputsPage() {
+  const groups = [
+    { title: "Read & understand", items: [
+      { title: "Working paper", detail: "Flagship v1.5 · overview, full PDF and earlier edition", href: route("paper/") },
+      { title: "References", detail: "Flagship bibliography and wider source library", href: route("references/") },
+      { title: "The CDE Gap, explained", detail: "A self-paced visual guide, with chapters and transcript", href: RIFT_ANIMATION },
+    ]},
+    { title: "Data & tools", items: [
+      { title: "Frontier Evaluation Registry", detail: "Part II · original chart, evidence and testing", href: route("registry/") },
+      { title: "Election Evidence Index", detail: "Part III · claim-level election records", href: ELECTION_INDEX_URL },
+      { title: "Policy Evidence Atlas", detail: "Part IV · published beta.3 dataset; original evidence grades", href: POLICY_ATLAS_URL },
+      { title: "Policy review workbook", detail: "1 September review · 118 implementation dossiers, not 118 verified effects", href: route("research/p4-source-linked-review-20260901.xlsx") },
+      { title: "Agency Transfer Lab", detail: "Part I · evidence harness and control prototype", href: LAB_URL },
+    ]},
+  ];
   return (
-    <main id="main-content" className="v2-main">
-      <PageLead eyebrow="Resources" title="One programme, several forms" deck="All programme outputs are drafts and work in progress, not peer-reviewed conclusions. The paper supplies the argument; datasets and tools supply inspectable, provisional records. External sources retain their own publication status." />
-      <p><TextLink href={route("references/")}>Browse the complete references and source library</TextLink></p>
-      <section className="v2-output-groups">
-        <div><p className="v2-eyebrow">Core publications</p><article><h2>Flagship working paper v1.5</h2><p>Revised 1 September 2026. New source-linked policy findings distinguish outcomes, delivery and protected authority. Parts I–III retain their evidence freeze; external studies are not new fellowship experiments or automatic dataset upgrades.</p><div className="v2-card-links"><TextLink href={route("paper/")}>Open web overview</TextLink><TextLink href={route("research/harmful-manipulation-election-security-v1.5-20260901.pdf")}>Read PDF · v1.5</TextLink></div></article><article id="white-paper"><h2>The Persuasion Machines</h2><p className="publication-pending">Not yet published on this site.</p><p>An accessible policy synthesis. No standalone file is currently linked.</p></article></div>
-        <div><p className="v2-eyebrow">Visual overview</p><article id="poster"><h2>Research poster</h2><p>Not yet published on this site. The illustration below is a conceptual overview, not a downloadable poster.</p><EditorialRiftVisual /></article><article><h2>CDE Rift animation</h2><p>Timed explanatory presentation of the programme’s central causal and evidentiary distinction.</p><TextLink href={RIFT_ANIMATION}>Open animation</TextLink></article></div>
-        <div><p className="v2-eyebrow">Data and tools</p><article><h2>Frontier Evaluation Registry</h2><p>Part II: benchmark-native outcomes, evidence review, and testing record.</p><TextLink href={route("registry/")}>Open Registry</TextLink></article><article><h2>Election Evidence Index</h2><p>Part III: claim-level public election evidence.</p><TextLink href={ELECTION_INDEX_URL} external>Open dataset</TextLink></article><article><h2>Policy Atlas · beta.3</h2><p>The production dataset retains its historical comparative assignments and empirical grades. The newer manuscript synthesis does not convert classification coverage into efficacy verification.</p><div className="v2-card-links"><TextLink href={POLICY_ATLAS_URL} external>Open dataset</TextLink><TextLink href={route("paper/#policy-update")}>Read updated findings</TextLink></div></article><article><h2>Policy source-linked review · 1 September</h2><p>118 implementation dossiers, 69 selected source records and the revised recommendations. A companion assessment, not 118 verified efficacy estimates.</p><div className="v2-card-links"><TextLink href={route("research/part-iv/")}>Read the review</TextLink><TextLink href={route("research/p4-source-linked-review-20260901.xlsx")}>Download workbook</TextLink></div></article><article><h2>Agency Transfer Lab</h2><p>Evidence-harness and control-semantics prototype.</p><TextLink href={LAB_URL} external>Open Lab</TextLink></article></div>
-      </section>
+    <main id="main-content" className="v2-main artifacts-page">
+      <PageLead eyebrow="Research collection" title="Artifacts" deck="The paper, sources, explainers and tools in one place. Each item opens its main record." />
+      <div className="artifact-directory">
+        {groups.map(group => <section key={group.title} aria-label={group.title}>
+          <h2>{group.title}</h2>
+          <ul>{group.items.map(item => <li key={item.title}>
+            <div><TextLink href={item.href} external={/^https?:/.test(item.href)}>{item.title}</TextLink><p>{item.detail}</p></div>
+          </li>)}</ul>
+        </section>)}
+      </div>
+      <details className="publication-extra" id="pending-artifacts">
+        <summary>Not yet published on this site</summary>
+        <p id="poster">Research poster: awaiting the public edition.</p>
+        <p id="white-paper">The Persuasion Machines: standalone white paper awaiting publication.</p>
+        <p>Brazil explainer: awaiting a durable public video link.</p>
+      </details>
     </main>
   );
 }
 
 export function ExplainersPage() {
+  useEffect(() => {
+    const reveal = () => {
+      const id = location.hash.slice(1);
+      if (!["manuel-miami", "brazil-2026", "mechanism-map"].includes(id)) return;
+      const target = document.getElementById(id);
+      const details = target?.closest("details");
+      if (details) details.open = true;
+      target?.scrollIntoView({ block: "start" });
+    };
+    reveal();
+    addEventListener("hashchange", reveal);
+    return () => removeEventListener("hashchange", reveal);
+  }, []);
   return (
-    <main id="main-content" className="v2-main">
-      <PageLead eyebrow="Explainers" title="Explain the mechanism, not the spectacle" deck="These artifacts make the system legible. Synthetic scenarios are illustrations, not observations of real campaigns, authentic exposure, behaviour change, or electoral effect." />
+    <main id="main-content" className="v2-main explainers-page">
+      <PageLead eyebrow="A guide to the research" title="The CDE Gap, explained" deck="Capability is not deployment. Deployment is not effect. Watch the short guide or read at your own pace." />
+      <p className="explainer-format">Six chapters · 1 min 33 sec · silent, with on-screen text</p>
       <AnimationFeature />
-      <section className="v2-simple-section"><div className="v2-section-lead"><div><p className="v2-eyebrow">Mechanism map</p><h2>Anatomy of an AI manipulation operation</h2></div><p>A restrained editorial version of the supplied visual: capability, operator control, audience discovery, vulnerability inference, generation, delivery, feedback, adaptation, and objective.</p></div><div className="v2-wide-figure v2-wide-figure--mechanism"><MechanismStrip /><p className="v2-figure-caption">Conceptual illustration. The research did not observe this complete chain operating against real people.</p></div></section>
-      <section className="v2-explainer-cards"><article><p className="v2-eyebrow">Synthetic scenario</p><h2>Manuel · Miami · US midterms</h2><p>A fictional voter is found through a political community, modelled through salient trust cues, and targeted with synthetic audio near an election. The scenario illustrates discovery, identity, delivery, repetition, and scale.</p><TextLink href={MANUEL_VIDEO_URL} external>Watch video</TextLink><small>Not evidence of a real campaign or effect.</small></article><article><p className="v2-eyebrow">Synthetic scenario</p><h2>Brazil 2026 · the final-hour voice</h2><p>A fictional cloned-audio scenario illustrates the difference between generation, deployment, individual response, and an unmeasured aggregate consequence.</p><span className="v2-status-pill">Not yet published</span><small>Not evidence that the depicted operation occurred or generalises to real voters.</small></article></section>
+      <details className="publication-extra">
+        <summary>More illustrations and scenarios</summary>
+      <section className="v2-simple-section" id="mechanism-map"><div className="v2-section-lead"><div><p className="v2-eyebrow">Mechanism map</p><h2>Anatomy of an AI manipulation operation</h2></div><p>A conceptual map of the links an operator would need to connect. Not a record of a completed operation.</p></div><div className="v2-wide-figure v2-wide-figure--mechanism"><MechanismStrip /><p className="v2-figure-caption">Conceptual illustration. The research did not observe this complete chain operating against real people.</p></div></section>
+      <section className="v2-explainer-cards"><article id="manuel-miami"><p className="v2-eyebrow">Synthetic scenario</p><h2>Manuel · Miami · US midterms</h2><p>A fictional voter is found through a political community, modelled through salient trust cues, and targeted with synthetic audio near an election. The scenario illustrates discovery, identity, delivery, repetition, and scale.</p><TextLink href={MANUEL_VIDEO_URL} external>Watch video</TextLink><small>Not evidence of a real campaign or effect.</small></article><article id="brazil-2026"><p className="v2-eyebrow">Synthetic scenario</p><h2>Brazil 2026 · the final-hour voice</h2><p>A fictional cloned-audio scenario illustrates the difference between generation, deployment, individual response, and an unmeasured aggregate consequence.</p><span className="v2-status-pill">Not yet published</span><small>Not evidence that the depicted operation occurred or generalises to real voters.</small></article></section>
+      </details>
     </main>
   );
 }
@@ -108,7 +148,7 @@ export function ExplainersPage() {
 export function AboutPage() {
   return (
     <main id="main-content" className="v2-main">
-      <PageLead eyebrow="About" title="A maintained record of an unfinished systems problem" deck="The programme asks when frontier AI capability can become harmful influence infrastructure, who controls the joins, what evidence exists at each node, and when control becomes a transfer of agency and democratic power." />
+      <PageLead eyebrow="About" title="About the programme" deck="A research programme in progress on harmful manipulation and epistemic risk, with election security as its first focus." />
       <EvidenceStatusKey />
       <section className="v2-about-grid"><article><p className="v2-eyebrow">Author</p><h2>Miguel Guerrero</h2><p>ERA:AI Research Fellow in Cambridge, senior AI adviser in government, founder of Saturdays.AI, engineer, educator, and researcher working across adoption, governance, safety, and democratic resilience.</p><p>This is independent research. It is not an official position of ERA, Cambridge, or any institution with which the author is affiliated.</p></article><article><p className="v2-eyebrow">Evidence policy</p><h2>Primary programme records are not independent replication</h2><p>Project-produced traces, recovered evaluations, coding decisions, and curated datasets document what this programme recorded. They do not constitute peer review or independent corroboration of downstream effects.</p></article><article><p className="v2-eyebrow">Responsible release</p><h2>Publish the argument, not operational tradecraft</h2><p>The public record publishes concepts, aggregates, source-linked claims, defensive methods, and synthetic explainers. It withholds campaign-ready outputs, targetable profiles, evasion methods, credentials, raw harmful traces, and private validation material.</p><TextLink href={`${REPOSITORY_URL}/blob/main/RESPONSIBLE_RELEASE.md`} external>Read policy</TextLink></article></section>
       <section className="v2-citation"><p className="v2-eyebrow">Citation</p><p>Guerrero, Miguel. 2026. <em>Harmful Manipulation and Election Security: The Capability–Deployment–Effect Gap.</em> ERA:AI Summer Research Fellowship, Cambridge. Flagship working paper, v1.5, 1 September 2026.</p></section>

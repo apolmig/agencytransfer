@@ -1,5 +1,13 @@
 # Changelog
 
+## 1 September 2026 — Simpler publication navigation
+
+- Reframed the programme introduction around harmful manipulation and epistemic risk, with election security as the first focus.
+- Kept the shared header on the CDE explainer, including its existing public URL.
+- Removed duplicate explainer headings and separate reader entry points; supplementary scenarios remain available on demand.
+- Simplified the artifacts directory and preserved the independent Registry, $10 hook, source library and manuscript.
+
+
 ## Publication usability and references — 2026-09-01
 
 - Preserved the independent Registry and the $10 hook; outgoing Registry links open in a new tab.
