@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.1.0-beta.3 — 2026-09-01
+
+- publishes the working v0.4 comparative grouping as actual CSV/Parquet data, not documentation alone;
+- adds six group records, 118 implementation-group relations and comparative fields to the 118-row default atlas;
+- records source workbook provenance and hash, classification date, and provisional author-synthesis status;
+- preserves every existing empirical claim classification and source-verification field; adds no new claim-source adjudications;
+- explicitly distinguishes 118 classified implementations from six checked effect claims, and explains the remaining 112 verification gaps;
+- clarifies that A is not five proven policies and forwarding-limit efficacy remains an open question in the retained review;
+- adds tests for complete unique membership, group counts, unchanged verification coverage and no silent evidence upgrades;
+- updates the dataset card, citation, dictionary, publication status and source documentation;
+- issues a new immutable release rather than moving the beta.2 tag.
+
 ## Comparative evidence synthesis — 2026-09-01
 
 - corrects the interpretation of the six priority effect claims: they were the
