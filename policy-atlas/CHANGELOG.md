@@ -1,5 +1,27 @@
 # Changelog
 
+## Comparative evidence synthesis — 2026-09-01
+
+- corrects the interpretation of the six priority effect claims: they were the
+  strongest prior audit candidates, not six effective policies and not a
+  shortlist;
+- groups all 118 implementations into six recommendation postures based on
+  comparative support, causal fit, maturity, reversibility, and the evidence
+  needed to upgrade the claim;
+- identifies five interventions with the strongest current bounded component
+  support: dark-pattern restrictions, forwarding friction, technique-based
+  prebunking, official-source grounding, and data minimisation or user control;
+- recommends control and observability infrastructure as a second priority,
+  while retaining a strong-inference ceiling for manipulation-specific effects;
+- classifies provenance, labels, detection, authentication, sponsor notices,
+  and repositories as auxiliary rather than sufficient controls;
+- moves frontier-specific memory, dependency, loyalty, workflow, impact, and
+  functional-portability controls into an urgent pilot posture;
+- holds unvalidated universal benchmark gates, blanket release rules, and broad
+  constitutional triggers pending construct and threshold validation;
+- adds `COMPARATIVE_EVIDENCE_GROUPS.md`; the public dataset remains
+  `v0.1.0-beta.2` until the release pipeline and source tables are regenerated.
+
 ## v0.1.0-beta.2 — 2026-08-13
 
 - adds a reproducible `curation-v0.4-wave1` overlay without rewriting the
