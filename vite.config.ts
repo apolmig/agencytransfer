@@ -30,6 +30,7 @@ export default defineConfig({
         paper: entry("./paper/index.html"),
         outputs: entry("./outputs/index.html"),
         explainers: entry("./explainers/index.html"),
+        explainerLegacy: entry("./media/cde-rift-animation/index.html"),
         updates: entry("./updates/index.html"),
         about: entry("./about/index.html"),
         legacyEvidence: entry("./evidence/index.html"),

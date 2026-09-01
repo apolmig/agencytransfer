@@ -72,7 +72,7 @@ export function ReferencesPage() {
       </div>
       <div className="reference-fields"><label>Search by title, author or subject<input type="search" value={query} onChange={e => { clearHash(); setQuery(e.target.value); }} placeholder="For example: persuasion, Salvi, provenance…" /></label><label>Source collection<select value={collection} onChange={e => { clearHash(); setCollection(e.target.value); }}><option value="all">All collections</option>{library?.collections.map(c => <option key={c.id} value={c.id}>{c.label}</option>)}</select></label><button type="button" onClick={reset}>Clear filters</button></div>
     </section>
-    <div className="reference-downloads"><a href={route("research/references.html")} target="_blank" rel="noopener noreferrer">Read the full bibliography</a><a href={route("research/references.json")} download>Download source index · JSON</a></div>
+    <div className="reference-downloads"><a href={route("research/references.html")} target="_blank" rel="noopener noreferrer">Print / no-JavaScript bibliography</a><a href={route("research/references.json")} download>Download source index · JSON</a></div>
     {error ? <p role="alert">{error}</p> : null}
     {!library && !error ? <p role="status">Loading references…</p> : null}
     {library ? <>

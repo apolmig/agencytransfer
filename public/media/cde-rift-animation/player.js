@@ -18,7 +18,7 @@ $('previous').addEventListener('click',()=>{pause();seek(scenes[Math.max(0,activ
 $('next').addEventListener('click',()=>{pause();seek(scenes[Math.min(scenes.length-1,active+1)].time);});
 $('restart').addEventListener('click',()=>{pause();seek(0);play.textContent='Play';});
 $('full').hidden=!document.documentElement.requestFullscreen;
-$('full').addEventListener('click',async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await document.documentElement.requestFullscreen();}catch{$('motion-note').textContent='Full screen is unavailable here. Open this explanation in its own window.';}});
+$('full').addEventListener('click',async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await document.documentElement.requestFullscreen();}catch{$('motion-note').textContent='Full screen is unavailable here. You can continue using the controls on this page.';}});
 document.addEventListener('fullscreenchange',()=>{$('full').textContent=document.fullscreenElement?'Exit full screen':'Full screen';$('full').setAttribute('aria-label',document.fullscreenElement?'Exit full screen':'Enter full screen');resize();});
 document.addEventListener('visibilitychange',()=>{if(document.hidden)pause();});
 addEventListener('message',e=>{if(e.origin===location.origin&&e.source===parent&&e.data?.type==='cde-explainer-pause')pause();});

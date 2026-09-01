@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { LAB_URL, REPOSITORY_URL, RIFT_ANIMATION, DraftBoundary, PageLead, TextLink, route } from "./EditorialShell";
+import { LAB_URL, REPOSITORY_URL, RIFT_ANIMATION, RIFT_PLAYER, DraftBoundary, PageLead, TextLink, route } from "./EditorialShell";
 import { MechanismStrip } from "./EditorialVisuals";
 import { BudgetBoundary } from "../components/ResearchStatus";
 
@@ -44,7 +44,7 @@ const researchParts = [
 
 function PartNavigation() {
   return (
-    <section className="v2-parts v2-parts--simple" aria-label="Four research parts">
+    <section className="v2-parts v2-parts--simple" id="research" aria-label="Four research parts">
       {researchParts.map((part) => (
         <article className={`v2-part-card${part.featured ? " v2-part-card--featured" : ""}`} key={part.label}>
           {part.featured ? <div className="v2-feature-label">Featured draft artifact</div> : null}
@@ -63,14 +63,14 @@ function Hero() {
   return (
     <section className="v2-hero v2-hero--repository">
       <div className="v2-hero-copy">
-        <p className="v2-eyebrow">Frontier AI · harmful manipulation · election security</p>
+        <p className="v2-eyebrow">Frontier AI · harmful manipulation · epistemic risk</p>
         <h1>Harmful manipulation<br />and election security</h1>
         <h2>The capability–deployment–effect gap</h2>
-        <p className="v2-deck">A research programme in progress on how frontier AI could become influence infrastructure, who controls it, and when practical agency shifts away from citizens and democratic institutions.</p>
+        <p className="v2-deck">A research programme in progress on harmful manipulation and epistemic risk, with election security as its first focus.</p>
         <p className="v2-plain-boundary">Documented harms do not establish that AI changed an election.</p>
         <div className="v2-actions">
-          <a className="v2-button v2-button--dark" href={route("research/")}>Explore the research</a>
-          <a className="v2-button" href={route("paper/")}>Read the working paper</a>
+          <a className="v2-button v2-button--dark" href={route("paper/")}>Read the working paper</a>
+          <a className="v2-button" href={RIFT_ANIMATION}>The CDE Gap, explained</a>
         </div>
       </div>
       <figure className="v2-hero-art v2-hero-art--supplied">
@@ -109,15 +109,10 @@ export function AnimationFeature() {
     return () => { removeEventListener("message", receive); observer.disconnect(); };
   }, []);
   return (
-    <section className="v2-animation-section">
-      <div className="v2-section-lead">
-        <div><p className="v2-eyebrow">A short explanation</p><h2>The CDE Gap, one step at a time</h2></div>
-        <p>Start when ready, choose a chapter, or read the full explanation. No sound or automatic playback.</p>
-      </div>
+    <section className="v2-animation-section" id="cde-explainer" aria-label="Interactive CDE explainer">
       <div className="v2-animation-frame v2-animation-frame--readable">
-        <iframe ref={frame} title="The CDE Gap: a user-controlled, captioned explainer" src={RIFT_ANIMATION} loading="lazy" allowFullScreen style={{ height }} />
+        <iframe ref={frame} title="The CDE Gap: a user-controlled, captioned explainer" src={RIFT_PLAYER} loading="eager" allowFullScreen style={{ height }} />
       </div>
-      <p><TextLink href={RIFT_ANIMATION}>Open the explanation on its own</TextLink></p>
     </section>
   );
 }
@@ -132,7 +127,7 @@ function KeyArtifacts() {
 
   return (
     <section className="v2-resources v2-resources--simple">
-      <div className="v2-section-lead"><div><p className="v2-eyebrow">Artifacts</p><h2>Research outputs</h2></div><TextLink href={route("outputs/")}>View all artifacts</TextLink></div>
+      <div className="v2-section-lead"><div><h2>Paper &amp; supporting artifacts</h2></div><TextLink href={route("outputs/")}>View all artifacts</TextLink></div>
       <div className="v2-artifact-list v2-artifact-list--available">
         {items.map((item) => (
           <a key={item.label} href={item.href} target={item.external ? "_blank" : undefined} rel={item.external ? "noreferrer" : undefined}>
@@ -148,9 +143,9 @@ export function HomePage() {
   return (
     <main id="main-content" className="v2-main">
       <Hero />
+      <p className="home-research-label">First phase · Election security</p>
       <PartNavigation />
       <KeyArtifacts />
-      <p className="publication-pending">Poster and standalone white paper: not yet published. They will appear here when available.</p>
     </main>
   );
 }

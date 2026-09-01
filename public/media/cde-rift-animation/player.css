@@ -3,3 +3,11 @@
 @media(max-width:760px){.explainer{padding:18px 18px 14px}.player-heading{display:block;margin-bottom:15px}.player-format{margin-top:8px}.chapters{grid-template-columns:repeat(3,minmax(0,1fr));margin-bottom:12px}.chapters button{min-height:44px}.scene{grid-template-columns:minmax(0,1fr);gap:5px;min-height:0}.landscape{max-width:580px;justify-self:center}.caption{min-height:245px;padding:14px 0 4px}.caption h2{font-size:26px}.caption p:not(.eyebrow){font-size:16px}.caption #scene-detail{font-size:14px}.controls{margin-top:12px}.transport{gap:5px;flex-wrap:wrap}.transport button{font-size:13px;padding:8px 10px}.play{min-width:72px}.timeline{gap:5px}#full{margin-left:auto}.landscape figcaption{font-size:10px}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 @media print{.controls,.chapters{display:none!important}.transcript>div{display:block!important}.scene{display:none}footer{display:block}}
+
+/* The publication owns its heading and navigation; the iframe owns playback. */
+html.embedded, .embedded body { background: transparent; }
+.embedded .explainer { padding: 0; }
+.embedded .player-heading, .embedded #player > footer { display: none; }
+.embedded:fullscreen, .embedded:fullscreen body { background: var(--paper); }
+.embedded:fullscreen .explainer { padding: 20px; }
+@media (max-width: 760px) { .embedded .explainer { padding: 0; } }

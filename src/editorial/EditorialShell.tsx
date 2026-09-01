@@ -12,20 +12,24 @@ export const route = (path = "") => `${BASE}${path.replace(/^\/+/, "")}`;
 const asset = (path: string) => route(path);
 export const isRegistryLink = (href: string) => href.startsWith(route("registry/"));
 
-export const RIFT_ANIMATION = asset("media/cde-rift-animation/index.html");
+export const PROGRAMME_SCOPE = "A research programme in progress on harmful manipulation and epistemic risk, with election security as its first focus.";
+// All reader-facing links keep the shared publication shell.
+export const RIFT_ANIMATION = route("explainers/");
+export const RIFT_PLAYER = asset("media/cde-rift-animation/player.html");
 export const RIFT_IMAGE = asset("media/cde-rift-hero.png");
 
 export const getPath = () => {
   const base = BASE.replace(/\/$/, "");
   let path = window.location.pathname;
   if (base && path.startsWith(base)) path = path.slice(base.length);
-  return path.replace(/index\.html$/, "").replace(/^\/+|\/+$/g, "");
+  const clean = path.replace(/index\.html$/, "").replace(/^\/+|\/+$/g, "");
+  return clean === "media/cde-rift-animation" ? "explainers" : clean;
 };
 
 const metadata: Record<string, { title: string; description: string }> = {
   "": {
     title: "Harmful Manipulation and Election Security · Working Draft",
-    description: "A draft research programme on frontier AI, harmful manipulation, election security, and the Capability–Deployment–Effect Gap.",
+    description: PROGRAMME_SCOPE,
   },
   research: {
     title: "Research · Harmful Manipulation and Election Security",
@@ -56,8 +60,8 @@ const metadata: Record<string, { title: string; description: string }> = {
     description: "Working paper, visual overview, registry, evidence index, policy atlas, explainers, and research tools.",
   },
   explainers: {
-    title: "Explainers · The Capability–Deployment–Effect Gap",
-    description: "The animated CDE Rift and bounded synthetic mechanism explainers.",
+    title: "The CDE Gap, explained · Working draft",
+    description: "A short, self-paced explanation of capability, deployment and effects. Six chapters, with a complete transcript.",
   },
   about: {
     title: "About · Harmful Manipulation and Election Security",
@@ -101,7 +105,7 @@ export function SiteHeader({ path }: { path: string }) {
   const active = activeSection(path);
   const links = [
     ["programme", "Programme", route()],
-    ["research", "Research", route("research/")],
+    ["research", "Research", route("#research")],
     ["registry", "Registry", route("registry/")],
     ["references", "References", route("references/")],
     ["artifacts", "Artifacts", route("outputs/")],
@@ -148,7 +152,7 @@ export function SiteFooter() {
     <footer className="v2-footer">
       <div className="v2-footer-brand">
         <span className="v2-mark" aria-hidden="true">✦</span>
-        <div><strong>Agency Transfer Research Programme</strong><p>Frontier AI, harmful manipulation, election security, and the Capability–Deployment–Effect Gap.</p></div>
+        <div><strong>Agency Transfer Research Programme</strong><p>Harmful manipulation and epistemic risk. First focus: election security.</p></div>
       </div>
       <div className="v2-footer-links">
         <a href={route("paper/")}>Working paper</a>
