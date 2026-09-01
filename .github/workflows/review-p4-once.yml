@@ -45,24 +45,27 @@ jobs:
                               report['legacy_layout_notes'].append({'path':slug,'viewport':width,'scroll_width':sw,'note':'Unchanged from the pre-update production baseline.'})
                           if slug == '':
                               cards = page.locator('.v2-parts--simple .v2-part-card')
-                              assert cards.count() == 4
-                              assert all(c.locator('a').count() == 1 for c in cards.all())
-                              assert cards.nth(1).locator('a').get_attribute('href') == '/agencytransfer/registry/'
+                              assert cards.count() == 4, 'Four-part navigation missing'
+                              assert all(c.locator('a').count() == 1 for c in cards.all()), 'Unexpected extra part links'
+                              assert cards.nth(1).locator('a').get_attribute('href') == '/agencytransfer/registry/', 'Registry link changed'
                               image = page.locator('.v2-hero-art img')
-                              assert 'cde-gap3-hero-' in image.get_attribute('src')
-                              assert image.evaluate('(el) => el.complete && el.naturalWidth > 0')
-                              assert 'Working draft' in page.locator('.v2-draftbar').inner_text()
+                              assert 'cde-gap3-hero-' in image.get_attribute('src'), 'Hero URL changed'
+                              assert image.evaluate('(el) => el.complete && el.naturalWidth > 0'), 'Hero failed to load'
+                              label = page.locator('.v2-draftbar').inner_text()
+                              assert 'working draft' in label.lower(), ('Draft label missing',label)
                           if slug == 'research/part-iv/':
-                              assert page.locator('h1').inner_text() == 'What works—and for whom?'
-                              assert page.locator('.p4-portfolios article').count() == 4
-                              assert page.locator('.p4-findings details').count() == 6
+                              title = page.locator('h1').inner_text()
+                              assert title == 'What works—and for whom?', ('Outdated P4 title',title)
+                              assert page.locator('.p4-portfolios article').count() == 4, 'Missing recommendation portfolio'
+                              assert page.locator('.p4-findings details').count() == 6, 'Missing source-linked finding'
                               page.locator('.p4-findings summary').first.click()
-                              assert page.locator('.p4-findings details').first.get_attribute('open') is not None
+                              assert page.locator('.p4-findings details').first.get_attribute('open') is not None, 'Finding did not open'
                               page.locator('.p4-findings summary').first.click()
                           if slug == 'paper/':
-                              assert 'v1.3' in page.locator('main').inner_text()
-                              assert page.locator('a[href$="v1.3-20260901.pdf"]').count() == 1
-                              assert 'Security must name its beneficiary' in page.locator('main').inner_text()
+                              text = page.locator('main').inner_text()
+                              assert 'v1.3' in text, 'Manuscript version missing'
+                              assert page.locator('a[href$="v1.3-20260901.pdf"]').count() == 1, 'Full PDF link missing'
+                              assert 'Security must name its beneficiary' in text, 'Concurrent manuscript analysis not preserved'
                           if slug in ('','research/part-iv/','paper/'):
                               page.evaluate("document.documentElement.style.scrollBehavior='auto'; if(document.activeElement instanceof HTMLElement) document.activeElement.blur(); window.scrollTo(0,0)")
                               page.wait_for_timeout(150)
@@ -85,6 +88,10 @@ jobs:
                   assert status == 200 and digest == expected, (path,status,digest)
                   report['files'].append({'path':path,'status':status,'bytes':len(raw),'sha256':digest})
               report['result'] = 'pass'
+          except Exception as error:
+              report['result'] = 'fail'
+              report['error'] = str(error)
+              raise
           finally:
               (out/'report.json').write_text(json.dumps(report,indent=2))
           print(json.dumps(report,indent=2))
