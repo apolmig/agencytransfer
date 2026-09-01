@@ -90,10 +90,11 @@ def validate_staged_release(destination: Path) -> set[str]:
         "PUBLICATION_STATUS.md": ROOT / "PUBLICATION_STATUS.md",
         "LICENSE.md": ROOT / "LICENSES" / "DATA.md",
     }
-    for directory in (ROOT / "schemas", ROOT / "review"):
-        for path in directory.rglob("*"):
-            if path.is_file():
-                static_sources[path.relative_to(ROOT).as_posix()] = path
+    # The strict inventory above defines this release. Later companion reviews
+    # must not be silently incorporated or treated as missing release files.
+    for relative in expected:
+        if relative.startswith(("schemas/", "review/")):
+            static_sources[relative] = ROOT / relative
     for relative, source in static_sources.items():
         staged = destination / relative
         if hashlib.sha256(staged.read_bytes()).digest() != hashlib.sha256(
