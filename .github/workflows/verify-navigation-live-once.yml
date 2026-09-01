@@ -1,0 +1,57 @@
+name: Verify live simplified navigation
+on:
+  push:
+    branches: [simple-navigation-scope-20260901]
+    paths: [.github/workflows/verify-navigation-live-once.yml]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      REVIEW_MODE: live
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: b2eaf3b4d47c7f5935589516d73658b804a3ac66
+          fetch-depth: 0
+      - name: Install browser bindings
+        run: |
+          python -m pip install --quiet playwright
+          if ! command -v google-chrome >/dev/null && ! command -v chromium >/dev/null; then
+            python -m playwright install --with-deps chromium
+          fi
+      - name: Wait for the deployed navigation snapshot
+        run: |
+          python - <<'PY'
+          import pathlib,time,urllib.request,urllib.error
+          base='https://miguelguerrero.eu/agencytransfer/'
+          expected=pathlib.Path('public/media/cde-rift-animation/player.js').read_bytes()
+          ready=False
+          for attempt in range(35):
+              try:
+                  with urllib.request.urlopen(base+'media/cde-rift-animation/',timeout=20) as response:wrapper=response.read().decode()
+                  with urllib.request.urlopen(base+'media/cde-rift-animation/player.js',timeout=20) as response:player=response.read()
+                  ready='id="root"' in wrapper and 'reading-fallback' in wrapper and player==expected
+                  if ready:break
+              except (urllib.error.URLError,TimeoutError):pass
+              time.sleep(8)
+          assert ready,'The new navigation snapshot is not yet served in production.'
+          print('New CDE publication wrapper and exact player bytes are live over HTTPS.')
+          PY
+      - name: Review the live reference library and existing publication behavior
+        run: python scripts/review-publication.py
+      - name: Review shared menus, direct paths and expanded transcript on the live site
+        run: python scripts/review-navigation.py
+      - name: Verify independent Registry and source records are unchanged
+        run: |
+          git diff --exit-code e02ed9c08d5d34316e07730632a3a29f4ef71ba6 HEAD -- src/LegacyRegistryApp.tsx src/components src/styles.css src/editorial/research-updates.css public/data public/research data policy-atlas
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: live-navigation-review
+          path: |
+            navigation-browser-review
+            publication-browser-review
+          retention-days: 7
