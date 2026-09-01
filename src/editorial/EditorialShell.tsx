@@ -10,6 +10,7 @@ export const MANUEL_VIDEO_URL = "https://www.youtube.com/watch?v=ZTyWOhF7Pto";
 
 export const route = (path = "") => `${BASE}${path.replace(/^\/+/, "")}`;
 const asset = (path: string) => route(path);
+export const isRegistryLink = (href: string) => href.startsWith(route("registry/"));
 
 export const RIFT_ANIMATION = asset("media/cde-rift-animation/index.html");
 export const RIFT_IMAGE = asset("media/cde-rift-hero.png");
@@ -44,7 +45,11 @@ const metadata: Record<string, { title: string; description: string }> = {
   },
   paper: {
     title: "Flagship Working Paper · Harmful Manipulation and Election Security",
-    description: "Web overview and full v1.3 working paper: The Capability–Deployment–Effect Gap, with the 1 September policy review.",
+    description: "Web overview and full v1.5 working paper: The Capability–Deployment–Effect Gap, with the 1 September policy review.",
+  },
+  references: {
+    title: "References · Harmful Manipulation and Election Security",
+    description: "The flagship bibliography and wider literature, policy, evaluation and election source records, with provenance and source links.",
   },
   outputs: {
     title: "Artifacts · Harmful Manipulation and Election Security",
@@ -86,6 +91,7 @@ export function useMetadata(path: string) {
 
 const activeSection = (path: string) => {
   if (!path) return "programme";
+  if (path === "references") return "references";
   if (path === "research" || path.startsWith("research/")) return "research";
   if (path === "outputs" || path === "explainers" || path === "paper") return "artifacts";
   return "about";
@@ -97,7 +103,7 @@ export function SiteHeader({ path }: { path: string }) {
     ["programme", "Programme", route()],
     ["research", "Research", route("research/")],
     ["registry", "Registry", route("registry/")],
-    ["lab", "Lab", LAB_URL],
+    ["references", "References", route("references/")],
     ["artifacts", "Artifacts", route("outputs/")],
     ["about", "About", route("about/")],
   ] as const;
@@ -110,7 +116,7 @@ export function SiteHeader({ path }: { path: string }) {
       </a>
       <nav aria-label="Primary navigation">
         {links.map(([id, label, href]) => {
-          const external = /^https?:\/\//.test(href);
+          const external = /^https?:\/\//.test(href) || isRegistryLink(href);
           return (
             <a
               key={id}
@@ -131,7 +137,7 @@ export function SiteHeader({ path }: { path: string }) {
 export function DraftBar() {
   return (
     <div className="v2-draftbar" role="status">
-      <div><span aria-hidden="true" /><strong>Draft · work in progress</strong><p>All programme results and recommendations are provisional · not peer reviewed. <a href={route("about/#evidence-status")}>Evidence key</a></p></div>
+      <div><span aria-hidden="true" /><strong>Working draft</strong><p>Research in progress · not peer reviewed. <a href={route("about/#evidence-status")}>How to read the evidence</a></p></div>
       <time dateTime="2026-09-01">Updated: 1 September 2026</time>
     </div>
   );
@@ -146,12 +152,13 @@ export function SiteFooter() {
       </div>
       <div className="v2-footer-links">
         <a href={route("paper/")}>Working paper</a>
-        <a href={route("registry/")}>Registry</a>
+        <a href={route("registry/")} target="_blank" rel="noopener noreferrer">Registry ↗</a>
+        <a href={route("references/")}>References</a>
         <a href={route("outputs/")}>Artifacts</a>
         <a href={`${REPOSITORY_URL}/blob/main/RESPONSIBLE_RELEASE.md`} target="_blank" rel="noreferrer">Responsible release ↗</a>
         <a href={REPOSITORY_URL} target="_blank" rel="noreferrer">Source ↗</a>
       </div>
-      <p className="v2-footer-note">Draft research by Miguel Guerrero · ERA:AI Summer Research Fellowship, Cambridge · 2026. Programme results, interpretations and recommendations remain provisional; no independent replication.</p>
+      <p className="v2-footer-note">Miguel Guerrero · ERA:AI Summer Research Fellowship, Cambridge · 2026.</p>
     </footer>
   );
 }
@@ -161,7 +168,8 @@ export function DraftBoundary({ children }: { children: ReactNode }) {
 }
 
 export function TextLink({ href, children, external = false }: { href: string; children: ReactNode; external?: boolean }) {
-  return <a className="v2-text-link" href={href} target={external ? "_blank" : undefined} rel={external ? "noreferrer" : undefined}>{children}<span aria-hidden="true">→</span></a>;
+  const newTab = external || isRegistryLink(href);
+  return <a className="v2-text-link" href={href} target={newTab ? "_blank" : undefined} rel={newTab ? "noopener noreferrer" : undefined}>{children}<span aria-hidden="true">{newTab ? "↗" : "→"}</span>{newTab ? <span className="sr-only"> (opens a new tab)</span> : null}</a>;
 }
 
 export function PageLead({ eyebrow, title, deck, children }: { eyebrow: string; title: string; deck: string; children?: ReactNode }) {

@@ -1,0 +1,59 @@
+{
+  "duration": 93,
+  "scenes": [
+    {
+      "id": "gap",
+      "label": "The gap",
+      "time": 0,
+      "title": "Capability is easier to observe. Electoral effects are harder to establish.",
+      "body": "A model can generate a convincing message. That does not tell us whether anyone received it, believed it or changed a decision.",
+      "detail": "The Capability–Deployment–Effect Gap keeps those questions separate.",
+      "focus": "all"
+    },
+    {
+      "id": "capability",
+      "label": "Capability",
+      "time": 14,
+      "title": "An output is not an operation.",
+      "body": "Tests can show what a model or configured service produces. A plan or synthetic prototype does not establish that a campaign ran.",
+      "detail": "Part I asks what an operator can do. Part II examines what evaluations actually measure.",
+      "focus": "capability"
+    },
+    {
+      "id": "deployment",
+      "label": "Deployment",
+      "time": 28,
+      "title": "The system changes the risk.",
+      "body": "An actor can connect a model to data, trusted identities, memory, tools and distribution. The question is who controls those connections and for what purpose.",
+      "detail": "The relevant object is the deployed system—not its model name alone.",
+      "focus": "deployment"
+    },
+    {
+      "id": "response",
+      "label": "Human response",
+      "time": 43,
+      "title": "Exposure is not a changed mind.",
+      "body": "People must encounter and process a message before it can change beliefs or choices. Bounded studies find effects; real-world reach, persistence and electoral attribution remain separate questions.",
+      "detail": "This is not evidence of zero effect. Every additional claim needs additional evidence.",
+      "focus": "response"
+    },
+    {
+      "id": "harm",
+      "label": "Harm",
+      "time": 60,
+      "title": "Harm does not wait for changed votes.",
+      "body": "Impersonation, harassment and confusion can harm people. Corrections and investigations can also consume attention and institutional resources—even without a demonstrated election-result effect.",
+      "detail": "Documented harm and inferred opportunity cost are not the same measurement.",
+      "focus": "consequence"
+    },
+    {
+      "id": "agency",
+      "label": "Agency & action",
+      "time": 75,
+      "title": "Keep power contestable.",
+      "body": "Agency transfer means practical control shifts from people or public institutions towards the actor operating the system. The programme studies the conditions for that shift; it does not measure its full extent.",
+      "detail": "Address evidenced mechanisms. Preserve independent scrutiny, meaningful refusal and practical exit. Measure what the control actually changes.",
+      "focus": "all"
+    }
+  ]
+}

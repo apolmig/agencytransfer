@@ -96,8 +96,14 @@ export function PartIVPage() {
         <DraftBoundary>Source-linked assessment, not 118 empirically verified policies. Evidence supports specific human and technical outcomes, not end-to-end electoral protection or durable preservation of agency.</DraftBoundary>
       </PageLead>
 
+      <section className="p4-summary" aria-label="Recommendation summary">
+        <p><strong>Use what is supported at the relevant endpoint.</strong> Enforce applicable duties. Test bounded controls such as accuracy prompts and timely corrections in their intended setting.</p>
+        <p><strong>Test what remains uncertain.</strong> Put consequential authority under enforceable limits, and evaluate defensive monitors, meaningful refusal and practical exit.</p>
+        <p><strong>Name the beneficiary.</strong> A control that secures an operator may not protect the person affected. None of these examples proves end-to-end electoral protection.</p>
+      </section>
       <PolicyExamples />
 
+      <details className="p4-deeper"><summary>How the recommendations fit together</summary>
       <section className="p4-section" aria-labelledby="p4-recommendations">
         <p className="v2-eyebrow">Provisional recommendation framework</p>
         <h2 id="p4-recommendations">Four uses, not a ranking of winners</h2>
@@ -109,6 +115,9 @@ export function PartIVPage() {
         <p className="p4-note">Provenance, detection and notices remain useful for their specific purposes. Applicable legal duties still apply; this research does not replace a current, jurisdiction-specific legal assessment.</p>
       </section>
 
+      </details>
+
+      <details className="p4-deeper"><summary>What the deeper evidence review changes</summary>
       <section className="p4-section" aria-labelledby="p4-findings">
         <p className="v2-eyebrow">What the deeper review changes</p>
         <h2 id="p4-findings">Different outcomes require different evidence</h2>
@@ -118,6 +127,8 @@ export function PartIVPage() {
           </details>)}
         </div>
       </section>
+
+      </details>
 
       <section className="p4-section p4-reading" aria-labelledby="p4-agency">
         <p className="v2-eyebrow">Agency transfer</p>
@@ -132,6 +143,7 @@ export function PartIVPage() {
         <h2 id="p4-record">The assessment behind this page</h2>
         <p>The review covers all {coverage.implementations} existing records. The {coverage.selected_source_records} sources include empirical studies, technical work and institutional material—not 69 independent efficacy trials. Three candidates—accuracy prompts, timely factual corrections and independent conversational monitors—remain separate from the 118-row denominator.</p>
         <div className="p4-resource-links">
+          <TextLink href={route("references/?collection=p4-review")}>Browse the reviewed sources</TextLink>
           <TextLink href={`${reviewBase}/findings.md`} external>Read the full findings</TextLink>
           <TextLink href={`${reviewBase}/implementation-dossiers.md`} external>Read the 118 dossiers and source ledger</TextLink>
           <TextLink href={route("research/p4-source-linked-review-20260901.xlsx")}>Download the review workbook</TextLink>
@@ -140,11 +152,10 @@ export function PartIVPage() {
           <summary>Review depth, evidence modes and version boundaries</summary>
           <p>Eight new substantive checks: {review.new_substantive_checks.join(", ")}. Other depths include primary abstracts, publication summaries and official text; six earlier adjudications are retained. This is single-pass and purposive, not independent double screening, full-text review of every source or reproduction of all data.</p>
           <p>Closest evidence modes: human component (H, {review.evidence_modes.H}); technical component (T, {review.evidence_modes.T}); implementation or quasi-experimental (O, {review.evidence_modes.O}); adjacent (A, {review.evidence_modes.A}); normative, design or measurement (N, {review.evidence_modes.N}). These are not ordered evidence grades or counts of successful policies. Source matches can be direct, partial, adjacent, normative or untested.</p>
-          <p>The previous A–F groups are historical metadata. This review's recommendations supersede them for the current presentation. The published Atlas beta.3 and its empirical claim-check flags remain unchanged; this companion does not silently promote its six retained adjudications. The v1.3 manuscript integrates this review. Parts I–III retain their 28 August evidence freeze; P4 is dated 1 September. External study results are not new fellowship experiments.</p>
+          <p>The previous A–F groups are historical metadata. This review's recommendations supersede them for the current presentation. The published Atlas beta.3 and its empirical claim-check flags remain unchanged; this companion does not silently promote its six retained adjudications. The current v1.5 manuscript retains this review and adds narrative and source qualifications. Parts I–III retain their 28 August evidence freeze; P4 is dated 1 September. External study results are not new fellowship experiments.</p>
           <TextLink href={POLICY_ATLAS_URL} external>Open the published Atlas · beta.3</TextLink>
         </details>
       </section>
-      <p className="v2-draft-line"><strong>Working draft.</strong> This page combines the 1 September source-linked review with a separately identified legal and empirical web supplement. Dossier scenarios are hypothetical; cited external policies, studies and incidents are real source records. They are not fellowship interventions or proof of electoral protection.</p>
     </main>
   );
 }

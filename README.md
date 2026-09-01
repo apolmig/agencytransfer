@@ -121,3 +121,9 @@ Synthetic explainers are illustrations. They are not evidence of a real operatio
 ## Citation and reuse
 
 Use [`CITATION.cff`](CITATION.cff) for the programme citation and retain the citations required by every upstream source. Project code is Apache-2.0. Project-authored aggregate data and metadata are CC BY 4.0, subject to the upstream rights recorded in [`LICENSES/DATA.md`](LICENSES/DATA.md).
+
+## Publication and source library
+
+The [current working paper](https://miguelguerrero.eu/agencytransfer/paper/) is v1.5 (1 September 2026); previous snapshots are retained. The [references section](https://miguelguerrero.eu/agencytransfer/references/) includes its full bibliography and wider recorded source collections. Membership is not evidence appraisal: review depths, historical status and unresolved links remain visible.
+
+Bibliographic maintenance: edit `public/research/references.json`, run `python scripts/build-reference-page.py` and `python scripts/validate-publication.py`. See `programme/references/README.md`. The standalone explainer under `public/media/cde-rift-animation/` uses native HTML/CSS/JavaScript and has no third-party runtime dependency. Its visible scene text and transcript should be edited together.
