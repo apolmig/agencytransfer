@@ -1,0 +1,49 @@
+name: Verify live research publication
+on:
+  push:
+    branches: [publication-usability-references-20260901]
+    paths: [.github/workflows/verify-publication-live-once.yml]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      REVIEW_MODE: live
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: e02ed9c08d5d34316e07730632a3a29f4ef71ba6
+      - name: Install browser bindings
+        run: python -m pip install --quiet playwright
+      - name: Wait for the actual publication snapshot
+        run: |
+          python - <<'PY'
+          import hashlib,json,pathlib,time,urllib.request,urllib.error
+          base='https://miguelguerrero.eu/agencytransfer/'
+          expected=hashlib.sha256(pathlib.Path('public/research/references.json').read_bytes()).hexdigest()
+          ready=False
+          for attempt in range(40):
+              try:
+                  with urllib.request.urlopen(base+'research/references.json',timeout=20) as r:raw=r.read()
+                  with urllib.request.urlopen(base+'media/cde-rift-animation/',timeout=20) as r:animation=r.read().decode()
+                  ready=hashlib.sha256(raw).hexdigest()==expected and 'The CDE Gap, explained' in animation and 'player.js' in animation
+                  if ready:break
+              except (urllib.error.URLError,TimeoutError):pass
+              time.sleep(8)
+          assert ready,'The production publication snapshot was not ready within the review window.'
+          print('New bibliography bytes and animation HTML confirmed on HTTPS production.')
+          PY
+      - name: Review live desktop and mobile UX
+        run: python scripts/review-publication.py
+      - name: Confirm independent Registry source was preserved
+        run: |
+          git fetch --depth=1 origin 1b1c4837568f071a57b27c670cfab0eb340959df
+          git diff --exit-code 1b1c4837568f071a57b27c670cfab0eb340959df HEAD -- src/LegacyRegistryApp.tsx src/components/FrontierTimeline.tsx src/components/LiteratureReview.tsx src/styles.css src/editorial/research-updates.css public/data data
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: live-publication-review
+          path: publication-browser-review
+          retention-days: 7
