@@ -1,4 +1,4 @@
-name: Apply source-linked P4 web update
+name: Integrate current manuscript and P4 publication
 on:
   push:
     branches: [p4-source-linked-web-20260901]
@@ -8,7 +8,7 @@ permissions:
 jobs:
   update:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v6
         with:
@@ -18,48 +18,68 @@ jobs:
         with:
           node-version: 24
           cache: npm
-      - name: Retrieve the fixed source package
-        env:
-          PACKAGE_URL: https://drive.google.com/uc?export=download&id=1-txQKPS6aEpw-jRMeOgOtVr6sVWz6clv
+      - name: Integrate the reviewed main-branch manuscript changes
         run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git fetch origin main
           python - <<'PY'
-          import hashlib, io, os, pathlib, urllib.request, zipfile
-          request = urllib.request.Request(os.environ['PACKAGE_URL'], headers={'User-Agent':'AgencyTransfer-Publication/1.0'})
-          raw = urllib.request.urlopen(request, timeout=60).read()
-          assert len(raw) == 1202808, len(raw)
-          assert hashlib.sha256(raw).hexdigest() == '6647144b8a779ca4ca24fb889f257b34efc7255c5e54598f5574dcd3ed648297'
-          dest = pathlib.Path(os.environ['RUNNER_TEMP']) / 'p4-source-package'
-          dest.mkdir()
-          with zipfile.ZipFile(io.BytesIO(raw)) as z:
-              for item in z.infolist():
-                  p = pathlib.PurePosixPath(item.filename)
-                  assert not p.is_absolute() and '..' not in p.parts
-                  assert item.file_size < 2000000
-              z.extractall(dest)
-          print('Verified source package and safe extraction.')
+          import copy, json, pathlib, subprocess
+          def git(*args):
+              return subprocess.check_output(['git',*args],text=True)
+          target='90314d6f0dd66ddbf8ea7d312f859c0c9d548024'
+          assert git('rev-parse','origin/main').strip()==target, 'Main changed; review new edits before merging.'
+          base='c147a6e4c2bfd1d62e50233503372b8b0a1c6cb1'
+          mf='programme/project-manifest.json'
+          rf='src/editorial/ResourcePages.tsx'
+          old=json.loads(git('show',f'{base}:{mf}'))
+          ours=json.loads(pathlib.Path(mf).read_text())
+          theirs=json.loads(git('show',f'{target}:{mf}'))
+          resource=git('show',f'{target}:{rf}')
+          result=subprocess.run(['git','merge','--no-commit','--no-ff',target])
+          assert result.returncode in (0,1)
+          conflicts=set(git('diff','--name-only','--diff-filter=U').splitlines())
+          assert conflicts <= {mf,rf}, conflicts
+          merged=copy.deepcopy(theirs)
+          for key,value in ours.items():
+              if key in ('research_parts','artifacts'):
+                  before={x['id']:x for x in old[key]}
+                  current={x['id']:x for x in merged[key]}
+                  for item in value:
+                      if item!=before.get(item['id']): current[item['id']]=item
+                  merged[key]=list(current.values())
+              elif value!=old.get(key): merged[key]=value
+          flagship=next(a for a in merged['artifacts'] if a['id']=='flagship-paper')
+          assert flagship['source_version']=='v1.3-20260901'
+          assert any(a['id']=='part-iv-source-linked-review' for a in merged['artifacts'])
+          pathlib.Path(mf).write_text(json.dumps(merged,indent=2,ensure_ascii=False)+'\n')
+          def replace_once(a,b):
+              global resource
+              assert resource.count(a)==1, ('Unexpected manuscript anchor',a)
+              resource=resource.replace(a,b)
+          replace_once('Flagship working paper v1.3</p>', 'Flagship working paper v1.3 · Web overview</p>')
+          replace_once('How frontier AI can turn political influence into infrastructure—and how democracy can preserve self-correction', 'How frontier AI can turn political influence into infrastructure, and how democracy can be more resilient to the new challenges ahead.')
+          replace_once('<p className="v2-paper-byline">Miguel Guerrero · Cambridge · 1 September 2026</p>', '<p className="v2-paper-byline">Miguel Guerrero · Cambridge · 1 September 2026</p><p className="v2-figure-caption">Parts I–III: evidence freeze, 28 August 2026. Part IV: source-linked review, 1 September. All material remains draft and not peer reviewed.</p>')
+          replace_once('<a className="v2-button v2-button--dark" href="#abstract">Read the abstract</a>', '<a className="v2-button v2-button--dark" href={route("research/harmful-manipulation-election-security-v1.3-20260901.pdf")}>Read the full working paper · PDF</a>')
+          replace_once('Public downloadable manuscript hosting remains separate from this web overview.', 'The full 34-page PDF includes Appendix G and the complete references; this page is a web overview, not the full manuscript.')
+          replace_once('<details><summary>Selected source references and claim ceilings</summary>', '<p><TextLink href={route("research/part-iv/")}>Explore the policy findings and complete source record</TextLink></p><details><summary>Selected source references and claim ceilings</summary>')
+          replace_once('href={route("research/part-ii/")}>Open Registry', 'href={route("registry/")}>Open Registry')
+          replace_once('<article><h2>Agency Transfer Lab</h2>', '<article><h2>Policy source-linked review · 1 September</h2><p>118 implementation dossiers, 69 selected source records and the revised recommendations. A companion assessment, not 118 verified efficacy estimates.</p><div className="v2-card-links"><TextLink href={route("research/part-iv/")}>Read the review</TextLink><TextLink href={route("research/p4-source-linked-review-20260901.xlsx")}>Download workbook</TextLink></div></article><article><h2>Agency Transfer Lab</h2>')
+          replace_once('<section className="v2-update-list">', '<section className="v2-update-list"><article><time>1 Sep 2026</time><div><h2>Source-linked policy review and full manuscript published</h2><p>Replaced the current Part IV page with four differentiated recommendation portfolios and six source-linked findings. Published the 118 implementation dossiers, 69-source ledger, original review workbook and full v1.3 working-paper PDF. Historical Atlas beta.3 flags remain unchanged. The hero and complete Registry are preserved.</p></div></article>')
+          assert 'const policySources = [' in resource and 'function PolicyPaperEvidence()' in resource
+          pathlib.Path(rf).write_text(resource.rstrip()+'\n')
+          subprocess.run(['git','add',mf,rf],check=True)
+          assert not git('diff','--name-only','--diff-filter=U').strip()
+          print('Concurrent manuscript analysis and references preserved; PDF and review access added.')
           PY
-      - name: Apply the bounded content update
-        run: python "$RUNNER_TEMP/p4-source-package/apply_update.py"
-      - name: Install and validate the website
+      - name: Validate integrated publication
         run: |
           npm ci
           npm run build
-          git diff --check -- src programme README.md CHANGELOG.md
-          test -f dist/research/part-iv/index.html
-          test -f dist/registry/index.html
+          git diff --check --cached
           test -f dist/research/p4-source-linked-review-20260901.xlsx
           test -f dist/research/harmful-manipulation-election-security-v1.3-20260901.pdf
-      - name: Commit only reviewed content and its sources
+      - name: Commit the integrated result
         run: |
-          git add src/editorial/EvidencePages.tsx src/editorial/ProgrammePages.tsx src/editorial/ResourcePages.tsx src/editorial/PolicyPage.tsx src/editorial/policy-review.css programme/project-manifest.json policy-atlas/README.md policy-atlas/COMPARATIVE_EVIDENCE_GROUPS.md policy-atlas/review/source-linked-20260901 public/research/p4-source-linked-review-20260901.xlsx public/research/harmful-manipulation-election-security-v1.3-20260901.pdf public/research/flagship-v1.3-metadata.json README.md CHANGELOG.md
-          git diff --cached --stat
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git commit -m 'Update P4 findings and publish the latest v1.3 working paper'
+          git commit -m 'Integrate the current v1.3 manuscript without discarding its policy analysis'
           git push origin HEAD:p4-source-linked-web-20260901
-      - name: Preserve the built preview
-        uses: actions/upload-artifact@v4
-        with:
-          name: p4-source-linked-preview
-          path: dist
-          retention-days: 7
