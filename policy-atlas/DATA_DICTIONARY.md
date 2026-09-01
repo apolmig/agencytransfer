@@ -1,14 +1,13 @@
 # Data dictionary
 
-This dictionary describes the generated public release, not every table in the
-frozen working-register snapshot.
+This dictionary describes the generated public release, not every table in the frozen working-register snapshot.
 
 ## Public core tables
 
 | File | Primary key | Purpose |
 |---|---|---|
 | intervention_families.csv | control_family_id | Groups related implementations |
-| implementations.csv | implementation_id | Concrete policy or operational controls |
+| implementations.csv | implementation_id | Concrete policy or operational controls; retains source coding |
 | claims.csv | claim_id | Atomic legal, mechanism, and effect claims |
 | sources.csv | source_id | Canonical source metadata and source-record verification |
 | mechanisms.csv | mechanism_id | Causal mechanisms and failure points |
@@ -17,7 +16,8 @@ frozen working-register snapshot.
 | research_gaps.csv | gap_id | Evidence and construct gaps |
 | policy_packages.csv | package_id | Candidate decision-oriented bundles |
 | decision_gates.csv | criterion_code | Non-compensable gates |
-| priority_claim_reviews.csv | claim_id | Designs, endpoints, limitations, and publication treatment for six priority effect claims |
+| priority_claim_reviews.csv | claim_id | Designs, endpoints, limitations and treatment of six checked effect claims |
+| evidence_groups.csv | group_id | Six provisional recommendation postures, source descriptions, membership and claim ceilings |
 
 ## Public relation tables
 
@@ -29,38 +29,37 @@ frozen working-register snapshot.
 | implementation_contexts.csv | implementation ↔ case/context |
 | implementation_gaps.csv | implementation ↔ research gap |
 | package_implementations.csv | policy package ↔ implementation |
+| implementation_evidence_groups.csv | Each of the 118 implementations ↔ exactly one provisional group |
 
 ## Public derived table
 
-| File | Unit | Purpose |
-|---|---|---|
-| atlas.csv | implementation_id | One-row-per-implementation policy-facing view generated from the normalized tables |
+`atlas.csv` has one row per implementation. It is generated from the normalized tables and exposes publication-safe evidence fields alongside historical source coding. The new comparative fields are additive:
 
-The source snapshot also contains provenance-only working tables such as
-`implementation_findings.csv`, `verification_log.csv`, and `changelog.csv`.
-They are not public release configurations. The source package table retains
-semicolon-separated implementation IDs; the release builder normalizes them
-into `package_implementations.csv`.
+| Field | Meaning |
+|---|---|
+| comparative_group | A–F identifier, not an ordinal efficacy score |
+| comparative_group_label | Working-register posture label |
+| comparative_recommended_posture | Proposed policy action, not a demonstrated effect |
+| comparative_rationale | Source-authored group-level rationale, not independent evidence |
+| comparative_claim_ceiling | Group-level boundary; the source-specific claim may be narrower |
+| comparative_classification_status | `provisional_author_synthesis` |
+| comparative_classification_date | Date of classification, not a new empirical evidence cutoff |
+| comparative_evidence_note | Explicit distinction between classification coverage and verification |
 
-Every public table is available as CSV and Parquet. In Parquet, ID collections
-in the derived atlas are typed lists and review flags are typed booleans.
+`evidence_groups.implementation_count` counts membership, not independent studies. The six memberships total 118. `implementation_ids` lists stable existing identifiers, including historical gaps in numbering. No identifiers are renumbered.
 
-## Important semantic boundaries
+The source snapshot also contains provenance-only working tables such as `implementation_findings.csv`, `verification_log.csv`, and `changelog.csv`; these are not public release configurations. Package membership is normalized into `package_implementations.csv`.
 
-- `legal_force` describes normative force, not effectiveness.
-- `legal_status` describes application stage, not effectiveness.
-- `mechanism_evidence_tier` describes evidence for the risk or causal
-  mechanism, not the control.
-- `intervention_effect_evidence` describes evidence relevant to the control;
-  its scope is constrained by the linked claim endpoint.
-- `epistemic_status` belongs to a bounded claim and must be read with its
-  endpoint.
-- `claim_role` describes how a claim relates to an implementation; it is not an
-  evidence grade.
-- `decision_tier` is a posture, not an ordinal score.
-- `sources.verification_level` records review of the source record; the
-  authoritative claim-specific status is
-  `claim_sources.verification_level` on each relation.
-- Public consumers should filter on `publication_claim_class` and
-  `publication_epistemic_status`. The corresponding fields without the
-  `publication_` prefix preserve working-register provenance.
+Every public table has CSV and Parquet companions. ID collections are typed lists in Parquet and boolean review flags are typed booleans. The viewer's `train` split is only a display container.
+
+## Semantic boundaries
+
+- Legal force and application stage are not effectiveness.
+- Mechanism evidence concerns the risk or causal mechanism, not necessarily the intervention.
+- Intervention-effect and epistemic grades belong to bounded endpoints.
+- `claim_role` is a relation type, not an evidence grade; `decision_tier` is a posture, not a score.
+- The authoritative claim-specific source status is `claim_sources.verification_level`, not source-record review alone.
+- Use `effect_claim_checked`, `publication_claim_class` and `publication_epistemic_status` for publication judgments. Fields without the publication prefix preserve source provenance.
+- `comparative_*` fields never override those evidence fields. All 118 rows are classified, but only six effect claims have checked empirical relations in the retained core.
+
+The release manifest separately records empirical curation, comparative classification, source provenance, counts and checksums.

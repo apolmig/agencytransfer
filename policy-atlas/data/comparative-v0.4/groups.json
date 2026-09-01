@@ -1,0 +1,79 @@
+{
+  "schema_version": "1.0",
+  "classification_version": "comparative-v0.4-20260901",
+  "classification_date": "2026-09-01",
+  "classification_status": "provisional_author_synthesis",
+  "source_workbook": "Policy_Interventions_and_Agency_Transfer_Register_v0.4_comparative_evidence_groups.xlsx",
+  "source_workbook_sha256": "0287b2dd02224f60bc9ef44231e4d6f12354651e5f4098b761e808106cab7efa",
+  "source_sheet": "v0.4 Evidence Groups",
+  "source_spreadsheet_id": "1awd-2vsrwe4_4us1EmndNpufvtHi_z9lVQImr0e3JKs",
+  "epistemic_note": "118/118 is classification coverage, not claim-level empirical verification. Group membership does not upgrade an effect claim, establish legal applicability, or constitute an ordinal efficacy ranking. The existing checked-source flags and wave-1 review remain authoritative. No new empirical claim-source adjudications are added in this synchronization.",
+  "groups": [
+    {
+      "group_id": "A",
+      "label": "Act now — bounded component evidence",
+      "implementation_count": 5,
+      "recommended_posture": "Adopt or enforce now, with narrow outcome claims",
+      "source_rationale": "Highest relative support in the current Atlas: direct or field evidence for a proximal component.",
+      "illustrative_controls": "Dark-pattern restrictions; forwarding friction; technique-based prebunking; official-source grounding; data minimisation and user control.",
+      "claim_ceiling": "Can support claims about consent/choice architecture, sharing friction, technique recognition, factual accuracy, or reduced data exposure. Does not establish durable agency preservation, reduced manipulation at scale, or electoral effect.",
+      "agency_transfer_relevance": "Preserves evaluative, decisional, epistemic, or informational agency at a directly targeted node.",
+      "implementation_ids": ["I-008", "I-044", "I-067", "I-068", "I-086"]
+    },
+    {
+      "group_id": "B",
+      "label": "Build now — control and observability infrastructure",
+      "implementation_count": 41,
+      "recommended_posture": "Implement as low-regret infrastructure; evaluate manipulation-specific effects",
+      "source_rationale": "Strong adjacent-domain and operational support from cybersecurity, safety engineering, incident response, audit and public administration; direct manipulation-effect evidence remains limited.",
+      "illustrative_controls": "Least privilege; consequential-action confirmation; tamper-evident traces; independent evaluator/researcher access; incident response; procurement exit and retained public capability.",
+      "claim_ceiling": "Can support claims about control, trace completeness, authorisation, detection, response latency, reversibility, contestability or switching capacity. Manipulation and democratic-effect reduction remain inferences.",
+      "agency_transfer_relevance": "Limits controller authority and restores visibility, interruption, remedy and institutional bargaining power.",
+      "implementation_ids": ["I-003", "I-004", "I-007", "I-016", "I-019", "I-020", "I-021", "I-023", "I-026", "I-027", "I-030", "I-034", "I-036", "I-038", "I-039", "I-040", "I-041", "I-046", "I-048", "I-054", "I-055", "I-066", "I-076", "I-079", "I-088", "I-089", "I-094", "I-098", "I-099", "I-100", "I-102", "I-103", "I-104", "I-105", "I-108", "I-109", "I-112", "I-113", "I-114", "I-115", "I-116"]
+    },
+    {
+      "group_id": "C",
+      "label": "Enforce legal and operational baselines",
+      "implementation_count": 31,
+      "recommended_posture": "Enforce where applicable; do not treat adoption or compliance as effectiveness",
+      "source_rationale": "Established legal force or operational maturity, but generally no checked causal evidence of reduced agency transfer.",
+      "illustrative_controls": "Platform systemic-risk duties; political-ad and targeting rules; data-protection duties; audits; complaints and remedies; high-risk election-AI controls.",
+      "claim_ceiling": "Can establish legal scope, compliance, coverage and procedural outputs. Effect on manipulation, dependency, agency transfer or election integrity must be measured separately.",
+      "agency_transfer_relevance": "Creates rights, duties, oversight and remedies that may constrain concentrated actors if implemented and enforced.",
+      "implementation_ids": ["I-010", "I-018", "I-024", "I-028", "I-032", "I-033", "I-037", "I-042", "I-043", "I-045", "I-047", "I-050", "I-051", "I-053", "I-057", "I-065", "I-069", "I-075", "I-077", "I-080", "I-081", "I-082", "I-084", "I-090", "I-091", "I-092", "I-095", "I-096", "I-097", "I-106", "I-121"]
+    },
+    {
+      "group_id": "D",
+      "label": "Use as auxiliary — authenticity and disclosure controls",
+      "implementation_count": 16,
+      "recommended_posture": "Use in a layered package, never as the primary defence",
+      "source_rationale": "Mixed or indirect component evidence. Useful against selected impersonation, provenance and paid-influence vectors.",
+      "illustrative_controls": "Labels; provenance and content credentials; deepfake detection; caller authentication; ad libraries; sponsor and synthetic-content disclosures.",
+      "claim_ceiling": "Can support claims about attribution, detectability, disclosure availability or treatment of a defined synthetic/paid vector. Weak against truthful, relational, adaptive, encrypted or cross-channel manipulation.",
+      "agency_transfer_relevance": "Improves epistemic contestability but leaves the controller’s targeting, relationship and optimisation power largely intact.",
+      "implementation_ids": ["I-029", "I-049", "I-052", "I-056", "I-058", "I-059", "I-060", "I-061", "I-062", "I-063", "I-064", "I-070", "I-071", "I-072", "I-073", "I-078"]
+    },
+    {
+      "group_id": "E",
+      "label": "Pilot urgently — frontier-specific and structural controls",
+      "implementation_count": 19,
+      "recommended_posture": "Run bounded pilots with prespecified endpoints, rights safeguards and stop rules",
+      "source_rationale": "Mechanism-grounded and often important to the agency-transfer threat model, but direct empirical support is thin or absent.",
+      "illustrative_controls": "Root-purpose provenance; workflow-level global guards; human-causal manipulation TEVV; memory/dependency monitoring; assistant loyalty and pluralism audits; Agency Transfer Impact Assessment.",
+      "claim_ceiling": "Can currently support mechanism plausibility and pilot justification. It cannot support a general statutory threshold or claims of democratic effectiveness.",
+      "agency_transfer_relevance": "Targets longitudinal, relational and institutional transfers of agency that content-level interventions miss.",
+      "implementation_ids": ["I-001", "I-002", "I-005", "I-012", "I-014", "I-015", "I-017", "I-022", "I-025", "I-031", "I-035", "I-074", "I-087", "I-101", "I-107", "I-110", "I-111", "I-119", "I-120"]
+    },
+    {
+      "group_id": "F",
+      "label": "Research / hold — unvalidated general triggers",
+      "implementation_count": 6,
+      "recommended_posture": "Do not use as a general release or prohibition gate until constructs and thresholds validate",
+      "source_rationale": "Insufficient construct validity, causal linkage or decision-threshold evidence.",
+      "illustrative_controls": "Universal capability-plus-reach triggers; APE/MASK release gates; blanket release/open-weight rules; freedom-of-thought and constitutional-significance triggers.",
+      "claim_ceiling": "Supports research questions and diagnostic use only. Does not justify a general prohibition, licensing threshold or claim of policy effectiveness.",
+      "agency_transfer_relevance": "Seeks to address high-level concentration and democratic harm, but risks false precision, overbreadth, capture or entrenchment.",
+      "implementation_ids": ["I-006", "I-009", "I-011", "I-013", "I-117", "I-118"]
+    }
+  ]
+}

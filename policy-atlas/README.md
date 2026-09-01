@@ -1,165 +1,70 @@
 # Agency Transfer Policy Atlas
 
-**A causal evidence map of interventions against AI-mediated manipulation.**
+**Comparative policy recommendations, not six effective policies.**
 
-The Policy Atlas is the Part 4 research artifact of *From Persuasion to Agency
-Transfer*. It asks a narrower question than a conventional policy catalogue:
+This Part IV artifact asks which interventions could interrupt AI-enabled agency transfer, where they act, who can implement them, and what evidence, rights burdens and uncertainties attach to them.
 
-> Which interventions could interrupt AI-enabled agency transfer, at what point
-> in the causal chain, under whose authority, and with what evidence,
-> trade-offs, and implementation readiness?
+## Current canonical release
 
-This directory contains the first reproducible snapshot of the working
-register. It is deliberately labelled **beta**. Most source records still
-require claim-by-claim verification, and no numeric policy ranking is provided.
+The public dataset is **v0.1.0-beta.3**. It includes the working register's **v0.4 comparative classification** as actual data, not just narrative documentation: 118 implementation rows with group fields, six group records, and 118 implementation–group relations. CSV and typed Parquet are generated together.
 
-## What is here
+The original empirical curation remains `curation-v0.4-wave1`. The recommendation layer is separately versioned as `comparative-v0.4-20260901`. The frozen `sheets-v0.3` snapshot and previous public versions are preserved.
 
-- 68 control families and 118 jurisdiction-specific or operational
-  implementations;
-- 320 atomic legal, mechanism, and control-effectiveness claims;
-- 123 canonical sources and explicit claim-specific verification status;
-- 16 mechanisms, 28 legal instruments, 15 policy packages, 24
-  non-compensable decision gates, 9 cases or contexts, and 16 research gaps;
-- bridge tables for implementation–claim, claim–source,
-  implementation–mechanism/context/gap, and package–implementation relations;
-- CSV for diff-friendly review and typed Parquet for Hugging Face/Data Studio;
-- a six-group comparative recommendation synthesis in
-  [COMPARATIVE_EVIDENCE_GROUPS.md](COMPARATIVE_EVIDENCE_GROUPS.md).
+## Coverage is not verification
 
-The unit of analysis is a concrete **implementation**, not a broad idea such as
-“transparency”. Families group related implementations without collapsing
-legal scope, jurisdiction, actor, or evidentiary status.
+**118/118 means classified, not empirically verified.** This synchronization adds no empirical claim-source adjudications and does not raise any pre-existing evidence grade.
 
-## Core causal chain
+The reproducible core still contains six checked empirical effect claims. At implementation level, the retained review supports one established bounded component effect, three strong inferences and two open questions. The other 112 effect claims still lack a checked empirical relation in the released core. That is a verification gap, not a finding that no relevant research exists or that those controls fail.
 
-AI capability → controller → influence vector → target → change → agency
-transfer → concentration of power → democratic harm → intervention
-
-An intervention is mapped to the point it targets. The existence of a law, the
-plausibility of a mechanism, and evidence that a control works are separate
-claims.
-
-## Evidence discipline
-
-The Atlas distinguishes established evidence, strong inference, plausible
-hypothesis, and open question. It also separates:
-
-1. legal force and application;
-2. mechanism evidence;
-3. intervention-effect evidence;
-4. operational maturity; and
-5. source-verification depth.
-
-The curated preview contains 22 source records used in at least one checked
-claim–source relation; the other 101 remain candidate source records. These
-records are useful for research triage but must not be treated as
-publication-ready support.
-
-The first evidence wave checked six priority effect claims because they carried
-the strongest prior component-effect classifications. Re-audit rewrote each to
-its observed endpoint and recoded five of the six implementation-level effect
-classifications. **Those six records are an audit sample, not six effective
-policies and not a shortlist.** See
-[PUBLICATION_STATUS.md](PUBLICATION_STATUS.md),
-[review/PRIORITY_VERIFICATION.md](review/PRIORITY_VERIFICATION.md), and
-[COMPARATIVE_EVIDENCE_GROUPS.md](COMPARATIVE_EVIDENCE_GROUPS.md).
+Twenty-two of 123 source records participate in at least one checked claim-source relation; the remaining 101 are candidates. The underlying review, not group membership, determines what can be cited as established. See [the priority review](review/PRIORITY_VERIFICATION.md) and [publication status](PUBLICATION_STATUS.md).
 
 ## Comparative recommendation groups
 
-The 118 implementations are organised into six recommendation postures rather
-than ranked by a composite effectiveness score:
+| Group | Implementations | Working posture |
+|---|---:|---|
+| A | 5 | Prioritize bounded controls: choice architecture, forwarding friction, technique-based prebunking, official-source grounding and data minimisation |
+| B | 41 | Build control and observability: scoped permissions, confirmations, traces, independent access and incident response |
+| C | 31 | Enforce relevant legal and operational baselines where applicable; measure effects separately |
+| D | 16 | Use authenticity and disclosure for their specific vectors, as auxiliary controls |
+| E | 19 | Pilot frontier-specific and structural controls, including memory, dependency, workflow and functional portability |
+| F | 6 | Validate general capability and release triggers before using them as automatic gates |
 
-- **A · Act now — bounded component evidence (5):** dark-pattern restrictions,
-  forwarding friction, technique-based prebunking, official-source grounding,
-  and data minimisation or user control;
-- **B · Build now — control and observability infrastructure (41):** least
-  privilege, confirmations, traces, independent access, incident response,
-  continuity, and exit;
-- **C · Enforce legal and operational baselines (31):** enforce applicable
-  duties while measuring effect separately;
-- **D · Auxiliary only — authenticity and disclosure (16):** provenance,
-  labels, detection, authentication, sponsor notices, and repositories;
-- **E · Pilot urgently — frontier-specific and structural controls (19):**
-  memory and dependency monitoring, workflow guards, human-causal TEVV,
-  assistant loyalty, impact assessment, and functional portability;
-- **F · Research or hold — unvalidated general triggers (6):** universal
-  benchmark gates, blanket release rules, and broad constitutional triggers.
+These are **provisional author recommendations**, not an ordinal ranking of efficacy, effect size, legal force, cost-effectiveness or democratic importance. Support differs within A: the retained forwarding-limit review remains an open question. A does not mean five directly proven policies. Functional portability remains in E because downloadable data alone does not establish successful switching or restored agency.
 
-The groups compare present support, causal fit, maturity, reversibility, and
-evidence gaps. They are recommendation postures, not effect estimates. Even
-Group A supports bounded outcomes such as consent quality, sharing friction,
-recognition, factual accuracy, or reduced data exposure—not preservation of
-democratic autonomy or electoral effect.
+[Detailed grouping and claim ceilings](COMPARATIVE_EVIDENCE_GROUPS.md) · [Machine-readable source](data/comparative-v0.4/groups.json)
+
+## Research object
+
+The Atlas retains 68 control families, 118 jurisdiction-specific or operational implementations, 320 atomic claims, 123 sources, 16 mechanisms, 28 legal instruments, 15 policy packages, 24 decision gates, nine cases or contexts and 16 research gaps. An implementation is the unit, not a general aspiration such as transparency.
+
+```text
+AI capability → controller → influence vector → target → change
+→ agency transfer → concentration of power → democratic harm → intervention
+```
+
+A law's existence, a plausible mechanism, compliance and an intervention's effect are different propositions. The Atlas distinguishes established evidence, strong inference, plausible hypothesis and open question at claim level. Legal status, mechanism evidence, intervention-effect evidence, maturity and verification depth remain separate.
 
 ## Decision architecture
 
-There is no composite “best policy” score. The release proposes
-non-compensable gates for legality, rights, necessity, proportionality,
-contestability, remedy, independent oversight, and anti-capture. Applying
-those gates implementation by implementation remains a review task; this beta
-does not publish gate-assessment results. Working-register action tiers—enforce
-now, implement now, prepare, pilot, research or hold, and monitor or shape—are
-therefore decision postures, not reproduced gate outcomes.
+There is no composite best-policy score. Proposed non-compensable gates address legality, rights, necessity, proportionality, contestability, remedy, independent oversight and capture. This beta does not publish completed implementation-by-gate assessments. Recommendation postures are not permission to bypass those gates.
 
-A control should first be tested at the CDE node it directly changes. A
-forwarding limit may reduce rapid redistribution; a provenance rule may improve
-attribution; a least-privilege architecture may prevent autonomous escalation.
-None of those component endpoints alone establishes preserved voter agency or
-election integrity.
+Test a control at the node it directly changes and measure its costs, failures, displacement and adversarial adaptation. A more complete log, a consent choice or reduced redistribution does not establish preserved democratic agency or an electoral effect.
 
-## Data
+## Reproduction and publication
 
-The source snapshot is under
-[data/draft-v0.3/](data/draft-v0.3/). The internal Sheets version is retained
-for provenance. Claim-specific corrections are applied from the transparent
-[data/curation-v0.4/](data/curation-v0.4/) overlay; the current public dataset
-release uses semantic version v0.1.0-beta.2.
-
-Run:
-
-~~~bash
+```bash
 python policy-atlas/scripts/build_release.py
 python policy-atlas/scripts/validate_release.py
 npm ci --prefix policy-atlas
 npm --prefix policy-atlas run build:parquet
-~~~
+python -m unittest discover -s policy-atlas/tests -p 'test_*.py'
+python policy-atlas/scripts/prepare_hf_release.py
+```
 
-The validator checks stable IDs, uniqueness, foreign keys, controlled
-vocabularies, package membership, family counts, source verification, and
-claim-discipline invariants.
+The builder preserves every existing evidence field while joining the comparative overlay, checks unique and complete 118-row membership, and records source provenance and checksums. The existing publisher authenticates as `apol`, validates exact staged and remote inventories, and binds a new immutable version tag to the uploaded commit. Historical tags are not moved.
 
-## Publication
+## Responsible use and citation
 
-Changes under `policy-atlas/` merged into `main` trigger the dedicated Hugging
-Face publisher. The workflow fails closed unless it can authenticate as
-`apol`, reproduce the release, encode the unresolved evidence blockers in the
-beta manifest, pass validation, match the staged and remote file inventories
-exactly, and bind the immutable version tag to the uploaded commit. It can also
-be invoked manually.
+Use the Atlas for defensible prioritization, mechanism comparison, audit and bounded evaluation design, not as a proven-policy list. It contains no targeting profiles, operational campaign playbooks, bypass prompts or raw harmful outputs. Case linkage does not establish causal policy effectiveness.
 
-## Responsible use
-
-This dataset maps defensive interventions and public evidence. It does not
-include targeting profiles, operational campaign playbooks, safeguard bypasses,
-or raw harmful model outputs. Case links motivate control design; they do not
-establish vote effects or counterfactual policy effectiveness.
-
-## Status
-
-- Public dataset version: v0.1.0-beta.2
-- Source snapshot: sheets-v0.3
-- Curation overlay: curation-v0.4-wave1
-- Comparative recommendation synthesis: 2026-09-01
-- Evidence freeze for comparative groups: 2026-08-28
-- Language: English
-
-## Citation
-
-Until a stable release is archived, cite the repository and version. A DOI
-should be minted only after claim-by-claim verification reaches the stable
-release gate.
-
-After publication, the immutable dataset snapshot for the current public
-release is
-`https://huggingface.co/datasets/apol/agency-transfer-policy-atlas/tree/v0.1.0-beta.2`.
+This is a research preview, not an independently double-screened full-text review of 118 interventions. No DOI is minted for this beta. Use [CITATION.cff](CITATION.cff) and the [immutable v0.1.0-beta.3 dataset](https://huggingface.co/datasets/apol/agency-transfer-policy-atlas/tree/v0.1.0-beta.3).

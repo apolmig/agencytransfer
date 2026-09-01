@@ -1,103 +1,43 @@
 # Publication status
 
-This snapshot is structurally valid and materially improved, but still
-evidentially incomplete.
+**v0.1.0-beta.3 · 1 September 2026 · research preview**
 
-## Ready for public beta
+The release adds a reproducible comparative recommendation layer. It does not complete the empirical review.
 
-- project-authored taxonomy and relational object model;
-- stable IDs, generated normalized tables, and a denormalized atlas view;
-- frozen source snapshot plus a transparent versioned curation overlay;
-- 6 priority control-effect claims checked against primary empirical sources
-  and rewritten to bounded observed endpoints;
-- 5 previously source-less legal instruments corrected and linked to official
-  primary sources;
-- deduplicated public claim–source edges, frozen checksums, and typed Parquet;
-- explicit evidence boundaries, limitations, failure modes, and negative
-  findings;
-- a comparative six-group recommendation synthesis covering all 118
-  implementations.
+## Published in this beta
 
-## Comparative synthesis status
+The dataset preserves its taxonomy, stable identifiers, frozen source, claim-specific curation, deduplicated relations, CSV/Parquet companions and checksums. It adds six group records, 118 implementation-group relations and `comparative_*` fields to all 118 default-atlas rows.
 
-The Atlas does **not** identify six effective policies. The six re-audited
-records were chosen because they carried the strongest prior component-effect
-claims. They are an audit sample, not a shortlist.
+Counts are A: 5; B: 41; C: 31; D: 16; E: 19; F: 6. The groups are provisional author policy postures, not efficacy ranks. Their metadata is separate from empirical verification. The source workbook hash and classification version are recorded in the release manifest.
 
-All 118 implementations are now assigned to one of six recommendation
-postures:
+## Empirical verification is unchanged
 
-- A · act now on bounded component evidence: 5;
-- B · build control and observability infrastructure: 41;
-- C · enforce legal and operational baselines: 31;
-- D · use authenticity and disclosure as auxiliary controls: 16;
-- E · pilot frontier-specific and structural controls: 19;
-- F · research or hold unvalidated general triggers: 6.
+The reproducible core contains six checked empirical effect claims, not six proven policies. At implementation level the retained review yields one established bounded component effect, three strong inferences and two open questions. Immediate recognition of taught manipulation techniques is the retained established effect. The forwarding and portability entries preserve implementation limitations rather than a positive efficacy finding.
 
-The grouping compares current support, causal fit, operational maturity,
-reversibility, rights costs, and the evidence needed to upgrade each claim. It
-is not a meta-analytic estimate of effectiveness, a completed independent
-full-text review of every source, or a scalar policy ranking. See
-[COMPARATIVE_EVIDENCE_GROUPS.md](COMPARATIVE_EVIDENCE_GROUPS.md).
+The other 112 effect claims remain without a checked empirical claim-source relation in this core. Twenty-two of 123 source records participate in a checked relation; 101 remain candidates. Classification coverage of 118/118 does not close these gaps. It does not demonstrate that no relevant studies exist or that the other controls fail.
 
-## Research candidates, not citation-ready claims
+The earlier wave also corrected and linked five previously source-less legal instruments. Public legal classes remain provisional without a checked primary legal relation. This synchronization is not a fresh legal-applicability review.
 
-- the 101 source records that do not yet participate in any checked
-  claim–source relation;
-- the 112 of 118 control-effectiveness claims without a checked empirical
-  source in the current public beta release;
-- candidate sources associated with the comparative grouping until their
-  design, endpoint, comparator, population, and causal match are adjudicated;
-- claim–source edges marked context-only or pending claim check;
-- legal-status implementations without a checked legal claim relation;
-- project mechanisms supported only by self-authored project provenance;
-- gate definitions before implementation-level pass/fail/uncertain assessments
-  and supporting evidence are published;
-- the legal-instrument table before an explicit implementation–instrument
-  bridge is added;
-- prospective Brazil and United States records before their dated
-  observations.
+## Not ready for stronger publication claims
+
+Candidate sources, context-only or unchecked relations, source-less legal propositions, project mechanisms supported only by self-authored provenance, unassessed implementation-level decision gates and prospective records must not be promoted to established findings. Downloadable data is not functional portability; disclosure is not informed consent; compliance is not reduced democratic harm.
+
+Group A is not an exception: the retained forwarding-limit review remains an open question. The default `atlas` and its `publication_*` and checked-source fields are the publication-safe view. Raw source tables retain historical coding for provenance.
 
 ## Stable-release gate
 
 A stable release requires:
 
-1. all claims used in the executive portfolio checked against primary sources;
-2. no established effect claim without a checked empirical source and a
-   bounded observed endpoint;
-3. no duplicate public claim–source edge;
-4. independent review of the central policy packages and comparative groups;
-5. source licences and attribution checked;
-6. frozen checksums and a reproducible derived view;
-7. no unresolved legal status or applicability field in the public portfolio.
+1. Primary-source checking of every claim relied on in the executive portfolio, with bounded endpoints.
+2. No established effect claim without checked empirical support and no duplicate public claim-source edge.
+3. Independent review of the central packages and comparative groups.
+4. Verified source licences and attribution.
+5. Frozen checksums and a reproducible derived view.
+6. Resolved legal scope and applicability for the public portfolio.
+7. Transparent implementation-level gate assessments where decision eligibility is claimed.
 
-The beta must not receive a DOI. A DOI should be minted only when the stable
-release gate is met.
+The stable-release gate remains closed and no DOI is minted for this beta. The empirical curation remains `curation-v0.4-wave1`; the separate recommendation layer is `comparative-v0.4-20260901`. Historical immutable tags are retained.
 
-## Priority evidence wave
+## Review record
 
-The initial register labelled six implementations `Established — component
-effect`. Primary-source review found that none of the original policy-effect
-claims was supported as written. The curation layer therefore separates two
-levels:
-
-- each of the six claim records now states only the empirical endpoint that
-  was actually observed; and
-- each implementation is classified according to how directly that endpoint
-  supports the proposed control.
-
-The result is one established bounded component effect (immediate recognition
-of taught manipulation techniques), three strong inferences, and two open
-questions. The WhatsApp and data-portability entries preserve negative
-implementation evidence instead of converting it into a positive effect
-claim. Full designs, samples, endpoints, and limitations are in
-[review/PRIORITY_VERIFICATION.md](review/PRIORITY_VERIFICATION.md).
-
-The derived atlas applies the same discipline to legal status: an
-implementation retains its working-register legal class only when a linked
-legal claim has been checked against a primary source; otherwise the public
-class is provisional.
-
-The two project mechanisms remain provisional. A canonical link to a
-self-authored research agenda establishes provenance, not external or
-claim-specific support.
+See [review/PRIORITY_VERIFICATION.md](review/PRIORITY_VERIFICATION.md) for designs, samples, endpoints and limitations of the six-record review. In the source repository, [COMPARATIVE_EVIDENCE_GROUPS.md](https://github.com/apolmig/agencytransfer/blob/main/policy-atlas/COMPARATIVE_EVIDENCE_GROUPS.md) explains the recommendation layer. Neither document is independent corroboration of programme claims.
