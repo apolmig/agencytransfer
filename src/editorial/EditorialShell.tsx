@@ -39,12 +39,12 @@ const metadata: Record<string, { title: string; description: string }> = {
     description: "Why election records document operations and institutional responses more readily than authentic exposure or effect.",
   },
   "research/part-iv": {
-    title: "Part IV · Policy evidence · Harmful Manipulation and Election Security",
-    description: "A causal policy atlas: adoption is not effectiveness.",
+    title: "Part IV · What works—and for whom? · Working Draft",
+    description: "A source-linked review of 118 policy implementations: what specific controls change, whose agency they protect, and what remains untested.",
   },
   paper: {
     title: "Flagship Working Paper · Harmful Manipulation and Election Security",
-    description: "Web overview of Harmful Manipulation and Election Security: The Capability–Deployment–Effect Gap.",
+    description: "Web overview and full v1.3 working paper: The Capability–Deployment–Effect Gap, with the 1 September policy review.",
   },
   outputs: {
     title: "Artifacts · Harmful Manipulation and Election Security",
@@ -131,7 +131,7 @@ export function DraftBar() {
   return (
     <div className="v2-draftbar" role="status">
       <div><span aria-hidden="true" /><strong>Working draft</strong><p>Research programme · not peer reviewed · all findings are provisional.</p></div>
-      <time dateTime="2026-08-28">Evidence freeze: 28 August 2026</time>
+      <time dateTime="2026-09-01">Updated: 1 September 2026</time>
     </div>
   );
 }
