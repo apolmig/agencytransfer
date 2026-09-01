@@ -31,12 +31,12 @@ const metadata: Record<string, { title: string; description: string }> = {
     description: "Four linked audits of operations, evaluation, field evidence, and policy evidence.",
   },
   "research/part-i": {
-    title: "Part I · Operations · Harmful Manipulation and Election Security",
-    description: "Why model access is not operational control, and why planning output is not deployment.",
+    title: "Part I · How far can an adversarial actor go with $10? · Draft",
+    description: "Author-reported low-cost sandbox planning, with explicit full-cost and evidence limits. Not a verified influence campaign.",
   },
   "research/part-iii": {
     title: "Part III · Field evidence · Harmful Manipulation and Election Security",
-    description: "Why election records document operations and institutional responses more readily than authentic exposure or effect.",
+    description: "Documented influence attempts, harassment and confusion; bounded human evidence and unresolved electoral effects.",
   },
   "research/part-iv": {
     title: "Part IV · What works—and for whom? · Working Draft",
@@ -67,15 +67,16 @@ const metadata: Record<string, { title: string; description: string }> = {
 export function useMetadata(path: string) {
   useEffect(() => {
     const entry = metadata[path] ?? metadata[""];
-    document.title = entry.title;
+    const pageTitle = /draft/i.test(entry.title) ? entry.title : `${entry.title} · Draft`;
+    document.title = pageTitle;
     const description = document.querySelector<HTMLMetaElement>('meta[name="description"]');
-    if (description) description.content = entry.description;
+    if (description) description.content = `${entry.description} Research in progress; programme findings and recommendations are provisional, not peer reviewed.`;
     const canonical = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
     if (canonical) canonical.href = `https://miguelguerrero.eu/agencytransfer/${path ? `${path}/` : ""}`;
     const ogTitle = document.querySelector<HTMLMetaElement>('meta[property="og:title"]');
-    if (ogTitle) ogTitle.content = entry.title;
+    if (ogTitle) ogTitle.content = pageTitle;
     const ogDescription = document.querySelector<HTMLMetaElement>('meta[property="og:description"]');
-    if (ogDescription) ogDescription.content = entry.description;
+    if (ogDescription) ogDescription.content = `${entry.description} Working draft; provisional programme findings.`;
     const ogUrl = document.querySelector<HTMLMetaElement>('meta[property="og:url"]');
     if (ogUrl) ogUrl.content = `https://miguelguerrero.eu/agencytransfer/${path ? `${path}/` : ""}`;
     document.body.classList.add("editorial-v2-active");
@@ -130,7 +131,7 @@ export function SiteHeader({ path }: { path: string }) {
 export function DraftBar() {
   return (
     <div className="v2-draftbar" role="status">
-      <div><span aria-hidden="true" /><strong>Working draft</strong><p>Research programme · not peer reviewed · all findings are provisional.</p></div>
+      <div><span aria-hidden="true" /><strong>Draft · work in progress</strong><p>All programme results and recommendations are provisional · not peer reviewed. <a href={route("about/#evidence-status")}>Evidence key</a></p></div>
       <time dateTime="2026-09-01">Updated: 1 September 2026</time>
     </div>
   );
@@ -150,13 +151,13 @@ export function SiteFooter() {
         <a href={`${REPOSITORY_URL}/blob/main/RESPONSIBLE_RELEASE.md`} target="_blank" rel="noreferrer">Responsible release ↗</a>
         <a href={REPOSITORY_URL} target="_blank" rel="noreferrer">Source ↗</a>
       </div>
-      <p className="v2-footer-note">Draft research by Miguel Guerrero · ERA:AI Summer Research Fellowship, Cambridge · 2026.</p>
+      <p className="v2-footer-note">Draft research by Miguel Guerrero · ERA:AI Summer Research Fellowship, Cambridge · 2026. Programme results, interpretations and recommendations remain provisional; no independent replication.</p>
     </footer>
   );
 }
 
 export function DraftBoundary({ children }: { children: ReactNode }) {
-  return <aside className="v2-boundary"><strong>Claim boundary</strong><p>{children}</p></aside>;
+  return <aside className="v2-boundary"><strong>Provisional claim boundary</strong><p>{children}</p></aside>;
 }
 
 export function TextLink({ href, children, external = false }: { href: string; children: ReactNode; external?: boolean }) {
