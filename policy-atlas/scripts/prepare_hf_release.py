@@ -43,7 +43,11 @@ def main() -> None:
     shutil.copy2(ROOT / "PUBLICATION_STATUS.md", DESTINATION / "PUBLICATION_STATUS.md")
     shutil.copy2(ROOT / "LICENSES" / "DATA.md", DESTINATION / "LICENSE.md")
     shutil.copytree(ROOT / "schemas", DESTINATION / "schemas")
-    shutil.copytree(ROOT / "review", DESTINATION / "review")
+    # Stage only the declared beta review records. Later companion reviews are
+    # public research documents, not automatic upgrades of this frozen dataset.
+    (DESTINATION / "review").mkdir()
+    for name in ("PRIORITY_VERIFICATION.md", "priority_claim_review.csv"):
+        shutil.copy2(ROOT / "review" / name, DESTINATION / "review" / name)
     print(f"Prepared {DESTINATION}")
 
 

@@ -1,5 +1,7 @@
 # Agency Transfer Research Programme
 
+> **Latest policy findings · 1 September 2026:** [Part IV](https://miguelguerrero.eu/agencytransfer/research/part-iv/) now reflects the later [source-linked review of 118 implementations](policy-atlas/review/source-linked-20260901/README.md). Specific controls have useful but bounded support; outcomes, delivery and whose authority is protected matter. Earlier A–F groups remain historical metadata, not the current recommendation framework. The Registry and frozen empirical records are unchanged.
+
 [![Deploy GitHub Pages](https://github.com/apolmig/agencytransfer/actions/workflows/deploy-pages.yml/badge.svg)](https://github.com/apolmig/agencytransfer/actions/workflows/deploy-pages.yml)
 
 > **Working research programme.** Independent research developed during the ERA:AI Summer Research Fellowship in Cambridge. It is not an official ERA benchmark and has not been peer reviewed.

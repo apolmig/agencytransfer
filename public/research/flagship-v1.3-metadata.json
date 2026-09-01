@@ -1,0 +1,23 @@
+{
+  "title": "Harmful Manipulation and Election Security",
+  "subtitle": "The Capability-Deployment-Effect Gap",
+  "version": "v1.3",
+  "date": "2026-09-01",
+  "status": "working_draft_not_peer_reviewed",
+  "parts_i_iii_evidence_freeze": "2026-08-28",
+  "part_iv_review_date": "2026-09-01",
+  "source_name": "Harmful_Manipulation_and_Election_Security_CDE_Gap_ERA_Flagship_Working_Paper_v1.3_20260901.pdf",
+  "source_drive_id": "10r5C3NUoBzRJCCqX4Ayfej9CT0Qo9Ag2",
+  "source_last_modified": "2026-09-01T13:46:14.167Z",
+  "pdf_path": "public/research/harmful-manipulation-election-security-v1.3-20260901.pdf",
+  "pdf_bytes": 1344817,
+  "pdf_sha256": "9049528ada708e9c5d591fac2343ef53d89a86d5e1d2703d22b1ef84bf701c5e",
+  "pages": 34,
+  "publication_note": "Exact supplied v1.3 working PDF, copied without alteration. Its abstract is reproduced on the paper overview. This does not update production Atlas empirical flags.",
+  "abstract": [
+    "Frontier AI does not need to persuade an electorate to create a democratic governance problem. The risk emerges when model capability is joined to audience data, trusted identity, tools, distribution, feedback, and control of the evidence. Influence can then become adaptive infrastructure: persistent, personalised, difficult to observe, and controlled by actors able both to shape the process and to determine what outsiders can know about it.",
+    "This paper develops the Capability-Deployment-Effect Gap, or CDE Gap, to separate model behaviour, served-system configuration, deployment, authentic exposure, human and institutional response, and electoral consequence. It uses agency transfer as the democratic severity test: whether practical control over attention, preference formation, choice, dependency, or institutional decisions shifts away from citizens and public institutions towards the actor controlling the system.",
+    "Four linked research strands provide a bounded evidence base. The technical work shows how unstable access, routes, parsers, evaluators, and missingness constrain apparently precise capability claims. Election records document operations and institutional responses more readily than authentic exposure or effect. A source-linked policy review finds usable human and technical evidence, but also divergence between recognition, trust, sharing, and choice. Controls that work after delivery may arrive too late; controls that secure an agent may protect its operator rather than the people affected. The policy gap is therefore not simply a shortage of interventions. It also concerns mismatched outcomes, incomplete delivery, and misallocated authority.",
+    "The governance implication is to match intervention to both mechanism and beneficiary. Use bounded controls where the relevant endpoint has been tested; make consequential authority inspectable and revocable; test practical exit; and scrutinise defensive monitors as well as the systems they monitor. These are differentiated recommendations, not a ranking of proven policies. The democratic objective is neither maximum resistance to AI advice nor merely fewer false messages. It is the continuing ability of citizens and institutions to understand, direct, refuse, contest, and leave the systems through which decisions are made."
+  ]
+}

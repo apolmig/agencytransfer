@@ -1,0 +1,809 @@
+{
+  "id": "p4-source-linked-review-20260901",
+  "title": "What works at the point of influence—and who the safeguard protects",
+  "date": "2026-09-01",
+  "status": "working_draft",
+  "review_method": "Single-pass, purposive, source-linked assessment; not independent double screening or full-text extraction of every study.",
+  "coverage": {
+    "implementations": 118,
+    "selected_source_records": 69,
+    "new_substantive_source_checks": 8,
+    "retained_prior_adjudications": 6,
+    "additional_candidates_outside_denominator": 3
+  },
+  "new_substantive_checks": [
+    "R009",
+    "R012",
+    "R013",
+    "R016",
+    "R037",
+    "R039",
+    "R040",
+    "R041"
+  ],
+  "evidence_modes": {
+    "N": 51,
+    "T": 12,
+    "H": 10,
+    "A": 27,
+    "O": 18
+  },
+  "mode_note": "Evidence modes are not ordered grades, independent experiments, or counts of effective policies.",
+  "production_dataset": {
+    "release": "v0.1.0-beta.3",
+    "empirical_claim_flags_changed": false,
+    "historical_A_F_assignments_preserved": true
+  },
+  "manuscript": {
+    "current_version": "v1.3-20260901",
+    "parts_i_iii_evidence_freeze": "2026-08-28",
+    "part_iv_review_date": "2026-09-01",
+    "web_update": "The v1.3 manuscript integrates this source-linked review. No new fellowship experiments or automatic Atlas empirical-flag upgrades."
+  },
+  "implementation_ids": [
+    "I-001",
+    "I-002",
+    "I-003",
+    "I-004",
+    "I-005",
+    "I-006",
+    "I-007",
+    "I-008",
+    "I-009",
+    "I-010",
+    "I-011",
+    "I-012",
+    "I-013",
+    "I-014",
+    "I-015",
+    "I-016",
+    "I-017",
+    "I-018",
+    "I-019",
+    "I-020",
+    "I-021",
+    "I-022",
+    "I-023",
+    "I-024",
+    "I-025",
+    "I-026",
+    "I-027",
+    "I-028",
+    "I-029",
+    "I-030",
+    "I-031",
+    "I-032",
+    "I-033",
+    "I-034",
+    "I-035",
+    "I-036",
+    "I-037",
+    "I-038",
+    "I-039",
+    "I-040",
+    "I-041",
+    "I-042",
+    "I-043",
+    "I-044",
+    "I-045",
+    "I-046",
+    "I-047",
+    "I-048",
+    "I-049",
+    "I-050",
+    "I-051",
+    "I-052",
+    "I-053",
+    "I-054",
+    "I-055",
+    "I-056",
+    "I-057",
+    "I-058",
+    "I-059",
+    "I-060",
+    "I-061",
+    "I-062",
+    "I-063",
+    "I-064",
+    "I-065",
+    "I-066",
+    "I-067",
+    "I-068",
+    "I-069",
+    "I-070",
+    "I-071",
+    "I-072",
+    "I-073",
+    "I-074",
+    "I-075",
+    "I-076",
+    "I-077",
+    "I-078",
+    "I-079",
+    "I-080",
+    "I-081",
+    "I-082",
+    "I-084",
+    "I-086",
+    "I-087",
+    "I-088",
+    "I-089",
+    "I-090",
+    "I-091",
+    "I-092",
+    "I-094",
+    "I-095",
+    "I-096",
+    "I-097",
+    "I-098",
+    "I-099",
+    "I-100",
+    "I-101",
+    "I-102",
+    "I-103",
+    "I-104",
+    "I-105",
+    "I-106",
+    "I-107",
+    "I-108",
+    "I-109",
+    "I-110",
+    "I-111",
+    "I-112",
+    "I-113",
+    "I-114",
+    "I-115",
+    "I-116",
+    "I-117",
+    "I-118",
+    "I-119",
+    "I-120",
+    "I-121"
+  ],
+  "source_files": [
+    {
+      "source_name": "P4 — Evidence findings and recommendations — 20260901.md",
+      "source_drive_id": "1pkPhTDXWhXfu9FGyIwSPeSIXmmZAHFMF",
+      "path": "policy-atlas/review/source-linked-20260901/findings.md",
+      "bytes": 19585,
+      "sha256": "95eda474c6ef1c20dd0685faf0f753f5f7e6b7e0420e6d8987101afa8a1a1d3c"
+    },
+    {
+      "source_name": "P4 — Individual dossiers and source ledger — 118 implementations — 20260901.md",
+      "source_drive_id": "1F3j04DmTHLRQx0B3eIB7gjpWb-6TqbJk",
+      "path": "policy-atlas/review/source-linked-20260901/implementation-dossiers.md",
+      "bytes": 227816,
+      "sha256": "eb187370d4f9215d4ac4de86deb8d9e6175158288fa816a59f521665622fa14d"
+    },
+    {
+      "source_name": "P4 — Source-linked review of 118 implementations — 20260901.xlsx",
+      "source_drive_id": "1xn43jNS3iNymqJNtntmwYsKwowEps_6u",
+      "path": "public/research/p4-source-linked-review-20260901.xlsx",
+      "bytes": 89792,
+      "sha256": "2104cb1851d5661ddacd0ae0b616e11a9c8ed6ef904d988d1ff7a305f9cdc421"
+    }
+  ],
+  "sources": [
+    {
+      "id": "R001",
+      "title": "Nouwens et al. — Dark Patterns after the GDPR",
+      "url": "https://doi.org/10.1145/3313831.3376321",
+      "design": "Within-person field browsing experiment; 40 US Chrome users; eight consent interfaces",
+      "review_depth": "Retained prior adjudication; primary abstract rechecked",
+      "finding": "Removing the first-screen reject option increased cookie acceptance by approximately 22–23 percentage points.",
+      "boundary": "Interface-induced acceptance is not informed preference alignment or the causal effect of enforcing a statutory ban."
+    },
+    {
+      "id": "R002",
+      "title": "Luguri and Strahilevitz — Shining a Light on Dark Patterns",
+      "url": "https://doi.org/10.1093/jla/laaa006",
+      "design": "Two US consumer experiments",
+      "review_depth": "Primary author summary checked",
+      "finding": "Deceptive interface designs increased acceptance of a questionable service in the tested settings.",
+      "boundary": "No population electoral outcome or evaluation of an implemented regulatory prohibition; magnitudes not extracted here."
+    },
+    {
+      "id": "R003",
+      "title": "Ershov and Morales — Sharing News Left and Right",
+      "url": "https://doi.org/10.1093/ej/ueae027",
+      "design": "Quasi-experimental analysis of Twitter's October 2020 retweet friction change",
+      "review_depth": "Primary publication results checked",
+      "finding": "The friction reduced news sharing, but did not selectively reduce misleading relative to factual news; responses differed by political orientation.",
+      "boundary": "Not randomized platform assignment and not WhatsApp forwarding limits. Reduced total circulation is not improved discernment."
+    },
+    {
+      "id": "R004",
+      "title": "de Freitas Melo et al. — WhatsApp forwarded-many-times coverage",
+      "url": "https://doi.org/10.1609/icwsm.v18i1.31372",
+      "design": "Observational study of 9.8 million messages in 1,101 public Brazilian political groups",
+      "review_depth": "Retained prior adjudication; primary abstract rechecked",
+      "finding": "Many duplicate-media appearances lacked the forwarding label even when the item was labelled elsewhere.",
+      "boundary": "Coverage failure is not an estimate of the limit's effect on delay, authentic exposure, behaviour or harm."
+    },
+    {
+      "id": "R005",
+      "title": "de Freitas Melo et al. — Can WhatsApp Counter Misinformation by Limiting Message Forwarding?",
+      "url": "https://arxiv.org/abs/1909.08740",
+      "design": "Diffusion modelling informed by messaging data",
+      "review_depth": "Primary abstract checked",
+      "finding": "Forwarding limits can delay modelled dissemination but need not stop highly viral content.",
+      "boundary": "Simulation assumptions and selected public-group data; no causal human behavioural estimate."
+    },
+    {
+      "id": "R006",
+      "title": "Pennycook et al. — Shifting attention to accuracy can reduce misinformation online",
+      "url": "https://doi.org/10.1038/s41586-021-03344-2",
+      "design": "Survey experiments and a Twitter field experiment",
+      "review_depth": "Primary publication summary checked",
+      "finding": "Accuracy prompts improved sharing discernment in surveys and the average quality of sources subsequently shared in the field.",
+      "boundary": "Source quality is a proxy; effects on durable agency and adaptive conversation were not measured."
+    },
+    {
+      "id": "R007",
+      "title": "Pennycook and Rand — Accuracy prompts are a replicable and generalizable approach",
+      "url": "https://doi.org/10.1038/s41467-022-30073-5",
+      "design": "Original meta-analysis of 20 experiments; 26,863 participants",
+      "review_depth": "Primary abstract checked",
+      "finding": "The experimental corpus supports improved sharing discernment on average.",
+      "boundary": "Studies are not all independent teams; overlap with R008. Do not count pooled datasets twice."
+    },
+    {
+      "id": "R008",
+      "title": "Martel et al. — Accuracy-prompt adversarial reanalysis",
+      "url": "https://doi.org/10.1177/09567976241232905",
+      "design": "Adversarial collaboration; reanalysis of 21 experiments; approximately 27,000 participants",
+      "review_depth": "Primary results summary checked",
+      "finding": "Estimated sharing-discernment benefits persisted across specifications, including among Republicans, with heterogeneous magnitudes.",
+      "boundary": "Overlaps R007; mostly stated sharing rather than measured field behaviour. Not a new 27,000-person independent trial."
+    },
+    {
+      "id": "R009",
+      "title": "Slaughter et al. — Community Notes and engagement with misleading posts",
+      "url": "https://doi.org/10.1073/pnas.2503413122",
+      "design": "Synthetic-control observational analysis; 40,078 posts",
+      "review_depth": "Main-text methods, results, limitations and correction notice checked; supplement/data not reproduced",
+      "finding": "Estimated repost reduction was larger after a note appeared than over a post's lifetime; lifetime estimates were 11.6% for reposts and 5.5% for views.",
+      "boundary": "Conditional on observed note/post eligibility, timing and synthetic-control assumptions; not randomized rollout or electoral effects."
+    },
+    {
+      "id": "R010",
+      "title": "Chuai et al. — Did the Roll-Out of Community Notes Reduce Engagement?",
+      "url": "https://arxiv.org/abs/2307.07960",
+      "design": "Quasi-experimental rollout analysis",
+      "review_depth": "Primary abstract checked",
+      "finding": "The rollout analysis did not find an overall reduction in engagement with misinformation.",
+      "boundary": "Different estimand from post-note attenuation in R009; delays and coverage can reconcile the findings."
+    },
+    {
+      "id": "R011",
+      "title": "Roozenbeek et al. — Psychological inoculation improves resilience against misinformation",
+      "url": "https://doi.org/10.1126/sciadv.abo6254",
+      "design": "Six online randomized experiments and a YouTube field study",
+      "review_depth": "Retained prior adjudication; primary abstract rechecked",
+      "finding": "Brief videos improved immediate recognition of the manipulation techniques taught.",
+      "boundary": "Recognition within the tested window is not durable resistance, actual sharing, agency or election protection."
+    },
+    {
+      "id": "R012",
+      "title": "Biddlestone et al. — Tune in to the prebunking network",
+      "url": "https://doi.org/10.1111/pops.70015",
+      "design": "Two experiments; 1,583 and 1,603 participants",
+      "review_depth": "Main-text sections checked",
+      "finding": "Technique detection improved more consistently than discernment; a moving-goalposts treatment also induced generalized distrust.",
+      "boundary": "Effects vary by technique and outcome; cannot generalize from detection to resistance."
+    },
+    {
+      "id": "R013",
+      "title": "Ancina, Zumbrägel and Krämer — Inoculation in a WhatsApp setting",
+      "url": "https://doi.org/10.1177/20563051261449194",
+      "design": "Randomized mock-WhatsApp experiment; 154 German participants",
+      "review_depth": "Main-text sections checked",
+      "finding": "Matched inoculation reduced false-message credibility, without a detected sharing-intention benefit or cross-topic transfer.",
+      "boundary": "Simulated chats, limited sample and topic scope; not a private-platform field experiment."
+    },
+    {
+      "id": "R014",
+      "title": "Pennycook et al. — Inoculation and accuracy prompting in combination",
+      "url": "https://doi.org/10.1038/s41562-024-02023-2",
+      "design": "Five studies; 7,286 participants",
+      "review_depth": "Primary abstract and publication metadata checked",
+      "finding": "Emotional-technique inoculation improved recognition but not truth discernment alone; combining it with accuracy prompting improved discernment through belief in true content.",
+      "boundary": "Tested combination and stimuli only, not proof that arbitrary policy packages are synergistic; some authors/funding linked to Google."
+    },
+    {
+      "id": "R015",
+      "title": "Carey et al. — Prebunking and credible-source corrections increase election credibility",
+      "url": "https://doi.org/10.1126/sciadv.adv3758",
+      "design": "Three preregistered online experiments in the US and Brazil",
+      "review_depth": "Retained prior adjudication; primary abstract rechecked",
+      "finding": "Factual election-security messages changed confidence, fraud beliefs and accuracy; persistence and context mattered. Forewarning did not supply the presumed extra benefit.",
+      "boundary": "Messages are not official-source-connected assistants; no voting-access, turnout or agency endpoint."
+    },
+    {
+      "id": "R016",
+      "title": "DeVerna et al. — Fact-checking information from LLMs can decrease headline discernment",
+      "url": "https://doi.org/10.1073/pnas.2322823121",
+      "design": "Preregistered online experiment; 2,159 US participants",
+      "review_depth": "Main text, methods and results checked",
+      "finding": "The tested LLM fact checks did not improve average discernment; erroneous and uncertain outputs produced harmful item-specific responses.",
+      "boundary": "One older configuration and 40 headlines. Human comparison was collected a year later; opt-in comparisons are selected, not randomized."
+    },
+    {
+      "id": "R017",
+      "title": "Gallegos et al. — AI authorship labels and political persuasion",
+      "url": "https://arxiv.org/abs/2504.09865",
+      "design": "Randomized authorship-label experiment; 1,601 participants",
+      "review_depth": "Primary abstract/results summary checked",
+      "finding": "AI-authorship labels did not significantly change persuasion, perceived accuracy or sharing in the tested policy messages.",
+      "boundary": "No general zero-effect conclusion, no personalized persistent conversation; label concerns origin rather than veracity."
+    },
+    {
+      "id": "R018",
+      "title": "Labeling Synthetic Content — User study",
+      "url": "https://doi.org/10.1145/3706598.3713171",
+      "design": "Experiment with 911 participants and alternative label designs",
+      "review_depth": "Primary abstract/results summary checked",
+      "finding": "Labels improved identification of synthetic origin more readily than engagement-related outcomes.",
+      "boundary": "Origin recognition is not claim accuracy or resistance to operator steering."
+    },
+    {
+      "id": "R019",
+      "title": "Dathathri et al. — Scalable watermarking for identifying LLM outputs",
+      "url": "https://doi.org/10.1038/s41586-024-08025-4",
+      "design": "Technical watermark evaluation and large-scale product testing",
+      "review_depth": "Primary publication summary checked",
+      "finding": "SynthID-Text supports detection of outputs from cooperating generators under tested conditions, with reported utility preservation.",
+      "boundary": "A watermark does not determine truth, prevent persuasion or cover uncooperative models and all transformations."
+    },
+    {
+      "id": "R020",
+      "title": "C2PA Security Considerations, version 2.0",
+      "url": "https://c2pa.org/specifications/specifications/2.0/security/Security_Considerations.html",
+      "design": "Technical specification",
+      "review_depth": "Official specification page checked",
+      "finding": "Specifies security assumptions and integrity properties of provenance assertions.",
+      "boundary": "An authenticated assertion is not truth; no human-effect experiment or democratic-benefit estimate."
+    },
+    {
+      "id": "R021",
+      "title": "Chandra et al. — Deepfake-Eval-2024",
+      "url": "https://arxiv.org/abs/2503.02857",
+      "design": "In-the-wild multimodal detector benchmark",
+      "review_depth": "Primary abstract checked",
+      "finding": "Detector performance deteriorated on in-the-wild media relative to conventional benchmark settings.",
+      "boundary": "Out-of-distribution technical detection, not a trial of an election mitigation programme; AUC is not classification accuracy."
+    },
+    {
+      "id": "R022",
+      "title": "Prasad, Nahapetyan and Reaves — Characterizing Robocalls through a Five-Year Honeypot",
+      "url": "https://arxiv.org/abs/2410.17361",
+      "design": "Longitudinal honeypot measurement",
+      "review_depth": "Primary author summary and abstract checked",
+      "finding": "Call patterns and anti-abuse adaptation can be observed over time.",
+      "boundary": "Changes in call volume do not isolate the effect of STIR/SHAKEN, consent law or one enforcement action."
+    },
+    {
+      "id": "R023",
+      "title": "Sherman et al. — User Comprehension of STIR/SHAKEN",
+      "url": "https://www.ruizlab.org/publications/characterizing-user-comprehension-in-the-stir-shaken-anti-robocall-standard/",
+      "design": "User-comprehension study",
+      "review_depth": "Primary author summary checked",
+      "finding": "Users can misunderstand authentication indicators.",
+      "boundary": "Authenticating caller identity is not verifying the caller's message or intentions."
+    },
+    {
+      "id": "R024",
+      "title": "Edelson, Lauinger and McCoy — A Security Analysis of the Facebook Ad Library",
+      "url": "https://doi.org/10.1109/SP40000.2020.00084",
+      "design": "Observational adversarial audit of advertising records",
+      "review_depth": "Primary publication summary checked",
+      "finding": "The archive exposed substantial gaps in disclosure and coverage.",
+      "boundary": "Finding missing advertisements demonstrates audit value and incompleteness, not prevention of harm."
+    },
+    {
+      "id": "R025",
+      "title": "Dommett and Power — Political advertising transparency",
+      "url": "https://doi.org/10.1177/02633957231156084",
+      "design": "Comparative analysis of UK returns and platform ad archives",
+      "review_depth": "Primary abstract checked",
+      "finding": "Different transparency sources provide incomplete and inconsistent views.",
+      "boundary": "No randomized disclosure treatment or causal reduction in covert influence."
+    },
+    {
+      "id": "R026",
+      "title": "Bär et al. — Political advertising delivery on Meta",
+      "url": "https://doi.org/10.1093/pnasnexus/pgae247",
+      "design": "Observational analysis of German political ads and delivery",
+      "review_depth": "Primary publication summary checked",
+      "finding": "Actual audience delivery can diverge from targeting inputs, with heterogeneous delivery patterns.",
+      "boundary": "No causal effect of a targeting restriction or on votes; motivates delivery-level audit, not intent attribution."
+    },
+    {
+      "id": "R027",
+      "title": "McCabe et al. — Post-January-6 deplatforming and misinformation",
+      "url": "https://doi.org/10.1038/s41586-024-07524-8",
+      "design": "Large observational panel around mass account suspension",
+      "review_depth": "Primary author/publication summary checked",
+      "finding": "Misinformation circulation fell among affected networks after the intervention.",
+      "boundary": "Concurrent January-6 events prevent clean identification of the intervention's causal magnitude; cross-platform displacement unresolved."
+    },
+    {
+      "id": "R028",
+      "title": "Gauthier et al. — The political effects of X's feed algorithm",
+      "url": "https://doi.org/10.1038/s41586-026-10098-2",
+      "design": "Seven-week randomized feed intervention; 4,965 recruits",
+      "review_depth": "Primary publication results checked",
+      "finding": "Switching on the algorithm changed selected attitudes; switching it off did not yield a symmetric reversal. Some following choices persisted.",
+      "boundary": "Pre-existing feed groups differ; asymmetry is not a clean estimate of irreversible agency transfer. No election-result estimate."
+    },
+    {
+      "id": "R029",
+      "title": "Guess et al. — How social media feed algorithms affect attitudes and behavior",
+      "url": "https://doi.org/10.1126/science.abp9364",
+      "design": "Facebook/Instagram randomized feed intervention during the 2020 US election",
+      "review_depth": "Primary author summary checked",
+      "finding": "Chronological feeds changed use and exposure, without detectable changes in the specified political-attitude measures.",
+      "boundary": "Null effects are context- and power-bounded; a 2026 erratum was located but its full implications were not adjudicated here."
+    },
+    {
+      "id": "R030",
+      "title": "Biega et al. — Operationalizing the Legal Principle of Data Minimization",
+      "url": "https://doi.org/10.1145/3397271.3401034",
+      "design": "Offline recommender experiments with reduced rating histories",
+      "review_depth": "Retained prior adjudication; primary abstract rechecked",
+      "finding": "Recommendation quality depends on the algorithm, user and data budget when histories are reduced.",
+      "boundary": "No conversation-memory, verified deletion, manipulation, dependency or human autonomy outcome."
+    },
+    {
+      "id": "R031",
+      "title": "Aridor, Che and Salz — Privacy regulation and online tracking",
+      "url": "https://doi.org/10.1111/1756-2171.12455",
+      "design": "Quasi-experimental GDPR analysis using an online travel intermediary",
+      "review_depth": "Primary publication results checked",
+      "finding": "Observed data coverage declined, while remaining users could be more trackable, illustrating selection and composition effects.",
+      "boundary": "One intermediary and legal change; fewer observed cookies is not a universal measure of less concentrated data power."
+    },
+    {
+      "id": "R032",
+      "title": "Miller, Lukic and Skiera — GDPR and tracking technologies",
+      "url": "https://doi.org/10.1016/j.ijresmar.2025.03.002",
+      "design": "Difference-in-differences analysis of 294 publishers",
+      "review_depth": "Primary abstract/results summary checked",
+      "finding": "Estimated tracker use was lower relative to the counterfactual, with heterogeneous effects; the study did not find the hypothesized concentration increase.",
+      "boundary": "Relative counterfactual reduction can coexist with absolute growth. Not conversational-memory minimization."
+    },
+    {
+      "id": "R033",
+      "title": "Turner et al. — The right to data portability in the IoT",
+      "url": "https://doi.org/10.1177/1461444820934033",
+      "design": "160 privacy policies and four hands-on portability exercises",
+      "review_depth": "Retained prior adjudication; primary publication summary checked",
+      "finding": "Receiving a data archive generally did not enable direct transfer or import into a rival service.",
+      "boundary": "Small, historical IoT exercise; not a current assistant migration trial."
+    },
+    {
+      "id": "R034",
+      "title": "Syrmoudis et al. — Data Portability Between Online Services",
+      "url": "https://doi.org/10.2478/popets-2021-0051",
+      "design": "Empirical evaluation of online-service portability",
+      "review_depth": "Primary abstract checked",
+      "finding": "Implementation barriers limit practical portability despite formal availability.",
+      "boundary": "No causal restored-agency measure or verified transfer of generative-agent memory and permissions."
+    },
+    {
+      "id": "R035",
+      "title": "Allcott et al. — Sources of Market Power in Web Search",
+      "url": "https://siepr.stanford.edu/publications/working-paper/sources-market-power-web-search-evidence-field-experiment",
+      "design": "Field experiments with defaults, active choice and incentivized trial",
+      "review_depth": "Primary working-paper summary checked",
+      "finding": "Defaults, attention and trial experience affect search-engine adoption; a nominal choice screen is not equivalent to a feasible alternative.",
+      "boundary": "Search is not assistant-state portability; model-based market-share projections are not directly randomized outcomes."
+    },
+    {
+      "id": "R036",
+      "title": "CMA — Cloud services market investigation, final report",
+      "url": "https://www.gov.uk/cma-cases/cloud-services-market-investigation",
+      "design": "Regulatory market investigation with primary surveys",
+      "review_depth": "Official final-report landing page checked",
+      "finding": "The investigation identifies concentration and switching/interoperability barriers and proposes further action.",
+      "boundary": "Diagnosis and recommended remedies are not an estimated causal benefit of implemented remedies."
+    },
+    {
+      "id": "R037",
+      "title": "Debenedetti et al. — Defeating Prompt Injections by Design (CaMeL)",
+      "url": "https://arxiv.org/html/2503.18813v2",
+      "design": "Technical evaluation of control/data-flow separation and capability policies",
+      "review_depth": "Main-text threat model, evaluation and limits checked",
+      "finding": "Hard authorization boundaries constrain external prompt injection under specified assumptions, with a utility trade-off.",
+      "boundary": "The user/principal and relevant trusted context are assumed trustworthy. This does not protect citizens from an authorized malicious operator."
+    },
+    {
+      "id": "R038",
+      "title": "Buçinca, Malaya and Gajos — To Trust or to Think",
+      "url": "https://arxiv.org/abs/2102.09692",
+      "design": "Controlled human experiment; 199 participants",
+      "review_depth": "Primary author summary and abstract checked",
+      "finding": "Cognitive-forcing designs reduced overreliance on erroneous AI advice in bounded decision tasks.",
+      "boundary": "Benefits and subjective costs were uneven. It does not validate a generic confirmation button or every multi-turn intervention."
+    },
+    {
+      "id": "R039",
+      "title": "Poonsiriwong et al. — AI Watchdog",
+      "url": "https://arxiv.org/html/2608.21841v1",
+      "design": "Preregistered five-arm experiment; 150 participants",
+      "review_depth": "Main-text methods, results and limitations checked",
+      "finding": "A dismissible just-in-time monitor reduced the preregistered secondary rate of AI-steered choices from 71.7% to 53.7%; the primary flagging outcome did not improve.",
+      "boundary": "Thirty participants per arm; simulated, consequence-free tasks; secondary endpoint; no superiority over forcing established. The monitor was researcher-hosted, not locally deployed."
+    },
+    {
+      "id": "R040",
+      "title": "Ibrahim et al. — Warning labels shift perceptions of sycophantic AI, but not its influence",
+      "url": "https://arxiv.org/html/2606.21317v1",
+      "design": "Preregistered multi-arm experiment; 2,610 analyzed participants",
+      "review_depth": "Main-text methods and results checked",
+      "finding": "Warnings changed perceptions of the chatbot but did not reliably change self-righteousness or intentions to repair the interpersonal conflict.",
+      "boundary": "Specified eight-turn dilemmas and self-reports, not observed relationship repair or a proof of zero effect."
+    },
+    {
+      "id": "R041",
+      "title": "Salvi, Cuevas and Ribeiro — Commercial Persuasion in AI-Mediated Conversations",
+      "url": "https://arxiv.org/html/2604.04263v1",
+      "design": "Two separately conducted experiments; 2,012 participants",
+      "review_depth": "Main-text methods, outcomes and disclosure comparison checked",
+      "finding": "Active promotion shifted book selections markedly. Explicit sponsorship disclosure improved detection but did not significantly reduce the selection effect relative to the earlier persuasion condition.",
+      "boundary": "Disclosure and baseline comparison spans two collection waves; not all five arms were contemporaneously randomized. Simplified purchase stakes; promised books ultimately replaced by monetary bonuses."
+    },
+    {
+      "id": "R042",
+      "title": "Fang et al. — Psychosocial Effects of Chatbot Use",
+      "url": "https://arxiv.org/abs/2503.17473",
+      "design": "Four-week randomized chatbot study; 981 participants",
+      "review_depth": "Revised primary abstract checked",
+      "finding": "The revised analysis reports no significant randomized condition effects; heavier voluntary use and adverse psychosocial measures were associated.",
+      "boundary": "Voluntary usage is not randomized dosage. Does not show that use caps, memory deletion or labels reduce dependence."
+    },
+    {
+      "id": "R043",
+      "title": "Jia et al. — Critical Evaluation of Defenses against Prompt Injection",
+      "url": "https://arxiv.org/abs/2505.18333",
+      "design": "Adaptive adversarial technical evaluation",
+      "review_depth": "Primary abstract checked",
+      "finding": "Defense performance degrades under adaptive attacks and must be compared with utility costs.",
+      "boundary": "Technical task security, not an estimate of human manipulation or institutional benefit."
+    },
+    {
+      "id": "R044",
+      "title": "Hao et al. — AgentDyn",
+      "url": "https://arxiv.org/abs/2602.03117",
+      "design": "Dynamic-environment benchmark; 60 tasks; 560 injections; ten defenses",
+      "review_depth": "Primary abstract checked",
+      "finding": "Dynamic environments reveal limitations missed by static evaluations.",
+      "boundary": "Benchmark coverage does not set a general release threshold or estimate real-world harm."
+    },
+    {
+      "id": "R045",
+      "title": "Ren et al. — MASK",
+      "url": "https://arxiv.org/abs/2503.03750",
+      "design": "Model honesty benchmark",
+      "review_depth": "Primary abstract checked",
+      "finding": "Honesty and factual accuracy can diverge under the benchmark's conditions.",
+      "boundary": "No validated conversion from benchmark score to human manipulation or a statutory release gate."
+    },
+    {
+      "id": "R046",
+      "title": "Duflo et al. — Truth-telling by Third-party Auditors",
+      "url": "https://doi.org/10.1093/qje/qjt024",
+      "design": "Randomized environmental-audit reform in Gujarat",
+      "review_depth": "Primary author and NBER summaries checked",
+      "finding": "An audit-reform package improved reporting truthfulness and reduced pollution in the study.",
+      "boundary": "Adjacent sector; package changes payment, assignment and cross-checking. Does not isolate AI-audit access or certify DSA audit efficacy."
+    },
+    {
+      "id": "R047",
+      "title": "Dyck, Morse and Zingales — Who Blows the Whistle on Corporate Fraud?",
+      "url": "https://doi.org/10.1111/j.1540-6261.2010.01614.x",
+      "design": "Observational analysis of reported large-company fraud",
+      "review_depth": "Primary publication abstract checked",
+      "finding": "Employees, media and other nontraditional actors contribute to detection; information access and incentives matter.",
+      "boundary": "Selected detected cases, not a randomized whistleblower-protection law or prevention estimate."
+    },
+    {
+      "id": "R048",
+      "title": "Longpre et al. — In-House Evaluation Is Not Enough",
+      "url": "https://proceedings.mlr.press/v267/longpre25a.html",
+      "design": "Expert position paper",
+      "review_depth": "Primary abstract and proposal checked",
+      "finding": "Proposes standardized flaw reporting, safe harbours and coordination infrastructure.",
+      "boundary": "A reasoned proposal, not an intervention-effect experiment."
+    },
+    {
+      "id": "R049",
+      "title": "Bracamonte et al. — Model-card comprehension",
+      "url": "https://doi.org/10.1109/PST58708.2023.10320197",
+      "design": "Human study of alternative model-card presentation",
+      "review_depth": "Primary author summary checked",
+      "finding": "Documentation design affects users' understanding and confidence.",
+      "boundary": "Comprehension is not oversight that changes deployer behaviour or prevents harm."
+    },
+    {
+      "id": "R050",
+      "title": "NIST — Generative AI Profile 600-1",
+      "url": "https://doi.org/10.6028/NIST.AI.600-1",
+      "design": "Risk-management guidance",
+      "review_depth": "Official publication page checked",
+      "finding": "Organizes proposed risk-management actions across the AI lifecycle.",
+      "boundary": "No measured effect of adopting the profile; not proof of the whole policy package."
+    },
+    {
+      "id": "R051",
+      "title": "NIST — AI Agent Standards Initiative",
+      "url": "https://www.nist.gov/artificial-intelligence/ai-agent-standards-initiative",
+      "design": "Standards and research initiative",
+      "review_depth": "Official page checked",
+      "finding": "Identity, authorization, interoperability and security evaluation are explicit workstreams.",
+      "boundary": "An initiative and research agenda, not evidence that a particular authorization design preserves human agency."
+    },
+    {
+      "id": "R052",
+      "title": "ISO — ISO/IEC 42001:2023",
+      "url": "https://www.iso.org/standard/42001",
+      "design": "AI management-system standard",
+      "review_depth": "Official overview checked; paid standard not reviewed",
+      "finding": "Defines an organizational management-system standard.",
+      "boundary": "A certificate is not an independently estimated reduction in manipulation or proof of model safety."
+    },
+    {
+      "id": "R053",
+      "title": "Validation of challenges in ISO/IEC 42001 adoption in logistics",
+      "url": "https://doi.org/10.14488/BJOPM.2591.2026",
+      "design": "Professional survey and challenge validation",
+      "review_depth": "Primary abstract checked",
+      "finding": "Identifies perceived adoption barriers including training and integration.",
+      "boundary": "Validating adoption challenges does not estimate certification's safety effects."
+    },
+    {
+      "id": "R054",
+      "title": "European Commission — GPAI Code of Practice",
+      "url": "https://digital-strategy.ec.europa.eu/en/policies/contents-code-gpai",
+      "design": "Official code and governance framework",
+      "review_depth": "Official page checked",
+      "finding": "Provides a voluntary route for demonstrating compliance with relevant GPAI obligations.",
+      "boundary": "Legal/compliance architecture, not causal efficacy evidence. Stronger governance language does not repair an unvalidated metric."
+    },
+    {
+      "id": "R055",
+      "title": "European Commission — AI Act implementation and amended timetable",
+      "url": "https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai",
+      "design": "Official implementation guidance",
+      "review_depth": "Current official summary checked",
+      "finding": "Reports the AI Omnibus entered into force on 27 July 2026 and changed high-risk application dates.",
+      "boundary": "The old assumption that Annex III duties generally apply from August 2026 requires correction. Primary consolidated provisions still need clause-level legal review."
+    },
+    {
+      "id": "R056",
+      "title": "TSE — Resolution 23.755/2026",
+      "url": "https://www.tse.jus.br/legislacao/compilada/res/2026/resolucao-no-23-755-de-2-de-marco-de-2026",
+      "design": "Primary electoral rule",
+      "review_depth": "Relevant primary clauses checked",
+      "finding": "Regulates synthetic electoral content, specified blackout periods and AI-mediated recommendations.",
+      "boundary": "A rule's adoption does not establish compliance, reach prevented, or effects; many relevant 2026 outcomes remain prospective."
+    },
+    {
+      "id": "R057",
+      "title": "TSE — Portaria 463/2026",
+      "url": "https://www.tse.jus.br/legislacao/compilada/prt/2026/portaria-no-463-de-27-de-julho-de-2026",
+      "design": "Primary compliance-plan procedure",
+      "review_depth": "Relevant primary clauses checked",
+      "finding": "Requires specified services to document electoral-risk mitigations and compliance plans.",
+      "boundary": "Submitted plans and indicators are administrative outputs, not independently established mitigation effects."
+    },
+    {
+      "id": "R058",
+      "title": "European Commission — DSA election-risk guidelines",
+      "url": "https://digital-strategy.ec.europa.eu/en/news/commission-publishes-guidelines-under-dsa-mitigation-systemic-risks-online-elections",
+      "design": "Official election-risk guidance",
+      "review_depth": "Official summary checked",
+      "finding": "Recommends measures for designated large services before, during and after elections.",
+      "boundary": "Not an outcome evaluation; each removal, disclosure or escalation measure has its own estimand."
+    },
+    {
+      "id": "R059",
+      "title": "ECAT — DSA researcher-access FAQs",
+      "url": "https://algorithmic-transparency.ec.europa.eu/news/faqs-dsa-data-access-researchers-2025-07-03_en",
+      "design": "Official access procedure",
+      "review_depth": "Official scope and conditions checked",
+      "finding": "Provides routes and safeguards for independent systemic-risk research access.",
+      "boundary": "Access rights alone do not establish usable access, valid findings, regulator action or harm reduction."
+    },
+    {
+      "id": "R060",
+      "title": "European Commission — EU model AI procurement clauses",
+      "url": "https://public-buyers-community.ec.europa.eu/communities/procurement-ai/resources/updated-eu-ai-model-contractual-clauses",
+      "design": "Model contractual clauses",
+      "review_depth": "Official resource page checked",
+      "finding": "Provides contractual tools for specifying provider obligations and public-buyer oversight.",
+      "boundary": "No causal estimate that inserting clauses creates retained institutional capability or enforceable exit."
+    },
+    {
+      "id": "R061",
+      "title": "CAC — Interim Measures for Generative AI Services",
+      "url": "https://www.cac.gov.cn/2023-07/13/c_1690898327029107.htm",
+      "design": "Primary regulatory text",
+      "review_depth": "Relevant primary clauses checked",
+      "finding": "Specifies provider, content, data and security-assessment duties for covered services.",
+      "boundary": "State control or compliance cannot be treated as democratic agency protection. Not a causal efficacy study or a complete review of subsequent amendments."
+    },
+    {
+      "id": "R062",
+      "title": "Perset and Fialho Esposito — How are AI developers managing risks?",
+      "url": "https://doi.org/10.1787/658c2ad6-en",
+      "design": "Analysis of voluntary organizational reporting",
+      "review_depth": "Official abstract and framework pages checked",
+      "finding": "Documents reported risk-management practices across participating organizations.",
+      "boundary": "Self-selection and self-report; no untreated comparison or independent safety effect. Report and organization counts differ."
+    },
+    {
+      "id": "R063",
+      "title": "OECD — Hiroshima AI reporting framework version 2.0",
+      "url": "https://www.oecd.org/en/about/news/press-releases/2026/05/oecd-launches-streamlined-hiroshima-ai-process-reporting-framework-to-help-small-and-medium-sized-enterprises-participate.html",
+      "design": "Official reporting-framework update",
+      "review_depth": "Official page checked",
+      "finding": "Expands and streamlines participation and reporting.",
+      "boundary": "More reports or pledges are not more effective mitigations."
+    },
+    {
+      "id": "R064",
+      "title": "Government of Canada — Algorithmic Impact Assessment",
+      "url": "https://www.canada.ca/en/government/system/digital-government/digital-government-innovations/responsible-use-ai/algorithmic-impact-assessment.html",
+      "design": "Official assessment tool",
+      "review_depth": "Official page summary checked",
+      "finding": "Documents an administrative risk-assessment and mitigation process.",
+      "boundary": "Tool completion is not an estimate of appeal effectiveness or agency preservation."
+    },
+    {
+      "id": "R065",
+      "title": "Green and Chen — Algorithmic risk assessments and human government decisions",
+      "url": "https://arxiv.org/abs/2012.05370",
+      "design": "Online human decision experiments",
+      "review_depth": "Primary abstract checked",
+      "finding": "Risk-assessment information can alter the weights people place on decision factors.",
+      "boundary": "Lay experimental tasks, not actual bureaucratic outcomes; supports a risk mechanism rather than a tested governance remedy."
+    },
+    {
+      "id": "R066",
+      "title": "Liu, Zhang and Liang — Evaluating Verifiability in Generative Search",
+      "url": "https://arxiv.org/abs/2304.09848",
+      "design": "Audit of citation support in generative search",
+      "review_depth": "Primary abstract checked",
+      "finding": "Citation presence and actual evidentiary support diverged in evaluated systems.",
+      "boundary": "Measurement of citation failure, not a test that retrieval automatically improves human decisions."
+    },
+    {
+      "id": "R067",
+      "title": "Spatharioti et al. — AI-assisted search and decision accuracy",
+      "url": "https://arxiv.org/abs/2307.03744",
+      "design": "Two online decision experiments",
+      "review_depth": "Primary abstract checked",
+      "finding": "Users could overrely on erroneous LLM answers; confidence-oriented interface cues improved specified error-detection/decision outcomes.",
+      "boundary": "Bounded product decisions and interface design; not general agent authorization or durable agency."
+    },
+    {
+      "id": "R068",
+      "title": "Nestaas, Debenedetti and Tramèr — Adversarial Search Engine Optimization",
+      "url": "https://arxiv.org/abs/2406.18382",
+      "design": "Technical adversarial evaluation of AI-mediated recommendations",
+      "review_depth": "Primary abstract checked",
+      "finding": "Retrieved content can steer model recommendations under tested conditions.",
+      "boundary": "Risk evidence, not proof that disclosure, a loyalty audit or a market remedy is effective; offensive payloads excluded."
+    },
+    {
+      "id": "R069",
+      "title": "Katsaros et al. — Reconsideration prompts for offensive tweets",
+      "url": "https://arxiv.org/abs/2112.00773",
+      "design": "Platform randomized experiment",
+      "review_depth": "Primary abstract checked",
+      "finding": "Context-specific prompts reduced offensive posting in the tested setting.",
+      "boundary": "Not generic friction, factual discernment or manipulation; supports testing targeted rather than blanket interruptions."
+    }
+  ]
+}
