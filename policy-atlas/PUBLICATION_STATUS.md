@@ -14,14 +14,40 @@ evidentially incomplete.
   primary sources;
 - deduplicated public claim–source edges, frozen checksums, and typed Parquet;
 - explicit evidence boundaries, limitations, failure modes, and negative
-  findings.
+  findings;
+- a comparative six-group recommendation synthesis covering all 118
+  implementations.
+
+## Comparative synthesis status
+
+The Atlas does **not** identify six effective policies. The six re-audited
+records were chosen because they carried the strongest prior component-effect
+claims. They are an audit sample, not a shortlist.
+
+All 118 implementations are now assigned to one of six recommendation
+postures:
+
+- A · act now on bounded component evidence: 5;
+- B · build control and observability infrastructure: 41;
+- C · enforce legal and operational baselines: 31;
+- D · use authenticity and disclosure as auxiliary controls: 16;
+- E · pilot frontier-specific and structural controls: 19;
+- F · research or hold unvalidated general triggers: 6.
+
+The grouping compares current support, causal fit, operational maturity,
+reversibility, rights costs, and the evidence needed to upgrade each claim. It
+is not a meta-analytic estimate of effectiveness, a completed independent
+full-text review of every source, or a scalar policy ranking. See
+[COMPARATIVE_EVIDENCE_GROUPS.md](COMPARATIVE_EVIDENCE_GROUPS.md).
 
 ## Research candidates, not citation-ready claims
 
 - the 101 source records that do not yet participate in any checked
   claim–source relation;
 - the 112 of 118 control-effectiveness claims without a checked empirical
-  source;
+  source in the current public beta release;
+- candidate sources associated with the comparative grouping until their
+  design, endpoint, comparator, population, and causal match are adjudicated;
 - claim–source edges marked context-only or pending claim check;
 - legal-status implementations without a checked legal claim relation;
 - project mechanisms supported only by self-authored project provenance;
@@ -40,7 +66,7 @@ A stable release requires:
 2. no established effect claim without a checked empirical source and a
    bounded observed endpoint;
 3. no duplicate public claim–source edge;
-4. independent review of the central policy packages;
+4. independent review of the central policy packages and comparative groups;
 5. source licences and attribution checked;
 6. frozen checksums and a reproducible derived view;
 7. no unresolved legal status or applicability field in the public portfolio.
