@@ -1,0 +1,87 @@
+name: Review simpler publication navigation
+on:
+  push:
+    branches: [simple-navigation-scope-20260901]
+    paths: [.github/workflows/apply-navigation-once.yml]
+permissions:
+  contents: write
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: simple-navigation-scope-20260901
+          fetch-depth: 0
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+      - name: Apply only the reviewed public files
+        run: |
+          python - <<'PY'
+          import hashlib,io,json,pathlib,subprocess,urllib.request,zipfile
+          raw=urllib.request.urlopen('https://drive.google.com/uc?export=download&id=15OCNslRdp7BjAuB6lGEZzdUoY_MXT3Bv',timeout=60).read()
+          assert len(raw)==57751
+          assert hashlib.sha256(raw).hexdigest()=='a1e6476711b992cc783c5a0ae4d4b5fe5ce4b4dd3e26a4b5f3fdaba4dca71cda'
+          root=pathlib.Path.cwd()
+          with zipfile.ZipFile(io.BytesIO(raw)) as z:
+              m=json.loads(z.read('navigation-patch.json'))
+              assert len(m['files'])==18
+              assert subprocess.check_output(['git','rev-parse','origin/main'],text=True).strip()==m['base'],'Main changed; review concurrent edits first.'
+              assert set(z.namelist())=={f['path'] for f in m['files'] if not f['delete']}|{'navigation-patch.json'}
+              for f in m['files']:
+                  path=pathlib.PurePosixPath(f['path'])
+                  assert not path.is_absolute() and '..' not in path.parts and '.github' not in path.parts
+                  assert not f['path'].startswith(('data/','evals/','public/data/','public/research/','src/LegacyRegistry','src/styles','src/components/'))
+                  dest=root/path
+                  if f['oldSha256'] is None:assert not dest.exists(),f['path']
+                  else:assert hashlib.sha256(dest.read_bytes()).hexdigest()==f['oldSha256'],f['path']
+                  if not f['delete']:
+                      content=z.read(f['path']);assert len(content)==f['bytes'] and hashlib.sha256(content).hexdigest()==f['sha256']
+              for f in m['files']:
+                  dest=root/f['path']
+                  if f['delete']:dest.unlink()
+                  else:dest.parent.mkdir(parents=True,exist_ok=True);dest.write_bytes(z.read(f['path']))
+              (root/'navigation-patch.json').write_text(json.dumps(m))
+          print('Applied the scoped navigation update. Empirical records, references, paper and Registry unchanged.')
+          PY
+      - name: Build and preserve the research artifacts
+        run: |
+          npm ci
+          npm run build
+          python scripts/validate-publication.py
+          git diff --check
+          test -f dist/media/cde-rift-animation/index.html
+          test -f dist/media/cde-rift-animation/player.html
+          git diff --exit-code origin/main -- src/LegacyRegistryApp.tsx src/components src/styles.css src/editorial/research-updates.css public/data public/research data policy-atlas
+      - name: Install browser test tools
+        run: |
+          python -m pip install --quiet playwright
+          python -m playwright install --with-deps chromium
+      - name: Review existing publication behaviour
+        run: python scripts/review-publication.py
+      - name: Review shared navigation and simplified reading paths
+        run: python scripts/review-navigation.py
+      - name: Commit only the validated files and remove staging workflows
+        run: |
+          python - <<'PY'
+          import json,subprocess
+          m=json.load(open('navigation-patch.json'))
+          subprocess.run(['git','add','-A','--',*[f['path'] for f in m['files']]],check=True)
+          PY
+          git rm .github/workflows/navigation-preview-once.yml .github/workflows/apply-navigation-once.yml
+          git diff --cached --check
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Simplify reader navigation and introduce the broader programme scope'
+          git push origin HEAD:simple-navigation-scope-20260901
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: navigation-browser-review
+          path: |
+            navigation-browser-review
+            publication-browser-review
+          retention-days: 7
