@@ -1,0 +1,72 @@
+[
+  {
+    "id": "ref-04aecb67c76b",
+    "originalUrl": "https://www.beuc.eu/publications/synthetic-empathy-risks-and-rights-artificial-companionship",
+    "currentUrl": "https://www.beuc.eu/reports/synthetic-empathy-risks-and-rights-artificial-companionship",
+    "note": "Updated the moved publisher landing page.",
+    "source": "https://www.beuc.eu/reports/synthetic-empathy-risks-and-rights-artificial-companionship"
+  },
+  {
+    "id": "ref-ea5ff315d9e9",
+    "originalUrl": "https://www.edpb.europa.eu/our-work-tools/our-documents/statements/statement-22019-use-personal-data-course-political-campaigns_en",
+    "currentUrl": "https://www.edpb.europa.eu/documents/statement/statement-22019-on-the-use-of-personal-data-in-the-course-of-political_en",
+    "note": "Updated the moved institutional source page.",
+    "source": "https://www.edpb.europa.eu/documents/statement/statement-22019-on-the-use-of-personal-data-in-the-course-of-political_en"
+  },
+  {
+    "id": "ref-3ce0d585cc93",
+    "originalUrl": "https://deepmind.google/discover/blog/protecting-people-from-harmful-manipulation/",
+    "currentUrl": "https://deepmind.google/blog/protecting-people-from-harmful-manipulation/",
+    "note": "Updated the provider’s moved article URL. This remains provider documentation.",
+    "source": "https://deepmind.google/blog/protecting-people-from-harmful-manipulation/"
+  },
+  {
+    "id": "ref-5ffd7645dedf",
+    "originalUrl": "https://doi.org/10.1177/14614448231227875",
+    "currentUrl": "https://doi.org/10.1177/14614448221142007",
+    "note": "Corrected the DOI against the journal record. Online publication: 2022; journal issue: 2024.",
+    "source": "https://journals.sagepub.com/doi/abs/10.1177/14614448221142007"
+  },
+  {
+    "id": "ref-f6d7dca559e0",
+    "originalUrl": "https://www.nist.gov/itl/ai-risk-management-framework/generative-artificial-intelligence-profile",
+    "currentUrl": "https://doi.org/10.6028/NIST.AI.600-1",
+    "note": "Replaced an unavailable landing page with the report’s DOI.",
+    "source": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-generative-artificial-intelligence"
+  },
+  {
+    "id": "ref-23ccc3a69dcd",
+    "originalUrl": "https://www.osce.org/odihr/elections/moldova/584121",
+    "currentUrl": "https://odihr.osce.org/odihr/elections/moldova/587451",
+    "note": "Corrected the report link and publication year: the 2024 election report was published on 14 March 2025.",
+    "source": "https://odihr.osce.org/odihr/elections/moldova/587451"
+  },
+  {
+    "id": "ref-69177a9d5415",
+    "originalUrl": "https://arxiv.org/abs/2604.22992",
+    "currentUrl": "https://arxiv.org/abs/2605.14097",
+    "note": "The earlier index linked an unrelated paper and overstated the finding. The matching author paper is linked here; its abstract reports no significant improvement in consensus. Original index wording remains in provenance, not as an endorsed finding.",
+    "source": "https://arxiv.org/abs/2605.14097"
+  },
+  {
+    "id": "ref-97c411bbc750",
+    "originalUrl": "https://arxiv.org/abs/2511.06701",
+    "currentUrl": null,
+    "note": "Unresolved citation. The recorded arXiv identifier belongs to an unrelated paper. No replacement source has been verified; do not cite this entry as evidence.",
+    "source": "https://arxiv.org/abs/2511.06701"
+  },
+  {
+    "id": "ref-df950e7dddca",
+    "originalUrl": "https://ico.org.uk/media/action-weve-taken/2260271/investigation-into-the-use-of-data-analytics-in-political-campaigns-final-20181105.pdf",
+    "currentUrl": "https://ico.org.uk/media2/migrated/2260271/investigation-into-the-use-of-data-analytics-in-political-campaigns-final-20181105.pdf",
+    "note": "Updated the historical PDF URL using the same report as cited in the flagship.",
+    "source": "https://ico.org.uk/media2/migrated/2260271/investigation-into-the-use-of-data-analytics-in-political-campaigns-final-20181105.pdf"
+  },
+  {
+    "id": "ref-d0c7ddc0082d",
+    "originalUrl": "https://doi.org/10.1080/13600834.2016.1186713",
+    "currentUrl": "https://doi.org/10.1080/1369118X.2016.1186713",
+    "note": "Corrected a mistyped DOI against the author’s institutional publication record.",
+    "source": "https://kclpure.kcl.ac.uk/portal/en/publications/hypernudge-big-data-as-a-mode-of-regulation-by-design/"
+  }
+]

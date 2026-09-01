@@ -1,5 +1,13 @@
 # Changelog
 
+## Publication usability and references — 2026-09-01
+
+- Preserved the independent Registry and the $10 hook; outgoing Registry links open in a new tab.
+- Rebuilt the CDE explainer as a responsive, manually controlled six-chapter presentation with transcript, reduced-motion support and a correct timer.
+- Added a searchable source library, the complete 64-citation v1.5 bibliography, wider recorded reading, source provenance and explicit link/identity-check limitations.
+- Collapsed policy detail behind readable recommendations; labelled unpublished artifacts rather than offering misleading homepage links.
+- Published the exact v1.5 working-paper PDF and aligned citation/version notices. Earlier v1.3, source datasets, policy grades and approved hero remain unchanged.
+
 ## 2026-09-01 — Source-linked Part IV web update (draft)
 
 - Integrated the later 118-implementation, 69-source review, with eight new substantive checks and six retained earlier adjudications.

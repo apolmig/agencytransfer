@@ -1,3 +1,4 @@
+import "./editorial/publication-polish.css";
 import LegacyRegistryApp from "./LegacyRegistryApp";
 import { DraftBar, SiteFooter, SiteHeader, getPath, useMetadata } from "./editorial/EditorialShell";
 import { renderEditorialPage } from "./editorial/EditorialPages";

@@ -76,26 +76,35 @@ const examples = [
   },
 ] as const;
 
+const briefs: Record<string, string> = {
+  marking: "Enforce applicable marking and disclosure duties. Technical feasibility is supported; reduced manipulation is not established.",
+  "dsa-chatgpt": "Use service-level risk assessment and independent scrutiny. A designation creates duties, not proof of protection.",
+  "accuracy-prompts": "Test an attention-to-accuracy prompt at the point of sharing. Evidence concerns sharing quality, not election results.",
+  "timely-corrections": "Deliver accurate corrections early and measure coverage. Post-correction diffusion effects are not population-wide protection.",
+  "authority-boundaries": "Enforce consequential permissions outside the model. Protecting an operator does not necessarily protect citizens from that operator.",
+  "conversational-defenders": "Run independently evaluated, user-controlled pilots. Early secondary-outcome evidence does not justify a universal mandate.",
+};
+
 export function PolicyExamples() {
   return (
     <section className="research-update policy-examples" id="policy-examples" aria-labelledby="policy-examples-heading">
-      <p className="research-update-kicker">Concrete examples · evidence checked 1 September 2026</p>
-      <h2 id="policy-examples-heading">What to do now, what to test, and what not to claim</h2>
-      <p>Legal duties and evidence of effectiveness answer different questions. The examples below distinguish an adopted obligation, a measured component effect and our provisional recommendation. None establishes end-to-end protection from harmful manipulation.</p>
-      <div className="policy-example-grid">
+      <p className="research-update-kicker">Concrete examples · 1 September 2026</p>
+      <h2 id="policy-examples-heading">Actions, evidence and limits</h2>
+      <p>Legal duties and evidence of effectiveness answer different questions. Open an example for the original sources and the boundary of the recommendation.</p>
+      <div className="policy-example-grid policy-example-grid--compact">
         {examples.map((item) => (
-          <article className="policy-example" key={item.id} id={`example-${item.id}`}>
-            <p className="research-update-kicker">{item.status}</p>
-            <h3>{item.title}</h3>
-            <p>{item.example}</p>
-            <p><strong>Evidence so far.</strong> {item.evidence}</p>
-            <p><strong>Provisional recommendation.</strong> {item.recommendation}</p>
-            <details><summary>What to measure and where the claim stops</summary><p>{item.measure}</p><p>{item.qualification}</p></details>
-            <p className="research-update-sources">{item.sources.map(([label, href], i) => <span key={href}>{i ? " · " : ""}<a href={href} target="_blank" rel="noreferrer">{label}</a></span>)}</p>
-          </article>
+          <details className="policy-example" key={item.id} id={`example-${item.id}`}>
+            <summary><p className="research-update-kicker">{item.status}</p><h3>{item.title}<span className="expand-label">Read more +</span></h3><p className="policy-example-brief">{briefs[item.id]}</p></summary>
+            <div className="policy-example-body">
+              <p>{item.example}</p>
+              <p><strong>Evidence so far.</strong> {item.evidence}</p>
+              <p><strong>Provisional recommendation.</strong> {item.recommendation}</p>
+              <p><strong>Measure.</strong> {item.measure}</p><p><strong>Limit.</strong> {item.qualification}</p>
+              <p className="research-update-sources">{item.sources.map(([label, href], i) => <span key={href}>{i ? " · " : ""}<a href={href} target="_blank" rel="noopener noreferrer">{label}</a></span>)}</p>
+            </div>
+          </details>
         ))}
       </div>
-      <p className="research-update-note">These are real external legal and research examples, not new fellowship experiments. This dated web supplement does not change the Atlas’s 118 implementation records, empirical grades or the frozen v1.3 manuscript. The interpretation and recommendations remain work in progress.</p>
     </section>
   );
 }

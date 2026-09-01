@@ -28,3 +28,15 @@ keywords:
   - agentic systems
   - model evaluation
   - AI governance
+
+preferred-citation:
+  type: report
+  title: "Harmful Manipulation and Election Security: The Capability–Deployment–Effect Gap"
+  authors:
+    - family-names: "Guerrero Manchón"
+      given-names: "Miguel"
+  year: 2026
+  version: "1.5 working draft"
+  date-released: 2026-09-01
+  url: "https://miguelguerrero.eu/agencytransfer/paper/"
+  notes: "Working paper; not peer reviewed. Earlier snapshots remain available."

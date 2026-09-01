@@ -26,6 +26,7 @@ export default defineConfig({
         registry: entry("./registry/index.html"),
         registryEvidence: entry("./registry/evidence/index.html"),
         registryTesting: entry("./registry/testing/index.html"),
+        references: entry("./references/index.html"),
         paper: entry("./paper/index.html"),
         outputs: entry("./outputs/index.html"),
         explainers: entry("./explainers/index.html"),

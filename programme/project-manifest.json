@@ -183,12 +183,12 @@
       "canonical_url": "https://miguelguerrero.eu/agencytransfer/paper/",
       "source_url": "https://miguelguerrero.eu/agencytransfer/research/harmful-manipulation-election-security-v1.3-20260901.pdf",
       "repo_path": "public/research/harmful-manipulation-election-security-v1.3-20260901.pdf",
-      "source_version": "v1.3-20260901",
-      "public_release_version": "v1.3-web-overview-and-working-PDF",
+      "source_version": "v1.5-20260901",
+      "public_release_version": "v1.5-draft-20260901",
       "evidence_cutoff": "2026-09-01",
       "planned_route": "/paper/",
       "claim_ceiling": "Programme synthesis, not a single-estimand study; no closed adaptive loop, authentic exposure, durable agency erosion, prevalence estimate, or AI-attributable electoral effect.",
-      "publication_note": "Exact v1.3 working PDF published unchanged. Parts I–III retain their 28 August freeze; P4 source-linked review and manuscript revision are dated 1 September. The reproduced abstract and web overview reflect v1.3. External studies are not new fellowship experiments or automatic upgrades to Atlas empirical flags."
+      "publication_note": "Current working version v1.5; PDF published as an immutable snapshot. Earlier v1.3 remains available. Not peer reviewed."
     },
     {
       "id": "part-i-served-system-evidence",
@@ -517,7 +517,8 @@
       "/outputs/",
       "/explainers/",
       "/updates/",
-      "/about/"
+      "/about/",
+      "/references/"
     ],
     "redirects": [
       {

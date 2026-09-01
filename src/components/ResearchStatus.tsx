@@ -47,19 +47,20 @@ export function MeasurementGap({ compact = false }: { compact?: boolean }) {
 export function BudgetBoundary() {
   return (
     <aside className="research-update budget-boundary" aria-label="Part I budget and evidence boundary">
-      <p className="research-update-kicker">Author-reported exploratory pilot · not independently validated</p>
-      <h2>$10 is a service-spend figure, not the cost of an operation</h2>
+      <details><summary>What the $10 covers—and what it does not</summary><div>
+      <p><strong>Author-reported exploratory pilot.</strong> $10 is a service-spend figure, not the total cost of an operation.</p>
       <p>The project’s draft one-pager reports approximately <strong>US$10 in direct service use</strong> for sandbox prototyping, alongside a <strong>separate, roughly US$500 one-time model-modification compute estimate</strong>. Labour, model acquisition and storage, audience data, accounts, advertising and distribution are excluded. These figures are not a reconciled, independently audited full-cost result.</p>
       <p>“Pretty far” describes the author’s provisional assessment of planning assistance and synthetic prototypes. It does not mean a campaign was deployed, people were persuaded or an election was affected. The more closely inspected trace subset is a different evidence unit and does not independently verify the pilot’s cost or all its reported comparisons.</p>
       <p className="research-update-sources"><a href={record + "#part-i-budget"} target="_blank" rel="noreferrer">Budget provenance and what remains to verify</a></p>
+      </div></details>
     </aside>
   );
 }
 
 export function WebRevisionNote() {
   return (
-    <aside className="research-update web-revision-note" aria-label="Manuscript and website version boundary">
-      <p><strong>Draft manuscript; evolving website.</strong> The PDF is the preserved v1.3 snapshot. The website’s 1 September editorial supplement clarifies the four research questions, budget limits and current policy examples. It does not add new fellowship experiments or silently revise the PDF or dataset grades. <a href={`${programme}research/part-iv/#policy-examples`}>Read the concrete policy examples</a>.</p>
+    <aside className="research-update web-revision-note" aria-label="Manuscript version">
+      <p><strong>Current working version: v1.5, 1 September 2026.</strong> This page is an overview; the complete manuscript and bibliography are linked below. Earlier PDF snapshots remain available. This publication update does not add experiments or change dataset grades.</p>
     </aside>
   );
 }
