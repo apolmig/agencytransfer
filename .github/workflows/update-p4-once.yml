@@ -1,0 +1,64 @@
+name: Apply source-linked P4 web update
+on:
+  push:
+    branches: [p4-source-linked-web-20260901]
+    paths: [.github/workflows/update-p4-once.yml]
+permissions:
+  contents: write
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: p4-source-linked-web-20260901
+          fetch-depth: 0
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+      - name: Retrieve the fixed source package
+        env:
+          PACKAGE_URL: https://drive.google.com/uc?export=download&id=1-txQKPS6aEpw-jRMeOgOtVr6sVWz6clv
+        run: |
+          python - <<'PY'
+          import hashlib, io, os, pathlib, urllib.request, zipfile
+          request = urllib.request.Request(os.environ['PACKAGE_URL'], headers={'User-Agent':'AgencyTransfer-Publication/1.0'})
+          raw = urllib.request.urlopen(request, timeout=60).read()
+          assert len(raw) == 177799, len(raw)
+          assert hashlib.sha256(raw).hexdigest() == '8a551e210e128721c93cd75bac6fb49d0b98afc16ec75786c603c480819369f5'
+          dest = pathlib.Path(os.environ['RUNNER_TEMP']) / 'p4-source-package'
+          dest.mkdir()
+          with zipfile.ZipFile(io.BytesIO(raw)) as z:
+              for item in z.infolist():
+                  p = pathlib.PurePosixPath(item.filename)
+                  assert not p.is_absolute() and '..' not in p.parts
+                  assert item.file_size < 1000000
+              z.extractall(dest)
+          print('Verified source package and safe extraction.')
+          PY
+      - name: Apply the bounded content update
+        run: python "$RUNNER_TEMP/p4-source-package/apply_update.py"
+      - name: Install and validate the website
+        run: |
+          npm ci
+          npm run build
+          git diff --check -- src programme README.md CHANGELOG.md
+          test -f dist/research/part-iv/index.html
+          test -f dist/registry/index.html
+          test -f dist/research/p4-source-linked-review-20260901.xlsx
+      - name: Commit only reviewed content and its sources
+        run: |
+          git add src/editorial/EvidencePages.tsx src/editorial/ProgrammePages.tsx src/editorial/ResourcePages.tsx src/editorial/PolicyPage.tsx src/editorial/policy-review.css programme/project-manifest.json policy-atlas/README.md policy-atlas/COMPARATIVE_EVIDENCE_GROUPS.md policy-atlas/review/source-linked-20260901 public/research/p4-source-linked-review-20260901.xlsx README.md CHANGELOG.md
+          git diff --cached --stat
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Update P4 findings from the source-linked 118-implementation review'
+          git push origin HEAD:p4-source-linked-web-20260901
+      - name: Preserve the built preview
+        uses: actions/upload-artifact@v4
+        with:
+          name: p4-source-linked-preview
+          path: dist
+          retention-days: 7
