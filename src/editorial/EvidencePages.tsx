@@ -1,12 +1,22 @@
 import { ELECTION_INDEX_URL, POLICY_ATLAS_URL, REPOSITORY_URL, DraftBoundary, PageLead, TextLink } from "./EditorialShell";
 import { EditorialRiftVisual } from "./EditorialVisuals";
-import comparative from "../../policy-atlas/data/comparative-v0.4/groups.json";
+import comparativeJson from "../../policy-atlas/data/comparative-v0.4/groups.json";
+
+type ComparativeGroup = {
+  group_id: string;
+  implementation_count: number;
+  label: string;
+  illustrative_controls: string;
+  recommended_posture: string;
+  claim_ceiling: string;
+};
+const comparative = comparativeJson as { groups: ComparativeGroup[] };
 
 export function PartIIIPage() {
   return (
     <main id="main-content" className="v2-main">
       <PageLead eyebrow="Part III · Field evidence" title="Evidence thins downstream" deck="Investigations can often identify accounts, calls, posts, payments, synthetic media, removals, and institutional responses. They rarely identify authentic exposure, prior belief, durable response, or the aggregate counterfactual.">
-        <DraftBoundary>No prevalence estimate, causal zero-effect claim, durable agency-transfer estimate, or AI-attributable national-election outcome.</DraftBoundary>
+        <DraftBoundary>No prevalence estimate, causal zero-effect claim, durable agency-transfer estimate, or an AI-attributable national-election outcome.</DraftBoundary>
       </PageLead>
       <div className="v2-wide-figure"><EditorialRiftVisual /><p className="v2-figure-caption">“No identified effect” is not “zero effect.” Every bridge—from delivery to authentic exposure, attention, belief, choice, and electoral consequence—requires new evidence.</p></div>
       <section className="v2-evidence-pair">
