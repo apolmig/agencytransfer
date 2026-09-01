@@ -23,7 +23,9 @@ require claim-by-claim verification, and no numeric policy ranking is provided.
   non-compensable decision gates, 9 cases or contexts, and 16 research gaps;
 - bridge tables for implementation–claim, claim–source,
   implementation–mechanism/context/gap, and package–implementation relations;
-- CSV for diff-friendly review and typed Parquet for Hugging Face/Data Studio.
+- CSV for diff-friendly review and typed Parquet for Hugging Face/Data Studio;
+- a six-group comparative recommendation synthesis in
+  [COMPARATIVE_EVIDENCE_GROUPS.md](COMPARATIVE_EVIDENCE_GROUPS.md).
 
 The unit of analysis is a concrete **implementation**, not a broad idea such as
 “transparency”. Families group related implementations without collapsing
@@ -52,11 +54,43 @@ hypothesis, and open question. It also separates:
 The curated preview contains 22 source records used in at least one checked
 claim–source relation; the other 101 remain candidate source records. These
 records are useful for research triage but must not be treated as
-publication-ready support. The first evidence wave checked six priority
-effect claims, rewrote each to its observed endpoint, and recoded five of the
-six implementation-level effect classifications. See
-[PUBLICATION_STATUS.md](PUBLICATION_STATUS.md) and
-[review/PRIORITY_VERIFICATION.md](review/PRIORITY_VERIFICATION.md).
+publication-ready support.
+
+The first evidence wave checked six priority effect claims because they carried
+the strongest prior component-effect classifications. Re-audit rewrote each to
+its observed endpoint and recoded five of the six implementation-level effect
+classifications. **Those six records are an audit sample, not six effective
+policies and not a shortlist.** See
+[PUBLICATION_STATUS.md](PUBLICATION_STATUS.md),
+[review/PRIORITY_VERIFICATION.md](review/PRIORITY_VERIFICATION.md), and
+[COMPARATIVE_EVIDENCE_GROUPS.md](COMPARATIVE_EVIDENCE_GROUPS.md).
+
+## Comparative recommendation groups
+
+The 118 implementations are organised into six recommendation postures rather
+than ranked by a composite effectiveness score:
+
+- **A · Act now — bounded component evidence (5):** dark-pattern restrictions,
+  forwarding friction, technique-based prebunking, official-source grounding,
+  and data minimisation or user control;
+- **B · Build now — control and observability infrastructure (41):** least
+  privilege, confirmations, traces, independent access, incident response,
+  continuity, and exit;
+- **C · Enforce legal and operational baselines (31):** enforce applicable
+  duties while measuring effect separately;
+- **D · Auxiliary only — authenticity and disclosure (16):** provenance,
+  labels, detection, authentication, sponsor notices, and repositories;
+- **E · Pilot urgently — frontier-specific and structural controls (19):**
+  memory and dependency monitoring, workflow guards, human-causal TEVV,
+  assistant loyalty, impact assessment, and functional portability;
+- **F · Research or hold — unvalidated general triggers (6):** universal
+  benchmark gates, blanket release rules, and broad constitutional triggers.
+
+The groups compare present support, causal fit, maturity, reversibility, and
+evidence gaps. They are recommendation postures, not effect estimates. Even
+Group A supports bounded outcomes such as consent quality, sharing friction,
+recognition, factual accuracy, or reduced data exposure—not preservation of
+democratic autonomy or electoral effect.
 
 ## Decision architecture
 
@@ -68,7 +102,11 @@ does not publish gate-assessment results. Working-register action tiers—enforc
 now, implement now, prepare, pilot, research or hold, and monitor or shape—are
 therefore decision postures, not reproduced gate outcomes.
 
-These are decision postures, not effect estimates.
+A control should first be tested at the CDE node it directly changes. A
+forwarding limit may reduce rapid redistribution; a provenance rule may improve
+attribution; a least-privilege architecture may prevent autonomous escalation.
+None of those component endpoints alone establishes preserved voter agency or
+election integrity.
 
 ## Data
 
@@ -109,11 +147,11 @@ establish vote effects or counterfactual policy effectiveness.
 
 ## Status
 
-- Artifact version: v0.1.0-beta.2
+- Public dataset version: v0.1.0-beta.2
 - Source snapshot: sheets-v0.3
 - Curation overlay: curation-v0.4-wave1
-- Source as-of date: 2026-08-11
-- Release preparation date: 2026-08-13
+- Comparative recommendation synthesis: 2026-09-01
+- Evidence freeze for comparative groups: 2026-08-28
 - Language: English
 
 ## Citation
@@ -122,5 +160,6 @@ Until a stable release is archived, cite the repository and version. A DOI
 should be minted only after claim-by-claim verification reaches the stable
 release gate.
 
-After publication, the immutable dataset snapshot for this release is
+After publication, the immutable dataset snapshot for the current public
+release is
 `https://huggingface.co/datasets/apol/agency-transfer-policy-atlas/tree/v0.1.0-beta.2`.
