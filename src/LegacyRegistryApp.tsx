@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { MeasurementGap } from "./components/ResearchStatus";
 import { AgenticInfluenceChart } from "./components/AgenticInfluenceChart";
 import { EvidenceMap } from "./components/EvidenceMap";
 import { FrontierTimeline } from "./components/FrontierTimeline";
@@ -62,9 +63,9 @@ function useRegistryMetadata(page: PageKey) {
         ? "Evidence · Agency Transfer Benchmark"
         : "Testing · Agency Transfer Benchmark";
     const suffix = page === "home" ? "" : `${page}/`;
-    document.title = title;
+    document.title = `${title} · Draft / work in progress`;
     const description = document.querySelector<HTMLMetaElement>('meta[name="description"]');
-    if (description) description.content = "The original Agency Transfer Benchmark registry, evidence review, and testing record.";
+    if (description) description.content = "Draft evaluation registry and research in progress. Native measures remain useful; a common validated system-level harmful-manipulation instrument remains unresolved.";
     const canonical = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
     if (canonical) canonical.href = `https://miguelguerrero.eu/agencytransfer/registry/${suffix}`;
     document.body.classList.remove("editorial-v2-active");
@@ -77,7 +78,7 @@ function DraftMark() {
   return (
     <div className="draft-mark" aria-label="Publication status">
       <strong>DRAFT · IN PROGRESS</strong>
-      <span>Independent Cambridge:ERA research · not an official ERA benchmark</span>
+      <span>Provisional programme results · not peer reviewed · not an official ERA benchmark</span>
     </div>
   );
 }
@@ -106,7 +107,7 @@ function SiteFooter() {
         <p>Frontier AI, harmful manipulation, and election security. Independent research; draft and in progress.</p>
       </div>
       <div>
-        <span>Draft · 12 August 2026</span>
+        <span>Draft / work in progress · presentation revised 1 September 2026 · source dates vary</span>
         <a href={`${REPOSITORY_URL}/blob/main/METHODS.md`} target="_blank" rel="noreferrer">Method ↗</a>
         <a href={HUGGING_FACE_URL} target="_blank" rel="noreferrer">Data ↗</a>
         <a href={REPOSITORY_URL} target="_blank" rel="noreferrer">Source and issues ↗</a>
@@ -132,6 +133,7 @@ function HomePage({ models, observations, loading, error }: HomeProps) {
           <p>Frontier releases · 2022–2026 · Native instruments first</p>
         </div>
 
+        <MeasurementGap compact />
         {error ? <p className="inline-data-error" role="alert">Some chart data could not load: {error}</p> : null}
         {models.length > 0 && observations.length > 0 ? (
           <FrontierTimeline models={models} observations={observations} />
@@ -177,12 +179,13 @@ function EvidencePage({ benchmarks, agenticResults, maskResults, diselectResults
         <p className="section-number">Evidence</p>
         <h1>What each instrument can—and cannot—claim</h1>
         <p>
-          No source measures harmful manipulation capability end to end. The literature separately observes
+          In the sources reviewed, no single accepted instrument covers harmful manipulation across deployed systems. The literature separately observes
           willingness, safeguards, task execution, persuasive effect, deception, or access. ATB preserves those
           native outcomes rather than collapsing them into a cross-benchmark score.
         </p>
       </section>
 
+      <MeasurementGap />
       <section className="section literature-section" id="literature">
         <div className="section-heading split-heading">
           <div><p className="section-number">01 · Literature review</p><h2>Papers behind the measurement model</h2></div>
@@ -303,8 +306,8 @@ export default function LegacyRegistryApp() {
           <section className="page-intro testing-page-intro">
             <DraftMark />
             <p className="section-number">Testing</p>
-            <h1>Confirmatory results only</h1>
-            <p>Exploratory runs stay in the audit trail. A comparison appears here only after route integrity, a frozen protocol, blinded human validation, and uncertainty checks pass.</p>
+            <h1>Testing in progress</h1>
+            <p>These are provisional testing records, not automatically admitted findings. Confirmatory claims require route integrity, a frozen protocol, human-calibrated validation and uncertainty checks. The current non-confirmatory runs remain visible in the audit trail.</p>
           </section>
           {errors.testingNotes ? <p className="inline-data-error standalone-error" role="alert">Testing notes could not load: {errors.testingNotes}</p> : null}
           <TestingSection notes={testingNotes} />

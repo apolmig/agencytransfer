@@ -1,6 +1,7 @@
 import { POLICY_ATLAS_URL, REPOSITORY_URL, DraftBoundary, PageLead, TextLink, route } from "./EditorialShell";
 import reviewJson from "../../policy-atlas/review/source-linked-20260901/review.json";
 import "./policy-review.css";
+import { PolicyExamples } from "./PolicyExamples";
 
 const reviewBase = `${REPOSITORY_URL}/blob/main/policy-atlas/review/source-linked-20260901`;
 type Review = {
@@ -95,8 +96,10 @@ export function PartIVPage() {
         <DraftBoundary>Source-linked assessment, not 118 empirically verified policies. Evidence supports specific human and technical outcomes, not end-to-end electoral protection or durable preservation of agency.</DraftBoundary>
       </PageLead>
 
+      <PolicyExamples />
+
       <section className="p4-section" aria-labelledby="p4-recommendations">
-        <p className="v2-eyebrow">Revised recommendations</p>
+        <p className="v2-eyebrow">Provisional recommendation framework</p>
         <h2 id="p4-recommendations">Four uses, not a ranking of winners</h2>
         <div className="p4-portfolios">
           {portfolios.map((item) => <article key={item.title}>
@@ -141,7 +144,7 @@ export function PartIVPage() {
           <TextLink href={POLICY_ATLAS_URL} external>Open the published Atlas · beta.3</TextLink>
         </details>
       </section>
-      <p className="v2-draft-line"><strong>Working draft.</strong> This page condenses the 1 September source-linked review. Examples in the supporting dossiers are hypothetical; no live voter intervention was conducted.</p>
+      <p className="v2-draft-line"><strong>Working draft.</strong> This page combines the 1 September source-linked review with a separately identified legal and empirical web supplement. Dossier scenarios are hypothetical; cited external policies, studies and incidents are real source records. They are not fellowship interventions or proof of electoral protection.</p>
     </main>
   );
 }

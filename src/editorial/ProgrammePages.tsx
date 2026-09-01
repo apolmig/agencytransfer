@@ -1,12 +1,13 @@
 import { LAB_URL, REPOSITORY_URL, RIFT_ANIMATION, DraftBoundary, PageLead, TextLink, route } from "./EditorialShell";
 import { MechanismStrip } from "./EditorialVisuals";
+import { BudgetBoundary } from "../components/ResearchStatus";
 
 const researchParts = [
   {
     label: "Part I",
-    title: "Operations",
-    line: "Access is not control.",
-    body: "What a served system can produce, what an operator can operationalise, and where the chain stopped.",
+    title: "Capability and operations",
+    line: "How far can an adversarial actor go with $10?",
+    body: "Pretty far, actually—for exploratory planning and synthetic prototypes. An author-reported service budget, not a verified full-cost operation.",
     href: route("research/part-i/"),
     action: "Open Part I",
     featured: false,
@@ -14,8 +15,8 @@ const researchParts = [
   {
     label: "Part II",
     title: "Frontier Evaluation Registry",
-    line: "Measurement is part of the object.",
-    body: "The original chart, evidence review, testing record, and benchmark-native results—restored as one complete artifact.",
+    line: "Useful evaluations. No shared system-level yardstick.",
+    body: "Useful model and system studies exist. Our review has not identified an accepted cross-system standard for harmful manipulation as framed by the EU GPAI Code.",
     href: route("registry/"),
     action: "Open the Registry",
     featured: true,
@@ -23,8 +24,8 @@ const researchParts = [
   {
     label: "Part III",
     title: "Field evidence",
-    line: "Evidence thins downstream.",
-    body: "What public election records establish about operations, exposure, response, and electoral consequence.",
+    line: "Real operations. Unresolved electoral effects.",
+    body: "Documented influence attempts and harms, including harassment and confusion. Individual and election-wide effects remain bounded or unresolved; proliferation is a hypothesis, not our estimate.",
     href: route("research/part-iii/"),
     action: "Open Part III",
     featured: false,
@@ -33,7 +34,7 @@ const researchParts = [
     label: "Part IV",
     title: "Policy interventions",
     line: "What works—and for whom?",
-    body: "Source-linked review of 118 interventions: what changes, what remains untested, and whose agency a safeguard protects.",
+    body: "Concrete legal and research examples, from AI-origin marking and ChatGPT’s DSA designation to tested sharing interventions. Recommendations remain provisional; adoption is not effectiveness.",
     href: route("research/part-iv/"),
     action: "Open Part IV",
     featured: false,
@@ -45,7 +46,7 @@ function PartNavigation() {
     <section className="v2-parts v2-parts--simple" aria-label="Four research parts">
       {researchParts.map((part) => (
         <article className={`v2-part-card${part.featured ? " v2-part-card--featured" : ""}`} key={part.label}>
-          {part.featured ? <div className="v2-feature-label">Featured artifact</div> : null}
+          {part.featured ? <div className="v2-feature-label">Featured draft artifact</div> : null}
           <p>{part.label}</p>
           <h2>{part.title}</h2>
           <h3>{part.line}</h3>
@@ -64,8 +65,8 @@ function Hero() {
         <p className="v2-eyebrow">Frontier AI · harmful manipulation · election security</p>
         <h1>Harmful manipulation<br />and election security</h1>
         <h2>The capability–deployment–effect gap</h2>
-        <p className="v2-deck">A draft research programme on how frontier AI capability becomes deployed influence infrastructure, where evidence weakens between capability and effect, and what that means for democratic self-correction.</p>
-        <p className="v2-plain-boundary">It does not show that frontier AI changed an election.</p>
+        <p className="v2-deck">A research programme in progress on how frontier AI could become influence infrastructure, who controls it, and when practical agency shifts away from citizens and democratic institutions.</p>
+        <p className="v2-plain-boundary">All programme results and recommendations are provisional and not peer reviewed. Documented harms do not establish that AI changed an election.</p>
         <div className="v2-actions">
           <a className="v2-button v2-button--dark" href={route("research/")}>Explore the research</a>
           <a className="v2-button" href={route("paper/")}>Read the working paper</a>
@@ -84,7 +85,7 @@ function Hero() {
   style={{ height: "auto" }}
   alt="The Capability–Deployment–Effect Gap: AI capability and deployment are separated from electoral consequences by uncertain links through exposure, attention, beliefs, and intentions."
 />
-        <figcaption>Conceptual illustration. Evidence is stronger upstream and progressively weaker across authentic exposure, human response, and aggregate consequence.</figcaption>
+        <figcaption>Conceptual illustration, not a measured universal law. The reviewed records establish operations more readily than authentic exposure, durable human response or electoral consequence.</figcaption>
       </figure>
     </section>
   );
@@ -134,7 +135,7 @@ export function HomePage() {
       <Hero />
       <PartNavigation />
       <KeyArtifacts />
-      <p className="v2-draft-line"><strong>Working draft.</strong> All findings and artifacts are provisional and subject to revision.</p>
+      <p className="v2-draft-line"><strong>Working draft.</strong> All programme findings, coding, interpretations and recommendations are work in progress, subject to correction and not independently replicated.</p>
     </main>
   );
 }
@@ -152,14 +153,15 @@ export function ResearchPage() {
 export function PartIPage() {
   return (
     <main id="main-content" className="v2-main">
-      <PageLead eyebrow="Part I · Operations" title="Access is not control" deck="A model name hides the served system around it: route, safeguards, context, memory, tools, permissions, retries, and operator interaction. Deployment adds an actor, objective, data, authority, distribution, feedback, and persistence.">
-        <DraftBoundary>No successful intervention, autonomous execution, authentic audience contact, persuasion, durable agency transfer, or electoral effect.</DraftBoundary>
+      <PageLead eyebrow="Part I · Capability and operations · Draft / work in progress" title="How far can an adversarial actor go with $10?" deck="Pretty far, actually—for planning and synthetic prototypes. This is an author-reported exploratory pilot, not a verified $10 influence campaign.">
+        <DraftBoundary>Planning assistance and synthetic prototypes are not a demonstrated live operation. No autonomous execution, authentic audience contact, human persuasion, durable agency transfer or electoral effect was established by these tests.</DraftBoundary>
       </PageLead>
+      <BudgetBoundary />
       <div className="v2-wide-figure v2-wide-figure--mechanism"><MechanismStrip /><p className="v2-figure-caption">A conceptual account of the joins an operator could attempt to control. It does not show that a real operation completed them.</p></div>
       <section className="v2-three-column">
-        <article><p className="v2-eyebrow">Observed</p><h2>Planning assistance and conversion constraints</h2><p>One recorded served route produced recognisable campaign-planning elements after some tactical refusals. A separate intervention study did not create a durable package that could be independently reloaded.</p></article>
+        <article><p className="v2-eyebrow">Provisional programme record</p><h2>Planning assistance, not demonstrated execution</h2><p>The author-reported pilot describes multi-step, multimodal prototyping. In a closer-inspected subset, one served route produced campaign-planning elements after some tactical refusals. These records do not establish a reliable success rate or retained capability. A separate model-intervention study failed to produce an independently reloadable package.</p></article>
         <article><p className="v2-eyebrow">Not observed</p><h2>No live operation</h2><p>The work did not research voters, contact real people, distribute content, run a feedback loop, or produce a behavioural estimate.</p></article>
-        <article><p className="v2-eyebrow">Next study</p><h2>Observe action, not prose</h2><p>Use exact routes, a closed synthetic election environment, reversible state, matched controls, permission boundaries, clean reload, and a human-only baseline.</p></article>
+        <article><p className="v2-eyebrow">Next study</p><h2>Observe action, not prose</h2><p>Reconcile the full budget and evidence units. Compare exact system versions with a human-only baseline in a closed synthetic environment. Record time, quality, missing outputs and permission failures, with blinded review and independent replication.</p></article>
       </section>
       <section className="v2-simple-section">
         <div className="v2-section-lead"><div><p className="v2-eyebrow">Artifacts</p><h2>Methods and bounded demonstrations</h2></div></div>
