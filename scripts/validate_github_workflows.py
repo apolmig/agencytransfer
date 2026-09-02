@@ -7,7 +7,7 @@ from pathlib import Path
 
 import yaml
 
-REQUIRED_TOP_LEVEL_KEYS = frozenset({"name", "on", "jobs"})
+REQUIRED_TOP_LEVEL_KEYS = frozenset({"on", "jobs"})
 
 
 def validate_workflow(path: Path) -> list[str]:
