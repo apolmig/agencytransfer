@@ -1,5 +1,12 @@
 # Changelog
 
+## 2 September 2026 — Retire obsolete APE-120 ingest bridges
+
+- Removed the two malformed, scheduled `ntfy.sh` polling workflows that had been retained after the APE-120 public aggregates were recovered and incorporated into Part II.
+- These workflows only transported a sanitised result packet and opened a draft pull request; their parse failures made no model calls, incurred no inference spend, and changed no research result.
+- Added fail-closed syntax and structural validation for every GitHub Actions workflow to the main evaluation and publication quality gate.
+- Any future controlled-result import must use a new, single-use, manually dispatched, content-addressed workflow rather than restoring the retired polling bridge.
+
 ## 1 September 2026 — Simpler publication navigation
 
 - Reframed the programme introduction around harmful manipulation and epistemic risk, with election security as the first focus.
