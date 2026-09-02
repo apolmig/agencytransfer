@@ -1,0 +1,33 @@
+name: Prepare deep sanitization source review
+on:
+  push:
+    branches: [deep-sanitization-20260903]
+    paths: [.github/workflows/deep-sanitization-source-once.yml]
+permissions:
+  contents: read
+jobs:
+  source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: deep-sanitization-20260903
+          fetch-depth: 0
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Package repository and build
+        run: |
+          mkdir -p "$RUNNER_TEMP/deep-sanitization-source"
+          git archive HEAD -o "$RUNNER_TEMP/deep-sanitization-source/source.zip"
+          tar -czf "$RUNNER_TEMP/deep-sanitization-source/node_modules.tar.gz" node_modules
+          tar -czf "$RUNNER_TEMP/deep-sanitization-source/dist.tar.gz" dist
+      - uses: actions/upload-artifact@v4
+        with:
+          name: deep-sanitization-source
+          path: ${{ runner.temp }}/deep-sanitization-source
+          retention-days: 3
