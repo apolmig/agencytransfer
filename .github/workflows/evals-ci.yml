@@ -39,10 +39,13 @@ jobs:
           uv lock --check
           uv sync --frozen --group dev
 
+      - name: Validate GitHub workflow configuration
+        run: uv run --frozen python scripts/validate_github_workflows.py
+
       - name: Lint evaluation code
         run: |
-          uv run --frozen ruff format --check evals/atb_eval scripts/capture_openrouter_routes.py scripts/prepare_diselect.py scripts/verify_scout_canary.py tests/evals
-          uv run --frozen ruff check evals/atb_eval scripts/capture_openrouter_routes.py scripts/prepare_diselect.py scripts/verify_scout_canary.py tests/evals
+          uv run --frozen ruff format --check evals/atb_eval scripts/capture_openrouter_routes.py scripts/prepare_diselect.py scripts/verify_scout_canary.py scripts/validate_github_workflows.py tests/evals
+          uv run --frozen ruff check evals/atb_eval scripts/capture_openrouter_routes.py scripts/prepare_diselect.py scripts/verify_scout_canary.py scripts/validate_github_workflows.py tests/evals
 
       - name: Run evaluation tests
         run: uv run --frozen pytest
