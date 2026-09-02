@@ -1,0 +1,30 @@
+name: Prepare sanitization source
+on:
+  push:
+    branches: [deep-sanitization-20260902]
+    paths: [.github/workflows/sanitization-source-once.yml]
+permissions:
+  contents: read
+jobs:
+  source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: deep-sanitization-20260902
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Package exact source and dependencies
+        run: |
+          mkdir -p "$RUNNER_TEMP/sanitization-source"
+          git archive HEAD -o "$RUNNER_TEMP/sanitization-source/source.zip"
+          tar -czf "$RUNNER_TEMP/sanitization-source/node_modules.tar.gz" node_modules
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sanitization-source
+          path: ${{ runner.temp }}/sanitization-source
+          retention-days: 3
