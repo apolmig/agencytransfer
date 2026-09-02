@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from pathlib import Path
 import sys
+from pathlib import Path
 
 import yaml
 
@@ -36,9 +36,7 @@ def validate_workflow(path: Path) -> list[str]:
 
 def main() -> int:
     workflow_dir = Path(".github/workflows")
-    workflow_paths = sorted(
-        [*workflow_dir.glob("*.yml"), *workflow_dir.glob("*.yaml")]
-    )
+    workflow_paths = sorted([*workflow_dir.glob("*.yml"), *workflow_dir.glob("*.yaml")])
     if not workflow_paths:
         print("No GitHub workflow files found.", file=sys.stderr)
         return 1
