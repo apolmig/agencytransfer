@@ -1,0 +1,66 @@
+name: Apply deep publication sanitization
+on:
+  push:
+    branches: [deep-sanitization-20260903]
+    paths: [.github/workflows/deep-sanitization-apply-once.yml]
+permissions:
+  contents: write
+jobs:
+  sanitize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: deep-sanitization-20260903
+          fetch-depth: 0
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+      - name: Apply bounded editorial and asset changes
+        run: python scripts/apply-deep-sanitization.py
+      - name: Install dependencies and validate source
+        run: |
+          npm ci
+          python scripts/validate-workflows.py
+          npm run validate:programme
+          npm run validate:data
+          npm run typecheck
+          npm run build
+          python scripts/audit-publication.py
+          git diff --check
+      - name: Confirm the independent Registry and empirical data are untouched
+        run: |
+          git diff --exit-code 4f6dff0d10771a300a4ad48e44e4c826fa9892ab -- \
+            src/LegacyRegistryApp.tsx \
+            src/components/FrontierTimeline.tsx \
+            src/components/LiteratureReview.tsx \
+            src/styles.css \
+            src/editorial/research-updates.css \
+            public/data \
+            data \
+            evals
+      - name: Install Chromium review tools
+        run: |
+          python -m pip install --quiet playwright
+          python -m playwright install --with-deps chromium
+      - name: Review content hierarchy, disclosures and responsive layout
+        run: python scripts/review-sanitization.py
+      - name: Commit reviewed publication only
+        run: |
+          git rm -f .github/workflows/deep-sanitization-source-once.yml .github/workflows/deep-sanitization-apply-once.yml scripts/apply-deep-sanitization.py
+          git add -A
+          git diff --cached --check
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Sanitize the research publication content, style and public assets'
+          git push origin HEAD:deep-sanitization-20260903
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: deep-sanitization-browser-review
+          path: |
+            sanitization-browser-review
+            programme/reviews/20260903-deep-sanitization-audit.json
+          retention-days: 7
