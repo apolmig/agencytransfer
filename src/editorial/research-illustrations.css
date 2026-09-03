@@ -1,0 +1,24 @@
+/* Existing artwork; layout is confined to the research publication. */
+.v2-main .research-illustration { width:100%; max-width:1080px; margin:36px auto; color:var(--v2-ink,#222); }
+.v2-main .research-illustration-image { display:block; min-width:0; line-height:0; }
+.v2-main .research-illustration-image img { display:block; width:100%; height:auto; max-height:none; object-fit:contain; }
+.v2-main .research-illustration figcaption { max-width:none; margin:16px 0 0; padding:14px 0 0; border-top:1px solid var(--v2-rule,#d8d4cc); font:15px/1.6 Georgia,'Times New Roman',serif; color:var(--v2-muted,#555); }
+.v2-main .research-illustration figcaption p { margin:0 0 12px; font:inherit; }
+.v2-main .research-illustration .research-illustration-label { font:600 10px/1.6 Arial,sans-serif; letter-spacing:.09em; text-transform:uppercase; }
+.v2-main .research-illustration a { color:inherit; text-underline-offset:3px; }
+.v2-main .research-illustration a:focus-visible, .v2-main .research-illustration summary:focus-visible { outline:2px solid currentColor; outline-offset:4px; }
+.v2-main .research-illustration details { margin:12px 0; }
+.v2-main .research-illustration summary { cursor:pointer; padding:8px 0; line-height:1.45; }
+.v2-main .research-illustration details p { margin:10px 0; }
+.v2-main .research-illustration--anatomy figcaption { max-width:84ch; }
+.v2-main .research-illustration--policy { display:grid; grid-template-columns:minmax(0,2fr) minmax(240px,1fr); align-items:start; gap:28px; }
+.v2-main .research-illustration--policy figcaption { margin:0; padding:14px 0 0; }
+.v2-main .research-illustration--policy h2 { margin:8px 0 14px; font:400 clamp(1.4rem,2vw,1.8rem)/1.22 Georgia,'Times New Roman',serif; letter-spacing:-.025em; }
+.v2-main .research-illustration-reading { margin:18px 0; }
+.v2-main .research-illustration-links { display:flex; flex-direction:column; align-items:flex-start; gap:10px; }
+@media(max-width:760px) {
+  .v2-main .research-illustration { margin:26px 0; }
+  .v2-main .research-illustration--policy { grid-template-columns:minmax(0,1fr); gap:16px; }
+  .v2-main .research-illustration figcaption { font-size:14px; }
+}
+@media print { .v2-main .research-illustration details>* { display:block!important; } }

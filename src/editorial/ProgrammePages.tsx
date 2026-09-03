@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { LAB_URL, REPOSITORY_URL, RIFT_ANIMATION, RIFT_PLAYER, DraftBoundary, PageLead, TextLink, route } from "./EditorialShell";
-import { MechanismStrip } from "./EditorialVisuals";
+import { AnatomyIllustration } from "./ResearchIllustrations";
 import { BudgetBoundary } from "../components/ResearchStatus";
 
 const researchParts = [
@@ -166,7 +166,7 @@ export function PartIPage() {
       <PageLead eyebrow="Part I · Capability and operations · Draft / work in progress" title="How far can an adversarial actor go with $10?" deck="Pretty far, actually. The exploratory pilot examines planning assistance and synthetic prototypes—not a live campaign.">
         <DraftBoundary>Planning assistance and synthetic prototypes are not a demonstrated live operation. No autonomous execution, authentic audience contact, human persuasion, durable agency transfer or electoral effect was established by these tests.</DraftBoundary>
       </PageLead>
-      <div className="v2-wide-figure v2-wide-figure--mechanism"><MechanismStrip /><p className="v2-figure-caption">A conceptual account of the joins an operator could attempt to control. It does not show that a real operation completed them.</p></div>
+      <AnatomyIllustration />
       <section className="v2-three-column">
         <article><p className="v2-eyebrow">Provisional programme record</p><h2>Planning assistance, not demonstrated execution</h2><p>The author-reported pilot describes multi-step, multimodal prototyping. In a closer-inspected subset, one served route produced campaign-planning elements after some tactical refusals. These records do not establish a reliable success rate or retained capability. A separate model-intervention study failed to produce an independently reloadable package.</p></article>
         <article><p className="v2-eyebrow">Not observed</p><h2>No live operation</h2><p>The work did not research voters, contact real people, distribute content, run a feedback loop, or produce a behavioural estimate.</p></article>

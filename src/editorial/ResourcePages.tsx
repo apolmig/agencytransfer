@@ -4,6 +4,7 @@ import { ELECTION_INDEX_URL, LAB_URL, MANUEL_VIDEO_URL, POLICY_ATLAS_URL, REPOSI
 import { MechanismStrip } from "./EditorialVisuals";
 import { AnimationFeature } from "./ProgrammePages";
 import { PaperConceptFigure, PaperCitation } from "./PaperPresentation";
+import { PolicyIllustration } from "./ResearchIllustrations";
 
 const paperAbstract = [
   "Frontier AI may threaten democracy without being shown to have changed an election. The concern is that models joined to personal data, trusted interfaces, distribution, and feedback can make influence persistent and adaptive, while concentrating control over both decisions and the evidence needed to scrutinise them.",
@@ -109,6 +110,7 @@ export function OutputsPage() {
           </li>)}</ul>
         </section>)}
       </div>
+      <PolicyIllustration linkToEvidence />
       <details className="publication-extra" id="pending-artifacts">
         <summary>Not yet published on this site</summary>
         <p id="poster">Research poster: awaiting the public edition.</p>

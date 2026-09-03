@@ -51,6 +51,7 @@ def main():
                         image=page.locator('.paper-concept-figure img')
                         image.scroll_into_view_if_needed()
                         page.wait_for_function("document.querySelector('.paper-concept-figure img').naturalWidth > 0")
+                        assert 'anatomy-manipulation-' in (image.get_attribute('src') or '')
                         assert image.get_attribute('srcset') and image.get_attribute('width')=='1672'
                         assert image.get_attribute('height')=='941'
                         assert page.locator('.paper-concept-figure a').first.get_attribute('target')=='_blank'

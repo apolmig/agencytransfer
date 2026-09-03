@@ -1,0 +1,58 @@
+[
+  {
+    "name": "anatomy-manipulation",
+    "originalFile": "illustration-anatomy-ai-manipulation.png",
+    "collection": "Images",
+    "originalSha256": "25f370d9a7f1bfd1a637af4feb058f0057e68fead47c2cdcb92f4c8a08b124a5",
+    "originalBytes": 3066441,
+    "originalDimensions": [
+      1672,
+      941
+    ],
+    "transformation": "Responsive resizing and WebP compression only. Complete composition and transparency retained; no cropping or regeneration.",
+    "variants": [
+      {
+        "path": "public/media/illustrations/anatomy-manipulation-1672.webp",
+        "width": 1672,
+        "height": 941,
+        "bytes": 758114,
+        "sha256": "5d5c08350737df8dfbf9700728b0ae2aea6a150dfa2b44e523db1cdae92cf0a7"
+      },
+      {
+        "path": "public/media/illustrations/anatomy-manipulation-824.webp",
+        "width": 824,
+        "height": 464,
+        "bytes": 230276,
+        "sha256": "ff4fdf65f9f427a0ede5bf8ec5e403519d8d7aa64b4bdba68ed0ebc6c1ed776b"
+      }
+    ]
+  },
+  {
+    "name": "policy-circuit-breakers",
+    "originalFile": "07_democratic_circuit_breakers.png",
+    "collection": "Images / era_harmful_manipulation_pack_hq",
+    "originalSha256": "6dad9e62078d50bc2de46e752100cf6e30ac8d04186dbb079490e71d1ddd1e4d",
+    "originalBytes": 3283625,
+    "originalDimensions": [
+      1448,
+      1086
+    ],
+    "transformation": "Responsive resizing and WebP compression only. Complete composition and transparency retained; no cropping or regeneration.",
+    "variants": [
+      {
+        "path": "public/media/illustrations/policy-circuit-breakers-1448.webp",
+        "width": 1448,
+        "height": 1086,
+        "bytes": 804902,
+        "sha256": "eb6c6b41193fb8baaac08b40dcc424df5de3c8669366e925d1614a3969b734ca"
+      },
+      {
+        "path": "public/media/illustrations/policy-circuit-breakers-768.webp",
+        "width": 768,
+        "height": 576,
+        "bytes": 278212,
+        "sha256": "340bc540ba3c26786e65f43e0c9f07c527a79770da17a1e74202f7bd98387ab7"
+      }
+    ]
+  }
+]

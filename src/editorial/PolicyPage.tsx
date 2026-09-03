@@ -2,6 +2,7 @@ import { POLICY_ATLAS_URL, REPOSITORY_URL, DraftBoundary, PageLead, TextLink, ro
 import reviewJson from "../../policy-atlas/review/source-linked-20260901/review.json";
 import "./policy-review.css";
 import { PolicyExamples } from "./PolicyExamples";
+import { PolicyIllustration } from "./ResearchIllustrations";
 
 const reviewBase = `${REPOSITORY_URL}/blob/main/policy-atlas/review/source-linked-20260901`;
 type Review = {
@@ -101,6 +102,7 @@ export function PartIVPage() {
         <p><strong>Test what remains uncertain.</strong> Put consequential authority under enforceable limits, and evaluate defensive monitors, meaningful refusal and practical exit.</p>
         <p><strong>Name the beneficiary.</strong> A control that secures an operator may not protect the person affected. None of these examples proves end-to-end electoral protection.</p>
       </section>
+      <PolicyIllustration />
       <PolicyExamples />
 
       <details className="p4-deeper"><summary>How the recommendations fit together</summary>
