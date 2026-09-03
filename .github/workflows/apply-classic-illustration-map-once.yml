@@ -1,0 +1,86 @@
+name: Apply classic illustration map
+on:
+  push:
+    branches: [classic-illustration-map-20260903]
+    paths: [.github/workflows/apply-classic-illustration-map-once.yml]
+permissions:
+  contents: write
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: classic-illustration-map-20260903
+          fetch-depth: 0
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+      - name: Retrieve and apply the fixed illustration package
+        env:
+          PACKAGE_URL: https://drive.google.com/uc?export=download&id=1FCxZXZD5i7R2d00CasqWSvdxCCBx7M28
+        run: |
+          test "$(git rev-parse origin/main)" = a42b5fc31e5e7cd6f7af473d8c6f1b3309029f8f
+          python - <<'PY'
+          import hashlib, io, json, os, pathlib, urllib.request, zipfile
+          root=pathlib.Path.cwd()
+          req=urllib.request.Request(os.environ['PACKAGE_URL'],headers={'User-Agent':'AgencyTransferIllustrationUpdate/1.0'})
+          raw=urllib.request.urlopen(req,timeout=60).read()
+          assert len(raw)==2325289,len(raw)
+          assert hashlib.sha256(raw).hexdigest()=='ab0ee1f4ce78e2d0aed903bb98d7c159dc3ceaa14ebb3b5461de2edef1093484'
+          with zipfile.ZipFile(io.BytesIO(raw)) as z:
+              manifest=json.loads(z.read('manifest.json'))
+              assert manifest['base']=='a42b5fc31e5e7cd6f7af473d8c6f1b3309029f8f'
+              allowed={item['path'] for item in manifest['files']}
+              assert set(z.namelist())==allowed|{'manifest.json'}
+              for item in manifest['files']:
+                  path=pathlib.PurePosixPath(item['path'])
+                  assert not path.is_absolute() and '..' not in path.parts and '.github' not in path.parts
+                  payload=z.read(item['path'])
+                  assert len(payload)==item['bytes']
+                  assert hashlib.sha256(payload).hexdigest()==item['sha256']
+              for item in manifest['files']:
+                  destination=root/item['path']
+                  destination.parent.mkdir(parents=True,exist_ok=True)
+                  destination.write_bytes(z.read(item['path']))
+              (root/'illustration-patch-manifest.json').write_text(json.dumps(manifest,indent=2))
+          print('Applied 17 reviewed files; no Registry implementation or empirical data touched.')
+          PY
+      - name: Build and preserve research boundaries
+        run: |
+          npm ci
+          npm run build
+          git diff --check
+          git diff --exit-code origin/main -- src/LegacyRegistryApp.tsx src/components/FrontierTimeline.tsx src/components/LiteratureReview.tsx src/styles.css public/data data evals public/media/cde-gap3-hero-1672.webp public/media/cde-gap3-hero-824.webp public/research/harmful-manipulation-election-security-v1.5-20260901.pdf public/research/harmful-manipulation-election-security-v1.3-20260901.pdf
+          test -f dist/media/illustrations/anatomy-manipulation-1672.webp
+          test -f dist/media/illustrations/policy-intervention-atlas-1600.webp
+          test -f dist/media/illustrations/policy-circuit-breakers-1448.webp
+      - name: Browser acceptance review
+        run: |
+          python -m pip install --quiet playwright
+          python -m playwright install --with-deps chromium
+          python scripts/review-classic-illustrations.py
+          REVIEW_WIDTHS=1440,390 python scripts/review-paper-status.py
+      - name: Commit only the bounded illustration update
+        run: |
+          python - <<'PY'
+          import json, subprocess
+          manifest=json.load(open('illustration-patch-manifest.json'))
+          subprocess.run(['git','add','--',*[item['path'] for item in manifest['files']]],check=True)
+          PY
+          git rm .github/workflows/apply-classic-illustration-map-once.yml
+          git diff --cached --check
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Assign classic illustrations to the research, policy and artifact pages'
+          git push origin HEAD:classic-illustration-map-20260903
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: classic-illustration-browser-review
+          path: |
+            classic-artwork-review
+            paper-status-review
+          retention-days: 7
