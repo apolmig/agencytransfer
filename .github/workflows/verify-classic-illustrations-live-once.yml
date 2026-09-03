@@ -1,0 +1,51 @@
+name: Verify live classic illustration map
+on:
+  push:
+    branches: [classic-illustration-map-20260903]
+    paths: [.github/workflows/verify-classic-illustrations-live-once.yml]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: classic-illustration-map-20260903
+      - name: Install browser bindings
+        run: |
+          python -m pip install --quiet playwright
+          python -m playwright install --with-deps chromium
+      - name: Wait for the deployed publication snapshot
+        run: |
+          python - <<'PY'
+          import hashlib, pathlib, time, urllib.request, urllib.error
+          base='https://miguelguerrero.eu/agencytransfer/'
+          expected=hashlib.sha256(pathlib.Path('public/media/illustrations/policy-intervention-atlas-1600.webp').read_bytes()).hexdigest()
+          ready=False
+          for _ in range(45):
+              try:
+                  with urllib.request.urlopen(base+'media/illustrations/policy-intervention-atlas-1600.webp',timeout=20) as response:
+                      raw=response.read()
+                  with urllib.request.urlopen(base+'research/part-iv/',timeout=20) as response:
+                      page=response.read().decode('utf-8','replace')
+                  ready=hashlib.sha256(raw).hexdigest()==expected and 'policy-intervention-atlas-1600.webp' in page
+                  if ready: break
+              except (urllib.error.URLError, TimeoutError):
+                  pass
+              time.sleep(8)
+          assert ready,'The deployed illustration snapshot was not ready within the verification window.'
+          print('New policy illustration and Part IV markup confirmed on HTTPS production.')
+          PY
+      - name: Run live desktop and mobile acceptance checks
+        env:
+          REVIEW_BASE: https://miguelguerrero.eu/agencytransfer/
+          REVIEW_OUTPUT: live-classic-artwork-review
+        run: python scripts/review-classic-illustrations.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: live-classic-illustration-review
+          path: live-classic-artwork-review
+          retention-days: 7
