@@ -1,9 +1,9 @@
 import { useEffect } from "react";
 import { EvidenceStatusKey, WebRevisionNote } from "../components/ResearchStatus";
 import { ELECTION_INDEX_URL, LAB_URL, MANUEL_VIDEO_URL, POLICY_ATLAS_URL, REPOSITORY_URL, RIFT_ANIMATION, DraftBoundary, PageLead, TextLink, route } from "./EditorialShell";
-import { MechanismStrip } from "./EditorialVisuals";
 import { AnimationFeature } from "./ProgrammePages";
 import { PaperConceptFigure, PaperCitation } from "./PaperPresentation";
+import { CircuitBreakersIllustration } from "./ResearchIllustrations";
 
 const paperAbstract = [
   "Frontier AI may threaten democracy without being shown to have changed an election. The concern is that models joined to personal data, trusted interfaces, distribution, and feedback can make influence persistent and adaptive, while concentrating control over both decisions and the evidence needed to scrutinise them.",
@@ -109,6 +109,7 @@ export function OutputsPage() {
           </li>)}</ul>
         </section>)}
       </div>
+      <CircuitBreakersIllustration linkToEvidence />
       <details className="publication-extra" id="pending-artifacts">
         <summary>Not yet published on this site</summary>
         <p id="poster">Research poster: awaiting the public edition.</p>
@@ -123,7 +124,7 @@ export function ExplainersPage() {
   useEffect(() => {
     const reveal = () => {
       const id = location.hash.slice(1);
-      if (!["manuel-miami", "brazil-2026", "mechanism-map"].includes(id)) return;
+      if (!["manuel-miami", "brazil-2026"].includes(id)) return;
       const target = document.getElementById(id);
       const details = target?.closest("details");
       if (details) details.open = true;
@@ -140,7 +141,7 @@ export function ExplainersPage() {
       <AnimationFeature />
       <details className="publication-extra">
         <summary>More illustrations and scenarios</summary>
-      <section className="v2-simple-section" id="mechanism-map"><div className="v2-section-lead"><div><p className="v2-eyebrow">Mechanism map</p><h2>Anatomy of an AI manipulation operation</h2></div><p>A conceptual map of the links an operator would need to connect. Not a record of a completed operation.</p></div><div className="v2-wide-figure v2-wide-figure--mechanism"><MechanismStrip /><p className="v2-figure-caption">Conceptual illustration. The research did not observe this complete chain operating against real people.</p></div></section>
+      <p className="explainer-related"><TextLink href={route("research/part-i/")}>See the operation anatomy in Part I</TextLink></p>
       <section className="v2-explainer-cards"><article id="manuel-miami"><p className="v2-eyebrow">Synthetic scenario</p><h2>Manuel · Miami · US midterms</h2><p>A fictional voter is found through a political community, modelled through salient trust cues, and targeted with synthetic audio near an election. The scenario illustrates discovery, identity, delivery, repetition, and scale.</p><TextLink href={MANUEL_VIDEO_URL} external>Watch video</TextLink><small>Not evidence of a real campaign or effect.</small></article><article id="brazil-2026"><p className="v2-eyebrow">Synthetic scenario</p><h2>Brazil 2026 · the final-hour voice</h2><p>A fictional cloned-audio scenario illustrates the difference between generation, deployment, individual response, and an unmeasured aggregate consequence.</p><span className="v2-status-pill">Not yet published</span><small>Not evidence that the depicted operation occurred or generalises to real voters.</small></article></section>
       </details>
     </main>

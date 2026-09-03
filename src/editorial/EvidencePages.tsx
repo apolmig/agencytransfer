@@ -1,5 +1,4 @@
 import { ELECTION_INDEX_URL, DraftBoundary, PageLead, TextLink } from "./EditorialShell";
-import { EditorialRiftVisual } from "./EditorialVisuals";
 import "./research-updates.css";
 export { PartIVPage } from "./PolicyPage";
 
@@ -32,7 +31,6 @@ export function PartIIIPage() {
         <p><strong>Open question: when does disruption become durable agency transfer?</strong> That requires evidence that citizens or institutions lose practical control over attention, choices or dependencies while the controlling actor gains it. Noise and response costs are not, by themselves, a measurement of that durable shift.</p>
       </section>
 
-      <div className="v2-wide-figure"><EditorialRiftVisual /><p className="v2-figure-caption">Conceptual illustration, not a prevalence or effect estimate. “No identified effect” is not “zero effect.” Institutional harm does not require every step of a voter-persuasion chain.</p></div>
       <section className="v2-evidence-pair">
         <article><p className="v2-eyebrow">Source-linked observations</p><h2>Operations and responses are real</h2><p>The Romania and Moldova records include coordinated promotion, amplification and institutional investigations. Attribution, the contribution of generative AI and the meaning of reach metrics differ by claim. Not every inauthentic operation is an AI operation, and not every synthetic asset is manipulative.</p></article>
         <article><p className="v2-eyebrow">Bounded and unresolved effects</p><h2>Do not turn reach into changed votes</h2><p>Controlled studies can show individual effects under specified conditions. Field effects are harder to identify, heterogeneous and often weakly observed. Account counts, views and engagement are not unique people, durable persuasion or a causal election result. Nor does an institutional decision establish a voter-level effect.</p></article>
