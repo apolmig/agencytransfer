@@ -1,0 +1,76 @@
+name: Verify forthcoming paper on the live site
+on:
+  push:
+    branches: [prepublication-status-20260903]
+    paths: [.github/workflows/verify-paper-status-once.yml]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      REVIEW_BASE: https://miguelguerrero.eu/agencytransfer/
+      REVIEW_WIDTHS: 1440,768,390,320
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: a42b5fc31e5e7cd6f7af473d8c6f1b3309029f8f
+          fetch-depth: 1
+      - name: Install browser bindings
+        run: python -m pip install --quiet playwright
+      - name: Wait for the deployed paper presentation
+        run: |
+          python - <<'PY'
+          import shutil,time
+          from playwright.sync_api import sync_playwright
+          ready=False
+          with sync_playwright() as p:
+              browser=p.chromium.launch(executable_path=shutil.which('google-chrome') or shutil.which('chromium'))
+              page=browser.new_page()
+              for attempt in range(36):
+                  try:
+                      response=page.goto('https://miguelguerrero.eu/agencytransfer/paper/',wait_until='networkidle',timeout=20000)
+                      ready=bool(response and response.status==200 and page.locator('.paper-coming-soon').count()==1 and page.locator('.paper-concept-figure img').get_attribute('loading')=='eager')
+                      if ready:break
+                  except Exception:pass
+                  time.sleep(5)
+              browser.close()
+          assert ready,'The new paper presentation is not yet live.'
+          print('Forthcoming-paper notice and current raster markup confirmed on HTTPS production.')
+          PY
+      - name: Run live desktop and mobile acceptance checks
+        run: python scripts/review-paper-status.py
+      - name: Check image decoding and capture the visible figure
+        run: |
+          python - <<'PY'
+          import json,pathlib,shutil
+          from playwright.sync_api import sync_playwright
+          out=pathlib.Path('paper-status-review')
+          result=[]
+          with sync_playwright() as p:
+              browser=p.chromium.launch(executable_path=shutil.which('google-chrome') or shutil.which('chromium'))
+              for width in (1440,390):
+                  page=browser.new_page(viewport={'width':width,'height':1000},reduced_motion='reduce')
+                  page.goto('https://miguelguerrero.eu/agencytransfer/paper/',wait_until='networkidle')
+                  image=page.locator('.paper-concept-figure img')
+                  image.scroll_into_view_if_needed()
+                  image.evaluate('(el) => el.decode()')
+                  page.wait_for_timeout(250)
+                  size=image.evaluate('(el) => ({naturalWidth:el.naturalWidth,naturalHeight:el.naturalHeight,currentSrc:el.currentSrc,opacity:getComputedStyle(el).opacity,visibility:getComputedStyle(el).visibility,display:getComputedStyle(el).display})')
+                  assert size['naturalWidth']>0 and size['opacity']=='1' and size['visibility']=='visible' and size['display']!='none',size
+                  page.locator('.paper-concept-figure').screenshot(path=str(out/f'artistic-figure-{width}.png'))
+                  page.evaluate("document.documentElement.style.scrollBehavior='auto';window.scrollTo(0,0)")
+                  page.screenshot(path=str(out/f'paper-painted-{width}.png'),full_page=True)
+                  result.append({'viewport':width,**size})
+                  page.close()
+              browser.close()
+          (out/'artwork-check.json').write_text(json.dumps(result,indent=2))
+          print(json.dumps(result,indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: paper-status-live
+          path: paper-status-review
+          retention-days: 7
