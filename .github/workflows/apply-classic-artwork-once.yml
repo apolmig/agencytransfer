@@ -1,0 +1,79 @@
+name: Apply classic research illustrations
+on:
+  push:
+    branches: [classic-policy-artwork-20260903]
+    paths: [.github/workflows/apply-classic-artwork-once.yml]
+permissions:
+  contents: write
+jobs:
+  artwork:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: classic-policy-artwork-20260903
+          fetch-depth: 0
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+      - name: Apply verified image and presentation files
+        run: |
+          python - <<'PY'
+          import hashlib,io,json,pathlib,subprocess,urllib.request,zipfile
+          root=pathlib.Path.cwd()
+          raw=urllib.request.urlopen('https://drive.google.com/uc?export=download&id=1noODS2kMae241JYq0psClZwdseurBO51',timeout=60).read()
+          assert len(raw)==2098428
+          assert hashlib.sha256(raw).hexdigest()=='5afcc387576fc531f32ee27d481f1808c7757de5e19ba7de83357b840c33f8d6'
+          with zipfile.ZipFile(io.BytesIO(raw)) as z:
+              m=json.loads(z.read('patch.json'))
+              assert len(m['files'])==14
+              assert subprocess.check_output(['git','rev-parse','origin/main'],text=True).strip()==m['base'], 'Main changed; inspect before applying.'
+              assert set(z.namelist())=={f['path'] for f in m['files']}|{'patch.json'}
+              for f in m['files']:
+                  path=pathlib.PurePosixPath(f['path'])
+                  assert not path.is_absolute() and '..' not in path.parts
+                  assert f['path'].startswith(('src/editorial/','programme/illustrations/','public/media/illustrations/','scripts/review-'))
+                  dest=root/path
+                  if f['oldSha256'] is None:assert not dest.exists(),f['path']
+                  else:assert hashlib.sha256(dest.read_bytes()).hexdigest()==f['oldSha256'],f['path']
+                  data=z.read(f['path'])
+                  assert len(data)==f['bytes'] and hashlib.sha256(data).hexdigest()==f['sha256']
+              for f in m['files']:
+                  dest=root/f['path'];dest.parent.mkdir(parents=True,exist_ok=True);dest.write_bytes(z.read(f['path']))
+              (root/'artwork-patch.json').write_text(json.dumps(m))
+          print('Applied 14 bounded files. Original artwork retained; no new generated images.')
+          PY
+      - name: Build and check preservation
+        run: |
+          npm ci
+          npm run build
+          git diff --check
+          git diff --exit-code origin/main -- src/LegacyRegistryApp.tsx src/components/FrontierTimeline.tsx src/components/LiteratureReview.tsx src/styles.css public/data data evals policy-atlas programme/project-manifest.json public/research public/media/cde-gap3-hero-1672.webp public/media/cde-gap3-hero-824.webp
+      - name: Browser acceptance checks
+        run: |
+          python -m pip install --quiet playwright
+          python scripts/review-classic-illustrations.py
+          REVIEW_WIDTHS=1440,390,320 python scripts/review-paper-status.py
+      - name: Commit reviewed files and remove temporary workflows
+        run: |
+          python - <<'PY'
+          import json,subprocess
+          m=json.load(open('artwork-patch.json'))
+          subprocess.run(['git','add','--',*[f['path'] for f in m['files']]],check=True)
+          PY
+          git rm .github/workflows/artwork-source-once.yml .github/workflows/apply-classic-artwork-once.yml
+          git diff --cached --check
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Use classic policy and anatomy artwork with explicit conceptual boundaries'
+          git push origin HEAD:classic-policy-artwork-20260903
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: classic-artwork-preview
+          path: |
+            classic-artwork-review
+            paper-status-review/report.json
+          retention-days: 7
