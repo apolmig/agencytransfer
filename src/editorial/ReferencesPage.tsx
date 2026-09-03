@@ -5,7 +5,7 @@ import "./publication-polish.css";
 type EntrySource = { collection: string; locator: string; title: string; authors: string; year: string; url: string; recordedStatus: string; note: string; boundary: string };
 type Reference = { id: string; title: string; authors: string; year: string; url: string; alternateUrls: string[]; category: string; scope: string; parts: string[]; collections: string[]; recordedStatus: string; citations: string[]; note: string; boundary: string; flags: string[]; provenance: EntrySource[]; linkCheck: { status: string; checkedAt: string | null; httpStatus?: number; finalUrl?: string }; metadataNote?: string };
 type Collection = { id: string; label: string; date: string; kind: string; recordCount: number };
-type Library = { version: string; manuscriptVersion: string; scopeNote: string; collections: Collection[]; records: Reference[]; counts: { records: number; sourceEntries: number; flagshipCitations: number; flagshipRecords: number } };
+type Library = { status: string; manuscriptStatus: string; scopeNote: string; collections: Collection[]; records: Reference[]; counts: { records: number; sourceEntries: number; flagshipCitations: number; flagshipRecords: number } };
 const PAGE_SIZE = 25;
 const normalise = (s: string) => s.normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 const initialParams = () => new URLSearchParams(window.location.search);
@@ -64,7 +64,7 @@ export function ReferencesPage() {
   const label = (id: string) => library?.collections.find(c => c.id === id)?.label ?? id;
   return <main id="main-content" className="v2-main references-page">
     <PageLead eyebrow="References & source library" title="The reading behind the research" deck="The flagship bibliography and the wider reading behind the programme. Search by author, title or subject. Review depth varies; inclusion is not endorsement." />
-    <p className="reference-scope">Manuscript v{library?.manuscriptVersion ?? "1.5"} · Source snapshot: 1 September 2026.</p>
+    <p className="reference-scope">Working-draft bibliography · source snapshot: 1 September 2026.</p>
 
     <section className="reference-search" aria-label="Find references">
       <div className="reference-tabs" role="group" aria-label="Reference scope">

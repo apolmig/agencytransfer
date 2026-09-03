@@ -124,7 +124,7 @@ Use [`CITATION.cff`](CITATION.cff) for the programme citation and retain the cit
 
 ## Publication and source library
 
-The [current working paper](https://miguelguerrero.eu/agencytransfer/paper/) is v1.5 (1 September 2026); previous snapshots are retained. The [references section](https://miguelguerrero.eu/agencytransfer/references/) includes its full bibliography and wider recorded source collections. Membership is not evidence appraisal: review depths, historical status and unresolved links remain visible.
+The [working-paper overview](https://miguelguerrero.eu/agencytransfer/paper/) is an unpublished draft. The full paper is coming soon; no formal paper release has taken place. Historical working-copy filenames are retained for provenance, not presented as public release numbers. The [references section](https://miguelguerrero.eu/agencytransfer/references/) includes its full bibliography and wider recorded source collections. Membership is not evidence appraisal: review depths, historical status and unresolved links remain visible.
 
 Bibliographic maintenance: edit `public/research/references.json`, run `python scripts/build-reference-page.py` and `python scripts/validate-publication.py`. See `programme/references/README.md`. The standalone explainer under `public/media/cde-rift-animation/` uses native HTML/CSS/JavaScript and has no third-party runtime dependency. Its visible scene text and transcript should be edited together.
 

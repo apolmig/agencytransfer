@@ -15,7 +15,7 @@
     "affiliation": "ERA:AI Summer Research Fellowship, Cambridge",
     "programme_period": "2026",
     "evidence_freeze": "2026-08-28",
-    "last_updated": "2026-09-01",
+    "last_updated": "2026-09-03",
     "canonical_site": "https://miguelguerrero.eu/agencytransfer/",
     "canonical_repository": "https://github.com/apolmig/agencytransfer",
     "claim_boundary": "The programme does not establish a closed adaptive influence loop, authentic audience exposure, durable agency erosion, a prevalence estimate, or an AI-attributable electoral effect."
@@ -178,17 +178,17 @@
       "kind": "working_paper",
       "part": "programme",
       "role": "Programme-level flagship synthesis and primary editorial spine.",
-      "status": "published",
+      "status": "unpublished_working_draft",
       "visibility": "public",
       "canonical_url": "https://miguelguerrero.eu/agencytransfer/paper/",
-      "source_url": "https://miguelguerrero.eu/agencytransfer/research/harmful-manipulation-election-security-v1.5-20260901.pdf",
+      "source_url": null,
       "repo_path": "public/research/harmful-manipulation-election-security-v1.5-20260901.pdf",
-      "source_version": "v1.5-20260901",
-      "public_release_version": "v1.5-draft-20260901",
+      "source_version": null,
+      "public_release_version": null,
       "evidence_cutoff": "2026-09-01",
       "planned_route": "/paper/",
       "claim_ceiling": "Programme synthesis, not a single-estimand study; no closed adaptive loop, authentic exposure, durable agency erosion, prevalence estimate, or AI-attributable electoral effect.",
-      "publication_note": "Current working version v1.5; PDF published as an immutable snapshot. Earlier v1.3 remains available. Not peer reviewed."
+      "publication_note": "Public draft overview only. Full working paper coming soon. Historical manuscript filenames identify working copies, not formal public releases."
     },
     {
       "id": "part-i-served-system-evidence",
@@ -555,6 +555,6 @@
   "known_blockers": [
     "Replace the white-paper summary, brief facsimile, and poster facsimile with their final canonical assets when supplied.",
     "Move the Brazil explainer master to durable hosting and add captions, transcript, poster frame, and final responsible-release review.",
-    "The P4 production core still has 112 effect claims without a checked empirical relation. The later source-linked review and manuscript v1.3 do not silently adjudicate these core claims."
+    "The P4 production core still has 112 effect claims without a checked empirical relation. The later source-linked review and working manuscript do not silently adjudicate these core claims."
   ]
 }

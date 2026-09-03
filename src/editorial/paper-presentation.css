@@ -1,0 +1,11 @@
+.paper-coming-soon{display:inline-flex;align-items:center;min-height:44px;padding:10px 0;font:500 1rem/1.45 Georgia,'Times New Roman',serif;color:#4a4741}
+.paper-concept-figure{margin:42px 0;max-width:1080px;width:100%}
+.paper-concept-figure>a{display:block;line-height:0}
+.paper-concept-figure img{display:block;width:100%;height:auto;max-height:none;object-fit:contain}
+.paper-concept-figure figcaption{margin:14px 0 0;padding-top:12px;border-top:1px solid #d8d4cc;font:14px/1.6 Georgia,'Times New Roman',serif;color:#55524c;max-width:78ch}
+.paper-concept-figure figcaption p{font:inherit;margin:0 0 6px}
+.paper-concept-figure figcaption a{font:inherit;color:inherit;text-underline-offset:3px}
+.paper-concept-figure a:focus-visible{outline:2px solid currentColor;outline-offset:5px}
+.paper-citation{max-width:78ch}
+.paper-citation>p:last-child{font-size:.95rem;line-height:1.6}
+@media(max-width:760px){.paper-concept-figure{margin-block:28px}.paper-coming-soon{font-size:.95rem}.paper-concept-figure figcaption{font-size:13px}}

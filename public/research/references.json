@@ -1,13 +1,12 @@
 {
   "version": "2026-09-01-v1",
   "status": "Working bibliography",
-  "manuscriptVersion": "1.5",
   "sourceDate": "2026-09-01",
   "scopeNote": "Citations and references recorded in the flagship paper, literature matrices, Registry, election sources and Policy Atlas. Coverage of these source collections is not a claim to cover all relevant research. A listed source has not necessarily received a full-text review.",
   "collections": [
     {
       "id": "flagship",
-      "label": "Flagship working paper v1.5",
+      "label": "Flagship working draft",
       "date": "2026-09-01",
       "kind": "Cited",
       "sha256": "3e6aea5b3f4f1dce1442f109c3d58e25ae273027f4646f7688e00a824716bdbe",
@@ -20890,5 +20889,6 @@
     },
     "corrections": 10,
     "method": "Bounded automated HTTP/metadata checks, followed by targeted primary-source checks. No inference of full-text review or scientific validity."
-  }
+  },
+  "manuscriptStatus": "unpublished_working_draft"
 }
