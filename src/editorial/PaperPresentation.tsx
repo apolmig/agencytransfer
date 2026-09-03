@@ -21,8 +21,8 @@ export function PaperConceptFigure() {
           sizes="(max-width: 760px) calc(100vw - 32px), (max-width: 1180px) calc(100vw - 64px), 1080px"
           width={1672}
           height={941}
-          loading="lazy"
-          decoding="async"
+          loading="eager"
+          decoding="sync"
           alt="The CDE Gap: AI capability and deployment on one side of a rift, electoral consequences on the other. Exposure, attention, beliefs and intentions mark uncertain links between them."
         />
       </a>
