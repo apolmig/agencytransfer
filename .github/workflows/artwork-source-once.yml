@@ -1,0 +1,18 @@
+name: Prepare classic illustration update
+on:
+  push:
+    branches: [classic-policy-artwork-20260903]
+    paths: [.github/workflows/artwork-source-once.yml]
+permissions:
+  contents: read
+jobs:
+  source:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - run: git archive HEAD -o "$RUNNER_TEMP/artwork-source.zip"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: artwork-source
+          path: ${{ runner.temp }}/artwork-source.zip
+          retention-days: 3
