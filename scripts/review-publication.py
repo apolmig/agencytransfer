@@ -59,8 +59,9 @@ try:
       item.locator('summary').click();assert item.locator('a').first.is_visible()
       item.locator('summary').click()
     if slug=='paper/':
-     assert page.locator('a[href$="v1.5-20260901.pdf"]').count()==1
-     assert page.locator('a[href$="v1.3-20260901.pdf"]').count()==1
+     assert page.locator('.paper-coming-soon').inner_text() == 'Full working paper — coming soon'
+     assert page.locator('a[href$="v1.5-20260901.pdf"]').count()==0
+     assert page.locator('a[href$="v1.3-20260901.pdf"]').count()==0
      assert page.locator('a[href$="references/?scope=flagship"]').count()==1
     if slug=='explainers/':
      frame=page.frame_locator('iframe');frame.locator('#play').wait_for()

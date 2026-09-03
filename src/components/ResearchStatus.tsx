@@ -60,7 +60,7 @@ export function BudgetBoundary() {
 export function WebRevisionNote() {
   return (
     <aside className="research-update web-revision-note" aria-label="Manuscript version">
-      <p><strong>Current working version: v1.5, 1 September 2026.</strong> This page is an overview; the complete manuscript and bibliography are linked below. Earlier PDF snapshots remain available. This publication update does not add experiments or change dataset grades.</p>
+      <p><strong>Unpublished working draft.</strong> This page presents the argument in progress, not a formally released paper. The full manuscript is forthcoming; the bibliography and research records are available for inspection.</p>
     </aside>
   );
 }

@@ -49,7 +49,7 @@ const metadata: Record<string, { title: string; description: string }> = {
   },
   paper: {
     title: "Flagship Working Paper · Harmful Manipulation and Election Security",
-    description: "Web overview and full v1.5 working paper: The Capability–Deployment–Effect Gap, with the 1 September policy review.",
+    description: "A draft overview of The Capability–Deployment–Effect Gap. The full working paper is forthcoming; no formal paper release has taken place.",
   },
   references: {
     title: "References · Harmful Manipulation and Election Security",

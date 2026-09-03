@@ -69,7 +69,7 @@ function Hero() {
         <p className="v2-deck">A research programme in progress on harmful manipulation and epistemic risk, with election security as its first focus.</p>
         <p className="v2-plain-boundary">Documented harms do not establish that AI changed an election.</p>
         <div className="v2-actions">
-          <a className="v2-button v2-button--dark" href={route("paper/")}>Read the working paper</a>
+          <a className="v2-button v2-button--dark" href={route("paper/")}>Read the draft overview</a>
           <a className="v2-button" href={RIFT_ANIMATION}>The CDE Gap, explained</a>
         </div>
       </div>
@@ -119,7 +119,7 @@ export function AnimationFeature() {
 
 function KeyArtifacts() {
   const items: Array<{ label: string; detail: string; href: string; external?: boolean }> = [
-    { label: "Working paper", detail: "v1.5 working draft · full PDF", href: route("paper/") },
+    { label: "Working paper", detail: "Draft overview · full paper coming soon", href: route("paper/") },
     { label: "References", detail: "Flagship bibliography and wider reading", href: route("references/") },
     { label: "Explainers", detail: "Animation and synthetic scenarios", href: route("explainers/") },
     { label: "Agency Transfer Lab", detail: "Research harness and open tools", href: LAB_URL, external: true },
