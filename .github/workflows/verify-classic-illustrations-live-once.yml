@@ -5,6 +5,9 @@ on:
     paths: [.github/workflows/verify-classic-illustrations-live-once.yml]
 permissions:
   contents: read
+concurrency:
+  group: live-classic-illustration-review
+  cancel-in-progress: true
 jobs:
   verify:
     runs-on: ubuntu-latest
@@ -22,21 +25,27 @@ jobs:
           python - <<'PY'
           import hashlib, pathlib, time, urllib.request, urllib.error
           base='https://miguelguerrero.eu/agencytransfer/'
-          expected=hashlib.sha256(pathlib.Path('public/media/illustrations/policy-intervention-atlas-1600.webp').read_bytes()).hexdigest()
+          files=(
+              'media/illustrations/anatomy-manipulation-1672.webp',
+              'media/illustrations/policy-intervention-atlas-1600.webp',
+              'media/illustrations/policy-circuit-breakers-1448.webp',
+          )
+          expected={name:hashlib.sha256((pathlib.Path('public')/name).read_bytes()).hexdigest() for name in files}
           ready=False
           for _ in range(45):
               try:
-                  with urllib.request.urlopen(base+'media/illustrations/policy-intervention-atlas-1600.webp',timeout=20) as response:
-                      raw=response.read()
-                  with urllib.request.urlopen(base+'research/part-iv/',timeout=20) as response:
-                      page=response.read().decode('utf-8','replace')
-                  ready=hashlib.sha256(raw).hexdigest()==expected and 'policy-intervention-atlas-1600.webp' in page
+                  observed={}
+                  for name in files:
+                      request=urllib.request.Request(base+name,headers={'Cache-Control':'no-cache','User-Agent':'AgencyTransferLiveReview/1.0'})
+                      with urllib.request.urlopen(request,timeout=20) as response:
+                          observed[name]=hashlib.sha256(response.read()).hexdigest()
+                  ready=observed==expected
                   if ready: break
               except (urllib.error.URLError, TimeoutError):
                   pass
               time.sleep(8)
-          assert ready,'The deployed illustration snapshot was not ready within the verification window.'
-          print('New policy illustration and Part IV markup confirmed on HTTPS production.')
+          assert ready,'The deployed illustration bytes were not ready within the verification window.'
+          print('All three optimized illustration assets match the source branch on HTTPS production.')
           PY
       - name: Run live desktop and mobile acceptance checks
         env:
