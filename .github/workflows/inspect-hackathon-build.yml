@@ -1,0 +1,65 @@
+name: Inspect hackathon isolated build
+on:
+  push:
+    branches: [research/inspect-hackathon-20260905]
+    paths:
+      - '.github/workflows/inspect-hackathon-build.yml'
+      - 'hackathon-20260905/**'
+permissions:
+  contents: read
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c
+        with:
+          python-version: '3.13'
+      - name: Install and archive actual Inspect packages
+        run: |
+          mkdir -p build/wheelhouse build/source
+          python -m pip download --only-binary=:all: --dest build/wheelhouse inspect-ai inspect-viz inspect-evals
+          python -m pip install --no-index --find-links build/wheelhouse inspect-ai inspect-viz inspect-evals
+          python -m pip freeze > build/requirements-resolved.txt
+          python - <<'PY'
+          import inspect_ai, inspect_viz, inspect_evals, importlib.metadata as m, json, pathlib
+          versions={p:m.version(p) for p in ['inspect-ai','inspect-viz','inspect-evals']}
+          pathlib.Path('build/verified-versions.json').write_text(json.dumps(versions,indent=2))
+          print('VERIFIED_IMPORTS',versions)
+          PY
+      - name: Inspect public source metadata without printing trajectories
+        run: |
+          python - <<'PY'
+          import urllib.request,json,pathlib,collections
+          base='https://huggingface.co/datasets/antieval/agentharm-trajectories/resolve/84559bee7a75515b5b9d0b061cd6628f25ee1c24/'
+          report={}
+          for name in ['agentharm_claude-opus-4.5.jsonl','agentharm_gpt-5.4.jsonl']:
+              raw=urllib.request.urlopen(base+name,timeout=60).read()
+              pathlib.Path('build/source',name).write_bytes(raw)
+              rows=[json.loads(x) for x in raw.decode().splitlines() if x]
+              report[name]={'n':len(rows),'keys':list(rows[0]),'schema':{k:{'type':type(v).__name__,'length':len(v) if isinstance(v,(str,list,dict)) else None,'item_keys':list(v[0]) if isinstance(v,list) and v and isinstance(v[0],dict) else None} for k,v in rows[0].items()}}
+              for key in ['model','score','refusal','success','split','category','task_type']:
+                  if key in rows[0]: report[name][key]=dict(collections.Counter(str(x.get(key)) for x in rows))
+          pathlib.Path('build/source-schema.json').write_text(json.dumps(report,indent=2))
+          print(json.dumps(report,indent=2))
+          PY
+      - name: Check whether an evaluation credential is configured
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        run: |
+          python - <<'PY'
+          import os,json,pathlib
+          data={'openrouter_key_configured':bool(os.getenv('OPENROUTER_API_KEY'))}
+          pathlib.Path('build/credential-status.json').write_text(json.dumps(data))
+          print(data)
+          PY
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        if: always()
+        with:
+          name: inspect-hackathon-build
+          path: build/
+          retention-days: 7
+          if-no-files-found: error
