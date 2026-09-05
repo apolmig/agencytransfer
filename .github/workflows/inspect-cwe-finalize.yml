@@ -1,0 +1,105 @@
+name: Finalize empirical Inspect Viz submission
+on:
+  push:
+    branches: [research/inspect-hackathon-20260905]
+    paths: ['.github/workflows/inspect-cwe-finalize.yml']
+permissions:
+  contents: read
+  actions: read
+jobs:
+  finalize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c
+        with:
+          python-version: '3.13'
+      - name: Install the real analysis and plotting packages
+        run: |
+          python -m pip install inspect-ai==0.3.263 inspect-evals==0.19.0 inspect-viz==0.4.1 pandas python-pptx nbformat nbclient nbconvert ipykernel playwright pytest
+          python -m playwright install --with-deps chromium
+      - name: Verify completion of missing-condition workflow
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for i in $(seq 1 120); do
+            status=$(gh api repos/apolmig/agencytransfer/actions/runs/33961409406 --jq '.status')
+            if [ "$status" = completed ]; then break; fi
+            sleep 5
+          done
+          test "$status" = completed
+          result=$(gh api repos/apolmig/agencytransfer/actions/runs/33961409406 --jq '.conclusion')
+          test "$result" = success
+      - uses: actions/download-artifact@v4
+        with:
+          name: inspect-cwe-0.5B
+          path: retrieved/original_0.5B
+          run-id: 33956621984
+          github-token: ${{ github.token }}
+      - uses: actions/download-artifact@v4
+        with:
+          name: inspect-cwe-1.5B
+          path: retrieved/original_1.5B
+          run-id: 33956621984
+          github-token: ${{ github.token }}
+      - uses: actions/download-artifact@v4
+        with:
+          name: inspect-cwe-resumed-all
+          path: retrieved/resumed_1.5B
+          run-id: 33961409406
+          github-token: ${{ github.token }}
+      - name: Stage original bytes and provenance
+        run: |
+          python - <<'PY'
+          import shutil,json
+          from pathlib import Path
+          from inspect_ai.log import read_eval_log
+          root=Path('submission');root.mkdir()
+          for sub in ['logs','outputs','excluded','provenance']: (root/sub).mkdir()
+          for p in Path('inspect-cwe-final').glob('*.py'): shutil.copy2(p,root/p.name)
+          shutil.copy2('inspect-cwe-pilot/minieval.py',root/'minieval.py')
+          excluded=[]
+          for p in Path('retrieved').rglob('*'):
+              if not p.is_file(): continue
+              if p.suffix=='.eval':
+                  log=read_eval_log(p)
+                  folder='logs' if log.status=='success' else 'excluded'
+                  dest=root/folder/p.name
+                  assert not dest.exists()
+                  shutil.copy2(p,dest)
+                  if folder=='excluded': excluded.append({'file':p.name,'status':log.status,'samples':len(log.samples or []),'reason':'Empty started log after original runner timeout; all missing samples subsequently resumed.'})
+              else:
+                  dest=root/'provenance'/p.relative_to('retrieved');dest.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(p,dest)
+          (root/'excluded'/'README.json').write_text(json.dumps(excluded,indent=2))
+          for p in Path('.github/workflows').glob('inspect-cwe-*.yml'): shutil.copy2(p,root/'provenance'/p.name)
+          (root/'requirements-analysis.txt').write_text('inspect-ai==0.3.263\ninspect-evals==0.19.0\ninspect-viz==0.4.1\npandas\npython-pptx\nnbformat\nnbclient\nnbconvert\nipykernel\nplaywright\npytest\n')
+          PY
+          python -m pip freeze > submission/provenance/analysis-environment.txt
+      - name: Recompute every score and execute the complete notebook
+        run: |
+          cd submission
+          python -u build_notebook.py
+          python -m jupyter nbconvert --to html capability_willingness_execution.ipynb --output capability_willingness_execution.html
+          python - <<'PY'
+          import json,hashlib
+          from pathlib import Path
+          from analysis import analyse,write_pitch
+          df,summary,diag,audit=analyse('.')
+          body='# Can’t, won’t—or didn’t execute?\n\nEmpirical Inspect custom mini-evaluation; fictional tasks, actual model inference.\n\n## Deliverables\n- `outputs/submission_one_slide.pptx`: exactly one slide, exactly one Inspect Viz plot.\n- `capability_willingness_execution.ipynb`: executed analysis notebook.\n- `logs/`: original completed Inspect .eval logs.\n- `outputs/inspect_viz_plot.html` and `.png`: native Inspect Viz exports.\n\n## Results\n'+summary.to_csv(index=False)+'\n## Limits\nThis is a diagnostic pilot, not a validated harmful-manipulation evaluation or a safety ranking. The willingness proxy is contaminated by arithmetic and tool-interface errors; benign-control inflation is reported. The first column is a separate benign test, not a nested funnel. No human effect or external action was measured. The original 1.5B job timed out; its missing deceptive condition was completed in fixed disjoint shards. Changed batch context is a confound; no causal prompt-effect claim is made.\n\n## Reproduction\n`pip install -r requirements-analysis.txt`\n`python -m playwright install chromium`\n`python build_notebook.py`\n`inspect view --log-dir logs`\n\nNo API key is required for reanalysis. The original model runs used local CPU inference through Inspect’s HF provider, not mock models, and did not use Hawk or event API credits. Package versions, model revisions, original log hashes, source code and workflow records are included. No form submission or sharing permission change has been made.\n'
+          Path('README.md').write_text(body)
+          manifest={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in Path('.').rglob('*') if p.is_file() and '__pycache__' not in str(p)}
+          Path('SHA256SUMS.json').write_text(json.dumps(manifest,indent=2))
+          print(diag.to_string(index=False))
+          print('FINAL_AUDIT',audit['status'],len(df),len(audit['inventory']))
+          PY
+      - name: Preserve complete empirical submission
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        with:
+          name: inspect-cwe-complete-submission
+          path: submission/
+          retention-days: 14
+          if-no-files-found: error
